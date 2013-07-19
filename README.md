@@ -94,8 +94,8 @@ text with something meaningful:
 ```
 
 Most find operations take an optional movement function as parameter. If you wanted to perform a depth-first search you'd
-use `rewrite-clj/next`, if you wanted to look for something on the same level as the current location, you'd emply 
-`rewrite-clj/right` (the default) or `rewrite-clj/left`. 
+use `rewrite-clj.zip/next`, if you wanted to look for something on the same level as the current location, you'd emply 
+`rewrite-clj.zip/right` (the default) or `rewrite-clj.zip/left`. 
 
 Now, to enter the project map, you'd look for the symbol `defproject` in a depth-first way:
 
