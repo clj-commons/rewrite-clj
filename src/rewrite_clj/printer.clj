@@ -1,6 +1,6 @@
 (ns ^{ :doc "Print EDN tree."
        :author "Yannick Scherer" }
-  rewrite-clj.print)
+  rewrite-clj.printer)
 
 ;; ## Base
 
