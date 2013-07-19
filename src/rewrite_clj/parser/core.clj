@@ -43,6 +43,7 @@
         (repeatedly #(parse-next reader delim))))))
 
 (defn- parse-whitespace
+  "Parse as much whitespace as possible."
   [reader]
   (token 
     :whitespace 
@@ -55,17 +56,17 @@
             (recur (conj r ws))))))))
 
 (defn- parse-meta
+  "Parse Token starting with '^'"
   [type reader]
+  (ignore reader)
   (apply token type
-         (do
-           (ignore reader)
-           (let [mta (parse-next reader nil)
-                 isq (repeatedly #(parse-next reader nil))
-                 spc (doall (take-while (comp #{:comment :whitespace} first) isq))
-                 vlu (nth isq (count spc))]
-             (when-not vlu
-               (throw (Exception. "Missing value for Metadata.")))
-             (concat (list* mta spc) [vlu])))))
+         (let [mta (parse-next reader nil)
+               isq (repeatedly #(parse-next reader nil))
+               spc (doall (take-while (comp #{:comment :whitespace} first) isq))
+               vlu (nth isq (count spc))]
+           (when-not vlu
+             (throw (Exception. "Missing value for Metadata.")))
+           (concat (list* mta spc) [vlu]))))
 
 (defn- parse-regex
   "Parse regular expression string. The first available character has to be the
@@ -80,6 +81,7 @@
             :else (recur (conj rx c) false)))))
 
 (defn- parse-reader-macro
+  "Parse token starting with '#'."
   [reader]
   (ignore reader)
   (let [c (r/peek-char reader)]
@@ -93,6 +95,7 @@
       (do (r/unread reader \#) (token :token (edn/read reader))))))
 
 (defn- parse-unquote
+  "Parse token starting with '~'."
   [reader]
   (ignore reader)
   (let [c (r/peek-char reader)]
