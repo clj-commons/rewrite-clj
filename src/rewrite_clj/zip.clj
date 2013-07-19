@@ -158,6 +158,7 @@
 
 (def remove z/remove)
 (def node z/node)
+(def root z/root)
 
 ;; ## Find
 
