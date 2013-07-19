@@ -9,8 +9,11 @@
     (p/parse-string ?s) => [:token ?r])
   ?s                           ?r
   "0"                          0
+  "0.1"                        0.1
+  "1N"                         1N
   ":key"                       :key
   "sym"                        'sym
+  "sym#"                       'sym#
   "\"string\""                 "string")
 
 (tabular

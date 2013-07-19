@@ -106,7 +106,6 @@
 ;; ## Register Parsers
 
 (defmethod parse-next nil [reader _] (throw (Exception. "Unknown Token Type.")))
-
 (defmethod parse-next :token [reader _]        (read-next :token edn/read reader))
 (defmethod parse-next :comment [reader _]      (read-next :comment r/read-line reader))
 (defmethod parse-next :matched [reader _]      (ignore reader))

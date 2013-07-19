@@ -3,7 +3,8 @@
   rewrite-clj.zip
   (:refer-clojure :exclude [replace next remove find])
   (:require [potemkin :refer [import-vars]]
-            [fast-zip.core :as z]))
+            [fast-zip.core :as z]
+            [rewrite-clj.convert :as c]))
 
 ;; ## Access
 
@@ -14,10 +15,16 @@
     (first (z/node zloc))))
 
 (defn value
-  "Get value of structure at current zipper location."
+  "Get the first child of the current zipper node."
   [zloc]
   (when zloc
     (second (z/node zloc))))
+
+(defn sexpr
+  "Get the s-expression of the current node."
+  [zloc]
+  (when zloc
+    (c/->sexpr (z/node zloc))))
 
 (defn whitespace?
   "Check if the node at the current zipper location is whitespae or comment."
