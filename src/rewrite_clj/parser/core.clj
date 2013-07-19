@@ -105,7 +105,7 @@
 
 ;; ## Register Parsers
 
-(defmethod parse-next nil [_ _] (throw (Exception. "Unknown Token Type.")))
+(defmethod parse-next nil [reader _] (throw (Exception. "Unknown Token Type.")))
 
 (defmethod parse-next :token [reader _]        (read-next :token edn/read reader))
 (defmethod parse-next :comment [reader _]      (read-next :comment r/read-line reader))
@@ -113,7 +113,7 @@
 (defmethod parse-next :unmatched [reader _]    (throw (Exception. "Unmatched Delimiter.")))
 (defmethod parse-next :deref [reader _]        (parse-prefixed :deref reader))
 (defmethod parse-next :whitespace [reader _]   (parse-whitespace reader))
-(defmethod parse-next :meta [reader delim]     (parse-meta :meta reader delim))
+(defmethod parse-next :meta [reader delim]     (parse-meta :meta reader))
 (defmethod parse-next :list [reader _]         (parse-delimited :list \) reader))
 (defmethod parse-next :vector [reader _]       (parse-delimited :vector \] reader) )
 (defmethod parse-next :map [reader _]          (parse-delimited :map \} reader) )
