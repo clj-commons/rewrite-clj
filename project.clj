@@ -4,4 +4,6 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [org.clojure/tools.reader "0.7.5"]])
+                 [org.clojure/tools.reader "0.7.5"]
+                 [potemkin "0.3.1"]
+                 [fast-zip "0.3.0"]])

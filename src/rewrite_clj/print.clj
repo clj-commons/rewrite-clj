@@ -2,16 +2,49 @@
        :author "Yannick Scherer" }
   rewrite-clj.print)
 
-(defn print-edn
-  "Print EDN tree."
-  [data]
-  (let [[t v] data]
-    (condp = t
-      :vector (do (print "[") (doseq [x v] (print-edn x)) (print "]"))
-      :list (do (print "(") (doseq [x v] (print-edn x)) (print ")"))
-      :set (do (print "#{") (doseq [x v] (print-edn x)) (print "}"))
-      :map (do (print "{") (doseq [x v] (print-edn x)) (print "}"))
-      :meta (do (print "^") (print-edn v))
-      :comment (println v)
-      :whitespace (print v)
-      (pr v))))
+(defmulti print-edn
+  (fn [data]
+    (when (vector? data)
+      (first data)))
+  :default :token)
+
+(defmethod print-edn :token [data] (pr (second data)))
+(defmethod print-edn :comment [data] (println (second data)))
+(defmethod print-edn :whitespace [data] (print (second data)))
+(defmethod print-edn :meta [data] (print "^") (doall (map print-edn (rest data))))
+
+(defmethod print-edn :list [data]
+  (print "(")
+  (doall (map print-edn (rest data)))
+  (print ")"))
+
+(defmethod print-edn :vector [data]
+  (print "[")
+  (doall (map print-edn (rest data)))
+  (print "]"))
+
+(defmethod print-edn :set [data]
+  (print "#{")
+  (doall (map print-edn (rest data)))
+  (print "}"))
+
+(defmethod print-edn :map [data]
+  (print "{")
+  (doall (map print-edn (rest data)))
+  (print "}"))
+
+(defmethod print-edn :quote [data]
+  (print "'")
+  (doall (map print-edn (rest data))))
+
+(defmethod print-edn :syntax-quote [data]
+  (print "`")
+  (doall (map print-edn (rest data))))
+
+(defmethod print-edn :unquote [data]
+  (print "~")
+  (doall (map print-edn (rest data))))
+
+(defmethod print-edn :unquote-splicing [data]
+  (print "~@")
+  (doall (map print-edn (rest data))))
