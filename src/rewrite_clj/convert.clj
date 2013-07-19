@@ -120,3 +120,4 @@
 (defmethod ->tree :vector [v] (seq->tree :vector v))
 (defmethod ->tree :set [v] (seq->tree :set v))
 (defmethod ->tree :map [v] (seq->tree :map (apply concat (seq v))))
+(defmethod ->tree clojure.lang.Var [v] [:var (->tree (:name (meta v)))])
