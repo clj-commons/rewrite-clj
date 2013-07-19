@@ -64,12 +64,9 @@ operations, based on [fast-zip](https://github.com/akhudek/fast-zip).
   (* a 3))")
 (def data (z/edn (p/parse-string data-string)))
 
-(z/sexpr data)
-;; => (defn my-function [a] (* a 3))
-(-> data z/down z/right z/node)
-;; => [:token my-function]
-(-> data z/down z/right z/sexpr)
-;; => my-function
+(z/sexpr data)                       ;; => (defn my-function [a] (* a 3))
+(-> data z/down z/right z/node)      ;; => [:token my-function]
+(-> data z/down z/right z/sexpr)     ;; => my-function
 
 (-> data z/down z/right (z/edit (comp symbol str) "2") z/up z/sexpr)
 ;; => (defn my-function2 [a] (* a 3))
