@@ -13,11 +13,11 @@
    \( :list      \[ :vector    \{ :map
    \} :unmatched \] :unmatched \) :unmatched
    \~ :unquote   \' :quote     \` :syntax-quote
-   \; :comment})
+   \; :comment   \@ :deref})
 
 (defmulti parse-next
   "Parse the next element from the given reader. Dispatch is done using the first
-   available character."
+   available character. If the given delimiter is reached, nil shall be returned."
   (fn [reader delimiter] 
     (when-let [c (r/peek-char reader)]
       (cond (whitespace? c) :whitespace
@@ -25,21 +25,25 @@
             :else (get parse-table c :token))))
   :default nil)
 
-;; ## Simple Tokens
+(defn- parse-prefixed
+  "Ignore the first available char and parse the next token of the given type."
+  [type reader]
+  (ignore reader)
+  (token type (parse-next reader nil)))
 
-(defmethod parse-next nil 
-  [_ _] 
-  (throw (Exception. "Unknown Token Type.")))
+(defn- parse-delimited
+  "Parse until the given delimiter is reached."
+  [type delim reader]
+  (ignore reader)
+  (apply token 
+    type 
+    (doall
+      (take-while 
+        (complement nil?) 
+        (repeatedly #(parse-next reader delim))))))
 
-(defmethod parse-next :token [reader _] (read-next :token edn/read reader))
-(defmethod parse-next :comment [reader _] (read-next :comment r/read-line reader))
-(defmethod parse-next :matched [reader _] (ignore reader))
-(defmethod parse-next :unmatched [reader _] (throw (Exception. "Unmatched Delimiter.")))
-
-;; ## Whitespace
-
-(defmethod parse-next :whitespace 
-  [reader _] 
+(defn- parse-whitespace
+  [reader]
   (token 
     :whitespace 
     (loop [r []]
@@ -50,39 +54,18 @@
             (ignore reader)
             (recur (conj r ws))))))))
 
-;; ## Metadata
-
-(defmethod parse-next :meta 
-  [reader delim]
-  (apply token 
-    :meta
-    (do
-      (ignore reader)
-      (let [mta (parse-next reader delim)
-            isq (repeatedly #(parse-next reader delim))
-            spc (doall (take-while (comp #{:comment :whitespace} first) isq))
-            vlu (nth isq (count spc))]
-        (when-not vlu
-          (throw (Exception. "Missing value for Metadata.")))
-        (concat (list* mta spc) [vlu])))))
-
-;; ## Seqs
-
-(defn- parse-delim
-  [type delim reader]
-  (ignore reader)
-  (apply token 
-    type 
-    (doall
-      (take-while 
-        (complement nil?) 
-        (repeatedly #(parse-next reader delim))))))
-
-(defmethod parse-next :list [reader _] (parse-delim :list \) reader))
-(defmethod parse-next :vector [reader _] (parse-delim :vector \] reader) )
-(defmethod parse-next :map [reader _] (parse-delim :map \} reader) )
-
-;; ## Regular Expressions/Sets
+(defn- parse-meta
+  [type reader]
+  (apply token type
+         (do
+           (ignore reader)
+           (let [mta (parse-next reader nil)
+                 isq (repeatedly #(parse-next reader nil))
+                 spc (doall (take-while (comp #{:comment :whitespace} first) isq))
+                 vlu (nth isq (count spc))]
+             (when-not vlu
+               (throw (Exception. "Missing value for Metadata.")))
+             (concat (list* mta spc) [vlu])))))
 
 (defn- parse-regex
   "Parse regular expression string. The first available character has to be the
@@ -96,38 +79,42 @@
             (= c \\) (recur (conj rx c) true)
             :else (recur (conj rx c) false)))))
 
-(defmethod parse-next :sharp
-  [reader _]
+(defn- parse-reader-macro
+  [reader]
   (ignore reader)
   (let [c (r/peek-char reader)]
     (condp = c
-      \{ (parse-delim :set \} reader)
+      \{ (parse-delimited :set \} reader)
+      \( (parse-delimited :fn \) reader)
       \" (parse-regex reader)
-      \= (do
-           (ignore reader)
-           (token :eval (parse-next reader nil)))
-      (do
-        (r/unread reader \#)
-        (token :token (edn/read reader))))))
+      \' (parse-prefixed :var reader)
+      \^ (parse-meta :meta* reader)
+      \= (parse-prefixed :eval reader)
+      (do (r/unread reader \#) (token :token (edn/read reader))))))
 
-;; ## Quotes
-
-(defmethod parse-next :unquote
-  [reader _]
+(defn- parse-unquote
+  [reader]
   (ignore reader)
   (let [c (r/peek-char reader)]
     (if (= c \@)
-      (do
-        (ignore reader)
-        (token :unquote-splicing (parse-next reader nil)))
+      (parse-prefixed :unquote-splicing reader)
       (token :unquote (parse-next reader nil)))))
 
-(defmethod parse-next :quote
-  [reader _]
-  (ignore reader)
-  (token :quote (parse-next reader nil)))
+;; ## Register Parsers
 
-(defmethod parse-next :syntax-quote
-  [reader _]
-  (ignore reader)
-  (token :syntax-quote (parse-next reader nil)))
+(defmethod parse-next nil [_ _] (throw (Exception. "Unknown Token Type.")))
+
+(defmethod parse-next :token [reader _]        (read-next :token edn/read reader))
+(defmethod parse-next :comment [reader _]      (read-next :comment r/read-line reader))
+(defmethod parse-next :matched [reader _]      (ignore reader))
+(defmethod parse-next :unmatched [reader _]    (throw (Exception. "Unmatched Delimiter.")))
+(defmethod parse-next :deref [reader _]        (parse-prefixed :deref reader))
+(defmethod parse-next :whitespace [reader _]   (parse-whitespace reader))
+(defmethod parse-next :meta [reader delim]     (parse-meta :meta reader delim))
+(defmethod parse-next :list [reader _]         (parse-delimited :list \) reader))
+(defmethod parse-next :vector [reader _]       (parse-delimited :vector \] reader) )
+(defmethod parse-next :map [reader _]          (parse-delimited :map \} reader) )
+(defmethod parse-next :sharp [reader _]        (parse-reader-macro reader))
+(defmethod parse-next :unquote [reader _]      (parse-unquote reader)) 
+(defmethod parse-next :quote [reader _]        (parse-prefixed :quote reader))
+(defmethod parse-next :syntax-quote [reader _] (parse-prefixed :syntax-quote reader))
