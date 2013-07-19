@@ -2,9 +2,8 @@
        :author "Yannick Scherer" } 
   rewrite-clj.zip
   (:refer-clojure :exclude [replace next remove find])
-  (:require [potemkin :refer [import-vars]]
-            [fast-zip.core :as z]
-            [rewrite-clj.convert :as c]))
+  (:require [fast-zip.core :as z]
+            [rewrite-clj.convert :as conv]))
 
 ;; ## Access
 
@@ -24,7 +23,7 @@
   "Get the s-expression of the current node."
   [zloc]
   (when zloc
-    (c/->sexpr (z/node zloc))))
+    (conv/->sexpr (z/node zloc))))
 
 (defn whitespace?
   "Check if the node at the current zipper location is whitespae or comment."
@@ -43,7 +42,7 @@
   [node ch]
   (apply vector (first node) ch))
 
-(def edn-zip 
+(def edn
   "Create zipper over rewrite-clj's EDN tree structure."
   (partial z/zipper z-branch? rest z-make-node))
 
@@ -142,15 +141,23 @@
       (-> zloc (z/append-child item))
       (-> zloc (z/append-child SPACE) (z/append-child item)))))
 
-;; ### Import Others
+;; ## Modify
 
-(import-vars
-  [fast-zip.core
-   
-   branch? children make-node
-   rights lefts
-   path node root end?
-   remove replace edit])
+(defn replace
+  "Replace value at the given zipper location with the given value."
+  [zloc v]
+  (z/replace zloc (conv/->tree v)))
+
+(defn edit
+  "Replace value at the given zipper location with value of (f node-sexpr args)."
+  [zloc f & args]
+  (let [form (sexpr zloc)]
+    (z/replace zloc (conv/->tree (apply f form args)))))
+
+;; ## Others
+
+(def remove z/remove)
+(def node z/node)
 
 ;; ## Find
 
@@ -182,8 +189,14 @@
   (when-let [zloc (left zloc)]
     (find-by-tag zloc left t)))
 
-(defn find-by-content
-  "Find element with the given content by applying the given movement function to the initial 
-   zipper location, defaulting to `zip/right`."
-  ([zloc v] (find-by-content zloc right v))
-  ([zloc f v] (find zloc f #(= (value %) v))))
+(defn find-token
+  "Find token element matching the given predicate by applying the given movement function
+   to the initial zipper location, defaulting to `right`."
+  ([zloc p?] (find-token zloc right p?))
+  ([zloc f p?] (find zloc f (fn [x] (and (= (tag x) :token) (p? (value x)))))))
+
+(defn find-value
+  "Find token element whose value matches the given one by applying the given movement
+   function to the initial zipper location, defaulting ro `right`."
+  ([zloc v] (find-value zloc right v))
+  ([zloc f v] (find-token zloc f #(= % v))))

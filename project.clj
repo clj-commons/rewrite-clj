@@ -6,7 +6,6 @@
   :repositories  {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/tools.reader "0.7.5"]
-                 [potemkin "0.3.1"]
                  [fast-zip "0.3.0"]]
   :profiles {:test {:dependencies [[midje "1.5.1"]]
                     :plugins [[lein-midje "3.0.1"]]}
