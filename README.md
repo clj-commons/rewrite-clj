@@ -81,6 +81,49 @@ operations, based on [fast-zip](https://github.com/akhudek/fast-zip).
 `rewrite-clj.zip/edit` and `rewrite-clj.zip/replace` try to facilitate their use by transparently converting
 between the node's internal representation (`[:token my-function]`) and its corresponding s-expression (`my-function`).
 
+## Sweet Code Traversal
+
+`rewrite-clj.zip` offers a series of `find` operations that can be used to determine specific positions in the code.
+For example, you might want to modify a `project.clj` of the following form by replacing the `:description` placeholder
+text with something meaningful:
+
+```clojure
+(defproject my-project "0.1.0-SNAPSHOT"
+  :description "Enter description"
+  ...)
+```
+
+Most find operations take an optional movement function as parameter. If you wanted to perform a depth-first search you'd
+use `rewrite-clj/next`, if you wanted to look for something on the same level as the current location, you'd emply 
+`rewrite-clj/right` (the default) or `rewrite-clj/left`. 
+
+Now, to enter the project map, you'd look for the symbol `defproject` in a depth-first way:
+
+```clojure
+(def data (z/edn (p/parse-file "project.clj")))
+(def prj-map (z/find-value data z/next 'defproject))
+```
+
+The `:description` keyword should be on the same layer, the corresponding string right of it:
+
+```clojure
+(def descr (-> prj-map (z/find-value :description) z/right))
+(z/sexpr descr) ;; => "Enter description"
+```
+
+Replace it, zip up and print the result:
+
+```clojure
+(-> descr (z/replace "My first Project.") z/root prn/print-edn)
+;; (defproject my-project "0.1.0-SNAPSHOT"
+;;   :description "My first Project."
+;;   ...)
+;; => nil
+```
+
+Other search functions include the generic `find`, `find-by-tag`, `find-next-by-tag`, `find-previous-by-tag` and
+`find-token`.
+
 ## License
 
 Copyright &copy; 2013 Yannick Scherer
