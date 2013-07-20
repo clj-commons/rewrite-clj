@@ -23,7 +23,11 @@
 
 ;; ## Simple Conversions
 
-(defmethod ->sexpr nil [v] nil)
+(defmethod ->sexpr nil [v]
+  (if (not (vector? v)) 
+    (throw (Exception. (str "Not a vector: " v)))
+    (throw (Exception. (str "Cannot convert type '" (first v) "' to s-expression.")))))
+
 (defmethod ->sexpr :token [v] (second v))
 (defmethod ->sexpr :eval [v] (->sexpr (second v)))
 (defmethod ->sexpr :list [v] (apply list (children->sexprs v)))
@@ -33,6 +37,7 @@
 
 ;; ## Wrapped
 
+(defmethod ->sexpr :deref [v] (wrap-sexpr 'deref v))
 (defmethod ->sexpr :var [v] (wrap-sexpr 'var v))
 (defmethod ->sexpr :quote [v] (wrap-sexpr 'quote v))
 (defmethod ->sexpr :syntax-quote [v] (wrap-sexpr 'quote v))
