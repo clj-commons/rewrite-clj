@@ -38,7 +38,7 @@
   [node]
   (when (clojure.core/vector? node)
     (let [[k & _] node]
-      (contains? #{:list :vector :set :map} k))))
+      (contains? #{:list :vector :set :map :meta :meta* :reader-macro} k))))
 
 (defn- z-make-node
   [node ch]
@@ -57,6 +57,7 @@
   (->> zloc
     (iterate f)
     (take-while identity)
+    (take-while (complement z/end?))
     (drop-while p?)
     (first)))
 
@@ -147,6 +148,16 @@
       (-> zloc (z/append-child item))
       (-> zloc (z/append-child SPACE) (z/append-child item)))))
 
+(defn prepend-space
+  "Prepend a whitespace node of the given width."
+  ([zloc] (prepend-space zloc 1))
+  ([zloc n] (z/insert-left zloc [:whitespace (apply str (repeat n \space))])))
+
+(defn append-space
+  "Append a whitespace node of the given width."
+  ([zloc] (append-space zloc 1))
+  ([zloc n] (z/insert-right zloc [:whitespace (apply str (repeat n \space))])))
+
 ;; ## Modify
 
 (defn replace
@@ -165,6 +176,12 @@
   [zloc]
   ;; TODO
   (z/remove zloc))
+
+(defn splice
+  "Add the current node's children to the parent branch (in place of the current node)."
+  [zloc]
+  (let [ch (z/children zloc)]
+    (-> (reduce z/insert-right zloc (reverse ch)) z/remove z/right)))
 
 ;; ## Others
 
