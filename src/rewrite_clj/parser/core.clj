@@ -55,8 +55,8 @@
             (ignore reader)
             (recur (conj r ws))))))))
 
-(defn- parse-meta
-  "Parse Token starting with '^'"
+(defn- parse-pair
+  "Parse two tokens (and whitespace inbetween)."
   [type reader]
   (ignore reader)
   (apply token type
@@ -65,7 +65,7 @@
                spc (doall (take-while (comp #{:comment :whitespace} first) isq))
                vlu (nth isq (count spc))]
            (when-not vlu
-             (throw (Exception. "Missing value for Metadata.")))
+             (throw (Exception. (str "Reading token of type " type " failed: needs pairs of values."))))
            (concat (list* mta spc) [vlu]))))
 
 (defn- parse-regex
@@ -90,9 +90,9 @@
       \( (parse-delimited :fn \) reader)
       \" (parse-regex reader)
       \' (parse-prefixed :var reader)
-      \^ (parse-meta :meta* reader)
+      \^ (parse-pair :meta* reader)
       \= (parse-prefixed :eval reader)
-      (do (r/unread reader \#) (token :token (edn/read reader))))))
+      (do (r/unread reader \#) (parse-pair :reader-macro reader)))))
 
 (defn- parse-unquote
   "Parse token starting with '~'."
@@ -112,7 +112,7 @@
 (defmethod parse-next :unmatched [reader _]    (throw (Exception. "Unmatched Delimiter.")))
 (defmethod parse-next :deref [reader _]        (parse-prefixed :deref reader))
 (defmethod parse-next :whitespace [reader _]   (parse-whitespace reader))
-(defmethod parse-next :meta [reader delim]     (parse-meta :meta reader))
+(defmethod parse-next :meta [reader delim]     (parse-pair :meta reader))
 (defmethod parse-next :list [reader _]         (parse-delimited :list \) reader))
 (defmethod parse-next :vector [reader _]       (parse-delimited :vector \] reader) )
 (defmethod parse-next :map [reader _]          (parse-delimited :map \} reader) )

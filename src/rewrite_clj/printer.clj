@@ -32,6 +32,7 @@
 (defmethod print-edn :vector [data] (print-children "[" data "]"))
 (defmethod print-edn :map [data] (print-children "{" data "}"))
 (defmethod print-edn :set [data] (print-children "#{" data "}"))
+(defmethod print-edn :reader-macro [data] (print-children "#" data))
 (defmethod print-edn :quote [data] (print-children "'" data))
 (defmethod print-edn :syntax-quote [data] (print-children "`" data))
 (defmethod print-edn :unquote [data] (print-children "~" data))
