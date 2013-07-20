@@ -114,7 +114,8 @@
 (defn insert-right
   "Insert item to the right of the current location. Will insert a space if necessary."
   [zloc item]
-  (let [r (-> zloc z/right)]
+  (let [r (-> zloc z/right)
+        item (conv/->tree item)]
     (cond (not (z/node zloc)) (-> zloc (z/replace item))
           (or (not r) (whitespace? r)) (-> zloc (z/insert-right item) (z/insert-right SPACE))
           :else (-> zloc (z/insert-right SPACE) (z/insert-right item) (z/insert-right SPACE)))))
@@ -122,7 +123,8 @@
 (defn insert-left
   "Insert item to the left of the current location. Will insert a space if necessary."
   [zloc item]
-  (let [r (-> zloc z/left)]
+  (let [r (-> zloc z/left)
+        item (conv/->tree item)]
     (cond (not (z/node zloc)) (-> zloc (z/replace item))
           (or (not r) (whitespace? r)) (-> zloc (z/insert-left item) (z/insert-left SPACE))
           :else (-> zloc (z/insert-left SPACE) (z/insert-left item) (z/insert-left SPACE)))))
@@ -158,9 +160,14 @@
   (let [form (sexpr zloc)]
     (z/replace zloc (conv/->tree (apply f form args)))))
 
+(defn remove
+  "Remove value at the given zipper location. Will remove excess whitespace, too."
+  [zloc]
+  ;; TODO
+  (z/remove zloc))
+
 ;; ## Others
 
-(def remove z/remove)
 (def node z/node)
 (def root z/root)
 
@@ -278,5 +285,7 @@
   "Set map/seq element to the given value."
   [zloc k v]
   (if-let [vloc (get zloc k)]
-    (replace vloc v)
-    (-> zloc (append-child k) (append-child v))))
+    (-> vloc (replace v) up)
+    (if (map? zloc)
+      (-> zloc (append-child k) (append-child v))
+      (throw (Exception. (str "not a valid index to assoc: " v))))))
