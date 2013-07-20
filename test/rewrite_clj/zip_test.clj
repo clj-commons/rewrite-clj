@@ -86,10 +86,10 @@
   (-> root (z/find-value z/next :description) z/right z/node) => [:token "A project."]
   (-> root (z/find-value z/next "private") z/right z/node) => [:token "http://private.com/repo"]
 
-  (-> root (z/find-by-tag z/next :map) z/down z/node) => [:token "private"]
-  (->> root z/down (iterate #(z/find-next-by-tag % :token)) (take-while identity) (map z/node) (map second))
+  (-> root (z/find z/next (z/tag= :map)) z/down z/node) => [:token "private"]
+  (->> root z/down (iterate #(z/find-next % (z/tag= :token))) (take-while identity) (map z/node) (map second))
     => ['defproject 'my-project "0.1.0-SNAPSHOT" :description "A project." :dependencies :repositories]
-  (->> root z/down z/rightmost (iterate #(z/find-previous-by-tag % :token)) (rest) (take-while identity) (map z/node) (map second))
+  (->> root z/down z/rightmost (iterate #(z/find-next % z/left  (z/tag= :token))) (rest) (take-while identity) (map z/node) (map second))
     => [:repositories :dependencies "A project." :description "0.1.0-SNAPSHOT" 'my-project 'defproject])
 
 (fact "about zipper seq operations"

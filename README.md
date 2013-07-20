@@ -83,6 +83,8 @@ between the node's internal representation (`[:token my-function]`) and its corr
 
 ## Sweet Code Traversal
 
+### Example
+
 `rewrite-clj.zip` offers a series of `find` operations that can be used to determine specific positions in the code.
 For example, you might want to modify a `project.clj` of the following form by replacing the `:description` placeholder
 text with something meaningful:
@@ -121,8 +123,57 @@ Replace it, zip up and print the result:
 ;; => nil
 ```
 
-Other search functions include the generic `find`, `find-by-tag`, `find-next-by-tag`, `find-previous-by-tag` and
-`find-token`.
+### Searching the Tree
+
+Search functions include:
+
+- `(find zloc [f] p?)`: find the first match for the given predicate by repeatedly applying `f` to the current zipper 
+  location (default movement: `rewrite-clj.zip/right`). This might return `zloc` itself. 
+- `(find-next zloc [f] p?)`: find the next match for the given predicate by repeatedly applying `f` to the current zipper
+  location (default movement: `rewrite-clj.zip/right`). This will not return `zloc` itself.
+- `(find-token zloc [f] p?): like `find` but will only check `:token` nodes. The predicate is applied to the node's value.
+- `(find-next-token zloc [f] p?): like `find-next` but will only check `:token` nodes.
+- `(find-value zloc [f] v)`: uses `find` to get the first `:token` node with the given value.
+- `(find-next-value zloc [f] v)`: uses `find-next` to get the first `:token` node with the given value.
+
+The following two functions are designed to be used as predicates in `find` and `find-next`:
+
+- `(tag= t)`: creates a predicate that checks a zipper node against the given tag.
+- `(value= t)`: creates a predicate that checks a zipper node's value against the given one.
+
+Example:
+
+```clojure
+(-> zloc z/down (z/find (z/tag= :list)) z/tag) ;; => :list
+```
+
+### Handling Clojure Data Structures
+
+rewrite-clj aims at providing easy ways to work with Clojure data structures. It offers functions corresponding
+to the standard seq functions designed to work with zipper nodes containing said structures, e.g.:
+
+```clojure
+(def data (z/edn (p/parse-string "[1\n2\n3]")))
+
+(z/vector? data)                ;; => true
+(z/sexpr data)                  ;; => [1 2 3]
+(-> data (z/get 1) z/node)      ;; => [:token 2]
+(-> data (z/assoc 1 5) z/sexpr) ;; => [1 5 3]
+
+(with-out-str (->> data (z/map #(z/edit % + 4)) z/node prn/print-edn))
+;; => "[5\n6\n7]"
+```
+
+The following functions exist:
+
+- `map`: takes a function to be applied to the zipper nodes of the seq's values, has to return the 
+  modified zipper node. If a `:map` node is supplied, the value nodes will be iterated over. Returns
+  the supplied node incorporating all changes.
+- `map-keys`: Iterate over the key nodes of a `:map` node.
+- `get`: can be applied to `:map` nodes (with a key) or `:vector`/`:list`/`:set` nodes (with a numerical index)
+  and will return the desired zipper location.
+- `assoc`: will replace the value at the location obtained via `get`.
+- `seq?`, `map?`, `vector?`, `list?`, `set?`: check the type of the given zipper node.
 
 ## License
 

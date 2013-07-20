@@ -183,23 +183,21 @@
                  (drop-while (complement p?))
                  (first))))
 
-(defn find-by-tag
-  "Find element with the given tag by applying the given movement function to the initial
-   zipper location, defaulting to `right`."
-  ([zloc t] (find-by-tag zloc right t))
-  ([zloc f t] (find zloc f #(= (tag %) t))))
+(defn find-next
+  "Find element other than the current zipper location matching the given predicate by 
+   applying the given movement function to the initial zipper location."
+  ([zloc p?] (find-next zloc right p?))
+  ([zloc f p?]
+   (when-let [zloc (f zloc)]
+     (find zloc f p?))))
 
-(defn find-next-by-tag
-  "Find next element with the given tag, moving to the right before beginning the search."
-  [zloc t]
-  (when-let [zloc (right zloc)]
-    (find-by-tag zloc right t)))
+(defn tag= [t] #(= (tag %) t))
+(defn value= [v] #(and (= (tag %) :token) (= (value %) v)))
 
-(defn find-previous-by-tag
-  "Find previous element with the given tag, moving to the left before beginning the search."
-  [zloc t]
-  (when-let [zloc (left zloc)]
-    (find-by-tag zloc left t)))
+(comment
+  ;; Usage:
+  (-> zloc down (find (tag= :list)))
+  (-> zloc (find-next (value= :description))))
 
 (defn find-token
   "Find token element matching the given predicate by applying the given movement function
@@ -207,11 +205,23 @@
   ([zloc p?] (find-token zloc right p?))
   ([zloc f p?] (find zloc f (fn [x] (and (= (tag x) :token) (p? (value x)))))))
 
+(defn find-next-token
+  "Find token element matching the given predicate by applying the given movement function
+   to the initial zipper location, defaulting to `right`."
+  ([zloc p?] (find-next-token zloc right p?))
+  ([zloc f p?] (find-next zloc f (fn [x] (and (= (tag x) :token) (p? (value x)))))))
+
 (defn find-value
   "Find token element whose value matches the given one by applying the given movement
    function to the initial zipper location, defaulting ro `right`."
   ([zloc v] (find-value zloc right v))
   ([zloc f v] (find-token zloc f #(= % v))))
+
+(defn find-next-value
+  "Find token element whose value matches the given one by applying the given movement
+   function to the initial zipper location, defaulting ro `right`."
+  ([zloc v] (find-next-value zloc right v))
+  ([zloc f v] (find-next-token zloc f #(= % v))))
 
 ;; ## Seq Operations
 
