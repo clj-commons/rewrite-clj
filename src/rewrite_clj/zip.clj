@@ -192,13 +192,17 @@
    (when-let [zloc (f zloc)]
      (find zloc f p?))))
 
-(defn tag= [t] #(= (tag %) t))
-(defn value= [v] #(and (= (tag %) :token) (= (value %) v)))
+(defn find-tag
+  "Find element with the given tag by applying the given movement function to the initial 
+   zipper location."
+  ([zloc t] (find-tag zloc right t))
+  ([zloc f t] (find zloc f #(= (tag %) t))))
 
-(comment
-  ;; Usage:
-  (-> zloc down (find (tag= :list)))
-  (-> zloc (find-next (value= :description))))
+(defn find-next-tag
+  "Find element other than the current zipper location with the given tag by applying the 
+   given movement function to the initial zipper location."
+  ([zloc t] (find-next-tag zloc right t))
+  ([zloc f t] (find-next zloc f #(= (tag %) t))))
 
 (defn find-token
   "Find token element matching the given predicate by applying the given movement function

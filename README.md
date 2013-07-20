@@ -131,21 +131,12 @@ Search functions include:
   location (default movement: `rewrite-clj.zip/right`). This might return `zloc` itself. 
 - `(find-next zloc [f] p?)`: find the next match for the given predicate by repeatedly applying `f` to the current zipper
   location (default movement: `rewrite-clj.zip/right`). This will not return `zloc` itself.
+- `(find-tag zloc [f] t)`: uses `find` to get the first node with the given tag.
+- `(find-next-tag zloc [f] t)`: uses `find-next` to get the first node with the given tag.
 - `(find-token zloc [f] p?): like `find` but will only check `:token` nodes. The predicate is applied to the node's value.
 - `(find-next-token zloc [f] p?): like `find-next` but will only check `:token` nodes.
 - `(find-value zloc [f] v)`: uses `find` to get the first `:token` node with the given value.
 - `(find-next-value zloc [f] v)`: uses `find-next` to get the first `:token` node with the given value.
-
-The following two functions are designed to be used as predicates in `find` and `find-next`:
-
-- `(tag= t)`: creates a predicate that checks a zipper node against the given tag.
-- `(value= t)`: creates a predicate that checks a zipper node's value against the given one.
-
-Example:
-
-```clojure
-(-> zloc z/down (z/find (z/tag= :list)) z/tag) ;; => :list
-```
 
 ### Handling Clojure Data Structures
 
