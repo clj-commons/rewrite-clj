@@ -81,6 +81,11 @@
     (-> root z/down z/right z/right (z/edit + 5) z/root)
       => [:vector [:token 1] [:whitespace "\n "] [:token 2] [:whitespace "\n "] [:token 8]]))
 
+(fact "about zipper splice"
+  (let [root (z/edn (p/parse-string "[1 [2 3] 4]"))]
+    (z/sexpr root) => [1 [2 3] 4]
+    (-> root z/down z/right z/splice z/up z/sexpr) => [1 2 3 4]))
+
 (fact "about zipper search/find traversal"
   (-> root z/down (z/find-value :description) z/right z/node) => [:token "A project."]
   (-> root (z/find-value z/next :description) z/right z/node) => [:token "A project."]
