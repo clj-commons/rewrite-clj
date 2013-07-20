@@ -180,6 +180,7 @@
   ([zloc f p?] (->> zloc
                  (iterate f)
                  (take-while identity)
+                 (take-while (complement z/end?))
                  (drop-while (complement p?))
                  (first))))
 
