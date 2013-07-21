@@ -96,7 +96,7 @@ text with something meaningful:
 ```
 
 Most find operations take an optional movement function as parameter. If you wanted to perform a depth-first search you'd
-use `rewrite-clj.zip/next`, if you wanted to look for something on the same level as the current location, you'd emply 
+use `rewrite-clj.zip/next`, if you wanted to look for something on the same level as the current location, you'd employ 
 `rewrite-clj.zip/right` (the default) or `rewrite-clj.zip/left`. 
 
 Now, to enter the project map, you'd look for the symbol `defproject` in a depth-first way:
@@ -133,8 +133,8 @@ Search functions include:
   location (default movement: `rewrite-clj.zip/right`). This will not return `zloc` itself.
 - `(find-tag zloc [f] t)`: uses `find` to get the first node with the given tag.
 - `(find-next-tag zloc [f] t)`: uses `find-next` to get the first node with the given tag.
-- `(find-token zloc [f] p?): like `find` but will only check `:token` nodes. The predicate is applied to the node's value.
-- `(find-next-token zloc [f] p?): like `find-next` but will only check `:token` nodes.
+- `(find-token zloc [f] p?)`: like `find` but will only check `:token` nodes. The predicate is applied to the node's value.
+- `(find-next-token zloc [f] p?)`: like `find-next` but will only check `:token` nodes.
 - `(find-value zloc [f] v)`: uses `find` to get the first `:token` node with the given value.
 - `(find-next-value zloc [f] v)`: uses `find-next` to get the first `:token` node with the given value.
 
