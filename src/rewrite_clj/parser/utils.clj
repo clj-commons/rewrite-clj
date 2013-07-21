@@ -1,7 +1,7 @@
 (ns ^{ :doc "Parser Utilities" 
        :author "Yannick Scherer" }
   rewrite-clj.parser.utils
-  (:require [clojure.tools.reader.reader-types :as r :only [read-char]]))
+  (:require [clojure.tools.reader.reader-types :as r :only [read-char get-line-number get-column-number]]))
 
 (defn whitespace?
   "Check if a given character is a whitespace."
@@ -23,3 +23,11 @@
   [reader]
   (r/read-char reader)
   nil)
+
+(defn throw-reader
+  [reader & msg]
+  (let [c (r/get-column-number reader)
+        l (r/get-line-number reader)]
+    (throw
+      (Exception.
+        (str (apply str msg) " [at line " l ", column " c "]")))))
