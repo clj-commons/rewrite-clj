@@ -85,3 +85,22 @@
   "#'a"                      :var             :token        1
   "#(+ % 1)"                 :fn              :token        5
   "#=(+ 1 2)"                :eval            :list         1)
+
+(tabular 
+  (fact "about parsing exceptions"
+    (p/parse-string ?s) => (throws Exception ?p))
+  ?s                      ?p
+  "#"                     #".*expects a value.*"
+  "#^"                    #".*expects a value.*"
+  "#="                    #".*expects a value.*"
+  "#("                    #".*Unexpected EOF.*"
+  "(def"                  #".*Unexpected EOF.*"
+  "[def"                  #".*Unexpected EOF.*"
+  "#{def"                 #".*Unexpected EOF.*"
+  "{:a 0"                 #".*Unexpected EOF.*"
+  "\"abc"                 #".*EOF.*"
+  "#\"abc"                #".*Unexpected EOF.*"
+  "(def x 0]"             #".*Unmatched delimiter.*"
+  "^:private"             #".*expects two values.*"
+  "#^:private"            #".*expects two values.*"
+  "#macro"                #".*expects two values.*")
