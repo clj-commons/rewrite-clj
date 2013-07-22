@@ -41,7 +41,7 @@
   [node]
   (when (clojure.core/vector? node)
     (let [[k & _] node]
-      (contains? #{:list :vector :set :map :meta :meta* :reader-macro} k))))
+      (contains? #{:forms :list :vector :set :map :meta :meta* :reader-macro} k))))
 
 (defn- z-make-node
   [node ch]
@@ -230,10 +230,21 @@
   (let [ch (z/children zloc)]
     (-> (reduce z/insert-right zloc (reverse ch)) z/remove z/right)))
 
-;; ## Others
+;; ## Base Operations
 
 (def node z/node)
 (def root z/root)
+
+(def right* z/right)
+(def left* z/left)
+(def up* z/up)
+(def down* z/down)
+(def next* z/next)
+(def prev* z/prev)
+(def rightmost* z/rightmost)
+(def leftmost* z/leftmost)
+(def replace* z/replace)
+(def edit* z/edit)
 
 ;; ## Find
 
@@ -296,7 +307,7 @@
 
 (defn seq?
   [zloc]
-  (contains? #{:list :vector :set :map} (tag zloc)))
+  (contains? #{:forms :list :vector :set :map} (tag zloc)))
 
 (defn list?
   [zloc]

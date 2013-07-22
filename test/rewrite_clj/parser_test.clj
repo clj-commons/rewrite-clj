@@ -84,7 +84,8 @@
   ?s                         ?t               ?tt           ?c
   "#'a"                      :var             :token        1
   "#(+ % 1)"                 :fn              :token        5
-  "#=(+ 1 2)"                :eval            :list         1)
+  "#=(+ 1 2)"                :eval            :list         1
+  "#macro 1"                 :reader-macro    :token        3)
 
 (tabular 
   (fact "about parsing exceptions"
@@ -104,3 +105,17 @@
   "^:private"             #".*expects two values.*"
   "#^:private"            #".*expects two values.*"
   "#macro"                #".*expects two values.*")
+
+(fact "about parsing multiple forms"
+  (p/parse-string-all "1 2 3") 
+      => [:forms 
+          [:token 1] [:whitespace " "] 
+          [:token 2] [:whitespace " "] 
+          [:token 3]]
+  (p/parse-string-all ";; Hi!\n(def pi 3.14)")
+      => [:forms
+          [:comment ";; Hi!"]
+          [:list
+           [:token 'def] [:whitespace " "]
+           [:token 'pi] [:whitespace " "]
+           [:token 3.14]]])

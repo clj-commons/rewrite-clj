@@ -25,14 +25,37 @@
   [reader]
   (p/parse-next reader nil))
 
+(defn parse-all
+  "Parse all forms from reader. Results will be wrapped in `[:forms ...]` if 
+   more than one form can be read."
+  [reader]
+  (let [forms (doall
+                (->> (repeatedly #(p/parse-next reader nil))
+                  (take-while identity)))]
+    (if (> (count forms) 1)
+      (vec (list* :forms forms))
+      (first forms))))
+
 (defn parse-string
-  "Get EDN tree from String."
+  "Get first form from String."
   [s]
   (let [r (string-reader s)]
-    (p/parse-next r nil)))
+    (parse r)))
 
 (defn parse-file
-  "Get EDN tree from File."
+  "Get first form from File."
   [f]
   (let [r (file-reader f)]
-    (p/parse-next r nil)))
+    (parse r)))
+
+(defn parse-string-all
+  "Get all forms from String."
+  [s]
+  (let [r (string-reader s)]
+    (parse-all r)))
+
+(defn parse-file-all
+  "Get all forms from File."
+  [f]
+  (let [r (file-reader f)]
+    (parse-all r)))

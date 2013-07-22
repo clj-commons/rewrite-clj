@@ -20,6 +20,7 @@
 
 ;; ## Printers
 
+(defmethod print-edn :forms [data] (print-children data))
 (defmethod print-edn :token [data] (pr (second data)))
 (defmethod print-edn :comment [data] (println (second data)))
 (defmethod print-edn :whitespace [data] (print (second data)))
@@ -60,6 +61,7 @@
   (reduce #(+ %1 (estimate-length %2)) 0 (rest data)))
 
 (defmethod estimate-length nil [data] (count (->string data)))
+(defmethod estimate-length :forms [data] (estimate-children-length data))
 (defmethod estimate-length :comment [data] (inc (count (second data))))
 (defmethod estimate-length :whitespace [data] (count (second data)))
 (defmethod estimate-length :meta [data] (inc (estimate-children-length data)))
