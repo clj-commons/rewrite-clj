@@ -32,8 +32,48 @@
 (defmethod print-edn :vector [data] (print-children "[" data "]"))
 (defmethod print-edn :map [data] (print-children "{" data "}"))
 (defmethod print-edn :set [data] (print-children "#{" data "}"))
+(defmethod print-edn :eval [data] (print-children "#=" data))
 (defmethod print-edn :reader-macro [data] (print-children "#" data))
 (defmethod print-edn :quote [data] (print-children "'" data))
 (defmethod print-edn :syntax-quote [data] (print-children "`" data))
 (defmethod print-edn :unquote [data] (print-children "~" data))
 (defmethod print-edn :unquote-splicing [data] (print-children "~@" data))
+
+;; ## Others
+
+(defn ->string
+  "Convert EDN tree to String."
+  [data]
+  (with-out-str (print-edn data)))
+
+;; ## Character Count
+
+(defmulti estimate-length
+  "Estimate length of string created from the given data."
+  (fn [data]
+    (when (vector? data)
+      (first data)))
+  :default nil)
+
+(defn- estimate-children-length
+  [data]
+  (reduce #(+ %1 (estimate-length %2)) 0 (rest data)))
+
+(defmethod estimate-length nil [data] (count (->string data)))
+(defmethod estimate-length :comment [data] (inc (count (second data))))
+(defmethod estimate-length :whitespace [data] (count (second data)))
+(defmethod estimate-length :meta [data] (inc (estimate-children-length data)))
+(defmethod estimate-length :meta* [data] (+ 2 (estimate-children-length data)))
+(defmethod estimate-length :list [data] (+ 2 (estimate-children-length data)))
+(defmethod estimate-length :vector [data] (+ 2 (estimate-children-length data)))
+(defmethod estimate-length :map [data] (+ 2 (estimate-children-length data)))
+(defmethod estimate-length :set [data] (+ 3 (estimate-children-length data)))
+(defmethod estimate-length :var [data] (+ 2 (estimate-children-length data)))
+(defmethod estimate-length :eval [data] (+ 2 (estimate-children-length data)))
+(defmethod estimate-length :deref [data] (inc (estimate-children-length data)))
+(defmethod estimate-length :fn [data] (+ 3 (estimate-children-length data)))
+(defmethod estimate-length :reader-macro [data] (inc (estimate-children-length data)))
+(defmethod estimate-length :quote [data] (inc (estimate-children-length data)))
+(defmethod estimate-length :syntax-quote [data] (inc (estimate-children-length data)))
+(defmethod estimate-length :unquote [data] (inc (estimate-children-length data)))
+(defmethod estimate-length :unquote-splicing [data] (+ 2 (estimate-children-length data)))
