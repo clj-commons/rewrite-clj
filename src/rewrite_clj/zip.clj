@@ -3,9 +3,12 @@
   rewrite-clj.zip
   (:refer-clojure :exclude [replace next remove find 
                             map get assoc
-                            seq? vector? list? map? set?])
+                            seq? vector? list? map? set?
+                            print])
   (:require [fast-zip.core :as z]
-            [rewrite-clj.convert :as conv]))
+            [rewrite-clj.convert :as conv]
+            [rewrite-clj.parser :as p]
+            [rewrite-clj.printer :as prn]))
 
 ;; ## Access
 
@@ -47,6 +50,40 @@
 (def edn
   "Create zipper over rewrite-clj's EDN tree structure."
   (partial z/zipper z-branch? rest z-make-node))
+
+;; ## Convenience Functions
+
+(defn of-string
+  "Create zipper from String."
+  [s]
+  (when-let [tree (p/parse-string s)]
+    (edn tree)))
+
+(defn of-file
+  "Create zipper from File."
+  [f]
+  (when-let [tree (p/parse-file f)]
+    (edn tree)))
+
+(defn print
+  "Print current zipper location."
+  [zloc]
+  (-> zloc z/node prn/print-edn))
+
+(defn print-root
+  "Zip up and print root node."
+  [zloc]
+  (-> zloc z/root prn/print-edn))
+
+(defn ->string
+  "Create string from current zipper location."
+  [zloc]
+  (-> zloc z/node prn/->string))
+
+(defn ->root-string
+  "Zip up and create string from root node."
+  [zloc]
+  (-> zloc z/root prn/->string))
 
 ;; ## Skip
 
@@ -157,6 +194,16 @@
   "Append a whitespace node of the given width."
   ([zloc] (append-space zloc 1))
   ([zloc n] (z/insert-right zloc [:whitespace (apply str (repeat n \space))])))
+
+(defn prepend-newline
+  "Prepend a whitespace node with the given number of linebreaks."
+  ([zloc] (prepend-newline zloc 1))
+  ([zloc n] (z/insert-left zloc [:whitespace (apply str (repeat n \newline))])))
+
+(defn append-newline
+  "Prepend a whitespace node with the given number of linebreaks."
+  ([zloc] (append-newline zloc 1))
+  ([zloc n] (z/insert-right zloc [:whitespace (apply str (repeat n \newline))])))
 
 ;; ## Modify
 
