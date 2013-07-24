@@ -38,7 +38,7 @@
 (defn- replace-with-spaces
   "Replace the given reader macro node with spaces."
   [zloc]
-  (let [w (count (with-out-str (prn/print-edn (z/node zloc))))]
+  (let [w (prn/estimate-length (z/node zloc))]
     (-> zloc (z/prepend-space w) z/remove)))
 
 (defn- remove-reader-macro
@@ -63,7 +63,7 @@
 
 (defn cljx-walk
   "Replace all occurences of profile reader macros."
-  [active-profiles root]
+  [root active-profiles]
   (loop [loc root]
     (if-let [mloc (z/find loc z/next cljx-macro?)]
       (recur (handle-reader-macro active-profiles mloc))
@@ -71,16 +71,13 @@
 
 ;; ## Test
 
-(comment
-  (def data
-    (z/edn
-      (p/parse-string
-        "(defn my-inc\n  [x]\n  #+debug (println \"inc: x =\" x #-nomark \"[debug]\")\n  (+ x 1))")))
+(defn run-cljx-test
+  [profiles]
+  (let [data (z/of-string ";; Test it!\n(defn my-inc\n  [x]\n  #+debug (println \"inc: x =\" x #-nomark \"[debug]\")\n  (+ x 1))")]
+    (println "Original Code:")
+    (z/print-root data)
+    (println "\n")
 
-  (println "Original Code:")
-  (-> data z/root prn/print-edn)
-  (println "\n")
-
-  (println "Processed Code:")
-  (-> (cljx-walk #{"debug" "nomark"} data) z/root prn/print-edn)
-  (println))
+    (println "Processed Code:")
+    (-> data (cljx-walk (or profiles #{"debug" "nomark"})) z/print-root)
+    (println)))
