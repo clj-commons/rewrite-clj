@@ -407,11 +407,10 @@
    only apply the function to nodes matching it."
   ([zloc f] (prewalk zloc (constantly true) f))
   ([zloc p? f]
-   (loop [loc (subzip zloc)]
-     (if (z/end? loc)
-       (z/replace zloc (z/root loc))
-       (if-let [n0 (find loc next p?)]
-         (if-let [n1 (f n0)]
-           (recur (z/next n1))
-           (recur (z/next n0)))
-         (z/replace zloc (z/root loc)))))))
+   (loop [loc (subzip zloc)
+          prv loc]
+     (if-let [n0 (find loc next p?)]
+       (if-let [n1 (f n0)]
+         (recur (next n1) n1)
+         (recur (next n0) n0))
+       (z/replace zloc (z/root prv))))))
