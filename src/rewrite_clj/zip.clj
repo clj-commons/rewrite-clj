@@ -56,13 +56,13 @@
 (defn of-string
   "Create zipper from String."
   [s]
-  (when-let [tree (p/parse-string s)]
+  (when-let [tree (p/parse-string-all s)]
     (edn tree)))
 
 (defn of-file
   "Create zipper from File."
   [f]
-  (when-let [tree (p/parse-file f)]
+  (when-let [tree (p/parse-file-all f)]
     (edn tree)))
 
 (defn print
