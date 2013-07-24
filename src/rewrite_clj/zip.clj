@@ -379,3 +379,39 @@
     (if (map? zloc)
       (-> zloc (append-child k) (append-child v))
       (throw (Exception. (str "not a valid index to assoc: " v))))))
+
+;; ## Edit Scope
+
+(defn subzip
+  "Create zipper that only contains the given zipper location's node."
+  [zloc]
+  (when zloc
+    (edn (z/node zloc))))
+
+(defmacro edit->
+  "Will pass arguments to `->`. Return value will be the state of the input node
+   after all modifications have been performed. This means that the result is 
+   automatically 'zipped up' to represent the same location the macro was given."
+  [zloc & body]
+  `(let [zloc# ~zloc
+         loc# (subzip zloc#)]
+     (if-let [edit# (-> loc# ~@body)]
+       (z/replace zloc# (z/root edit#))
+       (throw (Exception. "Body of edit-> did not return value.")))))
+
+;; ## Walk
+
+(defn prewalk
+  "Perform a depth-first pre-order traversal starting at the given zipper location
+   and apply the given function to each child node. If a predicate `p?` is given, 
+   only apply the function to nodes matching it."
+  ([zloc f] (prewalk zloc (constantly true) f))
+  ([zloc p? f]
+   (loop [loc (subzip zloc)]
+     (if (z/end? loc)
+       (z/replace zloc (z/root loc))
+       (if-let [n0 (find loc next p?)]
+         (if-let [n1 (f n0)]
+           (recur (z/next n1))
+           (recur (z/next n0)))
+         (z/replace zloc (z/root loc)))))))

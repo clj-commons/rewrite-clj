@@ -64,10 +64,7 @@
 (defn cljx-walk
   "Replace all occurences of profile reader macros."
   [root active-profiles]
-  (loop [loc root]
-    (if-let [mloc (z/find loc z/next cljx-macro?)]
-      (recur (handle-reader-macro active-profiles mloc))
-      loc)))
+  (z/prewalk root cljx-macro? #(handle-reader-macro active-profiles %)))
 
 ;; ## Test
 
