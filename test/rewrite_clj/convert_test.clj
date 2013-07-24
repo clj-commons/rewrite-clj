@@ -44,7 +44,8 @@
       (last form) => (list '+ sym 1))))
 
 (fact "about EDN conversion errors"
-  (c/->sexpr [:reader-macro [:token '+clj] [:token 5]]) => (throws Exception))
+  (c/->sexpr [:reader-macro [:token '+clj] [:token 5]]) => (throws Exception)
+  (c/->sexpr [:forms [:token 1] [:token 2]]) => (throws Exception))
 
 (tabular
   (fact "about s-expression to EDN tree conversion"
