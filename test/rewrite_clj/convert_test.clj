@@ -11,6 +11,9 @@
   [:token 0]                                0
   [:token 'id]                              'id
   [:token :k]                               :k
+  [:token "s"]                              "s"
+  [:token "abc\ndef"]                       "abc\ndef"
+  [:multi-line "abc" "def"]                 "abc\ndef"
   [:list [:token :k] [:token 5]]            '(:k 5)
   [:vector [:token :k] [:token 5]]          [:k 5]
   [:set [:token :k] [:token 5]]             #{:k 5}
@@ -54,6 +57,7 @@
   0                                        [:token 0]
   :k                                       [:token :k]
   'x                                       [:token 'x]
+  "s"                                      [:token "s"]
   '(1 2)                                   [:list [:token 1] [:whitespace " "] [:token 2]]
   [1 2]                                    [:vector [:token 1] [:whitespace " "] [:token 2]]
   #{1 2}                                   [:set [:token 1] [:whitespace " "] [:token 2]]

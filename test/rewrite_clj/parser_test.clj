@@ -39,6 +39,11 @@
   "#\"regex\\.\""    "regex\\."
   "#\"[reg|k].x\""   "[reg|k].x")
 
+(fact "about parsing strings"
+  (p/parse-string "\"123\"") => [:token "123"]
+  (p/parse-string "\"123\\n456\"") => [:token "123\n456"]
+  (p/parse-string "\"123\n456\"") => [:multi-line "123" "456"])
+
 (tabular
   (fact "about parsing seqs"
     (let [[k & rst] (p/parse-string ?s)]
