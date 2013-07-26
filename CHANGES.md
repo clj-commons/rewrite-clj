@@ -3,6 +3,7 @@
 ### 0.2.0
 
 - added more expressive error handling to parser.
+- added multi-line string handling (node type: `:multi-line`)
 - new functions in `rewrite-clj.printer`:
   - `->to-string`
   - `estimate-length`
@@ -17,6 +18,9 @@
   - `parse-all`
   - `parse-string-all`
   - `parse-file-all`
+- zipper utility functions in `rewrite-clj.zip.utils` (able to handle multi-line strings):
+  - `prefix`
+  - `suffix`
 
 ### 0.1.0
 
