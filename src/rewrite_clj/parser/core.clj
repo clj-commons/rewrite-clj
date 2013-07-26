@@ -13,7 +13,7 @@
    \( :list      \[ :vector    \{ :map
    \} :unmatched \] :unmatched \) :unmatched
    \~ :unquote   \' :quote     \` :syntax-quote
-   \; :comment   \@ :deref})
+   \; :comment   \@ :deref     \" :string})
 
 (defmulti parse-next
   "Parse the next element from the given reader. Dispatch is done using the first
@@ -74,13 +74,15 @@
    opening quotation mark."
   [reader]
   (ignore reader)
-  (loop [rx []
-         escape? false]
-    (if-let [c (r/read-char reader)]
-      (cond (and (not escape?) (= c \")) (token :token (re-pattern (apply str rx)))
-            (= c \\) (recur (conj rx c) true)
-            :else (recur (conj rx c) false))
-      (throw-reader reader "Unexpected EOF while reading regular expression."))))
+  (let [buf (StringBuffer.)]
+    (loop [escape? false]
+      (if-let [c (r/read-char reader)]
+        (if (and (not escape?) (= c \")) 
+          (token :token (re-pattern (.toString buf)))
+          (do 
+            (.append buf c)
+            (recur (and (not escape?) (= c \\)))))
+        (throw-reader reader "Unexpected EOF while reading regular expression.")))))
 
 (defn- parse-reader-macro
   "Parse token starting with '#'."
@@ -107,6 +109,33 @@
         (r/unread reader \~)
         (parse-prefixed :unquote reader delim)))))
 
+(defn- parse-string-contents
+  "Use EDN reader to transform the literal representation of a Clojure string
+   to its Clojure representation, e.g. \"a\\\\nb\" -> \"a\\nb\"."
+  [s]
+  (edn/read-string (str "\"" s "\"")))
+
+(defn- parse-string
+  "Parse string. Produces `:token` for single-line strings and `:multi-line` for
+   those spanning multiple lines."
+  [reader delim]
+  (ignore reader)
+  (let [buf (StringBuffer.)]
+    (loop [escape? false
+           result-type :token
+           results []]
+      (if-let [c (r/read-char reader)]
+        (cond (and (not escape?) (= c \")) (->> (conj results (.toString buf))
+                                             (map parse-string-contents)
+                                             (apply token result-type))
+              (= c \newline) (let [s (.toString buf)]
+                               (.setLength buf 0)
+                               (recur escape? :multi-line (conj results s)))
+              :else (do 
+                      (.append buf c)
+                      (recur (and (not escape?) (= c \\)) result-type results)))
+        (throw-reader reader "Unexpected EOF while reading regular expression.")))))
+
 ;; ## Register Parsers
 
 (defmethod parse-next nil [reader delim]
@@ -130,3 +159,4 @@
 (defmethod parse-next :unquote [reader delim]  (parse-unquote reader delim)) 
 (defmethod parse-next :quote [reader delim]    (parse-prefixed :quote reader delim))
 (defmethod parse-next :syntax-quote [reader d] (parse-prefixed :syntax-quote reader d))
+(defmethod parse-next :string [reader delim]   (parse-string reader delim)) 

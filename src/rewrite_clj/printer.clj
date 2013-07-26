@@ -40,6 +40,20 @@
 (defmethod print-edn :unquote [data] (print-children "~" data))
 (defmethod print-edn :unquote-splicing [data] (print-children "~@" data))
 
+(letfn [(print-line [^String s]
+          (let [^String s (pr-str s)]
+            (print (.substring s 1 (dec (count s))))))] 
+  (defmethod print-edn :multi-line [data]
+    (print "\"")
+    (loop [sq (rest data)]
+      (if-not (= (count sq) 1)
+        (let [[s0 & rst] sq]
+          (print-line s0)
+          (println)
+          (recur rst))
+        (print-line (first sq))))
+    (print "\"")))
+
 ;; ## Others
 
 (defn ->string
@@ -79,3 +93,9 @@
 (defmethod estimate-length :syntax-quote [data] (inc (estimate-children-length data)))
 (defmethod estimate-length :unquote [data] (inc (estimate-children-length data)))
 (defmethod estimate-length :unquote-splicing [data] (+ 2 (estimate-children-length data)))
+(defmethod estimate-length :multi-line [data]
+  (let [parts (rest data)]
+    (+ 2 (count parts) 
+       (reduce
+         (fn [sum p]
+           (+ sum (count p))) 0 parts))))
