@@ -5,7 +5,7 @@
 - added more expressive error handling to parser.
 - added multi-line string handling (node type: `:multi-line`)
 - new functions in `rewrite-clj.printer`:
-  - `->to-string`
+  - `->string`
   - `estimate-length`
 - new functions in `rewrite-clj.zip`:
   - `of-string`, `of-file`
