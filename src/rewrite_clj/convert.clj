@@ -34,6 +34,9 @@
 (defmethod ->sexpr :vector [v] (vec (children->sexprs v)))
 (defmethod ->sexpr :set [v] (set (children->sexprs v)))
 (defmethod ->sexpr :map [v] (apply hash-map (children->sexprs v)))
+(defmethod ->sexpr :multi-line [v]
+  (let [parts (rest v)]
+    (apply str (butlast (interleave parts (repeat "\n"))))))
 
 ;; ## Wrapped
 
