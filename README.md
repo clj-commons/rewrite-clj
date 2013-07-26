@@ -19,7 +19,7 @@ __This project is in flux. Anything may change at any time.__
 __Leiningen ([via Clojars](http://clojars.org/rewrite-clj))__
 
 ```clojure
-[rewrite-clj "0.1.0"]
+[rewrite-clj "0.2.0"]
 ```
 
 __Parsing Data__
@@ -62,7 +62,7 @@ operations, based on [fast-zip](https://github.com/akhudek/fast-zip).
 "(defn my-function [a] 
   ;; a comment
   (* a 3))")
-(def data (z/edn (p/parse-string data-string)))
+(def data (z/of-string data-string))
 
 (z/sexpr data)                       ;; => (defn my-function [a] (* a 3))
 (-> data z/down z/right z/node)      ;; => [:token my-function]
@@ -71,7 +71,7 @@ operations, based on [fast-zip](https://github.com/akhudek/fast-zip).
 (-> data z/down z/right (z/edit (comp symbol str) "2") z/up z/sexpr)
 ;; => (defn my-function2 [a] (* a 3))
 
-(-> data z/down z/right (z/edit (comp symbol str) "2") z/root prn/print-edn)
+(-> data z/down z/right (z/edit (comp symbol str) "2") z/print-root)
 ;; (defn my-function2 [a]
 ;;   ;; a comment
 ;;   (* a 3))
@@ -102,7 +102,7 @@ use `rewrite-clj.zip/next`, if you wanted to look for something on the same leve
 Now, to enter the project map, you'd look for the symbol `defproject` in a depth-first way:
 
 ```clojure
-(def data (z/edn (p/parse-file "project.clj")))
+(def data (z/of-file "project.clj"))
 (def prj-map (z/find-value data z/next 'defproject))
 ```
 
@@ -116,7 +116,7 @@ The `:description` keyword should be on the same layer, the corresponding string
 Replace it, zip up and print the result:
 
 ```clojure
-(-> descr (z/replace "My first Project.") z/root prn/print-edn)
+(-> descr (z/replace "My first Project.") z/print-root)
 ;; (defproject my-project "0.1.0-SNAPSHOT"
 ;;   :description "My first Project."
 ;;   ...)
@@ -144,14 +144,14 @@ rewrite-clj aims at providing easy ways to work with Clojure data structures. It
 to the standard seq functions designed to work with zipper nodes containing said structures, e.g.:
 
 ```clojure
-(def data (z/edn (p/parse-string "[1\n2\n3]")))
+(def data (z/of-string "[1\n2\n3]"))
 
 (z/vector? data)                ;; => true
 (z/sexpr data)                  ;; => [1 2 3]
 (-> data (z/get 1) z/node)      ;; => [:token 2]
 (-> data (z/assoc 1 5) z/sexpr) ;; => [1 5 3]
 
-(with-out-str (->> data (z/map #(z/edit % + 4)) z/node prn/print-edn))
+(->> data (z/map #(z/edit % + 4)) z/->root-string)
 ;; => "[5\n6\n7]"
 ```
 

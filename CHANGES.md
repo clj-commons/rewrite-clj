@@ -11,6 +11,7 @@
   - `of-string`, `of-file`
   - `print`, `print-root`
   - `->string`, `->root-string`
+  - `append-space`, `prepend-space`
   - `append-newline`, `prepend-newline`
   - `right*`, `left*`, ... (delegating to `fast-zip.core/right`, ...)
 - new token type `:forms`
