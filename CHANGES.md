@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.3.0
+
+- added token type `:newline` to handle linebreak characters.
+
 ### 0.2.0
 
 - added more expressive error handling to parser.

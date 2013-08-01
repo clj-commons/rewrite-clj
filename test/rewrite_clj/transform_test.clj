@@ -69,5 +69,5 @@
                  Multiline!\"
   :dependencies [[a-suffix \"0.1.0\"]
                  [b-suffix \"1.2.3\"]]
-  :repositories { \"private\" \"http://private.com/repo\" })" 
-      )
+  :repositories { \"private\" \"http://private.com/repo\" })")
+
