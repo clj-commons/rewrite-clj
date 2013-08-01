@@ -8,6 +8,16 @@
   [^java.lang.Character c]
   (and c (or (= c \,) (Character/isWhitespace c))))
 
+(defn linebreak?
+  "Check if a given character is a linebreak."
+  [^java.lang.Character c]
+  (and c (or (= c \newline) (= c \return))))
+
+(defn space?
+  "Check if a given character is a non-linebreak whitespace."
+  [^java.lang.Character c]
+  (and (not (linebreak? c)) (whitespace? c)))
+
 (defn token
   "Create tupel of [type value]."
   [type & values]

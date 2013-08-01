@@ -14,7 +14,7 @@
 (defn- children->sexprs
   [v]
   (->> (rest v)
-    (filter (comp not #{:comment :whitespace} first))
+    (filter (comp not #{:comment :whitespace :newline} first))
     (map ->sexpr)))
 
 (defn- wrap-sexpr

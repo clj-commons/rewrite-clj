@@ -73,13 +73,24 @@
 (fact "about zipper modification"
   (let [root (z/edn (p/parse-string "[1\n 2\n 3]"))]
     (z/node root) 
-      => [:vector [:token 1] [:whitespace "\n "] [:token 2] [:whitespace "\n "] [:token 3]]
+      => [:vector 
+          [:token 1] 
+          [:newline "\n"] [:whitespace " "] [:token 2] 
+          [:newline "\n"] [:whitespace " "] [:token 3]]
     (-> root z/down z/remove z/root) 
-      => [:vector [:whitespace "\n "] [:token 2] [:whitespace "\n "] [:token 3]]
+      => [:vector 
+          [:newline "\n"] [:whitespace " "] [:token 2] 
+          [:newline "\n"] [:whitespace " "] [:token 3]]
     (-> root z/down z/right (z/replace 5) z/root)
-      => [:vector [:token 1] [:whitespace "\n "] [:token 5] [:whitespace "\n "] [:token 3]]
+      => [:vector 
+          [:token 1] 
+          [:newline "\n"] [:whitespace " "] [:token 5] 
+          [:newline "\n"] [:whitespace " "] [:token 3]]
     (-> root z/down z/right z/right (z/edit + 5) z/root)
-      => [:vector [:token 1] [:whitespace "\n "] [:token 2] [:whitespace "\n "] [:token 8]]))
+      => [:vector 
+          [:token 1] 
+          [:newline "\n"] [:whitespace " "] [:token 2] 
+          [:newline "\n"] [:whitespace " "] [:token 8]]))
 
 (fact "about zipper splice"
   (let [root (z/edn (p/parse-string "[1 [2 3] 4]"))]

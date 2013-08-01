@@ -45,17 +45,16 @@
         (repeatedly #(parse-next reader delim))))))
 
 (defn- parse-whitespace
-  "Parse as much whitespace as possible."
+  "Parse as much whitespace as possible. The created node can either contain
+   only linebreaks or only space/tabs."
   [reader]
-  (token 
-    :whitespace 
-    (loop [r []]
-      (let [ws (r/peek-char reader)]
-        (if-not (whitespace? ws)
-          (apply str r)
-          (do
-            (ignore reader)
-            (recur (conj r ws))))))))
+  (let [c (r/read-char reader)
+        [t p?] (if (linebreak? c) [:newline linebreak?] [:whitespace space?])]
+    (token t 
+           (loop [r [c]]
+             (if-not (p? (r/peek-char reader))
+               (apply str r)
+               (recur (conj r (r/read-char reader))))))))
 
 (defn- parse-pair
   "Parse two tokens (and whitespace inbetween)."
@@ -63,7 +62,7 @@
   (let [c (r/read-char reader)]
     (if-let [mta (parse-next reader delim)]
       (let [isq (repeatedly #(parse-next reader nil))
-            spc (doall (take-while (comp #{:comment :whitespace} first) isq))
+            spc (doall (take-while (comp #{:comment :whitespace :newline} first) isq))
             vlu (nth isq (count spc))]
         (when-not vlu (throw-reader reader "'" type "' expects two values after prefix '" c "'."))
         (apply token type (concat (list* mta spc) [vlu])))

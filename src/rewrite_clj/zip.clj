@@ -33,7 +33,7 @@
 (defn whitespace?
   "Check if the node at the current zipper location is whitespae or comment."
   [zloc]
-  (contains? #{:comment :whitespace} (tag zloc)))
+  (contains? #{:comment :whitespace :newline} (tag zloc)))
 
 ;; ## Zipper
 

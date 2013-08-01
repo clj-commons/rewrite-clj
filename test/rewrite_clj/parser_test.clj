@@ -4,6 +4,14 @@
   (:require [midje.sweet :refer :all]
             [rewrite-clj.parser :as p]))
 
+(fact "about parsing whitespace"
+  (p/parse-string "   ") => [:whitespace "   "]
+  (p/parse-string "   \n   ") => [:whitespace "   "]
+  (p/parse-string-all "   \n   ") 
+      => [:forms [:whitespace "   "] [:newline "\n"] [:whitespace "   "]]
+  (p/parse-string-all " \t \r\n \t ") 
+      => [:forms [:whitespace " \t "] [:newline "\n\n"] [:whitespace " \t "]])
+
 (tabular
   (fact "about parsing simple data"
     (p/parse-string ?s) => [:token ?r])
