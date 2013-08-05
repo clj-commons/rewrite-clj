@@ -3,7 +3,8 @@
   rewrite-clj.zip.walk
   (:require [fast-zip.core :as z]
             [rewrite-clj.zip.core :as c :only [subzip]]
-            [rewrite-clj.zip.move :as m :only [next]]))
+            [rewrite-clj.zip.move :as m :only [next]]
+            [rewrite-clj.zip.find :as f :only [find]]))
 
 (defn prewalk
   "Perform a depth-first pre-order traversal starting at the given zipper location
@@ -11,10 +12,9 @@
    only apply the function to nodes matching it."
   ([zloc f] (prewalk zloc (constantly true) f))
   ([zloc p? f]
-   (loop [loc (c/subzip zloc)
-          prv loc]
-     (if-let [n0 (find loc m/next p?)]
+   (loop [loc zloc]
+     (if-let [n0 (f/find loc m/next p?)]
        (if-let [n1 (f n0)]
-         (recur (m/next n1) n1)
-         (recur (m/next n0) n0))
-       (z/replace zloc (z/root prv))))))
+         (recur (m/next n1))
+         (recur (m/next n0)))
+       (c/move-to-node loc zloc)))))

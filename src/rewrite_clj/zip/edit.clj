@@ -60,19 +60,29 @@
     (z/replace zloc (conv/->tree (apply f form args)))))
 
 (defn remove
-  "Remove value at the given zipper location. Will remove a single whitespace following the 
-   node, too."
+  "Remove value at the given zipper location. Returns the first non-whitespace node 
+   that would have preceded it in a depth-first walk. Will remove a single whitespace
+   character following the current node."
   [zloc]
-  (let [rloc (z/remove zloc)
-        ws (z/right rloc)]
-    (->> (if (= (zc/tag ws) :whitespace)
-           (let [w (count (zc/value ws))]
-             (-> ws (zc/append-space (dec w)) z/remove))
-           rloc)
+  (let [ws (z/right zloc)
+        zloc (or
+               (when (= (zc/tag ws) :whitespace)
+                 (let [w (dec (zc/length ws))]
+                   (when-not (neg? w)
+                     (-> ws z/remove (zc/append-space w)))))
+               zloc)]
+    (->> zloc 
+      z/remove 
       (zc/skip-whitespace z/prev))))
 
 (defn splice
-  "Add the current node's children to the parent branch (in place of the current node)."
+  "Add the current node's children to the parent branch (in place of the current node).
+   The resulting zipper will be positioned on the first non-whitespace \"child\"."
   [zloc]
-  (let [ch (z/children zloc)]
-    (-> (reduce z/insert-right zloc (reverse ch)) z/remove z/right)))
+  (if-not (z/branch? zloc)
+    zloc
+    (let [ch (z/children zloc)]
+      (-> (reduce z/insert-right zloc (reverse ch))
+        z/remove
+        z/next
+        zc/skip-whitespace))))

@@ -71,6 +71,7 @@
 (def leftmost* z/leftmost)
 (def replace* z/replace)
 (def edit* z/edit)
+(def remove* z/remove)
 
 ;; ## Convenience Functions
 

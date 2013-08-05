@@ -18,6 +18,7 @@
   - `insert-left`
   - `insert-right
   - `remove`
+  - `splice`
 
 ### 0.2.0
 

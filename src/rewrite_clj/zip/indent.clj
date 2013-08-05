@@ -94,13 +94,15 @@
   "Searches for a multi-line node right of the given location (starting on
    the same line). If there is none, `nil` is returned."
   [zloc]
-  (loop [zloc zloc]
-    (when-not (or (not zloc) (z/end? zloc) (zc/linebreak? zloc)) 
-      (if-not (z/branch? zloc)
-        (recur (z/right zloc))
-        (if (zf/find-tag zloc z/next :newline)
-          zloc
-          (recur (z/right zloc)))))))
+  (or
+    (loop [zloc zloc]
+      (when-not (or (not zloc) (z/end? zloc) (zc/linebreak? zloc)) 
+        (if-not (z/branch? zloc)
+          (recur (z/right zloc))
+          (if (zf/find-tag (zc/subzip zloc) z/next :newline)
+            zloc
+            (recur (z/right zloc))))))
+    (recur (z/up zloc))))
 
 ;; ## Low-Level Indentation
 
@@ -151,11 +153,11 @@
 ;;
 ;; The insert function should return the inserted element.
 
-(defn insert-left
+(defn- insert-left*
   "Insert the given sexpr to the left of the given zipper location and indent
    accordingly."
-  [zloc v]
-  (let [rloc (ze/insert-left zloc v)
+  [f zloc v]
+  (let [rloc (f zloc v)
         delta (inc (zc/length (-> rloc z/left z/left)))]
     (if (zero? delta) rloc 
       (if-let [iloc (find-node-to-indent rloc)]
@@ -164,11 +166,16 @@
           (zc/move-to-node rloc))
         rloc))))
 
-(defn insert-right
+(def insert-left 
+  "Insert the given sexpr to the left of the given zipper location and indent
+   accordingly."
+  (partial insert-left* ze/insert-left))
+
+(defn insert-right*
   "Insert the given sexpr to the right of the given zipper location and indent
    accordingly."
-  [zloc v]
-  (let [rloc (ze/insert-right zloc v)
+  [f zloc v]
+  (let [rloc (f zloc v)
         delta (inc (zc/length (-> rloc z/right z/right)))]
     (if (zero? delta) rloc 
       (if-let [iloc (find-node-to-indent (-> rloc z/right z/right))]
@@ -177,16 +184,38 @@
           (zc/move-to-node rloc))
         rloc))))
 
+(def insert-right
+  "Insert the given sexpr to the right of the given zipper location and indent
+   accordingly."
+  (partial insert-right* ze/insert-right))
+
 ;; ## Remove + Indent
 
 (defn remove
   "Remove the node at the given zipper location and indent accordingly."
   [zloc]
-  (let [delta (dec (- (zc/length zloc)))
+  (let [delta (- -1 (zc/length zloc))
         rloc (ze/remove zloc)]
     (if (zero? delta) rloc 
-      (if-let [iloc (find-node-to-indent (-> rloc z/next zc/skip-whitespace))]
+      (if-let [iloc (find-node-to-indent (->> rloc z/next (zc/skip-whitespace z/next)))]
         (-> iloc 
           (indent-children delta) 
           (zc/move-to-node rloc))
         rloc))))
+
+(defn splice
+  "Add the current node's children to the parent branch (in place of the current node).
+   The resulting zipper will be positioned on the first non-whitespace \"child\"."
+  [zloc]
+  (if-not (z/branch? zloc)
+    zloc
+    (let [w0 (zc/length zloc)
+          w1 (apply + (map p/estimate-length (z/children zloc)))
+          delta (- w1 w0)
+          rloc (ze/splice zloc)]
+      (if (zero? delta) rloc 
+        (if-let [iloc (find-node-to-indent rloc)]
+          (-> iloc 
+            (indent-children delta) 
+            (zc/move-to-node rloc))
+          rloc)))))

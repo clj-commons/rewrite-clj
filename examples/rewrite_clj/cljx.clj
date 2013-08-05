@@ -1,8 +1,6 @@
 (ns ^{ :doc "Implementation of lynaghk/cljx's basic semantics using rewrite-clj."}
   rewrite-clj.cljx
-  (:require [rewrite-clj.parser :as p]
-            [rewrite-clj.zip :as z]
-            [rewrite-clj.printer :as prn]))
+  (:require [rewrite-clj.zip :as z]))
 
 ;; ## Semantics
 ;;
@@ -36,10 +34,14 @@
           (or (.startsWith nm "+") (.startsWith nm "-")))))))
 
 (defn- replace-with-spaces
-  "Replace the given reader macro node with spaces."
+  "Replace the given reader macro node with spaces. The resulting zipper
+   will be on the first element following it."
   [zloc]
-  (let [w (prn/estimate-length (z/node zloc))]
-    (-> zloc (z/prepend-space w) z/remove)))
+  (let [w (z/length zloc)]
+    (-> zloc 
+      (z/prepend-space w)        ;; add space
+      z/remove*                  ;; remove original (without removing an extra space)
+      z/next)))                  ;; go to following node
 
 (defn- remove-reader-macro
   "Remove the macro part of the given reader macro node."
@@ -70,7 +72,12 @@
 
 (defn run-cljx-test
   [profiles]
-  (let [data (z/of-string ";; Test it!\n(defn my-inc\n  [x]\n  #+debug (println \"inc: x =\" x #-nomark \"[debug]\")\n  (+ x 1))")]
+  (let [data (z/of-string ";; Test it!
+(defn my-inc
+  [x]
+  #+debug (println \"inc: x =\" x #-nomark \"[debug]\" {:a 0
+                                                    :b 1})
+  (+ x 1))")]
     (println "Original Code:")
     (z/print-root data)
     (println "\n")
