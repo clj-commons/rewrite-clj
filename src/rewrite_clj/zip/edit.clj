@@ -4,7 +4,7 @@
   (:refer-clojure :exclude [replace remove])
   (:require [fast-zip.core :as z]
             [rewrite-clj.convert :as conv]
-            [rewrite-clj.zip.core :refer [tag value whitespace? sexpr]]))
+            [rewrite-clj.zip.core :as zc]))
 
 (def ^:private ^:const SPACE [:whitespace " "])
 
@@ -16,7 +16,7 @@
   (let [r (-> zloc z/right)
         item (conv/->tree item)]
     (cond (not (z/node zloc)) (-> zloc (z/replace item))
-          (or (not r) (whitespace? r)) (-> zloc (z/insert-right item) (z/insert-right SPACE))
+          (or (not r) (zc/whitespace? r)) (-> zloc (z/insert-right item) (z/insert-right SPACE))
           :else (-> zloc (z/insert-right SPACE) (z/insert-right item) (z/insert-right SPACE)))))
 
 (defn insert-left
@@ -25,7 +25,7 @@
   (let [r (-> zloc z/left)
         item (conv/->tree item)]
     (cond (not (z/node zloc)) (-> zloc (z/replace item))
-          (or (not r) (whitespace? r)) (-> zloc (z/insert-left item) (z/insert-left SPACE))
+          (or (not r) (zc/whitespace? r)) (-> zloc (z/insert-left item) (z/insert-left SPACE))
           :else (-> zloc (z/insert-left SPACE) (z/insert-left item) (z/insert-left SPACE)))))
 
 (defn insert-child
@@ -33,7 +33,7 @@
   [zloc item]
   (let [r (-> zloc z/down)
         item (conv/->tree item)]
-    (if (or (not r) (not (z/node r)) (whitespace? r))
+    (if (or (not r) (not (z/node r)) (zc/whitespace? r))
       (-> zloc (z/insert-child item))
       (-> zloc (z/insert-child SPACE) (z/insert-child item)))))
 
@@ -42,7 +42,7 @@
   [zloc item]
   (let [r (-> zloc z/down z/rightmost)
         item (conv/->tree item)]
-    (if (or (not r) (not (z/node r)) (whitespace? r))
+    (if (or (not r) (not (z/node r)) (zc/whitespace? r))
       (-> zloc (z/append-child item))
       (-> zloc (z/append-child SPACE) (z/append-child item)))))
 
@@ -56,14 +56,20 @@
 (defn edit
   "Replace value at the given zipper location with value of (f node-sexpr args)."
   [zloc f & args]
-  (let [form (sexpr zloc)]
+  (let [form (zc/sexpr zloc)]
     (z/replace zloc (conv/->tree (apply f form args)))))
 
 (defn remove
-  "Remove value at the given zipper location. Will remove excess whitespace, too."
+  "Remove value at the given zipper location. Will remove a single whitespace following the 
+   node, too."
   [zloc]
-  ;; TODO
-  (z/remove zloc))
+  (let [rloc (z/remove zloc)
+        ws (z/right rloc)]
+    (->> (if (= (zc/tag ws) :whitespace)
+           (let [w (count (zc/value ws))]
+             (-> ws (zc/append-space (dec w)) z/remove))
+           rloc)
+      (zc/skip-whitespace z/prev))))
 
 (defn splice
   "Add the current node's children to the parent branch (in place of the current node)."
