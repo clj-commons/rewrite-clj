@@ -25,7 +25,7 @@
 
   [rewrite-clj.zip.core 
 
-   edn tag value sexpr
+   edn tag value length sexpr
    whitespace? linebreak? 
    skip-whitespace skip-whitespace-left
    prepend-space append-space
