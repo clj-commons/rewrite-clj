@@ -3,6 +3,21 @@
 ### 0.3.0
 
 - added token type `:newline` to handle linebreak characters.
+- `rewrite-clj.zip/edn` wraps everything into `[:forms ...]` node, but the initial location
+  is the node passed to it.
+- new functions in `rewrite-clj.zip.core`:
+  - `length`
+  - `move-to-node`
+  - `edit->>`
+- added removal of a single whitespace character to `rewrite-clj.zip/remove`.
+- indentation-aware modification functions in `rewrite-clj.zip.indent`:
+  - `indent`
+  - `indent-children`
+  - `replace`
+  - `edit`
+  - `insert-left`
+  - `insert-right
+  - `remove`
 
 ### 0.2.0
 
