@@ -22,6 +22,10 @@
 ;; These compare fast-zip's zipper operations with rewrite-clj's whitespace-aware
 ;; ones.
 
+(fact "about top-level zipper structure and initial position"
+  (first (z/node root)) => :list
+  (first (z/root root)) => :forms)
+
 (fact "about whitespace-aware zipper movement"
   (z/sexpr root) => list?
 
@@ -77,20 +81,29 @@
           [:token 1] 
           [:newline "\n"] [:whitespace " "] [:token 2] 
           [:newline "\n"] [:whitespace " "] [:token 3]]
+    (z/root root)
+      => [:forms
+          [:vector 
+           [:token 1] 
+           [:newline "\n"] [:whitespace " "] [:token 2] 
+           [:newline "\n"] [:whitespace " "] [:token 3]]]
     (-> root z/down z/remove z/root) 
-      => [:vector 
-          [:newline "\n"] [:whitespace " "] [:token 2] 
-          [:newline "\n"] [:whitespace " "] [:token 3]]
+      => [:forms
+          [:vector 
+           [:newline "\n"] [:whitespace " "] [:token 2] 
+           [:newline "\n"] [:whitespace " "] [:token 3]]]
     (-> root z/down z/right (z/replace 5) z/root)
-      => [:vector 
-          [:token 1] 
-          [:newline "\n"] [:whitespace " "] [:token 5] 
-          [:newline "\n"] [:whitespace " "] [:token 3]]
+      => [:forms
+          [:vector 
+           [:token 1] 
+           [:newline "\n"] [:whitespace " "] [:token 5] 
+           [:newline "\n"] [:whitespace " "] [:token 3]]]
     (-> root z/down z/right z/right (z/edit + 5) z/root)
-      => [:vector 
-          [:token 1] 
-          [:newline "\n"] [:whitespace " "] [:token 2] 
-          [:newline "\n"] [:whitespace " "] [:token 8]]))
+      => [:forms
+          [:vector 
+           [:token 1] 
+           [:newline "\n"] [:whitespace " "] [:token 2] 
+           [:newline "\n"] [:whitespace " "] [:token 8]]]))
 
 (fact "about zipper splice"
   (let [root (z/edn (p/parse-string "[1 [2 3] 4]"))]
