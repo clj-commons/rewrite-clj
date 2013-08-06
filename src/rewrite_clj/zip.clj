@@ -30,7 +30,9 @@
    skip-whitespace skip-whitespace-left
    prepend-space append-space
    prepend-newline append-newline
-   edit-> subzip]
+   subzip
+   edit->> edit->
+   subedit-> subedit->>]
 
   [rewrite-clj.zip.move
    

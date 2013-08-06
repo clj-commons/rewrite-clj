@@ -138,6 +138,24 @@
       (edn* (z/root zloc))
       path)))
 
+(defn edit-node
+  "Apply given function to the given zipper location. Afterwards move the resulting 
+   zipper to the same location as the original one."
+  [zloc f]
+  (if-let [eloc (f zloc)]
+    (move-to-node eloc zloc)
+    (throw (Exception. "Function supplied to edit-node did not return value!"))))
+
+(defn edit-children
+  "Apply given function to the given zipper location. It may only alter the node itself or
+   its children. Afterwards, move the resulting zipper to the same location as the original one."
+  [zloc f]
+  (if-not (z/branch? zloc)
+    (throw (Exception. "Zipper location supplied to edit-children is not a branch!"))
+    (if-let [eloc (f (subzip zloc))]
+      (z/replace zloc (z/root eloc))
+      (throw (Exception. "Function supplied to edit-children did not return value!")))))
+
 (defmacro edit->
   "Will pass arguments to `->`. Return value will be the state of the input node
    after all modifications have been performed. This means that the result is 
@@ -146,9 +164,7 @@
    of the input node (modification can occur anywhere)."
   [zloc & body]
   `(let [zloc# ~zloc]
-     (if-let [edit# (-> zloc# ~@body)]
-       (move-to-node edit# zloc#)
-       (throw (Exception. "Body of edit-> did not return value.")))))
+     (edit-node zloc# (fn [zloc#] (-> zloc# ~@body)))))
 
 (defmacro edit->>
   "Will pass arguments to `->>`. Return value will be the state of the input node
@@ -158,6 +174,22 @@
    of the input node (modification can occur anywhere)."
   [zloc & body]
   `(let [zloc# ~zloc]
-     (if-let [edit# (->> zloc# ~@body)]
-       (move-to-node edit# zloc#)
-       (throw (Exception. "Body of edit->> did not return value.")))))
+     (edit-node zloc# (fn [zloc#] (->> zloc# ~@body)))))
+
+(defmacro subedit->
+  "Will pass arguments to `->`. Return value will be the state of the input node after
+   all modifications have been performed. This means that the result is automatically
+   'zipped up' to represent the same location the macro was given. This only allows
+   for modifications of the node itself or its children."
+  [zloc & body]
+  `(let [zloc# ~zloc]
+     (edit-children zloc# (fn [zloc#] (-> zloc# ~@body)))))
+
+(defmacro subedit->>
+  "Will pass arguments to `->>`. Return value will be the state of the input node after
+   all modifications have been performed. This means that the result is automatically
+   'zipped up' to represent the same location the macro was given. This only allows
+   for modifications of the node itself or its children."
+  [zloc & body]
+  `(let [zloc# ~zloc]
+     (edit-children zloc# (fn [zloc#] (->> zloc# ~@body)))))

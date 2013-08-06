@@ -15,7 +15,7 @@
                  [b \"1.2.3\"]]
   :repositories { \"private\" \"http://private.com/repo\" })")
 
-(def root (z/edn (p/parse-string data-string)))
+(def root (z/of-string data-string))
 
 ;; ## Tests
 ;;
@@ -75,7 +75,7 @@
     (-> loc z/right z/node) => [:token 'defproject]))
 
 (fact "about zipper modification"
-  (let [root (z/edn (p/parse-string "[1\n 2\n 3]"))]
+  (let [root (z/of-string "[1\n 2\n 3]")]
     (z/node root) 
       => [:vector 
           [:token 1] 
@@ -105,8 +105,24 @@
            [:newline "\n"] [:whitespace " "] [:token 2] 
            [:newline "\n"] [:whitespace " "] [:token 8]]]))
 
+(fact "about node removal (including trailing/preceding whitespace if necessary)"
+  (let [root (z/of-string "[1 [2 3] 4]")]
+    (z/sexpr root) => [1 [2 3] 4]
+    (let [r0 (-> root z/down z/remove*)]
+      (z/sexpr r0) => [[2 3] 4]
+      (z/->root-string r0) => "[ [2 3] 4]")
+    (let [r0 (-> root z/down z/remove)]
+      (z/sexpr r0) => [[2 3] 4]
+      (z/->root-string r0) => "[[2 3] 4]")
+    (let [r0 (-> root z/down z/right z/right z/remove*)]
+      (z/->root-string r0) => "[1 [2 3] ]")  
+    (future-fact "about removal of preceding spaces"
+      (let [r0 (-> root z/down z/right z/right z/remove)]
+        (z/sexpr r0) => 3
+        (z/->root-string r0) => "[1 [2 3]]"))))
+
 (fact "about zipper splice"
-  (let [root (z/edn (p/parse-string "[1 [2 3] 4]"))]
+  (let [root (z/of-string "[1 [2 3] 4]")]
     (z/sexpr root) => [1 [2 3] 4]
     (-> root z/down z/right z/splice z/up z/sexpr) => [1 2 3 4]))
 
@@ -122,7 +138,7 @@
     => [:repositories :dependencies "A project." :description "0.1.0-SNAPSHOT" 'my-project 'defproject])
 
 (fact "about zipper seq operations"
-  (let [root (z/edn (p/parse-string "[1 2 3]"))]
+  (let [root (z/of-string "[1 2 3]")]
     root => z/seq?
     root => z/vector?
     (z/sexpr root) => [1 2 3]
@@ -132,7 +148,7 @@
     (-> root (z/assoc 2 5) z/sexpr) => [1 2 5]
     (-> root (z/assoc 5 8) z/sexpr) => (throws IndexOutOfBoundsException)
     (->> root (z/map #(z/edit % inc)) z/sexpr) => [2 3 4])
-  (let [root (z/edn (p/parse-string "(1 2 3)"))]
+  (let [root (z/of-string "(1 2 3)")]
     root => z/seq?
     root => z/list?
     (z/sexpr root) => '(1 2 3)
@@ -142,7 +158,7 @@
     (-> root (z/assoc 2 5) z/sexpr) => '(1 2 5)
     (-> root (z/assoc 5 8) z/sexpr) => (throws IndexOutOfBoundsException)
     (->> root (z/map #(z/edit % inc)) z/sexpr) => '(2 3 4))
-  (let [root (z/edn (p/parse-string "#{1 2 3}"))]
+  (let [root (z/of-string "#{1 2 3}")]
     root => z/seq?
     root => z/set?
     (z/sexpr root) => #{1 2 3}
@@ -152,7 +168,7 @@
     (-> root (z/assoc 2 5) z/sexpr) => #{1 2 5}
     (-> root (z/assoc 5 8) z/sexpr) => (throws IndexOutOfBoundsException)
     (->> root (z/map #(z/edit % inc)) z/sexpr) => #{2 3 4})
-  (let [root (z/edn (p/parse-string "{:a 1 :b 2}"))]
+  (let [root (z/of-string "{:a 1 :b 2}")]
     root => z/seq?
     root => z/map?
     (z/sexpr root) => {:a 1 :b 2}
@@ -162,3 +178,38 @@
     (-> root (z/assoc :c 7) z/sexpr) => {:a 1 :b 2 :c 7}
     (->> root (z/map #(z/edit % inc)) z/sexpr) => {:a 2 :b 3}
     (->> root (z/map-keys #(z/edit % name)) z/sexpr) => {"a" 1 "b" 2}))
+
+(fact "about edit scope limitation/location memoization"
+  (let [root (z/of-string "[0 [1 2 3] 4]")]
+    (fact "about subedit->"
+      (let [r0 (-> root z/down z/right z/down z/right (z/replace 5))
+            r1 (z/subedit-> root z/down z/right z/down z/right (z/replace 5))]
+        (z/->root-string r0) => (z/->root-string r1)
+        (z/->string r0) => "5"
+        (z/->string r1) => "[0 [1 5 3] 4]"
+        (z/tag r0) => :token
+        (z/tag r1) => :vector))
+    (fact "about subedit->>"
+      (let [r0 (->> root z/down z/right (z/map #(z/edit % inc)) z/down)
+            r1 (z/subedit->> root z/down z/right (z/map #(z/edit % + 1)) z/down)]
+        (z/->root-string r0) => (z/->root-string r1)
+        (z/->string r0) => "2"
+        (z/->string r1) => "[0 [2 3 4] 4]"
+        (z/tag r0) => :token
+        (z/tag r1) => :vector))
+    (fact "about edit->"
+      (let [v (-> root z/down z/right z/down)
+            r0 (-> v z/up z/right z/remove)
+            r1 (z/edit-> v z/up z/right z/remove)]
+        (z/->root-string r0) => (z/->root-string r1)
+        (z/->string v) => "1"
+        (z/->string r0) => "3"
+        (z/->string r1) => "1"))
+    (fact "about edit->>"
+      (let [v (-> root z/down)
+            r0 (->> v z/right (z/map #(z/edit % inc)) z/right)
+            r1 (z/edit->> v z/right (z/map #(z/edit % inc)) z/right)]
+        (z/->root-string r0) => (z/->root-string r1)
+        (z/->string v) => "0"
+        (z/->string r0) => "4"
+        (z/->string r1) => "0"))))

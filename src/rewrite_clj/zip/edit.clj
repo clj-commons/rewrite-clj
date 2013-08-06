@@ -6,7 +6,21 @@
             [rewrite-clj.convert :as conv]
             [rewrite-clj.zip.core :as zc]))
 
+;; ## Helpers
+
 (def ^:private ^:const SPACE [:whitespace " "])
+
+(defn- remove-trailing-space
+  "Remove a single whitespace character after the given node."
+  [zloc]
+  (or
+    (when-let [ws (z/right zloc)]
+      (when (= (zc/tag ws) :whitespace)
+        (let [w (dec (zc/length ws))]
+          (-> ws
+            (z/replace [:whitespace (apply str (repeat w \space))])
+            z/left))))
+    zloc))
 
 ;; ## Insert
 
@@ -62,18 +76,13 @@
 (defn remove
   "Remove value at the given zipper location. Returns the first non-whitespace node 
    that would have preceded it in a depth-first walk. Will remove a single whitespace
-   character following the current node."
+   character following the current node and/or preceding it (if last element in branch)."
   [zloc]
-  (let [ws (z/right zloc)
-        zloc (or
-               (when (= (zc/tag ws) :whitespace)
-                 (let [w (dec (zc/length ws))]
-                   (when-not (neg? w)
-                     (-> ws z/remove (zc/append-space w)))))
-               zloc)]
-    (->> zloc 
-      z/remove 
-      (zc/skip-whitespace z/prev))))
+  (->> zloc
+    remove-trailing-space
+    ;; TODO: Remove preceding space
+    z/remove
+    (zc/skip-whitespace z/prev)))
 
 (defn splice
   "Add the current node's children to the parent branch (in place of the current node).
