@@ -19,7 +19,7 @@ __This project is in flux. Anything may change at any time.__
 __Leiningen ([via Clojars](http://clojars.org/rewrite-clj))__
 
 ```clojure
-[rewrite-clj "0.2.0"]
+[rewrite-clj "0.3.0"]
 ```
 
 __Parsing Data__
