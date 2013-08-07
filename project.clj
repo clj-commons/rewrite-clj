@@ -7,7 +7,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/tools.reader "0.7.5"]
                  [fast-zip "0.3.0"]
-                 [potemkin "0.3.1"]]
+                 [potemkin "0.3.2"]]
   :profiles {:dev {:dependencies [[midje "1.5.1"]]
                    :plugins [[lein-midje "3.1.1"]]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
