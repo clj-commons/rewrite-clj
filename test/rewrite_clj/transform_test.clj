@@ -70,3 +70,16 @@
                  [b-suffix \"1.2.3\"]]
   :repositories { \"private\" \"http://private.com/repo\" })")
 
+(fact "about whitespace-handling in removal"
+  (-> data
+    (z/find-value z/next 'defproject)
+    (z/find-value :dependencies)
+    z/right z/down z/remove
+    z/->root-string)
+      =>
+";; This is a Project File.
+(defproject my-project \"0.1.0-SNAPSHOT\"
+  :description \"A project.
+                 Multiline!\"
+  :dependencies [[b \"1.2.3\"]]
+  :repositories { \"private\" \"http://private.com/repo\" })")

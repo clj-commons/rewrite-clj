@@ -9,7 +9,6 @@
 ;; ## Fixtures
 
 (def data-string "{:first [1\n          2],\n :second 3}")
-
 (def data (z/of-string data-string))
 
 ;; ## Tests
@@ -48,8 +47,7 @@
     (z/tag rloc) => :token
     (z/value rloc) => 2
     (z/->root-string rloc) => "[1\n 2 \"abc\" [3\n          4]]")
-  (future-fact "about correct preceding whitespace handling."
-    (let [rloc (-> (z/of-string "[1\n 2 [3\n    4]]") (z/find-value z/next 2) i/remove)]
-      (z/tag rloc) => :token
-      (z/value rloc) => 1
-      (z/->root-string rloc) => "[1\n [3\n  4]]")))
+  (let [rloc (-> (z/of-string "[1\n 2 [3\n    4]]") (z/find-value z/next 2) i/remove)]
+    (z/tag rloc) => :token
+    (z/value rloc) => 1
+    (z/->root-string rloc) => "[1\n [3\n  4]]"))

@@ -8,8 +8,13 @@
 - new functions in `rewrite-clj.zip.core`:
   - `length`
   - `move-to-node`
-  - `edit->>`
-- added removal of a single whitespace character to `rewrite-clj.zip/remove`.
+  - `edit->>`, `edit-node`
+  - `subedit->`, `subedit->>`, `edit-children`
+  - `leftmost?`, `rightmost?`
+- new functions in `rewrite-clj.zip.edit`:
+  - `splice-or-remove`
+  - `prefix`, `suffix` (formerly `rewrite-clj.zip.utils`)
+- `rewrite-clj.zip.edit/remove` now handles whitespace appropriately.
 - indentation-aware modification functions in `rewrite-clj.zip.indent`:
   - `indent`
   - `indent-children`
@@ -19,6 +24,7 @@
   - `insert-right
   - `remove`
   - `splice`
+- fast-zip utility functions in `rewrite-clj.zip.utils`
 
 ### 0.2.0
 

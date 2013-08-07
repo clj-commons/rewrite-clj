@@ -7,7 +7,8 @@
 
 ;; ## Zipper
 
-(declare skip-whitespace)
+(declare skip-whitespace
+         skip-whitespace-left)
 
 (defn- z-branch?
   [node]
@@ -70,6 +71,16 @@
   "Check if the node at the current zipper location is a linebreak."
   [zloc]
   (= (tag zloc) :newline))
+
+(defn leftmost?
+  "Check if the given zipper is at the leftmost non-whitespace position."
+  [zloc]
+  (nil? (skip-whitespace-left (z/left zloc))))
+
+(defn rightmost?
+  "Check if the given zipper is at the rightmost non-whitespace position."
+  [zloc]
+  (nil? (skip-whitespace (z/right zloc))))
 
 ;; ## Skip
 

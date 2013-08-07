@@ -27,6 +27,7 @@
 
    edn tag value length sexpr
    whitespace? linebreak? 
+   leftmost? rightmost?
    skip-whitespace skip-whitespace-left
    prepend-space append-space
    prepend-newline append-newline
@@ -50,7 +51,8 @@
    
    insert-right insert-left
    insert-child append-child
-   replace edit remove splice
+   replace edit remove 
+   splice splice-or-remove
    prefix suffix]
 
   [rewrite-clj.zip.seqs

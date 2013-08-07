@@ -4,23 +4,12 @@
   (:refer-clojure :exclude [replace remove])
   (:require [fast-zip.core :as z]
             [rewrite-clj.convert :as conv]
-            [rewrite-clj.zip.core :as zc]))
+            [rewrite-clj.zip.core :as zc]
+            [rewrite-clj.zip.utils :as zu]))
 
 ;; ## Helpers
 
 (def ^:private ^:const SPACE [:whitespace " "])
-
-(defn- remove-trailing-space
-  "Remove a single whitespace character after the given node."
-  [zloc]
-  (or
-    (when-let [ws (z/right zloc)]
-      (when (= (zc/tag ws) :whitespace)
-        (let [w (dec (zc/length ws))]
-          (-> ws
-            (z/replace [:whitespace (apply str (repeat w \space))])
-            z/left))))
-    zloc))
 
 ;; ## Insert
 
@@ -73,28 +62,65 @@
   (let [form (zc/sexpr zloc)]
     (z/replace zloc (conv/->tree (apply f form args)))))
 
+;; ## Remove
+
+(defn- remove-trailing-space
+  "Remove all whitespace following a given node."
+  [zloc]
+  (loop [zloc zloc]
+    (if-let [rloc (z/right zloc)]
+      (if (zc/whitespace? rloc)
+        (recur (zu/remove-right zloc))
+        zloc)
+      zloc)))
+
+(defn- remove-preceding-space
+  [zloc]
+  (loop [zloc zloc]
+    (if-let [lloc (z/left zloc)]
+      (if (zc/whitespace? lloc)
+        (recur (zu/remove-left zloc))
+        zloc)
+      zloc)))
+
 (defn remove
   "Remove value at the given zipper location. Returns the first non-whitespace node 
-   that would have preceded it in a depth-first walk. Will remove a single whitespace
-   character following the current node and/or preceding it (if last element in branch)."
+   that would have preceded it in a depth-first walk. Will remove whitespace appropriately.
+  
+     [1  2  3]   => [1  3]
+     [1 2]       => [1]
+     [1 2]       => [2]
+     [1]         => []
+     [  1  ]     => []
+     [1 [2 3] 4] => [1 [2 3]]
+     [1 [2 3] 4] => [[2 3] 4]
+
+  If a node is located rightmost, both preceding and trailing spaces are removed, otherwise only
+  trailing spaces are touched. This means that a following element (no matter whether on the
+  same line or not) will end up in the same position (line/column) as the removed one."
   [zloc]
-  (->> zloc
-    remove-trailing-space
-    ;; TODO: Remove preceding space
-    z/remove
-    (zc/skip-whitespace z/prev)))
+  (let [zloc (if (zc/rightmost? zloc) (remove-preceding-space zloc) zloc)
+        zloc (-> zloc remove-trailing-space z/remove)]
+    (zc/skip-whitespace z/prev zloc)))
+
+;; ## Splice
 
 (defn splice
   "Add the current node's children to the parent branch (in place of the current node).
-   The resulting zipper will be positioned on the first non-whitespace \"child\"."
+   The resulting zipper will be positioned on the first non-whitespace \"child\". If 
+   the node does not have children (or only whitespace children), `nil` is returned."
   [zloc]
-  (if-not (z/branch? zloc)
-    zloc
-    (let [ch (z/children zloc)]
-      (-> (reduce z/insert-right zloc (reverse ch))
-        z/remove
-        z/next
-        zc/skip-whitespace))))
+  (when (and (z/branch? zloc) (pos? (count (z/children zloc))) (zc/skip-whitespace (z/down zloc)))
+    (->> (reverse (z/children zloc))
+      (reduce z/insert-right zloc)
+      zu/remove-and-move-right
+      zc/skip-whitespace)))
+
+(defn splice-or-remove
+  "Try to splice the given node. If it fails (no children, only whitespace children),
+   remove it."
+  [zloc]
+  (or (splice zloc) (remove zloc)))
 
 ;; ## Prefix
 

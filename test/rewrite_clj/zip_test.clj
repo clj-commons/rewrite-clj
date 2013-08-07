@@ -90,7 +90,7 @@
     (-> root z/down z/remove z/root) 
       => [:forms
           [:vector 
-           [:newline "\n"] [:whitespace " "] [:token 2] 
+           [:token 2] 
            [:newline "\n"] [:whitespace " "] [:token 3]]]
     (-> root z/down z/right (z/replace 5) z/root)
       => [:forms
@@ -106,6 +106,11 @@
            [:newline "\n"] [:whitespace " "] [:token 8]]]))
 
 (fact "about node removal (including trailing/preceding whitespace if necessary)"
+  (let [root (z/of-string "[1\n2]")]
+    (z/sexpr root) => [1 2]
+    (let [r0 (-> root z/down z/remove)]
+      (z/sexpr r0) => [2]
+      (z/->root-string r0) => "[2]"))
   (let [root (z/of-string "[1 [2 3] 4]")]
     (z/sexpr root) => [1 [2 3] 4]
     (let [r0 (-> root z/down z/remove*)]
@@ -116,15 +121,37 @@
       (z/->root-string r0) => "[[2 3] 4]")
     (let [r0 (-> root z/down z/right z/right z/remove*)]
       (z/->root-string r0) => "[1 [2 3] ]")  
-    (future-fact "about removal of preceding spaces"
-      (let [r0 (-> root z/down z/right z/right z/remove)]
-        (z/sexpr r0) => 3
-        (z/->root-string r0) => "[1 [2 3]]"))))
+    (let [r0 (-> root z/down z/right z/right z/remove)]
+      (z/sexpr r0) => 3
+      (z/->root-string r0) => "[1 [2 3]]")))
 
 (fact "about zipper splice"
-  (let [root (z/of-string "[1 [2 3] 4]")]
-    (z/sexpr root) => [1 [2 3] 4]
-    (-> root z/down z/right z/splice z/up z/sexpr) => [1 2 3 4]))
+  (let [r0 (z/of-string "[1 [2 3] 4]")
+        r1 (-> r0 z/down z/right z/splice)]
+    (z/sexpr r0) => [1 [2 3] 4]
+    (z/sexpr r1) => 2
+    (z/sexpr (z/up r1)) => [1 2 3 4])
+  (let [r0 (z/of-string "[1 [] 4]")
+        r1 (-> r0 z/down z/right z/splice)
+        r2 (-> r0 z/down z/right z/splice-or-remove)]
+    (z/sexpr r0) => [1 [] 4]
+    r1 => falsey
+    (z/sexpr r2) => 1
+    (z/->root-string r2) => "[1 4]")  
+  (let [r0 (z/of-string "[1 [ ] 4]")
+        r1 (-> r0 z/down z/right z/splice)
+        r2 (-> r0 z/down z/right z/splice-or-remove)]
+    (z/sexpr r0) => [1 [] 4]
+    r1 => falsey
+    (z/sexpr r2) => 1
+    (z/->root-string r2) => "[1 4]")
+  (let [r0 (z/of-string "[1 []]")
+        r1 (-> r0 z/down z/right z/splice)
+        r2 (-> r0 z/down z/right z/splice-or-remove)]
+    (z/sexpr r0) => [1 []]
+    r1 => falsey
+    (z/sexpr r2) => 1
+    (z/->root-string r2) => "[1]"))
 
 (fact "about zipper search/find traversal"
   (-> root z/down (z/find-value :description) z/right z/node) => [:token "A project."]
