@@ -1,58 +1,57 @@
-(ns ^{ :doc "Utility operations for nodes."
+(ns ^{ :doc "Utility Operations for Zippers"
        :author "Yannick Scherer" }
   rewrite-clj.zip.utils
-  (:require [fast-zip.core :as z]))
+  (:require [fast-zip.core :as z])
+  (:import [fast_zip.core ZipperPath ZipperLocation]))
 
-;; ## Prefix
+(defn remove-right
+  "Remove right sibling of the current node (if there is one)."
+  [^ZipperLocation zloc]
+  (let [path ^ZipperPath (.path zloc)]
+    (if (zero? (count (.r path)))
+      zloc
+      (ZipperLocation.
+        (.branch? zloc)
+        (.children zloc)
+        (.make-node zloc)
+        (.node zloc)
+        (assoc path :r (clojure.core/next (.r path)) :changed? true)))))
 
-(defmulti prefix
-  "Prefix the value of a zipper node with the given string. This supports multi-lined strings."
-  (fn [zloc p]
-    (when zloc
-      (first (z/node zloc))))
-  :default nil)
+(defn remove-left
+  "Remove left sibling of the current node (if there is one)."
+  [^ZipperLocation zloc]
+  (let [path ^ZipperPath (.path zloc)]
+    (if (zero? (count (.l path)))
+      zloc
+      (ZipperLocation.
+        (.branch? zloc)
+        (.children zloc)
+        (.make-node zloc)
+        (.node zloc)
+        (assoc path :l (pop (.l path)) :changed? true)))))
 
-(defmethod prefix nil
-  [zloc prefix]
-  (throw (Exception. (str "Cannot prefix value of type: " (first (z/node zloc))))))
+(defn remove-and-move-left
+  "Remove current node and move left. If current node is at the leftmost
+   location, returns `nil`."
+  [^ZipperLocation zloc]
+  (let [path ^ZipperPath (.path zloc)]
+    (when (pos? (count (.l path)))
+      (ZipperLocation.
+        (.branch? zloc)
+        (.children zloc)
+        (.make-node zloc)
+        (peek (.l path))
+        (assoc path :l (pop (.l path)) :changed? true)))))
 
-(defmethod prefix :token
-  [zloc prefix]
-  (let [v (second (z/node zloc))
-        v1 (cond (string? v) (str prefix v)
-                 (symbol? v) (symbol (namespace v) (str prefix (name v)))
-                 (keyword? v) (keyword (namespace v) (str prefix (name v)))
-                 :else (throw (Exception. (str "Cannot prefix token: " v))))]
-    (z/replace zloc [:token v1])))
-
-(defmethod prefix :multi-line
-  [zloc prefix]
-  (let [[v & rst] (rest (z/node zloc))]
-    (z/replace zloc (vec (list* :multi-line (str prefix v) rst)))))
-
-;; ## Suffix
-
-(defmulti suffix
-  "Suffix the value of a zipper node with the given string. This supports multi-lined strings."
-  (fn [zloc p]
-    (when zloc
-      (first (z/node zloc))))
-  :default nil)
-
-(defmethod suffix nil
-  [zloc suffix]
-  (throw (Exception. (str "Cannot suffix value of type: " (first (z/node zloc))))))
-
-(defmethod suffix :token
-  [zloc suffix]
-  (let [v (second (z/node zloc))
-        v1 (cond (string? v) (str v suffix)
-                 (symbol? v) (symbol (namespace v) (str (name v) suffix))
-                 (keyword? v) (keyword (namespace v) (str (name v) suffix))
-                 :else (throw (Exception. (str "Cannot suffix token: " v))))]
-    (z/replace zloc [:token v1])))
-
-(defmethod suffix :multi-line
-  [zloc suffix]
-  (let [[v & rst] (rest (z/node zloc))]
-    (z/replace zloc (vec (list* :multi-line (str v suffix) rst)))))
+(defn remove-and-move-right
+  "Remove current node and move right. If current node is at the rightmost
+   location, returns `nil`."
+  [^ZipperLocation zloc]
+  (let [path ^ZipperPath (.path zloc)]
+    (when (pos? (count (.r path)))
+      (ZipperLocation.
+        (.branch? zloc)
+        (.children zloc)
+        (.make-node zloc)
+        (first (.r path))
+        (assoc path :r (clojure.core/next (.r path)) :changed? true)))))

@@ -50,7 +50,8 @@
    
    insert-right insert-left
    insert-child append-child
-   replace edit remove splice]
+   replace edit remove splice
+   prefix suffix]
 
   [rewrite-clj.zip.seqs
    

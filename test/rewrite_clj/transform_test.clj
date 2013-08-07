@@ -2,8 +2,7 @@
        :author "Yannick Scherer" }
   rewrite-clj.transform-test
   (:require [midje.sweet :refer :all]
-            [rewrite-clj.zip :as z]
-            [rewrite-clj.zip.utils :as zu]))
+            [rewrite-clj.zip :as z]))
 
 (def data-string
 ";; This is a Project File.
@@ -39,7 +38,7 @@
       (z/map
         (fn [loc]
           (-> loc z/down 
-            (zu/prefix "prefix-")
+            (z/prefix "prefix-")
             z/up))))
     z/->root-string)
       =>
@@ -59,7 +58,7 @@
       (z/map
         (fn [loc]
           (-> loc z/down 
-            (zu/suffix "-suffix")
+            (z/suffix "-suffix")
             z/up))))
     z/->root-string)
       =>
