@@ -67,21 +67,12 @@
 (defn- remove-trailing-space
   "Remove all whitespace following a given node."
   [zloc]
-  (loop [zloc zloc]
-    (if-let [rloc (z/right zloc)]
-      (if (zc/whitespace? rloc)
-        (recur (zu/remove-right zloc))
-        zloc)
-      zloc)))
+  (zu/remove-right-while zloc zc/whitespace?))
 
 (defn- remove-preceding-space
+  "Remove all whitespace preceding a given node."
   [zloc]
-  (loop [zloc zloc]
-    (if-let [lloc (z/left zloc)]
-      (if (zc/whitespace? lloc)
-        (recur (zu/remove-left zloc))
-        zloc)
-      zloc)))
+  (zu/remove-left-while zloc zc/whitespace?))
 
 (defn remove
   "Remove value at the given zipper location. Returns the first non-whitespace node 
@@ -95,9 +86,10 @@
      [1 [2 3] 4] => [1 [2 3]]
      [1 [2 3] 4] => [[2 3] 4]
 
-  If a node is located rightmost, both preceding and trailing spaces are removed, otherwise only
-  trailing spaces are touched. This means that a following element (no matter whether on the
-  same line or not) will end up in the same position (line/column) as the removed one."
+   If a node is located rightmost, both preceding and trailing spaces are removed, otherwise only
+   trailing spaces are touched. This means that a following element (no matter whether on the
+   same line or not) will end up in the same position (line/column) as the removed one, 
+   _unless_ a comment lies between the original node and the neighbour."
   [zloc]
   (let [zloc (if (zc/rightmost? zloc) (remove-preceding-space zloc) zloc)
         zloc (-> zloc remove-trailing-space z/remove)]

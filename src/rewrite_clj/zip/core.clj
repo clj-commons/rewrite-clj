@@ -7,8 +7,7 @@
 
 ;; ## Zipper
 
-(declare skip-whitespace
-         skip-whitespace-left)
+(declare skip-whitespace)
 
 (defn- z-branch?
   [node]
@@ -62,8 +61,19 @@
   (when zloc
     (prn/estimate-length (z/node zloc))))
 
+(defn comment?
+  "Check if the node at the current zipper location is a comment."
+  [zloc]
+  (= (tag zloc) :comment))
+
 (defn whitespace?
-  "Check if the node at the current zipper location is whitespace or comment."
+  "Check if the node at the current zipper location is whitespace (including linebreak)."
+  [zloc]
+  (contains? #{:whitespace :newline} (tag zloc)))
+
+(defn whitespace-or-comment?
+  "Check if the node at the current zipper location is whitespace (including linebreak)
+   or comment."
   [zloc]
   (contains? #{:comment :whitespace :newline} (tag zloc)))
 
@@ -71,16 +81,6 @@
   "Check if the node at the current zipper location is a linebreak."
   [zloc]
   (= (tag zloc) :newline))
-
-(defn leftmost?
-  "Check if the given zipper is at the leftmost non-whitespace position."
-  [zloc]
-  (nil? (skip-whitespace-left (z/left zloc))))
-
-(defn rightmost?
-  "Check if the given zipper is at the rightmost non-whitespace position."
-  [zloc]
-  (nil? (skip-whitespace (z/right zloc))))
 
 ;; ## Skip
 
@@ -99,12 +99,22 @@
   "Apply movement function (default: `clojure.z/right`) until a non-whitespace/non-comment
    element is reached."
   ([zloc] (skip-whitespace z/right zloc))
-  ([f zloc] (skip f whitespace? zloc)))
+  ([f zloc] (skip f whitespace-or-comment? zloc)))
 
 (defn skip-whitespace-left
   "Move left until a non-whitespace/non-comment element is reached."
   [zloc]
   (skip-whitespace z/left zloc))
+
+(defn leftmost?
+  "Check if the given zipper is at the leftmost non-whitespace position."
+  [zloc]
+  (nil? (skip-whitespace-left (z/left zloc))))
+
+(defn rightmost?
+  "Check if the given zipper is at the rightmost non-whitespace position."
+  [zloc]
+  (nil? (skip-whitespace (z/right zloc))))
 
 ;; ## Whitespace Nodes
 

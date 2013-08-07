@@ -111,6 +111,14 @@
     (let [r0 (-> root z/down z/remove)]
       (z/sexpr r0) => [2]
       (z/->root-string r0) => "[2]"))
+  (let [root (z/of-string "[1 ;;comment\n 2]")]
+    (z/sexpr root) => [1 2]
+    (let [r0 (-> root z/down z/remove)]
+      (z/sexpr r0) => [2]
+      (z/->root-string r0) => "[;;comment\n 2]") 
+    (let [r0 (-> root z/down z/right z/remove)]
+      (z/sexpr (z/up r0)) => [1]
+      (z/->root-string r0) => "[1 ;;comment\n]"))
   (let [root (z/of-string "[1 [2 3] 4]")]
     (z/sexpr root) => [1 [2 3] 4]
     (let [r0 (-> root z/down z/remove*)]

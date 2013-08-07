@@ -55,3 +55,25 @@
         (.make-node zloc)
         (first (.r path))
         (assoc path :r (clojure.core/next (.r path)) :changed? true)))))
+
+(defn remove-right-while
+  "Remove elements to the right of the current zipper location as long as
+   the given predicate matches."
+  [zloc p?]
+  (loop [zloc zloc]
+    (if-let [rloc (z/right zloc)]
+      (if (p? rloc)
+        (recur (remove-right zloc))
+        zloc)
+      zloc)))
+
+(defn remove-left-while
+  "Remove elements to the left of the current zipper location as long as
+   the given predicate matches."
+  [zloc p?]
+  (loop [zloc zloc]
+    (if-let [lloc (z/left zloc)]
+      (if (p? lloc)
+        (recur (remove-left zloc))
+        zloc)
+      zloc)))
