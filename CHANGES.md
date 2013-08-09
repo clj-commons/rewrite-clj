@@ -21,7 +21,7 @@
   - `replace`
   - `edit`
   - `insert-left`
-  - `insert-right
+  - `insert-right`
   - `remove`
   - `splice`
 - fast-zip utility functions in `rewrite-clj.zip.utils`
