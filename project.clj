@@ -5,13 +5,13 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :repositories  {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [org.clojure/tools.reader "0.7.5"]
+                 [org.clojure/tools.reader "0.7.8"]
                  [fast-zip "0.3.0"]
-                 [potemkin "0.3.2"]]
+                 [potemkin "0.3.3"]]
   :profiles {:dev {:dependencies [[midje "1.5.1"]]
-                   :plugins [[lein-midje "3.1.1"]]}
+                   :plugins [[lein-midje "3.1.3-RC1"]]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}}
-  :aliases {"midje-all" ["with-profile" "dev,1.4:dev,1.5:dev,1.6" "midje"]
+  :aliases {"test-ancient" ["with-profile" "dev,1.4:dev,1.5:dev,1.6" "midje"]
             "deps-all" ["with-profile" "dev,1.4:dev,1.5:dev,1.6" "deps"]})

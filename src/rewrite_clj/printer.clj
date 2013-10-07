@@ -20,8 +20,14 @@
 
 ;; ## Printers
 
+(defmethod print-edn :token 
+  [data] 
+  (let [[_ tk & rst] data]
+    (when (and (keyword? tk) (:namespaced? (first rst)))
+      (print ":"))
+    (pr tk)))
+
 (defmethod print-edn :forms [data] (print-children data))
-(defmethod print-edn :token [data] (pr (second data)))
 (defmethod print-edn :comment [data] (println (second data)))
 (defmethod print-edn :whitespace [data] (print (second data)))
 (defmethod print-edn :newline [data] (print (second data)))
@@ -40,7 +46,6 @@
 (defmethod print-edn :syntax-quote [data] (print-children "`" data))
 (defmethod print-edn :unquote [data] (print-children "~" data))
 (defmethod print-edn :unquote-splicing [data] (print-children "~@" data))
-(defmethod print-edn :namespaced [data] (pr ":") (prn (second data)))
 
 (letfn [(print-line [^String s]
           (let [^String s (pr-str s)]
@@ -96,7 +101,6 @@
 (defmethod estimate-length :syntax-quote [data] (inc (estimate-children-length data)))
 (defmethod estimate-length :unquote [data] (inc (estimate-children-length data)))
 (defmethod estimate-length :unquote-splicing [data] (+ 2 (estimate-children-length data)))
-(defmethod estimate-length :namespaced [data] (inc (count (pr-str (second data)))))
 (defmethod estimate-length :multi-line [data]
   (let [parts (rest data)]
     (+ 2 (count parts) 

@@ -26,7 +26,7 @@
   "\"string\""                 "string")
 
 (fact "about parsing implicitly namespaced keywords"
-    (p/parse-string "::key") => [:namespaced :key])
+    (p/parse-string "::key") => [:token :key {:namespaced? true}])
 
 (tabular
   (fact "about parsing prefixed data"

@@ -140,7 +140,7 @@
   [reader]
   (ignore reader)
   (let [nxt (edn/read reader)]
-    (cond (keyword? nxt) [:namespaced nxt]
+    (cond (keyword? nxt) [:token nxt {:namespaced? true}]
           (symbol? nxt) [:token (keyword nxt)]
           :else (throw-reader "Invalid token(s) following ':' prefix: " nxt))))
 
