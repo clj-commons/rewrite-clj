@@ -20,9 +20,13 @@
   "0.1"                        0.1
   "1N"                         1N
   ":key"                       :key
+  ":ns/key"                    :ns/key
   "sym"                        'sym
   "sym#"                       'sym#
   "\"string\""                 "string")
+
+(fact "about parsing implicitly namespaced keywords"
+    (p/parse-string "::key") => [:namespaced :key])
 
 (tabular
   (fact "about parsing prefixed data"

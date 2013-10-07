@@ -13,7 +13,8 @@
    \( :list      \[ :vector    \{ :map
    \} :unmatched \] :unmatched \) :unmatched
    \~ :unquote   \' :quote     \` :syntax-quote
-   \; :comment   \@ :deref     \" :string})
+   \; :comment   \@ :deref     \" :string
+   \: :keyword})
 
 (defmulti parse-next
   "Parse the next element from the given reader. Dispatch is done using the first
@@ -135,6 +136,14 @@
                       (recur (and (not escape?) (= c \\)) result-type results)))
         (throw-reader reader "Unexpected EOF while reading regular expression.")))))
 
+(defn- parse-keyword 
+  [reader]
+  (ignore reader)
+  (let [nxt (edn/read reader)]
+    (cond (keyword? nxt) [:namespaced nxt]
+          (symbol? nxt) [:token (keyword nxt)]
+          :else (throw-reader "Invalid token(s) following ':' prefix: " nxt))))
+
 ;; ## Register Parsers
 
 (defmethod parse-next nil [reader delim]
@@ -159,3 +168,4 @@
 (defmethod parse-next :quote [reader delim]    (parse-prefixed :quote reader delim))
 (defmethod parse-next :syntax-quote [reader d] (parse-prefixed :syntax-quote reader d))
 (defmethod parse-next :string [reader delim]   (parse-string reader delim)) 
+(defmethod parse-next :keyword [reader delim]  (parse-keyword reader))
