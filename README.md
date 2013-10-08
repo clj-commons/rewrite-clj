@@ -12,8 +12,6 @@ sjacket, partly because of the underlying data structure (a [parsely](https://gi
 unnecessary data like parentheses and maintaining values as strings instead of their Clojure pendants), but mostly because of the
 missing documentation. For those with similar experiences: rewrite-clj is for you!
 
-__This project is in flux. Anything may change at any time.__
-
 ## Usage
 
 __Leiningen ([via Clojars](http://clojars.org/rewrite-clj))__
