@@ -142,7 +142,8 @@
   (let [nxt (edn/read reader)]
     (cond (keyword? nxt) [:token nxt {:namespaced? true}]
           (symbol? nxt) [:token (keyword nxt)]
-          :else (throw-reader "Invalid token(s) following ':' prefix: " nxt))))
+          (not (seq? nxt)) [:token (keyword (str nxt))]
+          :else (throw-reader reader "Invalid token(s) following ':' prefix: " nxt))))
 
 ;; ## Register Parsers
 
