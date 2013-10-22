@@ -1,5 +1,13 @@
 ## Changelog
 
+### 0.3.2
+
+- Bugfix: `:1.4` and others threw an exception.
+
+### 0.3.1
+
+- added namespaced keywords.
+
 ### 0.3.0
 
 - added token type `:newline` to handle linebreak characters.
