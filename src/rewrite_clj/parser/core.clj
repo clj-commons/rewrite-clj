@@ -137,13 +137,17 @@
         (throw-reader reader "Unexpected EOF while reading regular expression.")))))
 
 (defn- parse-keyword 
+  "Parse keyword. Produces `:token` result with an optional map containing a
+   `:namespaced?`field for keywords like `::xyz`."
   [reader]
   (ignore reader)
-  (let [nxt (edn/read reader)]
-    (cond (keyword? nxt) [:token nxt {:namespaced? true}]
-          (symbol? nxt) [:token (keyword nxt)]
-          (not (seq? nxt)) [:token (keyword (str nxt))]
-          :else (throw-reader reader "Invalid token(s) following ':' prefix: " nxt))))
+  (if-let [c (r/peek-char reader)]
+    (if (= c \:)
+      [:token (edn/read reader) {:namespaced? true}]
+      (do
+        (r/unread reader \:)
+        [:token (edn/read reader)]))
+    (throw-reader reader "Unexpected EOF while reading keyword.")))
 
 ;; ## Register Parsers
 
