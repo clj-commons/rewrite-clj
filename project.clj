@@ -1,4 +1,4 @@
-(defproject rewrite-clj "0.3.2"
+(defproject rewrite-clj "0.3.3"
   :description "Comment-/Whitespace-preserving rewriting of EDN documents."
   :url "https://github.com/xsc/rewrite-clj"
   :license {:name "Eclipse Public License"
