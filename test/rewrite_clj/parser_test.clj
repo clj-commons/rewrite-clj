@@ -10,7 +10,7 @@
   (p/parse-string-all "   \n   ") 
       => [:forms [:whitespace "   "] [:newline "\n"] [:whitespace "   "]]
   (p/parse-string-all " \t \r\n \t ") 
-      => [:forms [:whitespace " \t "] [:newline "\n\n"] [:whitespace " \t "]])
+      => [:forms [:whitespace " \t "] [:newline "\n"] [:whitespace " \t "]])
 
 (tabular
   (fact "about parsing simple data"
