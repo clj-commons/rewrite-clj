@@ -5,6 +5,7 @@ way. It includes an EDN parser (based on [clojure.tools.reader](https://github.c
 printer, as well as an EDN-aware zipper implementation (based on [fast-zip](https://github.com/akhudek/fast-zip)).
 
 [![Build Status](https://travis-ci.org/xsc/rewrite-clj.png?branch=master)](https://travis-ci.org/xsc/rewrite-clj)
+[![Dependencies Status](http://jarkeeper.com/xsc/rewrite-clj/status.png)](http://jarkeeper.com/xsc/rewrite-clj)
 [![endorse](https://api.coderwall.com/xsc/endorsecount.png)](https://coderwall.com/xsc)
 
 This project is similar to Christophe Grand's [sjacket](https://github.com/cgrand/sjacket). In fact, I found it hard to _use_
