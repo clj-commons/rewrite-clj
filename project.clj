@@ -10,7 +10,8 @@
                  [potemkin "0.3.4"]]
   :profiles {:dev {:dependencies [[midje "1.6.0" :exclusions [joda-time]]
                                   [joda-time "2.3"]]
-                   :plugins [[lein-midje "3.1.3"]]}
+                   :plugins [[lein-midje "3.1.3"]]
+                   :exclusions [org.clojure/clojure]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}}
