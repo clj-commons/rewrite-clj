@@ -18,7 +18,7 @@ missing documentation. For those with similar experiences: rewrite-clj is for yo
 __Leiningen ([via Clojars](http://clojars.org/rewrite-clj))__
 
 ```clojure
-[rewrite-clj "0.3.4"]
+[rewrite-clj "0.3.5"]
 ```
 
 __Parsing Data__
