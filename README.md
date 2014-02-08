@@ -5,7 +5,6 @@ way. It includes an EDN parser (based on [clojure.tools.reader](https://github.c
 printer, as well as an EDN-aware zipper implementation (based on [fast-zip](https://github.com/akhudek/fast-zip)).
 
 [![Build Status](https://travis-ci.org/xsc/rewrite-clj.png?branch=master)](https://travis-ci.org/xsc/rewrite-clj)
-[![Dependencies Status](http://jarkeeper.com/xsc/rewrite-clj/status.png)](http://jarkeeper.com/xsc/rewrite-clj)
 [![endorse](https://api.coderwall.com/xsc/endorsecount.png)](https://coderwall.com/xsc)
 
 This project is similar to Christophe Grand's [sjacket](https://github.com/cgrand/sjacket). In fact, I found it hard to _use_
@@ -31,10 +30,10 @@ contained (`:token`, `:whitespace`, `:comment`, `:list`, ...).
 (require '[rewrite-clj.parser :as p])
 (p/parse-string "(defn my-function [a]\n  (* a 3))")
 ;; =>
-;; [:list 
-;;   [:token defn] [:whitespace " "] [:token my-function] [:whitespace " "] 
-;;   [:vector [:token a]] [:whitespace "\n  "] 
-;;   [:list 
+;; [:list
+;;   [:token defn] [:whitespace " "] [:token my-function] [:whitespace " "]
+;;   [:vector [:token a]] [:whitespace "\n  "]
+;;   [:list
 ;;     [:token *] [:whitespace " "] [:token a] [:whitespace " "] [:token 3]]]
 ```
 
@@ -57,8 +56,8 @@ operations, based on [fast-zip](https://github.com/akhudek/fast-zip).
 
 ```clojure
 (require '[rewrite-clj.zip :as z])
-(def data-string 
-"(defn my-function [a] 
+(def data-string
+"(defn my-function [a]
   ;; a comment
   (* a 3))")
 (def data (z/of-string data-string))
@@ -95,8 +94,8 @@ text with something meaningful:
 ```
 
 Most find operations take an optional movement function as parameter. If you wanted to perform a depth-first search you'd
-use `rewrite-clj.zip/next`, if you wanted to look for something on the same level as the current location, you'd employ 
-`rewrite-clj.zip/right` (the default) or `rewrite-clj.zip/left`. 
+use `rewrite-clj.zip/next`, if you wanted to look for something on the same level as the current location, you'd employ
+`rewrite-clj.zip/right` (the default) or `rewrite-clj.zip/left`.
 
 Now, to enter the project map, you'd look for the symbol `defproject` in a depth-first way:
 
@@ -126,8 +125,8 @@ Replace it, zip up and print the result:
 
 Search functions include:
 
-- `(find zloc [f] p?)`: find the first match for the given predicate by repeatedly applying `f` to the current zipper 
-  location (default movement: `rewrite-clj.zip/right`). This might return `zloc` itself. 
+- `(find zloc [f] p?)`: find the first match for the given predicate by repeatedly applying `f` to the current zipper
+  location (default movement: `rewrite-clj.zip/right`). This might return `zloc` itself.
 - `(find-next zloc [f] p?)`: find the next match for the given predicate by repeatedly applying `f` to the current zipper
   location (default movement: `rewrite-clj.zip/right`). This will not return `zloc` itself.
 - `(find-tag zloc [f] t)`: uses `find` to get the first node with the given tag.
@@ -156,7 +155,7 @@ to the standard seq functions designed to work with zipper nodes containing said
 
 The following functions exist:
 
-- `map`: takes a function to be applied to the zipper nodes of the seq's values, has to return the 
+- `map`: takes a function to be applied to the zipper nodes of the seq's values, has to return the
   modified zipper node. If a `:map` node is supplied, the value nodes will be iterated over. Returns
   the supplied node incorporating all changes.
 - `map-keys`: Iterate over the key nodes of a `:map` node.
