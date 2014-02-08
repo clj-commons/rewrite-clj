@@ -139,3 +139,13 @@
            [:token 'def] [:whitespace " "]
            [:token 'pi] [:whitespace " "]
            [:token 3.14]]])
+
+(fact "about parsing files"
+  (let [f (doto (java.io.File/createTempFile "rewrite.test" "")
+            (.deleteOnExit))
+        s "âbcdé"
+        c ";; Hi"
+        o (str c "\n" (pr-str s))]
+    (spit f o) => anything
+    (slurp f) => o
+    (p/parse-file-all f) => [:forms [:comment c] [:token s]]))
