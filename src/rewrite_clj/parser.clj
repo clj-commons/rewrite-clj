@@ -2,7 +2,8 @@
   rewrite-clj.parser
   (:require [clojure.tools.reader.reader-types :as r]
             [clojure.java.io :as io :only [input-stream file]]
-            [rewrite-clj.parser.core :as p :only [parse-next]]))
+            [rewrite-clj.parser.core :as p :only [parse-next]])
+  (:import [java.io PushbackReader]))
 
 ;; ## Readers
 
@@ -14,9 +15,10 @@
 (defn file-reader
   "Create reader for files."
   [f]
-  (r/indexing-push-back-reader
-    (r/input-stream-push-back-reader 
-      (io/input-stream (io/file f)))))
+  (-> (io/file f)
+      (io/reader)
+      (PushbackReader.)
+      (r/indexing-push-back-reader)))
 
 ;; ## Parse Wrapper
 
