@@ -1,7 +1,7 @@
-(ns ^{ :doc "Zipper Utilities for EDN Trees." 
-       :author "Yannick Scherer" } 
+(ns ^{ :doc "Zipper Utilities for EDN Trees."
+       :author "Yannick Scherer" }
   rewrite-clj.zip
-  (:refer-clojure :exclude [replace next remove find 
+  (:refer-clojure :exclude [replace next remove find
                             map get assoc
                             seq? vector? list? map? set?
                             print])
@@ -20,13 +20,13 @@
 ;; ## Import
 
 (import-vars
-  [fast-zip.core 
+  [fast-zip.core
    node root]
 
-  [rewrite-clj.zip.core 
+  [rewrite-clj.zip.core
 
    edn tag value length sexpr
-   whitespace? linebreak? 
+   whitespace? linebreak?
    leftmost? rightmost?
    skip-whitespace skip-whitespace-left
    prepend-space append-space
@@ -36,32 +36,32 @@
    subedit-> subedit->>]
 
   [rewrite-clj.zip.move
-   
+
    left right up down prev next
    leftmost rightmost]
-  
+
   [rewrite-clj.zip.find
-   
+
    find find-next
    find-tag find-next-tag
    find-value find-next-value
    find-token find-next-token]
 
   [rewrite-clj.zip.edit
-   
+
    insert-right insert-left
    insert-child append-child
-   replace edit remove 
+   replace edit remove
    splice splice-or-remove
    prefix suffix]
 
   [rewrite-clj.zip.seqs
-   
+
    seq? map? vector? list? set?
    map map-keys get assoc]
 
   [rewrite-clj.zip.walk
-   
+
    prewalk])
 
 ;; ## Base Operations

@@ -20,8 +20,8 @@
 
 ;; ## Printers
 
-(defmethod print-edn :token 
-  [data] 
+(defmethod print-edn :token
+  [data]
   (let [[_ tk & rst] data]
     (when (and (keyword? tk) (:namespaced? (first rst)))
       (print ":"))
@@ -49,7 +49,7 @@
 
 (letfn [(print-line [^String s]
           (let [^String s (pr-str s)]
-            (print (.substring s 1 (dec (count s))))))] 
+            (print (.substring s 1 (dec (count s))))))]
   (defmethod print-edn :multi-line [data]
     (print "\"")
     (loop [sq (rest data)]
@@ -103,7 +103,7 @@
 (defmethod estimate-length :unquote-splicing [data] (+ 2 (estimate-children-length data)))
 (defmethod estimate-length :multi-line [data]
   (let [parts (rest data)]
-    (+ 2 (count parts) 
+    (+ 2 (count parts)
        (reduce
          (fn [sum p]
            (+ sum (count p))) 0 parts))))

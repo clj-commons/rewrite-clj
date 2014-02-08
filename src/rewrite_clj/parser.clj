@@ -26,7 +26,7 @@
   (p/parse-next reader nil))
 
 (defn parse-all
-  "Parse all forms from reader. Results will be wrapped in `[:forms ...]` if 
+  "Parse all forms from reader. Results will be wrapped in `[:forms ...]` if
    more than one form can be read."
   [reader]
   (let [forms (doall

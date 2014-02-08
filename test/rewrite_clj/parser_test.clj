@@ -7,9 +7,9 @@
 (fact "about parsing whitespace"
   (p/parse-string "   ") => [:whitespace "   "]
   (p/parse-string "   \n   ") => [:whitespace "   "]
-  (p/parse-string-all "   \n   ") 
+  (p/parse-string-all "   \n   ")
       => [:forms [:whitespace "   "] [:newline "\n"] [:whitespace "   "]]
-  (p/parse-string-all " \t \r\n \t ") 
+  (p/parse-string-all " \t \r\n \t ")
       => [:forms [:whitespace " \t "] [:newline "\n"] [:whitespace " \t "]])
 
 (tabular
@@ -49,7 +49,7 @@
       (first r) => :token
       (class (second r)) => java.util.regex.Pattern
       (str (second r)) => ?p))
-  ?s                 ?p 
+  ?s                 ?p
   "#\"regex\""       "regex"
   "#\"regex\\.\""    "regex\\."
   "#\"[reg|k].x\""   "[reg|k].x")
@@ -80,7 +80,7 @@
   "#{} "             :set         0  0
   "{:a 0 :b 1}"      :map         3  4
   "{}"               :map         0  0
-  "{ }"              :map         1  0 
+  "{ }"              :map         1  0
   "{} "              :map         0  0)
 
 (tabular
@@ -107,7 +107,7 @@
   "#=(+ 1 2)"                :eval            :list         1
   "#macro 1"                 :reader-macro    :token        3)
 
-(tabular 
+(tabular
   (fact "about parsing exceptions"
     (p/parse-string ?s) => (throws Exception ?p))
   ?s                      ?p
@@ -127,10 +127,10 @@
   "#macro"                #".*expects two values.*")
 
 (fact "about parsing multiple forms"
-  (p/parse-string-all "1 2 3") 
-      => [:forms 
-          [:token 1] [:whitespace " "] 
-          [:token 2] [:whitespace " "] 
+  (p/parse-string-all "1 2 3")
+      => [:forms
+          [:token 1] [:whitespace " "]
+          [:token 2] [:whitespace " "]
           [:token 3]]
   (p/parse-string-all ";; Hi!\n(def pi 3.14)")
       => [:forms
