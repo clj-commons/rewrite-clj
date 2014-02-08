@@ -1,5 +1,23 @@
 ## Changelog
 
+### 0.3.6
+
+- upgrade dependencies.
+- fix file parser (UTF-8 characters were not parsed correctly, see #24@xsc/lein-ancient).
+
+### 0.3.5
+
+- upgrade dependencies.
+- cleanup dependency chain.
+
+### 0.3.4
+
+- upgrade dependencies.
+
+### 0.3.3
+
+- Bugfix: parsing of a variety of keywords threw an exception.
+
 ### 0.3.2
 
 - Bugfix: `:1.4` and others threw an exception.
