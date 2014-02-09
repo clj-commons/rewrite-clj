@@ -1,4 +1,4 @@
-(ns ^{ :doc "Base Operations for Zipper" 
+(ns ^{ :doc "Base Operations for Zipper"
        :author "Yannick Scherer" }
   rewrite-clj.zip.core
   (:require [fast-zip.core :as z]
@@ -23,7 +23,7 @@
 
 (def edn
   "Create zipper over rewrite-clj's EDN tree structure. The returned zipper location will
-   be the first non-whitespace node _inside_ a top-level `:forms` node. If the given tree 
+   be the first non-whitespace node _inside_ a top-level `:forms` node. If the given tree
    is not a `:forms` node, it will be wrapped in one."
   (fn [tree]
     (skip-whitespace
@@ -160,7 +160,7 @@
       path)))
 
 (defn edit-node
-  "Apply given function to the given zipper location. Afterwards move the resulting 
+  "Apply given function to the given zipper location. Afterwards move the resulting
    zipper to the same location as the original one."
   [zloc f]
   (if-let [eloc (f zloc)]
@@ -179,7 +179,7 @@
 
 (defmacro edit->
   "Will pass arguments to `->`. Return value will be the state of the input node
-   after all modifications have been performed. This means that the result is 
+   after all modifications have been performed. This means that the result is
    automatically 'zipped up' to represent the same location the macro was given.
    This only works correctly if insertions/removals are limited to nodes below or right
    of the input node (modification can occur anywhere)."
@@ -189,7 +189,7 @@
 
 (defmacro edit->>
   "Will pass arguments to `->>`. Return value will be the state of the input node
-   after all modifications have been performed. This means that the result is 
+   after all modifications have been performed. This means that the result is
    automatically 'zipped up' to represent the same location the macro was given.
    This only works correctly if insertions/removals are limited to nodes below or right
    of the input node (modification can occur anywhere)."
