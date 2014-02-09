@@ -19,7 +19,7 @@
 (defmulti parse-next
   "Parse the next element from the given reader. Dispatch is done using the first
    available character. If the given delimiter is reached, nil shall be returned."
-  (fn [reader delimiter] 
+  (fn [reader delimiter]
     (when-let [c (r/peek-char reader)]
       (cond (whitespace? c) :whitespace
             (= c delimiter) :matched
@@ -29,7 +29,7 @@
 (defn- parse-prefixed
   "Ignore the first available char and parse the next token of the given type."
   [type reader delim]
-  (let [p (r/read-char reader)] 
+  (let [p (r/read-char reader)]
     (if-let [t (parse-next reader delim)]
     (token type t)
     (throw-reader reader "'" type "' expects a value following the prefix '\\" p "'."))))
@@ -38,11 +38,11 @@
   "Parse until the given delimiter is reached."
   [type delim reader]
   (ignore reader)
-  (apply token 
-    type 
+  (apply token
+    type
     (doall
-      (take-while 
-        (complement nil?) 
+      (take-while
+        (complement nil?)
         (repeatedly #(parse-next reader delim))))))
 
 (defn- parse-whitespace
@@ -51,7 +51,7 @@
   [reader]
   (let [c (r/read-char reader)
         [t p?] (if (linebreak? c) [:newline linebreak?] [:whitespace space?])]
-    (token t 
+    (token t
            (loop [r [c]]
              (if-not (p? (r/peek-char reader))
                (apply str r)
@@ -77,9 +77,9 @@
   (let [buf (StringBuffer.)]
     (loop [escape? false]
       (if-let [c (r/read-char reader)]
-        (if (and (not escape?) (= c \")) 
+        (if (and (not escape?) (= c \"))
           (token :token (re-pattern (.toString buf)))
-          (do 
+          (do
             (.append buf c)
             (recur (and (not escape?) (= c \\)))))
         (throw-reader reader "Unexpected EOF while reading regular expression.")))))
@@ -131,12 +131,12 @@
               (= c \newline) (let [s (.toString buf)]
                                (.setLength buf 0)
                                (recur escape? :multi-line (conj results s)))
-              :else (do 
+              :else (do
                       (.append buf c)
                       (recur (and (not escape?) (= c \\)) result-type results)))
         (throw-reader reader "Unexpected EOF while reading regular expression.")))))
 
-(defn- parse-keyword 
+(defn- parse-keyword
   "Parse keyword. Produces `:token` result with an optional map containing a
    `:namespaced?`field for keywords like `::xyz`."
   [reader]
@@ -156,7 +156,7 @@
     (throw-reader reader "Cannot parse value starting with '" c  "'.")
     (when delim (throw-reader reader "Unexpected EOF (expected '" delim "')"))))
 
-(defmethod parse-next :unmatched [reader _]   
+(defmethod parse-next :unmatched [reader _]
   (throw-reader reader "Unmatched delimiter '" (r/peek-char reader) "'."))
 
 (defmethod parse-next :token [reader _]        (read-next :token edn/read reader))
@@ -169,8 +169,8 @@
 (defmethod parse-next :vector [reader _]       (parse-delimited :vector \] reader) )
 (defmethod parse-next :map [reader _]          (parse-delimited :map \} reader) )
 (defmethod parse-next :sharp [reader delim]    (parse-reader-macro reader delim))
-(defmethod parse-next :unquote [reader delim]  (parse-unquote reader delim)) 
+(defmethod parse-next :unquote [reader delim]  (parse-unquote reader delim))
 (defmethod parse-next :quote [reader delim]    (parse-prefixed :quote reader delim))
 (defmethod parse-next :syntax-quote [reader d] (parse-prefixed :syntax-quote reader d))
-(defmethod parse-next :string [reader delim]   (parse-string reader delim)) 
+(defmethod parse-next :string [reader delim]   (parse-string reader delim))
 (defmethod parse-next :keyword [reader delim]  (parse-keyword reader))
