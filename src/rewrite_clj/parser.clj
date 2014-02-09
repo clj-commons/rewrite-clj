@@ -17,7 +17,7 @@
   [f]
   (-> (io/file f)
       (io/reader)
-      (PushbackReader.)
+      (PushbackReader. 2)
       (r/indexing-push-back-reader)))
 
 ;; ## Parse Wrapper
