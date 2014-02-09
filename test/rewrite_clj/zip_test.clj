@@ -49,7 +49,7 @@
     (z/node loc) => [:token :go]
     (-> loc fz/right fz/node) => [:whitespace " "]
     (-> loc z/right z/node) => [:token 'defproject])
-  
+
   (let [loc (-> root (fz/append-child [:token :go]) fz/down fz/rightmost)]
     (fz/node loc) => [:token :go]
     (-> loc fz/left fz/node first) => :map)
@@ -57,7 +57,7 @@
     (z/node loc) => [:token :go]
     (-> loc fz/left fz/node) => [:whitespace " "]
     (-> loc z/left z/node first) => :map)
-  
+
   (let [loc (-> root fz/down (fz/insert-right [:token :go]) fz/right)]
     (fz/node loc) => [:token :go]
     (-> loc fz/left fz/node) => [:token 'defproject])
@@ -76,33 +76,33 @@
 
 (fact "about zipper modification"
   (let [root (z/of-string "[1\n 2\n 3]")]
-    (z/node root) 
-      => [:vector 
-          [:token 1] 
-          [:newline "\n"] [:whitespace " "] [:token 2] 
+    (z/node root)
+      => [:vector
+          [:token 1]
+          [:newline "\n"] [:whitespace " "] [:token 2]
           [:newline "\n"] [:whitespace " "] [:token 3]]
     (z/root root)
       => [:forms
-          [:vector 
-           [:token 1] 
-           [:newline "\n"] [:whitespace " "] [:token 2] 
+          [:vector
+           [:token 1]
+           [:newline "\n"] [:whitespace " "] [:token 2]
            [:newline "\n"] [:whitespace " "] [:token 3]]]
-    (-> root z/down z/remove z/root) 
+    (-> root z/down z/remove z/root)
       => [:forms
-          [:vector 
-           [:token 2] 
+          [:vector
+           [:token 2]
            [:newline "\n"] [:whitespace " "] [:token 3]]]
     (-> root z/down z/right (z/replace 5) z/root)
       => [:forms
-          [:vector 
-           [:token 1] 
-           [:newline "\n"] [:whitespace " "] [:token 5] 
+          [:vector
+           [:token 1]
+           [:newline "\n"] [:whitespace " "] [:token 5]
            [:newline "\n"] [:whitespace " "] [:token 3]]]
     (-> root z/down z/right z/right (z/edit + 5) z/root)
       => [:forms
-          [:vector 
-           [:token 1] 
-           [:newline "\n"] [:whitespace " "] [:token 2] 
+          [:vector
+           [:token 1]
+           [:newline "\n"] [:whitespace " "] [:token 2]
            [:newline "\n"] [:whitespace " "] [:token 8]]]))
 
 (fact "about node removal (including trailing/preceding whitespace if necessary)"
@@ -115,7 +115,7 @@
     (z/sexpr root) => [1 2]
     (let [r0 (-> root z/down z/remove)]
       (z/sexpr r0) => [2]
-      (z/->root-string r0) => "[;;comment\n 2]") 
+      (z/->root-string r0) => "[;;comment\n 2]")
     (let [r0 (-> root z/down z/right z/remove)]
       (z/sexpr (z/up r0)) => [1]
       (z/->root-string r0) => "[1 ;;comment\n]"))
@@ -128,7 +128,7 @@
       (z/sexpr r0) => [[2 3] 4]
       (z/->root-string r0) => "[[2 3] 4]")
     (let [r0 (-> root z/down z/right z/right z/remove*)]
-      (z/->root-string r0) => "[1 [2 3] ]")  
+      (z/->root-string r0) => "[1 [2 3] ]")
     (let [r0 (-> root z/down z/right z/right z/remove)]
       (z/sexpr r0) => 3
       (z/->root-string r0) => "[1 [2 3]]")))
@@ -145,7 +145,7 @@
     (z/sexpr r0) => [1 [] 4]
     r1 => falsey
     (z/sexpr r2) => 1
-    (z/->root-string r2) => "[1 4]")  
+    (z/->root-string r2) => "[1 4]")
   (let [r0 (z/of-string "[1 [ ] 4]")
         r1 (-> r0 z/down z/right z/splice)
         r2 (-> r0 z/down z/right z/splice-or-remove)]
@@ -248,3 +248,12 @@
         (z/->string v) => "0"
         (z/->string r0) => "4"
         (z/->string r1) => "0"))))
+
+(fact "about creating zippers from files."
+      (let [f (doto (java.io.File/createTempFile "rewrite.test" "")
+                (.deleteOnExit))]
+        (spit f data-string) => anything
+        (slurp f) => data-string
+        (let [loc (z/of-file f)]
+          (first (z/node root)) => :list
+          (first (z/root root)) => :forms)))
