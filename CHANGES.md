@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.3.7
+
+- fix zipper creation from file.
+
 ### 0.3.6
 
 - upgrade dependencies.
