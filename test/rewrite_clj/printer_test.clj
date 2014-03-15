@@ -1,4 +1,4 @@
-(ns ^{:doc "Tests for EDN printer." 
+(ns ^{:doc "Tests for EDN printer."
       :author "Yannick Scherer"}
   rewrite-clj.printer-test
   (:require [midje.sweet :refer :all]
@@ -11,19 +11,41 @@
       (estimate-length tree) => (count ?str)
       (->string tree) => ?str))
   ?str
-  "0"    "0.1"     "1N"
-  ":key" ":ns/key" "::key"
-  "sym"  "sym#"
-  "\"string\""
+  "0"
+  "0.1"
+  "1N"
 
-  "@sym"  "#'sym" "'sym" "~sym"
-  "~@sym" "`sym"  "#=sym"
+  ":key"
+  ":ns/key"
+  "::key"
+
+  "sym"
+  "sym#"
+
+  "\"string\""
+  "\"string\nnewline\""
+  "\"string\n  newline\n  other\""
+
+  "@sym"
+  "#'sym"
+  "'sym"
+  "~sym"
+  "~@sym"
+  "`sym"
+  "#=sym"
 
   "(first form) (second form)"
   "[:complex (list {:map 0})]"
-  "#=(eval this)" "#date s"
 
-  "#\"regex\"" "#\"regex\\.\"" "#\"[reg|k].x\""
+  "#=(eval this)"
+  "#date s"
+  "#(+ 1 2)"
+  "#_abc"
+  "#_(+ 1 2)"
+
+  "#\"regex\""
+  "#\"regex\\.\""
+  "#\"[reg|k].x\""
 
   "^:private s"
   "^{:private true} s"

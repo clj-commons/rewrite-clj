@@ -105,7 +105,9 @@
   "#'a"                      :var             :token        1
   "#(+ % 1)"                 :fn              :token        5
   "#=(+ 1 2)"                :eval            :list         1
-  "#macro 1"                 :reader-macro    :token        3)
+  "#macro 1"                 :reader-macro    :token        3
+  "#_abc"                    :uneval          :token        1
+  "#_(+ 1 2)"                :uneval          :list         1)
 
 (tabular
   (fact "about parsing exceptions"

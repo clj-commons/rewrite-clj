@@ -96,6 +96,7 @@
       \' (parse-prefixed :var reader delim)
       \^ (parse-pair :meta* reader delim)
       \= (parse-prefixed :eval reader delim)
+      \_ (parse-prefixed :uneval reader delim)
       (do (r/unread reader \#) (parse-pair :reader-macro reader delim)))))
 
 (defn- parse-unquote

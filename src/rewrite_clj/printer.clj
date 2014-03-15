@@ -41,6 +41,7 @@
 (defmethod print-edn :map [data] (print-children "{" data "}"))
 (defmethod print-edn :set [data] (print-children "#{" data "}"))
 (defmethod print-edn :eval [data] (print-children "#=" data))
+(defmethod print-edn :uneval [data] (print-children "#_" data))
 (defmethod print-edn :reader-macro [data] (print-children "#" data))
 (defmethod print-edn :quote [data] (print-children "'" data))
 (defmethod print-edn :syntax-quote [data] (print-children "`" data))
