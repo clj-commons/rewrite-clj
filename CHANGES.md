@@ -1,5 +1,10 @@
 ## Changelog
 
+### 0.3.8
+
+- add `:uneval` element type (for `#_form` elements).
+- fix `estimate-length` for multi-line strings.
+
 ### 0.3.7
 
 - fix zipper creation from file.
