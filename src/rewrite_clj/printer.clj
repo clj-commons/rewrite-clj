@@ -104,7 +104,6 @@
 (defmethod estimate-length :unquote-splicing [data] (+ 2 (estimate-children-length data)))
 (defmethod estimate-length :multi-line [data]
   (let [parts (rest data)]
-    (+ 2 (count parts)
-       (reduce
-         (fn [sum p]
-           (+ sum (count p))) 0 parts))))
+    (->> (map count parts)
+         (reduce +)
+         (+ 1 (count parts)))))
