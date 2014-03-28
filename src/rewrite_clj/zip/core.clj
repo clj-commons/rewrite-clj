@@ -13,7 +13,7 @@
   [node]
   (when (clojure.core/vector? node)
     (let [[k & _] node]
-      (contains? #{:forms :list :vector :set :map :meta :meta* :reader-macro} k))))
+      (contains? #{:quote :forms :list :vector :set :map :meta :meta* :reader-macro} k))))
 
 (defn- z-make-node
   [node ch]
