@@ -19,7 +19,7 @@
   [node ch]
   (apply vector (first node) ch))
 
-(def edn* (partial z/zipper z-branch? rest z-make-node))
+(def edn* (partial z/zipper z-branch? next z-make-node))
 
 (def edn
   "Create zipper over rewrite-clj's EDN tree structure. The returned zipper location will
