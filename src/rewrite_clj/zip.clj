@@ -38,7 +38,7 @@
   [rewrite-clj.zip.move
 
    left right up down prev next
-   leftmost rightmost]
+   leftmost rightmost end?]
 
   [rewrite-clj.zip.find
 
