@@ -7,11 +7,11 @@
 
 ;; ### Move
 
-(def right 
+(def right
   "Move right to next non-whitespace/non-comment location."
   (comp skip-whitespace z/right))
 
-(def left 
+(def left
   "Move left to next non-whitespace/non-comment location."
   (comp skip-whitespace-left z/left))
 
@@ -19,22 +19,30 @@
   "Move down to next non-whitespace/non-comment location."
   (comp skip-whitespace z/down))
 
-(def up 
+(def up
   "Move up to next non-whitespace/non-comment location."
   (comp skip-whitespace-left z/up))
 
-(def next
-  "Move to the next non-whitespace/non-comment location in a depth-first manner."
-  (comp skip-whitespace z/next))
+(defn end?
+  "Check whether the given node is at the end of the depth-first traversal."
+  [loc]
+  (or (z/end? loc)
+      (not (skip-whitespace z/next (z/next loc)))))
 
-(def prev 
+(defn next
   "Move to the next non-whitespace/non-comment location in a depth-first manner."
-  (comp skip-whitespace-left z/prev))
+  [loc]
+  (or (->> (z/next loc) (skip-whitespace z/next))
+      loc))
 
-(def leftmost 
+(def prev
+  "Move to the next non-whitespace/non-comment location in a depth-first manner."
+  (comp (partial skip-whitespace z/prev) z/prev))
+
+(def leftmost
   "Move to the leftmost non-whitespace/non-comment location."
   (comp skip-whitespace z/leftmost))
 
-(def rightmost 
+(def rightmost
   "Move to the rightmost non-whitespace/non-comment location."
   (comp skip-whitespace-left z/rightmost))
