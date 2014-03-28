@@ -41,6 +41,16 @@
   (-> root fz/down fz/rightmost fz/next fz/node) => [:whitespace " "]
   (-> root z/down z/rightmost z/next z/node) => [:token "private"])
 
+(fact "about depth-first traversal"
+      (let [loc (z/of-string "(defn func [] (println 1))")
+            dfs (->> (iterate z/next loc) (take 8))]
+        dfs => (has every? truthy)
+        (nth dfs 6) => (nth dfs 7)
+        (nth dfs 6) => z/end?
+        (map z/sexpr dfs) => '[(defn func [] (println 1))
+                               defn func [] (println 1)
+                               println 1 1]))
+
 (fact "about whitespace-aware insert/append"
   (let [loc (-> root (fz/insert-child [:token :go]) fz/down)]
     (fz/node loc) => [:token :go]
