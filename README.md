@@ -4,7 +4,7 @@ __rewrite-clj__ is a library offering mechanisms to easily rewrite Clojure/EDN d
 way. It includes an EDN parser (based on [clojure.tools.reader](https://github.com/clojure/tools.reader)), a corresponding
 printer, as well as an EDN-aware zipper implementation (based on [fast-zip](https://github.com/akhudek/fast-zip)).
 
-[![Build Status](https://travis-ci.org/xsc/rewrite-clj.png?branch=master)](https://travis-ci.org/xsc/rewrite-clj)
+[![Build Status](https://travis-ci.org/xsc/rewrite-clj.svg?branch=master)](https://travis-ci.org/xsc/rewrite-clj)
 [![endorse](https://api.coderwall.com/xsc/endorsecount.png)](https://coderwall.com/xsc)
 
 This project is similar to Christophe Grand's [sjacket](https://github.com/cgrand/sjacket). In fact, I found it hard to _use_
