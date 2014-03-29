@@ -4,7 +4,7 @@
   (:refer-clojure :exclude [find])
   (:require [fast-zip.core :as z]
             [rewrite-clj.zip.core :refer [tag value]]
-            [rewrite-clj.zip.move :refer [right]]))
+            [rewrite-clj.zip.move :as m :refer [right]]))
 
 (defn find
   "Find element satisfying the given predicate by applying the given movement function
@@ -14,7 +14,7 @@
    (->> zloc
      (iterate f)
      (take-while identity)
-     (take-while (complement z/end?))
+     (take-while (complement m/end?))
      (drop-while (complement p?))
      (first))))
 
