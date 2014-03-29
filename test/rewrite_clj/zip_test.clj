@@ -224,6 +224,14 @@
     (->> root (z/map #(z/edit % inc)) z/sexpr) => {:a 2 :b 3}
     (->> root (z/map-keys #(z/edit % name)) z/sexpr) => {"a" 1 "b" 2}))
 
+(fact "about quoted forms"
+      (let [root (z/of-string "'a")]
+        (z/node root) => [:quote [:token 'a]]
+        (z/sexpr root) => '(quote a)
+        (-> root z/next z/node) => [:token 'a]
+        (-> root z/next (z/replace 'b) z/up z/sexpr) => '(quote b)
+        (-> root z/next (z/replace 'b) z/->root-string) => "'b"))
+
 (fact "about edit scope limitation/location memoization"
   (let [root (z/of-string "[0 [1 2 3] 4]")]
     (fact "about subedit->"
