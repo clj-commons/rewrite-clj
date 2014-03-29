@@ -8,7 +8,7 @@
 
 (defn prewalk
   "Perform a depth-first pre-order traversal starting at the given zipper location
-   and apply the given function to each child node. If a predicate `p?` is given, 
+   and apply the given function to each child node. If a predicate `p?` is given,
    only apply the function to nodes matching it."
   ([zloc f] (prewalk zloc (constantly true) f))
   ([zloc p? f]

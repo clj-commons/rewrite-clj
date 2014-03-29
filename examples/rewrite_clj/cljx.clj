@@ -38,7 +38,7 @@
    will be on the first element following it."
   [zloc]
   (let [w (z/length zloc)]
-    (-> zloc 
+    (-> zloc
       (z/prepend-space w)        ;; add space
       z/remove*                  ;; remove original (without removing an extra space)
       z/next)))                  ;; go to following node
@@ -46,7 +46,7 @@
 (defn- remove-reader-macro
   "Remove the macro part of the given reader macro node."
   [zloc]
-  (-> zloc 
+  (-> zloc
     z/down replace-with-spaces   ;; replace the '+...'/'-...' part with spaces
     z/up z/splice                ;; remove the macro wrapper
     z/prepend-space))            ;; insert a space to make up for the missing '#'
