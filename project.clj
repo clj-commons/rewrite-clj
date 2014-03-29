@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :repositories  {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
-  :dependencies [[org.clojure/clojure "1.5.1"]
+  :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/tools.reader "0.8.3"]
                  [fast-zip "0.4.0"]
                  [potemkin "0.3.4"]]
@@ -14,8 +14,7 @@
                    :exclusions [org.clojure/clojure]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
-             :1.6 {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}}
-  :aliases {"midje-all" ["with-profile" "dev,1.4:dev,1.5:dev,1.6" "midje"]
-            "deps-all" ["with-profile" "dev,1.4:dev,1.5:dev,1.6" "deps"]
+             :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}}
+  :aliases {"all" ["with-profile" "dev,1.4:dev,1.5:dev,1.6"]
             "test-ancient" ["with-profile" "dev,1.4:dev,1.5:dev,1.6" "midje"]}
   :pedantic? :abort)

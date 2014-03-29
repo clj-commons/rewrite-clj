@@ -1,8 +1,8 @@
 language: clojure
 lein: lein2
 before_script:
-  - lein2 deps-all
-script: lein2 midje-all
+  - lein2 all deps
+script: lein2 all midje
 jdk:
   - openjdk7
   - openjdk6
