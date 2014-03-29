@@ -20,7 +20,7 @@ __Leiningen ([via Clojars](http://clojars.org/rewrite-clj))__
 [rewrite-clj "0.3.8"]
 ```
 
-__Parsing Data__
+### Parsing Data
 
 The parser relies on [clojure.tools.reader](https://github.com/clojure/tools.reader) when handling simple
 tokens. It generates a structure of nested vectors whose first elements represent the kind of data
@@ -32,12 +32,12 @@ contained (`:token`, `:whitespace`, `:comment`, `:list`, ...).
 ;; =>
 ;; [:list
 ;;   [:token defn] [:whitespace " "] [:token my-function] [:whitespace " "]
-;;   [:vector [:token a]] [:whitespace "\n  "]
+;;   [:vector [:token a]] [:newline "\n"] [:whitespace "  "]
 ;;   [:list
 ;;     [:token *] [:whitespace " "] [:token a] [:whitespace " "] [:token 3]]]
 ```
 
-__Printing Data__
+### Printing Data
 
 The printer incorporates whitespaces and comments in its output.
 
@@ -49,7 +49,7 @@ The printer incorporates whitespaces and comments in its output.
 ;; => nil
 ```
 
-__EDN Zipper__
+### Clojure Zipper
 
 To traverse/modify the generated structure you can use rewrite-clj's whitespace-/comment-/value-aware zipper
 operations, based on [fast-zip](https://github.com/akhudek/fast-zip).
