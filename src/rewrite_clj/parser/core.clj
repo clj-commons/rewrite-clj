@@ -16,7 +16,7 @@
    \; :comment   \@ :deref     \" :string
    \: :keyword})
 
-(defmulti parse-next
+(defmulti -parse-next
   "Parse the next element from the given reader. Dispatch is done using the first
    available character. If the given delimiter is reached, nil shall be returned."
   (fn [reader delimiter]
@@ -25,6 +25,15 @@
             (= c delimiter) :matched
             :else (get parse-table c :token))))
   :default nil)
+
+(defn parse-next [reader delimiter]
+  (let [row (r/get-line-number reader)
+        col (r/get-column-number reader)
+        entry (-parse-next reader delimiter)]
+    (if entry
+      (with-meta
+        entry
+        {:row row :col col}))))
 
 (defn- parse-prefixed
   "Ignore the first available char and parse the next token of the given type."
@@ -152,26 +161,26 @@
 
 ;; ## Register Parsers
 
-(defmethod parse-next nil [reader delim]
+(defmethod -parse-next nil [reader delim]
   (if-let [c (r/peek-char reader)]
     (throw-reader reader "Cannot parse value starting with '" c  "'.")
     (when delim (throw-reader reader "Unexpected EOF (expected '" delim "')"))))
 
-(defmethod parse-next :unmatched [reader _]
+(defmethod -parse-next :unmatched [reader _]
   (throw-reader reader "Unmatched delimiter '" (r/peek-char reader) "'."))
 
-(defmethod parse-next :token [reader _]        (read-next :token edn/read reader))
-(defmethod parse-next :comment [reader _]      (read-next :comment r/read-line reader))
-(defmethod parse-next :matched [reader _]      (ignore reader))
-(defmethod parse-next :deref [reader delim]    (parse-prefixed :deref reader delim))
-(defmethod parse-next :whitespace [reader _]   (parse-whitespace reader))
-(defmethod parse-next :meta [reader delim]     (parse-pair :meta reader delim))
-(defmethod parse-next :list [reader _]         (parse-delimited :list \) reader))
-(defmethod parse-next :vector [reader _]       (parse-delimited :vector \] reader) )
-(defmethod parse-next :map [reader _]          (parse-delimited :map \} reader) )
-(defmethod parse-next :sharp [reader delim]    (parse-reader-macro reader delim))
-(defmethod parse-next :unquote [reader delim]  (parse-unquote reader delim))
-(defmethod parse-next :quote [reader delim]    (parse-prefixed :quote reader delim))
-(defmethod parse-next :syntax-quote [reader d] (parse-prefixed :syntax-quote reader d))
-(defmethod parse-next :string [reader delim]   (parse-string reader delim))
-(defmethod parse-next :keyword [reader delim]  (parse-keyword reader))
+(defmethod -parse-next :token [reader _]        (read-next :token edn/read reader))
+(defmethod -parse-next :comment [reader _]      (read-next :comment r/read-line reader))
+(defmethod -parse-next :matched [reader _]      (ignore reader))
+(defmethod -parse-next :deref [reader delim]    (parse-prefixed :deref reader delim))
+(defmethod -parse-next :whitespace [reader _]   (parse-whitespace reader))
+(defmethod -parse-next :meta [reader delim]     (parse-pair :meta reader delim))
+(defmethod -parse-next :list [reader _]         (parse-delimited :list \) reader))
+(defmethod -parse-next :vector [reader _]       (parse-delimited :vector \] reader) )
+(defmethod -parse-next :map [reader _]          (parse-delimited :map \} reader) )
+(defmethod -parse-next :sharp [reader delim]    (parse-reader-macro reader delim))
+(defmethod -parse-next :unquote [reader delim]  (parse-unquote reader delim))
+(defmethod -parse-next :quote [reader delim]    (parse-prefixed :quote reader delim))
+(defmethod -parse-next :syntax-quote [reader d] (parse-prefixed :syntax-quote reader d))
+(defmethod -parse-next :string [reader delim]   (parse-string reader delim))
+(defmethod -parse-next :keyword [reader delim]  (parse-keyword reader))
