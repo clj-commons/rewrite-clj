@@ -23,17 +23,16 @@
   "Move up to next non-whitespace/non-comment location."
   (comp skip-whitespace-left z/up))
 
-(defn end?
-  "Check whether the given node is at the end of the depth-first traversal."
-  [loc]
-  (or (z/end? loc)
-      (not (skip-whitespace z/next (z/next loc)))))
-
 (defn next
   "Move to the next non-whitespace/non-comment location in a depth-first manner."
   [loc]
   (or (->> (z/next loc) (skip-whitespace z/next))
-      loc))
+      (vary-meta loc assoc ::end? true)))
+
+(defn end?
+  "Check whether the given node is at the end of the depth-first traversal."
+  [loc]
+  (or (z/end? loc) (::end? (meta loc))))
 
 (def prev
   "Move to the next non-whitespace/non-comment location in a depth-first manner."
