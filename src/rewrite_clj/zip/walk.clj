@@ -13,8 +13,10 @@
   ([zloc f] (prewalk zloc (constantly true) f))
   ([zloc p? f]
    (loop [loc zloc]
-     (if-let [n0 (f/find loc m/next p?)]
-       (if-let [n1 (f n0)]
-         (recur (m/next n1))
-         (recur (m/next n0)))
-       (c/move-to-node loc zloc)))))
+     (if (m/end? loc)
+       (c/move-to-node loc zloc)
+       (if (p? loc)
+         (if-let [n (f loc)]
+           (recur (m/next n))
+           (recur (m/next loc)))
+         (recur (m/next loc)))))))
