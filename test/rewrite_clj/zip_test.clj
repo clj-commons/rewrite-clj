@@ -46,7 +46,8 @@
             dfs (->> (iterate z/next loc) (take 8))]
         dfs => (has every? truthy)
         (nth dfs 6) => (nth dfs 7)
-        (nth dfs 6) => z/end?
+        (z/end? (nth dfs 6)) => falsey
+        (z/end? (nth dfs 7)) => truthy
         (map z/sexpr dfs) => '[(defn func [] (println 1))
                                defn func [] (println 1)
                                println 1 1]))
