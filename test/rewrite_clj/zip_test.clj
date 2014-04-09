@@ -4,6 +4,7 @@
   (:require [midje.sweet :refer :all]
             [rewrite-clj.parser :as p]
             [rewrite-clj.zip :as z]
+            [rewrite-clj.zip.walk :as w]
             [fast-zip.core :as fz]))
 
 ;; ## Data
@@ -276,3 +277,29 @@
         (let [loc (z/of-file f)]
           (first (z/node root)) => :list
           (first (z/root root)) => :forms)))
+
+(fact "about zipper tree prewalk."
+      (let [root (z/of-string  "[0 [1 2 3] 4]")]
+        (z/->root-string
+          (z/prewalk root identity)) => "[0 [1 2 3] 4]"
+        (z/->root-string
+          (z/prewalk
+            root
+            (fn [loc]
+              (if (z/vector? loc)
+                loc
+                (z/edit loc inc))))) => "[1 [2 3 4] 5]"
+        (z/->root-string
+          (z/prewalk
+            root
+            (complement z/vector?)
+            #(z/edit % inc))) => "[1 [2 3 4] 5]"
+        (z/->root-string
+          (nth
+            (iterate
+              #(z/prewalk
+                 %
+                 (complement z/vector?)
+                 (fn [loc] (z/edit loc inc)))
+              root)
+            3)) => "[3 [4 5 6] 7]"))
