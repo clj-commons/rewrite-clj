@@ -151,3 +151,23 @@
     (spit f o) => anything
     (slurp f) => o
     (p/parse-file-all f) => [:forms [:comment c] [:token s]]))
+
+(defn- nodes-with-meta
+  "Create map associating row/column number pairs with the node at that position."
+  [data]
+  (if-not (vector? data)
+    {}
+    (let [rs (apply merge (map nodes-with-meta (next data)))]
+      (assoc rs ((juxt :row :col) (meta data)) data))))
+
+(fact "about line/column numbers"
+      (let [positions (->> (p/parse-string-all "(defn f\n  [x]\n  (println x))")
+                           (nodes-with-meta))]
+        (take 2 (positions [1 1])) => [:list [:token 'defn]]
+        (positions [1 2])  => [:token 'defn]
+        (positions [1 7])  => [:token 'f]
+        (positions [2 3])  => [:vector [:token 'x]]
+        (positions [2 4])  => [:token 'x]
+        (positions [3 3])  => [:list [:token 'println] [:whitespace " "] [:token 'x]]
+        (positions [3 4])  => [:token 'println]
+        (positions [3 12]) => [:token 'x]))
