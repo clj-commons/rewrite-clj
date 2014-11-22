@@ -5,11 +5,11 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :repositories  {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/tools.reader "0.8.3"]
-                 [fast-zip "0.4.0"]
-                 [potemkin "0.3.4"]]
+                 [org.clojure/tools.reader "0.8.12"]
+                 [fast-zip "0.5.1"]
+                 [potemkin "0.3.11"]]
   :profiles {:dev {:dependencies [[midje "1.6.3" :exclusions [joda-time]]
-                                  [joda-time "2.3"]]
+                                  [joda-time "2.5"]]
                    :plugins [[lein-midje "3.1.3"]]
                    :exclusions [org.clojure/clojure]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
