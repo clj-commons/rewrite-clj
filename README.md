@@ -16,9 +16,7 @@ missing documentation. For those with similar experiences: rewrite-clj is for yo
 
 __Leiningen ([via Clojars](http://clojars.org/rewrite-clj))__
 
-```clojure
-[rewrite-clj "0.3.9"]
-```
+[![Clojars Project](http://clojars.org/rewrite-clj/latest-version.svg)](http://clojars.org/rewrite-clj)
 
 ### Parsing Data
 
