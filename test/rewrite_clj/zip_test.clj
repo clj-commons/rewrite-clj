@@ -40,7 +40,10 @@
   (-> root z/down z/rightmost z/left z/node) => [:token :repositories]
 
   (-> root fz/down fz/rightmost fz/next fz/node) => [:whitespace " "]
-  (-> root z/down z/rightmost z/next z/node) => [:token "private"])
+  (-> root z/down z/rightmost z/next z/node) => [:token "private"]
+
+  (-> root z/down z/leftmost z/node) => [:token 'defproject]
+  (-> root z/down z/right z/leftmost z/node) => [:token 'defproject])
 
 (fact "about depth-first traversal"
       (let [loc (z/of-string "(defn func [] (println 1))")
