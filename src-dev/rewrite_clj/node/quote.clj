@@ -31,26 +31,26 @@
   [children]
   (node/assert-single-sexpr children)
   (->QuoteNode
-    :quote "'" `quote
+    :quote "'" 'quote
     children))
 
 (defn syntax-quote-node
   [children]
   (node/assert-single-sexpr children)
   (->QuoteNode
-    :syntax-quote "`" `quote
+    :syntax-quote "`" 'quote
     children))
 
 (defn unquote-node
   [children]
   (node/assert-single-sexpr children)
   (->QuoteNode
-    :unquote "~" `unquote
+    :unquote "~" 'unquote
     children))
 
 (defn unquote-splicing-node
   [children]
   (node/assert-single-sexpr children)
   (->QuoteNode
-    :unquote-splicing "~@" `unquote-splicing
+    :unquote-splicing "~@" 'unquote-splicing
     children))

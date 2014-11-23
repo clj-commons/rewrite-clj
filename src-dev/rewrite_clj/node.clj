@@ -1,9 +1,17 @@
 (ns rewrite-clj.node
   (:require [rewrite-clj.node
-             comment integer keyword
-             protocols meta quote
+             comment
+             forms
+             integer
+             keyword
+             meta
+             protocols
+             quote
              reader-macro
-             seq string token uneval
+             seq
+             string
+             token
+             uneval
              whitespace]
             [potemkin :refer [import-vars]]))
 
@@ -21,6 +29,9 @@
 
   [rewrite-clj.node.comment
    comment-node]
+
+  [rewrite-clj.node.forms
+   forms-node]
 
   [rewrite-clj.node.integer
    integer-node]

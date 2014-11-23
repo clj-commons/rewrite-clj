@@ -68,12 +68,13 @@
   [reader]
   (reader/throw-reader
     reader
-    "unmatched delimiter: %s"
+    "Unmatched delimiter: %s"
     (reader/peek reader)))
 
 (defmethod parse-next* :eof
   [reader]
-  (reader/throw-reader reader "unexpected EOF."))
+  (when *delimiter*
+    (reader/throw-reader reader "Unexpected EOF.")))
 
 ;; ### Whitespace
 
@@ -109,10 +110,11 @@
   [reader]
   (reader/ignore reader)
   (case (reader/peek reader)
+    nil (reader/throw-reader reader "Unexpected EOF.")
     \{ (node/set-node (parse-delim reader \}))
     \( (node/fn-node (parse-delim reader \)))
     \" (parse-regex reader)
-    \^ (assoc (parse-next* reader) :tag :meta*)
+    \^ (node/raw-meta-node (parse-printables reader 2 true))
     \' (node/var-node (parse-printables reader 1 true))
     \= (node/eval-node (parse-printables reader 1 true))
     \_ (node/uneval-node (parse-printables reader 1 true))

@@ -11,7 +11,7 @@
   (printable-only? [_] false)
   (sexpr [_]
     (let [[mta data] (node/sexprs children)]
-      (with-meta data mta)))
+      (with-meta data (if (map? mta) mta {mta true}))))
   (string [_]
     (str prefix (node/concat-strings children)))
 

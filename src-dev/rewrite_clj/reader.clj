@@ -25,8 +25,7 @@
   "Check whether a given char is a token boundary."
   (contains?
     #{\" \: \; \' \@ \^ \` \~
-      \( \) \[ \] \{ \} \\ \%
-      \# nil}
+      \( \) \[ \] \{ \} \\ nil}
     c))
 
 (defn whitespace?
@@ -69,16 +68,16 @@
             (str buf)))
         (if eof?
           (str buf)
-          (throw-reader reader "unexpected EOF."))))))
+          (throw-reader reader "Unexpected EOF."))))))
 
 (defn read-until
   "Read until a char fulfills the given condition. Ignores the
    matching char."
   [reader p?]
   (read-while
-   reader
-   (complement p?)
-   (p? nil)))
+    reader
+    (complement p?)
+    (p? nil)))
 
 (defn read-include-linebreak
   "Read until linebreak and include it."
@@ -138,7 +137,11 @@
         (recur
           (if (p? v) (inc c) c)
           (conj vs v))
-        (throw-reader reader "value expected."))
+        (throw-reader
+          reader
+          "expects %d value%s."
+          n
+          (if (= n 1) "" "s")))
       vs)))
 
 ;; ## Reader Types

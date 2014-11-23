@@ -11,7 +11,7 @@
     (if (and namespaced?
              (not (namespace k)))
       (keyword
-        (ns-name *ns*)
+        (name (ns-name *ns*))
         (name k))
       k))
   (string [_]

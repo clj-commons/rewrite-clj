@@ -3,8 +3,9 @@
 
 ;; ## Node
 
-(defrecord ReaderNode [tag prefix sexpr-fn
-                       sexpr-count children]
+(defrecord ReaderNode [tag prefix suffix
+                       sexpr-fn sexpr-count
+                       children]
   node/Node
   (tag [_] tag)
   (printable-only? [_]
@@ -14,7 +15,7 @@
       (sexpr-fn (node/sexprs children))
       (throw (UnsupportedOperationException.))))
   (string [_]
-    (str "#" prefix (node/concat-strings children)))
+    (str "#" prefix (node/concat-strings children) suffix))
 
   node/InnerNode
   (inner? [_]
@@ -22,7 +23,8 @@
   (children [_]
     children)
   (replace-children [this children']
-    (node/assert-sexpr-count children' sexpr-count)
+    (when sexpr-count
+      (node/assert-sexpr-count children' sexpr-count))
     (assoc this :children children'))
 
   Object
@@ -80,29 +82,32 @@
 ;; ## Constructors
 
 (defn- ->node
-  [tag prefix sexpr-fn sexpr-count children]
-  (node/assert-sexpr-count children sexpr-count)
+  [tag prefix suffix sexpr-fn sexpr-count children]
+  (when sexpr-count
+    (node/assert-sexpr-count children sexpr-count))
   (->ReaderNode
-    tag prefix sexpr-fn sexpr-count children))
+    tag prefix suffix
+    sexpr-fn sexpr-count
+    children))
 
 (defn var-node
   [children]
-  (->node :var "'" #(list* 'var %) 1 children))
+  (->node :var "'" "" #(list* 'var %) 1 children))
 
 (defn fn-node
-  [child]
-  (->node :fn "" nil 1 [child]))
+  [children]
+  (->node :fn "(" ")" nil nil children))
 
 (defn eval-node
   [children]
   (->node
-    :eval "="
-    #(list 'eval (list 'quote %))
+    :eval "=" ""
+    #(list 'eval (list* 'quote %))
     1 children))
 
 (defn uneval-node
   [children]
-  (->node :uneval "_" nil 1 children))
+  (->node :uneval "_" "" nil 1 children))
 
 (defn reader-macro-node
   [children]
