@@ -6,7 +6,7 @@
   :repositories  {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/tools.reader "0.8.12"]
-                 [fast-zip "0.5.1"]
+                 [fast-zip "0.5.2"]
                  [potemkin "0.3.11"]]
   :profiles {:dev {:dependencies [[midje "1.6.3" :exclusions [joda-time]]
                                   [joda-time "2.5"]]
