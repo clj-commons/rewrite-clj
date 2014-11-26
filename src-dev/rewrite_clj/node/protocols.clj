@@ -55,6 +55,12 @@
   (replace-children [_ _]
     (throw (UnsupportedOperationException.))))
 
+;; ## Coerceable
+
+(defprotocol+ NodeCoerceable
+  "Protocol for values that can be coerced to nodes."
+  (coerce [_]))
+
 ;; ## Print Helper
 
 (defn node->string

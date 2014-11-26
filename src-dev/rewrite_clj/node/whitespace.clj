@@ -84,3 +84,8 @@
   (defn line-separated
     [nodes]
     (butlast (interleave nodes (repeat nl)))))
+
+(let [space (whitespace-node " ")]
+  (defn space-separated
+    [nodes]
+    (butlast (interleave nodes (repeat space)))))

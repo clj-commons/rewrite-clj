@@ -36,7 +36,7 @@
 (defn list-node
   "Create a node representing an EDN list."
   [children]
-  (->SeqNode :list "(%s)" #(concat '() %) children))
+  (->SeqNode :list "(%s)" #(apply list %) children))
 
 (defn vector-node
   "Create a node representing an EDN vector."
