@@ -25,3 +25,8 @@
   [s]
   {:pre [(re-matches #"[^\r\n]+[\r\n]?" s)]}
   (->CommentNode s))
+
+(defn comment?
+  "Check whether a node represents a comment."
+  [node]
+  (= (node/tag node) :comment))

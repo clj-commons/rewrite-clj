@@ -15,8 +15,11 @@
              whitespace]
             [potemkin :refer [import-vars]]))
 
+;; ## API Facade
+
 (import-vars
   [rewrite-clj.node.protocols
+   coerce
    children
    concat-strings
    inner?
@@ -28,7 +31,8 @@
    tag]
 
   [rewrite-clj.node.comment
-   comment-node]
+   comment-node
+   comment?]
 
   [rewrite-clj.node.forms
    forms-node]
@@ -75,7 +79,17 @@
   [rewrite-clj.node.whitespace
    comma-separated
    line-separated
+   linebreak?
    newlines
    newline-node
    spaces
-   whitespace-node])
+   whitespace-node
+   whitespace?])
+
+;; ## Predicates
+
+(defn whitespace-or-comment?
+  "Check whether the given node represents whitespace or comment."
+  [node]
+  (or (whitespace? node)
+      (comment? node)))

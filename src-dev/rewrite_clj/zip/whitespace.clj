@@ -1,0 +1,62 @@
+(ns rewrite-clj.zip.whitespace
+  (:require [rewrite-clj.node :as node]
+            [fast-zip.core :as z]))
+
+;; ## Predicates
+
+(def whitespace?
+  (comp node/whitespace? z/node))
+
+(def linebreak?
+  (comp node/linebreak? z/node))
+
+(def whitespace-or-comment?
+  (comp node/whitespace-or-comment? z/node))
+
+;; ## Movement
+
+(defn skip
+  "Perform the given movement while the given predicate returns true."
+  [f p? zloc]
+  (->> (iterate f zloc)
+       (take-while identity)
+       (take-while (complement z/end?))
+       (drop-while p?)
+       (first)))
+
+(defn skip-whitespace
+  "Perform the given movement (default: `z/right`) until a non-whitespace/
+   non-comment node is encountered."
+  ([zloc] (skip-whitespace z/right zloc))
+  ([f zloc] (skip f whitespace-or-comment? zloc)))
+
+(defn skip-whitespace-left
+  "Move left until a non-whitespace/non-comment node is encountered."
+  [zloc]
+  (skip-whitespace z/left zloc))
+
+;; ## Insertion
+
+(defn prepend-space
+  "Prepend a whitespace node representing the given number of spaces (default: 1)."
+  ([zloc] (prepend-space zloc 1))
+  ([zloc n]
+   (z/insert-left zloc (node/spaces n))))
+
+(defn append-space
+  "Append a whitespace node representing the given number of spaces (default: 1)."
+  ([zloc] (append-space zloc 1))
+  ([zloc n]
+   (z/insert-right zloc (node/spaces n))))
+
+(defn prepend-newline
+  "Prepend a whitespace node representing the given number of spaces (default: 1)."
+  ([zloc] (prepend-newline zloc 1))
+  ([zloc n]
+   (z/insert-left zloc (node/newlines n))))
+
+(defn append-newline
+  "Append a whitespace node representing the given number of spaces (default: 1)."
+  ([zloc] (append-newline zloc 1))
+  ([zloc n]
+   (z/insert-right zloc (node/newlines n))))

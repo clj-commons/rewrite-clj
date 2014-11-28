@@ -89,3 +89,18 @@
   (defn space-separated
     [nodes]
     (butlast (interleave nodes (repeat space)))))
+
+;; ## Predicates
+
+(defn whitespace?
+  "Check whether a node represents whitespace."
+  [node]
+  (contains?
+    #{:whitespace
+      :newline}
+    (node/tag node)))
+
+(defn linebreak?
+  "Check whether a ndoe represents linebreaks."
+  [node]
+  (= (node/tag node) :newline))
