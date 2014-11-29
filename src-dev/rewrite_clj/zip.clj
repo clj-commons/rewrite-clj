@@ -4,8 +4,11 @@
                             print map get assoc])
   (:require [rewrite-clj.zip
              [base :as base]
+             [edit :as edit]
              [find :as find]
+             [insert :as insert]
              [move :as move]
+             [remove :as remove]
              [whitespace :as ws]]
             [rewrite-clj
              [parser :as p]
@@ -25,16 +28,26 @@
    string root-string
    print print-root]
 
+  [rewrite-clj.zip.edit
+   replace edit splice]
+
   [rewrite-clj.zip.find
    find find-next
    find-tag find-next-tag
    find-value find-next-value
    find-token find-next-token]
 
+  [rewrite-clj.zip.insert
+   insert-right insert-left
+   insert-child append-child]
+
   [rewrite-clj.zip.move
    left right up down prev next
    leftmost rightmost
    leftmost? rightmost? end?]
+
+  [rewrite-clj.zip.remove
+   remove]
 
   [rewrite-clj.zip.whitespace
    whitespace? linebreak?
