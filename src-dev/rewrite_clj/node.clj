@@ -1,5 +1,6 @@
 (ns rewrite-clj.node
   (:require [rewrite-clj.node
+             coerce
              comment
              forms
              integer
