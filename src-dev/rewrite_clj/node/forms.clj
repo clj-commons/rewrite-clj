@@ -10,7 +10,10 @@
   (printable-only? [_]
     false)
   (sexpr [_]
-    (list* 'do (node/sexprs children)))
+    (let [es (node/sexprs children)]
+      (if (next es)
+        (list* 'do es)
+        (first es))))
   (string [_]
     (node/concat-strings children))
 
