@@ -9,6 +9,7 @@
              [insert :as insert]
              [move :as move]
              [remove :as remove]
+             [subedit :as subedit]
              [whitespace :as ws]]
             [rewrite-clj
              [parser :as p]
@@ -48,6 +49,10 @@
 
   [rewrite-clj.zip.remove
    remove]
+
+  [rewrite-clj.zip.subedit
+   edit-node edit-> edit->>
+   subedit-node subedit-> subedit->>]
 
   [rewrite-clj.zip.whitespace
    whitespace? linebreak?
