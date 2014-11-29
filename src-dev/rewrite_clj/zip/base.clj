@@ -1,5 +1,8 @@
 (ns rewrite-clj.zip.base
-  (:require [rewrite-clj.node :as node]
+  (:refer-clojure :exclude [print])
+  (:require [rewrite-clj
+             [node :as node]
+             [parser :as p]]
             [rewrite-clj.zip.whitespace :as ws]
             [fast-zip.core :as z]))
 
@@ -35,3 +38,47 @@
   "Get sexpr represented by the given node."
   [zloc]
   (some-> zloc z/node node/sexpr))
+
+;; ## Read
+
+(defn of-string
+  "Create zipper from String."
+  [s]
+  (some-> s p/parse-string-all edn))
+
+(defn of-file
+  "Create zipper from File."
+  [f]
+  (some-> f p/parse-file-all edn))
+
+;; ## Write
+
+(defn string
+  "Create string representing the current zipper location."
+  [zloc]
+  (some-> zloc z/node node/string))
+
+(defn root-string
+  "Create string representing the zipped-up zipper."
+  [zloc]
+  (some-> zloc z/root node/string))
+
+(defn- print!
+  [^String s writer]
+  (if writer
+    (.write ^java.io.Writer writer s)
+    (recur s *out*)))
+
+(defn print
+  "Print current zipper location."
+  [zloc & [writer]]
+  (some-> zloc
+          string
+          (print! writer)))
+
+(defn print-root
+  "Zip up and print root node."
+  [zloc & [writer]]
+  (some-> zloc
+          root-string
+          (print! writer)))

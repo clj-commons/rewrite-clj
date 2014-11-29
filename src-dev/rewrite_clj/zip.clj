@@ -20,7 +20,10 @@
    node root]
 
   [rewrite-clj.zip.base
-   edn* edn tag sexpr]
+   edn* edn tag sexpr
+   of-file of-string
+   string root-string
+   print print-root]
 
   [rewrite-clj.zip.find
    find find-next
@@ -54,38 +57,6 @@
 (def replace* z/replace)
 (def edit* z/edit)
 (def remove* z/remove)
-
-;; ## Zipper Constructors
-
-(defn of-string
-  "Create zipper from String."
-  [s]
-  (some-> s p/parse-string-all edn))
-
-(defn of-file
-  "Create zipper from File."
-  [f]
-  (some-> f p/parse-file-all edn))
-
-(defn string
-  "Create string representing the current zipper location."
-  [zloc]
-  (some-> zloc z/node node/string))
-
-(defn root-string
-  "Create string representing the zipped-up zipper."
-  [zloc]
-  (some-> zloc z/root node/string))
-
-(defn print
-  "Print current zipper location."
-  [zloc]
-  (some-> zloc string print))
-
-(defn print-root
-  "Zip up and print root node."
-  [zloc]
-  (some-> zloc z/root string print))
 
 ;; ## DEPRECATED
 
