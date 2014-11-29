@@ -47,6 +47,13 @@
   ([zloc f p?]
    (some-> zloc f (find f p?))))
 
+(defn find-next-depth-first
+  "Find node other than the current zipper location matching
+   the given predicate by traversing the zipper in a
+   depth-first way."
+  [zloc p?]
+  (find-next zloc m/next p?))
+
 (defn find-tag
   "Find node with the given tag by repeatedly applying the given
    movement function to the initial zipper location."
@@ -91,7 +98,10 @@
   ([zloc v]
    (find-value zloc m/right v))
   ([zloc f v]
-   (find-token zloc f #(= (base/sexpr %) v))))
+   (let [p? (if (set? v)
+              (comp v base/sexpr)
+              #(= (base/sexpr %) v))]
+     (find-token zloc f p?))))
 
 (defn find-next-value
   "Find token node whose value matches the given one by applying the
@@ -100,4 +110,4 @@
   ([zloc v]
    (find-next-value zloc m/right v))
   ([zloc f v]
-   (find-next-token zloc f #(= (base/sexpr %) v))))
+   (find-value (f zloc) f v)))
