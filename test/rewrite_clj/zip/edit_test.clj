@@ -3,7 +3,8 @@
             [rewrite-clj.zip
              [base :as base]
              [move :as m]
-             [edit :as e]]))
+             [edit :as e]]
+            [rewrite-clj.node :as node]))
 
 (let [root (base/of-string "[1 \"2\" :3]")
       elements (iterate m/next root)]
@@ -50,3 +51,16 @@
   "[1 [;;comment\n3]]"        "[1 ;;comment\n3]"
   "[1 [;;comment\n]]"         "[1 ;;comment\n]"
   "[1 [2\n;;comment\n]]"      "[1 2\n;;comment\n]")
+
+(tabular
+  (fact "about replacement using a hand-crafted node."
+        (let [root (base/of-string "[1 2 3]")]
+          (-> root
+              m/next
+              (e/replace ?node)
+              base/root-string) => ?s))
+  ?node                             ?s
+  (node/token-node 255 "16rff")     "[16rff 2 3]"
+  (node/integer-node 255 16)        "[0xff 2 3]"
+  (node/integer-node 255 8)         "[0377 2 3]"
+  (node/integer-node 9   2)         "[2r1001 2 3]")
