@@ -85,12 +85,17 @@
 
 ;; ## DEPRECATED
 
-(defn ->string
-  "DEPRECATED. Create string from current zipper location."
+(defn ^:deprecated ->string
+  "DEPRECATED. Use `string` instead."
   [zloc]
   (string zloc))
 
-(defn ->root-string
-  "DEPRECATED. Zip up and create string from root node."
+(defn ^:deprecated ->root-string
+  "DEPRECATED. Use `root-string` instead."
   [zloc]
   (root-string zloc))
+
+(defn ^:deprecated value
+  "DEPRECATED. Use `sexpr` instead."
+  [zloc]
+  (sexpr zloc))
