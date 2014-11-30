@@ -31,7 +31,8 @@
    print print-root]
 
   [rewrite-clj.zip.edit
-   replace edit splice]
+   replace edit splice
+   prefix suffix]
 
   [rewrite-clj.zip.find
    find find-next

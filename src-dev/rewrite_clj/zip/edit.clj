@@ -57,3 +57,39 @@
         (or (ws/skip-whitespace loc) loc))
       (r/remove zloc))
     zloc))
+
+;; ## Prefix/Suffix
+
+(defn- edit-token
+  [zloc str-fn]
+  (let [e (base/sexpr zloc)
+        e' (cond (string? e) (str-fn e)
+                 (keyword? e) (keyword (namespace e) (str-fn (name e)))
+                 (symbol? e) (symbol (namespace e) (str-fn (name e))))]
+    (z/replace zloc (node/token-node e'))))
+
+(defn- edit-multi-line
+  [zloc line-fn]
+  (let [n (-> (z/node zloc)
+              (update-in [:lines] (comp line-fn vec)))]
+    (z/replace zloc n)))
+
+(defn prefix
+  [zloc s]
+  (case (base/tag zloc)
+    :token      (edit-token zloc #(str s %))
+    :multi-line (->> (fn [lines]
+                       (if (empty? lines)
+                         [s]
+                         (update-in lines [0] #(str s %))))
+                     (edit-multi-line zloc ))))
+
+(defn suffix
+  [zloc s]
+  (case (base/tag zloc)
+    :token      (edit-token zloc #(str % s))
+    :multi-line (->> (fn [lines]
+                       (if (empty? lines)
+                         [s]
+                         (concat (butlast lines) (str (last lines) s))))
+                     (edit-multi-line zloc))))

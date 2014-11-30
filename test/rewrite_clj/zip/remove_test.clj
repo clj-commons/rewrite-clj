@@ -25,3 +25,12 @@
   "[;; c\n1]"    1    "[;; c\n]"
   "[1\n;; c\n2]" 1    "[;; c\n2]"
   "[1\n;; c\n2]" 2    "[1\n;; c\n]")
+
+(fact "about more whitespace."
+      (let [root (base/of-string
+                   (str "  :k [[a b c]\n"
+                        "      [d e f]]\n"
+                        "  :keyword 0"))]
+        (-> root m/next m/down r/remove base/root-string)
+        => (str "  :k [[d e f]]\n"
+                "  :keyword 0")))
