@@ -9,6 +9,7 @@
              [insert :as insert]
              [move :as move]
              [remove :as remove]
+             [seq :as seq]
              [subedit :as subedit]
              [whitespace :as ws]]
             [rewrite-clj
@@ -49,6 +50,11 @@
 
   [rewrite-clj.zip.remove
    remove]
+
+  [rewrite-clj.zip.seq
+   seq? list? vector? set? map?
+   map map-keys map-vals
+   get assoc]
 
   [rewrite-clj.zip.subedit
    edit-node edit-> edit->>
