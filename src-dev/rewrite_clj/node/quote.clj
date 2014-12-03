@@ -17,7 +17,7 @@
   (children [_] children)
   (replace-children [this children']
     (node/assert-single-sexpr children')
-    (assoc this :children (first children')))
+    (assoc this :children children'))
 
   Object
   (toString [this]

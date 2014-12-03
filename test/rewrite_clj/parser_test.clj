@@ -218,7 +218,7 @@
         children (node/children n)]
     (node/tag n) => :forms
     (node/string n) => s
-    (node/sexpr n) => '(do (def pi 3.14))
+    (node/sexpr n) => '(def pi 3.14)
     (map node/tag children) => [:comment :list]
     (node/string (first children))))
 
@@ -234,7 +234,7 @@
           children (node/children n)]
       (node/tag n) => :forms
       (node/string n) => o
-      (node/sexpr n) => (list 'do s)
+      (node/sexpr n) => s
       (map node/tag children) => [:comment :newline :token]
       (map node/string children) => [";; Hi\n" "\n" (pr-str s)])))
 

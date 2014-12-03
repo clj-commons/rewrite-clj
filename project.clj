@@ -16,5 +16,6 @@
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}}
   :aliases {"all" ["with-profile" "dev,1.5:dev,1.6"]
+            "test" ["midje"]
             "test-ancient" ["with-profile" "dev,1.5:dev,1.6" "midje"]}
   :pedantic? :abort)
