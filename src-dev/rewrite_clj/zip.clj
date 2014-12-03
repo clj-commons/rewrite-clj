@@ -11,6 +11,7 @@
              [remove :as remove]
              [seq :as seq]
              [subedit :as subedit]
+             [walk :as walk]
              [whitespace :as ws]]
             [rewrite-clj
              [parser :as p]
@@ -60,6 +61,9 @@
   [rewrite-clj.zip.subedit
    edit-node edit-> edit->>
    subedit-node subedit-> subedit->>]
+
+  [rewrite-clj.zip.walk
+   prewalk]
 
   [rewrite-clj.zip.whitespace
    whitespace? linebreak?
