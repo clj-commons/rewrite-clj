@@ -8,6 +8,7 @@
   (tag [_] :whitespace)
   (printable-only? [_] true)
   (sexpr [_] (throw (UnsupportedOperationException.)))
+  (length [_] (count whitespace))
   (string [_] whitespace)
 
   Object
@@ -19,6 +20,7 @@
   (tag [_] :newline)
   (printable-only? [_] true)
   (sexpr [_] (throw (UnsupportedOperationException.)))
+  (length [_] (count newlines))
   (string [_] newlines)
 
   Object

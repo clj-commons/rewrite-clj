@@ -39,6 +39,11 @@
   [zloc]
   (some-> zloc z/node node/sexpr))
 
+(defn length
+  "Get length of printable string for the given zipper location."
+  [zloc]
+  (or (some-> zloc z/node node/length) 0))
+
 ;; ## Read
 
 (defn of-string

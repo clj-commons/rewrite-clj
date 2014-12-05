@@ -24,6 +24,7 @@
    children
    concat-strings
    inner?
+   length
    printable-only?
    replace-children
    sexpr

@@ -9,6 +9,8 @@
   (printable-only? [_] false)
   (sexpr [_]
     (list sym (first (node/sexprs children))))
+  (length [_]
+    (+ (count prefix) (node/sum-lengths children)))
   (string [_]
     (str prefix (node/concat-strings children)))
 

@@ -14,6 +14,8 @@
       (if (next es)
         (list* 'do es)
         (first es))))
+  (length [_]
+    (node/sum-lengths children))
   (string [_]
     (node/concat-strings children))
 

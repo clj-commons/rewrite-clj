@@ -8,6 +8,7 @@
   (tag [_] :token)
   (printable-only? [_] false)
   (sexpr [_] value)
+  (length [_] (count string-value))
   (string [_] string-value)
 
   Object

@@ -9,6 +9,8 @@
   (printable-only? [_] true)
   (sexpr [_]
     (throw (UnsupportedOperationException.)))
+  (length [_]
+    (+ 2 (node/sum-lengths children)))
   (string [_]
     (str "#_" (node/concat-strings children)))
 

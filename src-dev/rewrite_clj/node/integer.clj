@@ -8,6 +8,8 @@
   (tag [_] :token)
   (printable-only? [_] false)
   (sexpr [_] value)
+  (length [this]
+    (count (node/string this)))
   (string [_]
     (let [s (.toString (biginteger value) base)
           prefix (case base

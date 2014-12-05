@@ -9,6 +9,8 @@
   (printable-only? [_] true)
   (sexpr [_]
     (throw (UnsupportedOperationException.)))
+  (length [_]
+    (+ 1 (count s)))
   (string [_]
     (str ";" s))
 

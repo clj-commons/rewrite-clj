@@ -5,14 +5,17 @@
 
 (defrecord SeqNode [tag
                     format-string
+                    wrap-length
                     seq-fn
                     children]
   node/Node
   (tag [this]
     tag)
+  (printable-only? [_] false)
   (sexpr [this]
     (seq-fn (node/sexprs children)))
-  (printable-only? [_] false)
+  (length [_]
+    (+ wrap-length (node/sum-lengths children)))
   (string [this]
     (->> (node/concat-strings children)
          (format format-string)))
@@ -36,19 +39,19 @@
 (defn list-node
   "Create a node representing an EDN list."
   [children]
-  (->SeqNode :list "(%s)" #(apply list %) children))
+  (->SeqNode :list "(%s)" 2 #(apply list %) children))
 
 (defn vector-node
   "Create a node representing an EDN vector."
   [children]
-  (->SeqNode :vector "[%s]" vec children))
+  (->SeqNode :vector "[%s]" 2 vec children))
 
 (defn set-node
   "Create a node representing an EDN set."
   [children]
-  (->SeqNode :set "#{%s}" set children))
+  (->SeqNode :set "#{%s}" 3 set children))
 
 (defn map-node
   "Create a node representing an EDN map."
   [children]
-  (->SeqNode :map "{%s}" #(apply hash-map %) children))
+  (->SeqNode :map "{%s}" 2 #(apply hash-map %) children))

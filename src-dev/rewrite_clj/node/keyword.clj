@@ -14,8 +14,10 @@
         (name (ns-name *ns*))
         (name k))
       k))
+  (length [this]
+    (count (node/string this)))
   (string [_]
-    (str (if namespaced?  ":")
+    (str (if namespaced? ":")
          (pr-str k)))
 
   Object

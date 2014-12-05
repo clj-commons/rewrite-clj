@@ -54,3 +54,18 @@
       (base/of-string s)
       (base/of-file f)
       (base/of-file (.getPath f)))))
+
+(tabular
+  (fact "about length calculation."
+        (let [s ?s
+              loc (base/of-string s)]
+          (base/length loc) => (count s)))
+  ?s
+  "0"
+  "^:private x"
+  "[1 2 [3 4] #{5}]"
+  "{:a 0, :b 1}"
+  "#inst \"2014\""
+  "#_(+ 2 3)"
+  "@(deref x)"
+  "#=(+ 1 2)")

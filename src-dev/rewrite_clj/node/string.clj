@@ -26,6 +26,8 @@
       (map
         (comp edn/read-string wrap-string)
         lines)))
+  (length [_]
+    (+ 2 (reduce + (map count lines))))
   (string [_]
     (wrap-string (join-lines lines)))
 

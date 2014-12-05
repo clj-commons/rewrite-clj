@@ -13,6 +13,8 @@
      element.")
   (sexpr [_]
     "Convert node to s-expression.")
+  (length [_]
+    "Get number of characters for the string version of this node.")
   (string [_]
     "Convert node to printable string."))
 
@@ -21,6 +23,7 @@
   (tag [_] :unknown)
   (printable-only? [_] false)
   (sexpr [this] this)
+  (length [this] (count (string this)))
   (string [this] (pr-str this)))
 
 (defn sexprs
@@ -30,6 +33,11 @@
   (->> nodes
        (remove printable-only?)
        (map sexpr)))
+
+(defn sum-lengths
+  "Sum up lengths of the given nodes."
+  [nodes]
+  (reduce + (map length nodes)))
 
 (defn concat-strings
   "Convert nodes to strings and concatenate them."

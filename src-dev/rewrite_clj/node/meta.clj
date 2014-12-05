@@ -14,6 +14,8 @@
       (assert (instance? clojure.lang.IMeta data)
               (str "cannot attach metadata to: " (pr-str data)))
       (with-meta data (if (map? mta) mta {mta true}))))
+  (length [_]
+    (+ (count prefix) (node/sum-lengths children)))
   (string [_]
     (str prefix (node/concat-strings children)))
 

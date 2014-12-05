@@ -14,6 +14,9 @@
     (if sexpr-fn
       (sexpr-fn (node/sexprs children))
       (throw (UnsupportedOperationException.))))
+  (length [_]
+    (-> (node/sum-lengths children)
+        (+ 1 (count prefix) (count suffix))))
   (string [_]
     (str "#" prefix (node/concat-strings children) suffix))
 
@@ -37,6 +40,8 @@
   (printable-only?[_] false)
   (sexpr [this]
     (list 'read-string (node/string this)))
+  (length [_]
+    (inc (node/sum-lengths children)))
   (string [_]
     (str "#" (node/concat-strings children)))
 
@@ -59,6 +64,8 @@
   (printable-only?[_] false)
   (sexpr [this]
     (list* 'deref (node/sexprs children)))
+  (length [_]
+    (inc (node/sum-lengths children)))
   (string [_]
     (str "@" (node/concat-strings children)))
 
