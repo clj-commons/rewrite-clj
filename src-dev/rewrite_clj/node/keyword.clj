@@ -36,4 +36,6 @@
 (defn keyword-node
   [k & [namespaced?]]
   {:pre [(keyword? k)]}
+  (assert (or (not namespaced?) (not (namespace k)))
+          (str "invalid namespaced keyword: :" (pr-str k)))
   (->KeywordNode k namespaced?))
