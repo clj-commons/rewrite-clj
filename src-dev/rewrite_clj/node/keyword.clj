@@ -15,7 +15,12 @@
         (name k))
       k))
   (length [this]
-    (count (node/string this)))
+    (let [c (inc (count (name k)))]
+      (if namespaced?
+        (inc c)
+        (if-let [nspace (namespace k)]
+          (+ 1 c (count nspace))
+          c))))
   (string [_]
     (str (if namespaced? ":")
          (pr-str k)))
