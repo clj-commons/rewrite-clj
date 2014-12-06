@@ -1,7 +1,28 @@
 (ns rewrite-clj.node.whitespace
   (:require [rewrite-clj.node.protocols :as node]))
 
-;; ## Node
+;; ## Newline Modifiers
+
+(def ^:dynamic *newline-fn*
+  "This function is applied to every newline string."
+  identity)
+
+(def ^:dynamic *count-fn*
+  "This function is applied to every newline string and should produce
+   the eventual character count."
+  count)
+
+(defmacro with-newline-fn
+  [f & body]
+  `(binding [*newline-fn* (comp *newline-fn* ~f)]
+     ~@body))
+
+(defmacro with-count-fn
+  [f & body]
+  `(binding [*count-fn* (comp *count-fn* ~f)]
+     ~@body))
+
+;; ## Nodes
 
 (defrecord WhitespaceNode [whitespace]
   node/Node
@@ -20,8 +41,8 @@
   (tag [_] :newline)
   (printable-only? [_] true)
   (sexpr [_] (throw (UnsupportedOperationException.)))
-  (length [_] (count newlines))
-  (string [_] newlines)
+  (length [_] (*count-fn* newlines))
+  (string [_] (*newline-fn* newlines))
 
   Object
   (toString [this]
