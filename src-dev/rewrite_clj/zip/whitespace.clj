@@ -4,14 +4,17 @@
 
 ;; ## Predicates
 
-(def whitespace?
-  (comp node/whitespace? z/node))
+(defn whitespace?
+  [zloc]
+  (some-> zloc z/node node/whitespace?))
 
-(def linebreak?
-  (comp node/linebreak? z/node))
+(defn linebreak?
+  [zloc]
+  (some-> zloc z/node node/linebreak?))
 
-(def whitespace-or-comment?
-  (comp node/whitespace-or-comment? z/node))
+(defn whitespace-or-comment?
+  [zloc]
+  (some-> zloc z/node node/whitespace-or-comment?))
 
 ;; ## Movement
 
