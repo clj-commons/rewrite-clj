@@ -23,7 +23,8 @@
   "Insert item to the right of the current location. Will insert a space if necessary."
   [zloc item]
   (insert
-    z/right z/insert-right
+    z/right
+    z/insert-right
     [space]
     zloc item))
 
@@ -31,7 +32,8 @@
   "Insert item to the right of the left location. Will insert a space if necessary."
   [zloc item]
   (insert
-    z/left z/insert-left
+    z/left
+    z/insert-left
     [space]
     zloc item))
 
@@ -39,7 +41,8 @@
   "Insert item as first child of the current node. Will insert a space if necessary."
   [zloc item]
   (insert
-    z/down z/insert-child
+    z/down
+    z/insert-child
     []
     zloc item))
 
@@ -47,6 +50,7 @@
   "Insert item as last child of the current node. Will insert a space if necessary."
   [zloc item]
   (insert
-    (comp z/rightmost z/down) z/append-child
+    #(some-> % z/down z/rightmost)
+    z/append-child
     []
     zloc item))

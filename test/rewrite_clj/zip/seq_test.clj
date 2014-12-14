@@ -13,12 +13,21 @@
   (fact "about iteration over map keys/values."
         (base/string (sq/map-keys #(e/edit % name) m)) => "{\"a\" 0, \"b\" 1}"
         (base/string (sq/map-vals #(e/edit % inc) m)) => "{:a 1, :b 2}")
-  (fact "about get/assoc."
+  (fact "about get."
         (-> m (sq/get :a) base/sexpr)       => 0
         (-> m (sq/get :b) base/sexpr)       => 1
         (sq/get m :c)                       => nil?
-        (-> v (sq/get 1) base/sexpr)        => 2
-        (-> m (sq/assoc :a 3) base/sexpr)   => {:a 3, :b 1}
-        (-> m (sq/assoc :c 2) base/sexpr)   => {:a 0, :b 1, :c 2}
-        (-> e (sq/assoc :x 0) base/sexpr)   => {:x 0}
-        (-> v (sq/assoc 2 4)  base/sexpr)   => [1 2 4]))
+        (-> v (sq/get 1) base/sexpr)        => 2)
+  (fact "about assoc."
+        (let [m' (sq/assoc m :a 3)]
+          (base/sexpr m') => {:a 3 :b 1}
+          (base/string m') => "{:a 3, :b 1}")
+        (let [m' (sq/assoc m :c 2)]
+          (base/sexpr m') => {:a 0 :b 1, :c 2}
+          (base/string m') => "{:a 0, :b 1 :c 2}")
+        (let [m' (sq/assoc e :x 0)]
+          (base/sexpr m')  => {:x 0}
+          (base/string m') => "{:x 0}")
+        (let [v' (sq/assoc v 2 4)]
+          (base/sexpr v') => [1 2 4]
+          (base/string v') => "[1 2 4]")))

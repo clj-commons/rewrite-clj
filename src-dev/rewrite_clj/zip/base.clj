@@ -13,7 +13,7 @@
   [node]
   (z/zipper
     node/inner?
-    node/children
+    (comp seq node/children)
     node/replace-children
     node))
 

@@ -26,4 +26,4 @@
 
 (fact "about moving into an empty inner node."
       (let [zloc (base/of-string "[]")]
-        (-> zloc m/down m/up) => zloc))
+        (m/down zloc) => nil?))
