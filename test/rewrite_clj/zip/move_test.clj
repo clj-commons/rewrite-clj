@@ -23,3 +23,7 @@
     [m/down m/next m/next m/up m/up]  [1 [2 3] 4] #(and (m/leftmost? %) (m/rightmost? %))
     [m/down m/rightmost m/prev]       3           truthy
     [m/down m/rightmost m/next]       4           m/end?))
+
+(fact "about moving into an empty inner node."
+      (let [zloc (base/of-string "[]")]
+        (-> zloc m/down m/up) => zloc))

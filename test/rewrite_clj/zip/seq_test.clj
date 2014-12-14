@@ -6,7 +6,8 @@
              [seq :as sq]]))
 
 (let [v (base/of-string "[1 2 3]")
-      m (base/of-string "{:a 0, :b 1}")]
+      m (base/of-string "{:a 0, :b 1}")
+      e (base/of-string "{}")]
   (fact "about iteration."
         (base/string (sq/map #(e/edit % inc) v)) => "[2 3 4]")
   (fact "about iteration over map keys/values."
@@ -19,4 +20,5 @@
         (-> v (sq/get 1) base/sexpr)        => 2
         (-> m (sq/assoc :a 3) base/sexpr)   => {:a 3, :b 1}
         (-> m (sq/assoc :c 2) base/sexpr)   => {:a 0, :b 1, :c 2}
+        (-> e (sq/assoc :x 0) base/sexpr)   => {:x 0}
         (-> v (sq/assoc 2 4)  base/sexpr)   => [1 2 4]))
