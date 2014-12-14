@@ -1,5 +1,27 @@
 ## Changelog
 
+### 0.3.12
+
+- fix `assoc` on empty map. (see #16)
+
+### 0.3.11
+
+- drop tests for Clojure 1.4.0.
+- fix behaviour of `leftmost`.
+- upgrade to fast-zip 0.5.2.
+
+### 0.3.10
+
+- fix behaviour of `next` and `end?`.
+- fix prewalk.
+- add row/column metadata.
+
+### 0.3.9
+
+- add `end?`.
+- allow access to children of quoted forms. (see #6)
+- fix children lookup for zipper (return `nil` on missing children). (see #5)
+
 ### 0.3.8
 
 - add `:uneval` element type (for `#_form` elements).
