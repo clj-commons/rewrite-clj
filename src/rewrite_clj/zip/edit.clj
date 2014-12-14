@@ -43,7 +43,8 @@
 (defn append-child
   "Append item as child of the current location. Will insert a space if necessary."
   [zloc item]
-  (let [r (-> zloc z/down z/rightmost)
+  (let [r' (z/down zloc)
+        r (when r' (z/rightmost r'))
         item (conv/->tree item)]
     (if (or (not r) (not (z/node r)) (zc/whitespace? r))
       (-> zloc (z/append-child item))

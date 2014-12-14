@@ -218,6 +218,11 @@
     (-> root (z/assoc 2 5) z/sexpr) => #{1 2 5}
     (-> root (z/assoc 5 8) z/sexpr) => (throws IndexOutOfBoundsException)
     (->> root (z/map #(z/edit % inc)) z/sexpr) => #{2 3 4})
+  (let [root (z/of-string "{}")]
+    root => z/seq?
+    root => z/map?
+    (z/sexpr root) => {}
+    (-> root (z/assoc :a 5) z/sexpr) => {:a 5})
   (let [root (z/of-string "{:a 1 :b 2}")]
     root => z/seq?
     root => z/map?
