@@ -47,9 +47,9 @@
   "Remove the macro part of the given reader macro node."
   [zloc]
   (-> zloc
-    z/down replace-with-spaces   ;; replace the '+...'/'-...' part with spaces
-    z/up z/splice                ;; remove the macro wrapper
-    z/prepend-space))            ;; insert a space to make up for the missing '#'
+      z/splice                   ;; remove the macro wrapper
+      replace-with-spaces        ;; replace the '+...'/'-...' part with spaces
+      z/prepend-space))          ;; insert a space to make up for the missing '#'
 
 (defn- handle-reader-macro
   "Handle a reader macro node by either removing it completely or only the macro part."
