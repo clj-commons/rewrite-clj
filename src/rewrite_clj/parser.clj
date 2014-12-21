@@ -1,63 +1,49 @@
-(ns ^{ :doc "Comment-/Whitespace-preserving EDN parser."}
-  rewrite-clj.parser
-  (:require [clojure.tools.reader.reader-types :as r]
-            [clojure.java.io :as io :only [input-stream file]]
-            [rewrite-clj.parser.core :as p :only [parse-next]])
-  (:import [java.io PushbackReader]))
+(ns rewrite-clj.parser
+  (:require [rewrite-clj.parser.core :as p]
+            [rewrite-clj
+             [node :as node]
+             [reader :as reader]]
+            [clojure.walk :as w]))
 
-;; ## Readers
-
-(defn string-reader
-  "Create reader for strings."
-  [s]
-  (r/indexing-push-back-reader (r/string-push-back-reader s)))
-
-(defn file-reader
-  "Create reader for files."
-  [f]
-  (-> (io/file f)
-      (io/reader)
-      (PushbackReader. 2)
-      (r/indexing-push-back-reader)))
-
-;; ## Parse Wrapper
+;; ## Parser Core
 
 (defn parse
-  "Get next EDN tree from Reader."
+  "Parse next form from the given reader."
   [reader]
-  (p/parse-next reader nil))
+  (p/parse-next reader))
 
 (defn parse-all
-  "Parse all forms from reader. Results will be wrapped in `[:forms ...]` if
-   more than one form can be read."
+  "Parse all forms from the given reader."
   [reader]
-  (let [forms (doall
-                (->> (repeatedly #(p/parse-next reader nil))
-                  (take-while identity)))]
-    (if (> (count forms) 1)
-      (vec (list* :forms forms))
-      (first forms))))
+  (let [nodes (->> (repeatedly #(parse reader))
+                   (take-while identity)
+                   (doall))]
+    (with-meta
+      (node/forms-node nodes)
+      (meta (first nodes)))))
+
+;; ## Specialized Parsers
 
 (defn parse-string
-  "Get first form from String."
+  "Parse first form in the given string."
   [s]
-  (let [r (string-reader s)]
-    (parse r)))
-
-(defn parse-file
-  "Get first form from File."
-  [f]
-  (let [r (file-reader f)]
-    (parse r)))
+  (parse (reader/string-reader s)))
 
 (defn parse-string-all
-  "Get all forms from String."
+  "Parse all forms in the given string."
   [s]
-  (let [r (string-reader s)]
-    (parse-all r)))
+  (parse-all (reader/string-reader s)))
+
+(defn parse-file
+  "Parse first form from the given file."
+  [f]
+  (let [r (reader/file-reader f)]
+    (with-open [_ (.-rdr r)]
+      (parse r))))
 
 (defn parse-file-all
-  "Get all forms from File."
+  "Parse all forms from the given file."
   [f]
-  (let [r (file-reader f)]
-    (parse-all r)))
+  (let [r (reader/file-reader f)]
+    (with-open [_ (.-rdr r)]
+      (parse-all r))))

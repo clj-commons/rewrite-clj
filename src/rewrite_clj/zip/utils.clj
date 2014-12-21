@@ -1,6 +1,4 @@
-(ns ^{ :doc "Utility Operations for Zippers"
-       :author "Yannick Scherer" }
-  rewrite-clj.zip.utils
+(ns rewrite-clj.zip.utils
   (:require [fast-zip.core :as z])
   (:import [fast_zip.core ZipperPath ZipperLocation]))
 

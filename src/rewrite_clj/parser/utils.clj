@@ -1,7 +1,5 @@
-(ns ^{ :doc "Parser Utilities" 
-       :author "Yannick Scherer" }
-  rewrite-clj.parser.utils
-  (:require [clojure.tools.reader.reader-types :as r :only [read-char get-line-number get-column-number]]))
+(ns rewrite-clj.parser.utils
+  (:require [clojure.tools.reader.reader-types :as r]))
 
 (defn whitespace?
   "Check if a given character is a whitespace."
@@ -18,16 +16,6 @@
   [^java.lang.Character c]
   (and (not (linebreak? c)) (whitespace? c)))
 
-(defn token
-  "Create tupel of [type value]."
-  [type & values]
-  (vec (list* type values)))
-
-(defn read-next
-  "Create token of the given type using the given read function."
-  [type parse-fn reader]
-  (token type (parse-fn reader)))
-
 (defn ignore
   "Ignore next character of Reader."
   [reader]
@@ -41,3 +29,12 @@
     (throw
       (Exception.
         (str (apply str msg) " [at line " l ", column " c "]")))))
+
+(defn read-eol
+  [reader]
+  (loop [char-seq []]
+    (if-let [c (r/read-char reader)]
+      (if (linebreak? c)
+        (apply str (conj char-seq c))
+        (recur (conj char-seq c)))
+      (apply str char-seq))))

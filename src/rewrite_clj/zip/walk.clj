@@ -1,10 +1,19 @@
-(ns ^{ :doc "Walk Operations over Zipper"
-       :author "Yannick Scherer" }
-  rewrite-clj.zip.walk
+(ns rewrite-clj.zip.walk
   (:require [fast-zip.core :as z]
-            [rewrite-clj.zip.core :as c :only [subzip]]
-            [rewrite-clj.zip.move :as m :only [next]]
-            [rewrite-clj.zip.find :as f :only [find]]))
+            [rewrite-clj.zip
+             [subedit :refer [subedit-node]]
+             [move :as m]]))
+
+(defn- prewalk-subtree
+  [p? f zloc]
+  (loop [loc zloc]
+    (if (m/end? loc)
+      loc
+      (if (p? loc)
+        (if-let [n (f loc)]
+          (recur (m/next n))
+          (recur (m/next loc)))
+        (recur (m/next loc))))))
 
 (defn prewalk
   "Perform a depth-first pre-order traversal starting at the given zipper location
@@ -12,11 +21,5 @@
    only apply the function to nodes matching it."
   ([zloc f] (prewalk zloc (constantly true) f))
   ([zloc p? f]
-   (loop [loc zloc]
-     (if (m/end? loc)
-       (c/move-to-node loc zloc)
-       (if (p? loc)
-         (if-let [n (f loc)]
-           (recur (m/next n))
-           (recur (m/next loc)))
-         (recur (m/next loc)))))))
+   (->> (partial prewalk-subtree p? f)
+        (subedit-node zloc))))

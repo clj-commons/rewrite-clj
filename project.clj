@@ -8,7 +8,6 @@
                  [org.clojure/tools.reader "0.8.12"]
                  [fast-zip "0.5.2"]
                  [potemkin "0.3.11"]]
-  :source-paths ["src-dev"]
   :profiles {:dev {:dependencies [[midje "1.6.3" :exclusions [joda-time]]
                                   [joda-time "2.5"]]
                    :plugins [[lein-midje "3.1.3"]]

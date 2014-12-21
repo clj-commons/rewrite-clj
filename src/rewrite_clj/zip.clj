@@ -1,68 +1,77 @@
-(ns ^{ :doc "Zipper Utilities for EDN Trees."
-       :author "Yannick Scherer" }
-  rewrite-clj.zip
-  (:refer-clojure :exclude [replace next remove find
-                            map get assoc
-                            seq? vector? list? map? set?
-                            print])
-  (:require [potemkin :refer [import-vars]]
+(ns rewrite-clj.zip
+  (:refer-clojure :exclude [next find replace remove
+                            seq? map? vector? list? set?
+                            print map get assoc])
+  (:require [rewrite-clj.zip
+             [base :as base]
+             [edit :as edit]
+             [find :as find]
+             [insert :as insert]
+             [move :as move]
+             [remove :as remove]
+             [seq :as seq]
+             [subedit :as subedit]
+             [walk :as walk]
+             [whitespace :as ws]]
+            [rewrite-clj
+             [parser :as p]
+             [node :as node]]
             [fast-zip.core :as z]
-            [rewrite-clj.convert :as conv]
-            [rewrite-clj.parser :as p]
-            [rewrite-clj.printer :as prn])
-  (:require rewrite-clj.zip.core
-            rewrite-clj.zip.edit
-            rewrite-clj.zip.move
-            rewrite-clj.zip.find
-            rewrite-clj.zip.seqs
-            rewrite-clj.zip.walk))
+            [potemkin :refer [import-vars]]))
 
-;; ## Import
+;; ## API Facade
 
 (import-vars
   [fast-zip.core
    node root]
 
-  [rewrite-clj.zip.core
+  [rewrite-clj.zip.base
+   edn* edn tag sexpr
+   of-file of-string
+   string root-string
+   print print-root]
 
-   edn tag value length sexpr
-   whitespace? linebreak?
-   leftmost? rightmost?
-   skip-whitespace skip-whitespace-left
-   prepend-space append-space
-   prepend-newline append-newline
-   subzip
-   edit->> edit->
-   subedit-> subedit->>]
-
-  [rewrite-clj.zip.move
-
-   left right up down prev next
-   leftmost rightmost end?]
+  [rewrite-clj.zip.edit
+   replace edit splice
+   prefix suffix]
 
   [rewrite-clj.zip.find
-
    find find-next
    find-tag find-next-tag
    find-value find-next-value
    find-token find-next-token]
 
-  [rewrite-clj.zip.edit
-
+  [rewrite-clj.zip.insert
    insert-right insert-left
-   insert-child append-child
-   replace edit remove
-   splice splice-or-remove
-   prefix suffix]
+   insert-child append-child]
 
-  [rewrite-clj.zip.seqs
+  [rewrite-clj.zip.move
+   left right up down prev next
+   leftmost rightmost
+   leftmost? rightmost? end?]
 
-   seq? map? vector? list? set?
-   map map-keys get assoc]
+  [rewrite-clj.zip.remove
+   remove]
+
+  [rewrite-clj.zip.seq
+   seq? list? vector? set? map?
+   map map-keys map-vals
+   get assoc]
+
+  [rewrite-clj.zip.subedit
+   edit-node edit-> edit->>
+   subedit-node subedit-> subedit->>]
 
   [rewrite-clj.zip.walk
+   prewalk]
 
-   prewalk])
+  [rewrite-clj.zip.whitespace
+   whitespace? linebreak?
+   whitespace-or-comment?
+   skip skip-whitespace
+   skip-whitespace-left
+   prepend-space append-space
+   prepend-newline append-newline])
 
 ;; ## Base Operations
 
@@ -78,36 +87,19 @@
 (def edit* z/edit)
 (def remove* z/remove)
 
-;; ## Convenience Functions
+;; ## DEPRECATED
 
-(defn of-string
-  "Create zipper from String."
-  [s]
-  (when-let [tree (p/parse-string-all s)]
-    (edn tree)))
-
-(defn of-file
-  "Create zipper from File."
-  [f]
-  (when-let [tree (p/parse-file-all f)]
-    (edn tree)))
-
-(defn print
-  "Print current zipper location."
+(defn ^:deprecated ->string
+  "DEPRECATED. Use `string` instead."
   [zloc]
-  (-> zloc z/node prn/print-edn))
+  (string zloc))
 
-(defn print-root
-  "Zip up and print root node."
+(defn ^:deprecated ->root-string
+  "DEPRECATED. Use `root-string` instead."
   [zloc]
-  (-> zloc z/root prn/print-edn))
+  (root-string zloc))
 
-(defn ->string
-  "Create string from current zipper location."
+(defn ^:deprecated value
+  "DEPRECATED. Use `sexpr` instead."
   [zloc]
-  (-> zloc z/node prn/->string))
-
-(defn ->root-string
-  "Zip up and create string from root node."
-  [zloc]
-  (-> zloc z/root prn/->string))
+  (sexpr zloc))
