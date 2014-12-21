@@ -63,6 +63,12 @@
   (replace-children [_ _]
     (throw (UnsupportedOperationException.))))
 
+(defn child-sexprs
+  "Get all child s-expressions for the given node."
+  [node]
+  (if (inner? node)
+    (sexprs (children node))))
+
 ;; ## Coerceable
 
 (defprotocol+ NodeCoerceable

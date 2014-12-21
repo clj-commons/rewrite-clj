@@ -22,6 +22,7 @@
   [rewrite-clj.node.protocols
    coerce
    children
+   child-sexprs
    concat-strings
    inner?
    length
@@ -95,3 +96,16 @@
   [node]
   (or (whitespace? node)
       (comment? node)))
+
+;; ## Value
+
+(defn value
+  "DEPRECATED: Get first child as a pair of tag/sexpr (if inner node),
+   or just the node's own sexpr. (use explicit analysis of `children`
+   `child-sexprs` instead) "
+  [node]
+  (if (inner? node)
+    (some-> (children node)
+            (first)
+            ((juxt tag sexpr)))
+    (sexpr node)))

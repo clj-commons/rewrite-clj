@@ -27,6 +27,7 @@
 
   [rewrite-clj.zip.base
    edn* edn tag sexpr
+   length value
    of-file of-string
    string root-string
    print print-root]
@@ -98,8 +99,3 @@
   "DEPRECATED. Use `root-string` instead."
   [zloc]
   (root-string zloc))
-
-(defn ^:deprecated value
-  "DEPRECATED. Use `sexpr` instead."
-  [zloc]
-  (sexpr zloc))

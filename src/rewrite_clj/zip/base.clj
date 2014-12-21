@@ -39,10 +39,21 @@
   [zloc]
   (some-> zloc z/node node/sexpr))
 
+(defn child-sexprs
+  "Get children as s-expressions."
+  [zloc]
+  (some-> zloc z/node node/child-sexprs))
+
 (defn length
   "Get length of printable string for the given zipper location."
   [zloc]
   (or (some-> zloc z/node node/length) 0))
+
+(defn value
+  "DEPRECATED. Return a tag/s-expression pair for inner nodes, or
+   the s-expression itself for leaves."
+  [zloc]
+  (some-> zloc z/node node/value))
 
 ;; ## Read
 
