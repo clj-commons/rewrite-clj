@@ -79,26 +79,20 @@
 
 (defn node->string
   [node]
-  (str (if (printable-only? node)
-         (pr-str (string node))
-         (string node))
-       (if (inner? node)
-         (->> (children node)
-              (map pr-str)
-              (string/join ", ")
-              (format ", children:[%s]"))
-         "")))
+  (let [n (str (if (printable-only? node)
+                 (pr-str (string node))
+                 (string node)))
+        n' (if (re-find #"\n" n)
+             (->> (string/replace n #"\r?\n" "\n  ")
+                  (format "%n  %s%n"))
+             (str " " n))]
+    (format "<%s:%s>" (name (tag node)) n')))
 
 (defmacro make-printable!
   [class]
   `(defmethod print-method ~class
      [node# w#]
-     (->> (str "<"
-               (name (tag node#))
-               " "
-               (node->string node#)
-               ">")
-          (.write w#))))
+     (.write w# (node->string node#))))
 
 ;; ## Helpers
 
