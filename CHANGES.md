@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.4.1
+
+- fixes infinite loop when trying to read a character.
+
 ### 0.4.0
 
 - __BREAKING__ `rewrite-clj.zip.indent` no longer usable.
