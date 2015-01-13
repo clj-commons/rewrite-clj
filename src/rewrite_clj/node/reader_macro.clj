@@ -1,5 +1,7 @@
 (ns rewrite-clj.node.reader-macro
-  (:require [rewrite-clj.node.protocols :as node]))
+  (:require [rewrite-clj.node
+             [protocols :as node]
+             [whitespace :as ws]]))
 
 ;; ## Node
 
@@ -98,28 +100,48 @@
     children))
 
 (defn var-node
+  "Create node representing a var.
+   Takes either a seq of nodes or a single one."
   [children]
-  (->node :var "'" "" #(list* 'var %) 1 children))
+  (if (sequential? children)
+    (->node :var "'" "" #(list* 'var %) 1 children)
+    (recur [children])))
 
 (defn fn-node
+  "Create node representing an anonymous function."
   [children]
   (->node :fn "(" ")" nil nil children))
 
 (defn eval-node
+  "Create node representing an inline evaluation. (`#=...`)
+   Takes either a seq of nodes or a single one."
   [children]
-  (->node
-    :eval "=" ""
-    #(list 'eval (list* 'quote %))
-    1 children))
+  (if (sequential? children)
+    (->node
+      :eval "=" ""
+      #(list 'eval (list* 'quote %))
+      1 children)
+    (recur [children])))
 
 (defn uneval-node
+  "Create node representing a form ignored by the reader. (`#_...`)
+   Takes either a seq of nodes or a single one."
   [children]
-  (->node :uneval "_" "" nil 1 children))
+  (if (sequential? children)
+    (->node :uneval "_" "" nil 1 children)
+    (recur [children])))
 
 (defn reader-macro-node
-  [children]
-  (->ReaderMacroNode children))
+  "Create node representing a reader macro. (`#... ...`)"
+  ([children]
+   (->ReaderMacroNode children))
+  ([macro-node form-node]
+   (->ReaderMacroNode [macro-node (ws/spaces 1) form-node])))
 
 (defn deref-node
+  "Create node representing the dereferencing of a form. (`@...`)
+   Takes either a seq of nodes or a single one."
   [children]
-  (->DerefNode children))
+  (if (sequential? children)
+    (->DerefNode children)
+    (->DerefNode [children])))
