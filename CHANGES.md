@@ -8,6 +8,8 @@
 - __BREAKING__ moved to a type/protocol based implementation of nodes.
 - fix radix support. (see #13)
 - fix handling of spaces between certain forms. (see #7)
+- add node constructor functions.
+- add `child-sexprs` function.
 
 ### 0.3.12
 
