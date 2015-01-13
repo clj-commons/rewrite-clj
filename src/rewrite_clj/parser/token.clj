@@ -6,8 +6,10 @@
 (defn parse-token
   "Parse a single token."
   [reader]
-  (let [s (r/read-until
-            reader
-            r/whitespace-or-boundary?)
+  (let [s (str
+            (r/next reader)
+            (r/read-until
+              reader
+              r/whitespace-or-boundary?))
         v (r/string->edn s)]
     (node/token-node v s)))
