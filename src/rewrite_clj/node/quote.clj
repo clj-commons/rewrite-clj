@@ -29,30 +29,39 @@
 
 ;; ## Constructors
 
+(defn- ->node
+  [t prefix sym children]
+  (node/assert-single-sexpr children)
+  (->QuoteNode t prefix sym children))
+
 (defn quote-node
   [children]
-  (node/assert-single-sexpr children)
-  (->QuoteNode
-    :quote "'" 'quote
-    children))
+  (if (sequential? children)
+    (->node
+      :quote "'" 'quote
+      children)
+    (recur [children])))
 
 (defn syntax-quote-node
   [children]
-  (node/assert-single-sexpr children)
-  (->QuoteNode
-    :syntax-quote "`" 'quote
-    children))
+  (if (sequential? children)
+    (->node
+      :syntax-quote "`" 'quote
+      children)
+    (recur [children])))
 
 (defn unquote-node
   [children]
-  (node/assert-single-sexpr children)
-  (->QuoteNode
-    :unquote "~" 'unquote
-    children))
+  (if (sequential? children)
+    (->node
+      :unquote "~" 'unquote
+      children)
+    (recur [children])))
 
 (defn unquote-splicing-node
   [children]
-  (node/assert-single-sexpr children)
-  (->QuoteNode
-    :unquote-splicing "~@" 'unquote-splicing
-    children))
+  (if (sequential? children)
+    (->node
+      :unquote-splicing "~@" 'unquote-splicing
+      children)
+    (recur [children])))
