@@ -67,6 +67,8 @@ Alternatively, by hand:
 ;; => <meta: ^:private sym>
 ```
 
+See the [auto-generated documentation](http://xsc.github.io/rewrite-clj/rewrite-clj.node.html) for more information.
+
 ### Clojure Zipper
 
 To traverse/modify the generated structure you can use rewrite-clj's
@@ -98,6 +100,8 @@ whitespace-/comment-/value-aware zipper operations, based on
 `rewrite-clj.zip/edit` and `rewrite-clj.zip/replace` try to facilitate their use
 by transparently coercing between the node's internal representation (`<token: my-function>`)
 and its corresponding s-expression (`my-function`).
+
+See the [auto-generated documentation](http://xsc.github.io/rewrite-clj/rewrite-clj.zip.html) for more information.
 
 ## Sweet Code Traversal
 
