@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.comment
+(ns ^:no-doc rewrite-clj.node.comment
   (:require [rewrite-clj.node.protocols :as node]))
 
 ;; ## Node

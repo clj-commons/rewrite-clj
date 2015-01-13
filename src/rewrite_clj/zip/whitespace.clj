@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.whitespace
+(ns ^:no-doc rewrite-clj.zip.whitespace
   (:require [rewrite-clj.node :as node]
             [fast-zip.core :as z]))
 

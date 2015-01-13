@@ -78,26 +78,38 @@
 
 ;; ## Base Operations
 
-(def right* z/right)
-(def left* z/left)
-(def up* z/up)
-(def down* z/down)
-(def next* z/next)
-(def prev* z/prev)
-(def rightmost* z/rightmost)
-(def leftmost* z/leftmost)
-(def replace* z/replace)
-(def edit* z/edit)
-(def remove* z/remove)
+(defmacro ^:private defbase
+  [sym base]
+  (let [{:keys [arglists]} (meta
+                             (ns-resolve
+                               (symbol (namespace base))
+                               (symbol (name base))))
+        sym (with-meta
+              sym
+              {:doc (format "Directly call '%s' on the given arguments." base)
+               :arglists `(quote ~arglists)})]
+    `(def ~sym ~base)))
+
+(defbase right* fast-zip.core/right)
+(defbase left* fast-zip.core/left)
+(defbase up* fast-zip.core/up)
+(defbase down* fast-zip.core/down)
+(defbase next* fast-zip.core/next)
+(defbase prev* fast-zip.core/prev)
+(defbase rightmost* fast-zip.core/rightmost)
+(defbase leftmost* fast-zip.core/leftmost)
+(defbase replace* fast-zip.core/replace)
+(defbase edit* fast-zip.core/edit)
+(defbase remove* fast-zip.core/remove)
 
 ;; ## DEPRECATED
 
-(defn ^:deprecated ->string
+(defn ^{:deprecated "0.4.0"} ->string
   "DEPRECATED. Use `string` instead."
   [zloc]
   (string zloc))
 
-(defn ^:deprecated ->root-string
+(defn ^{:deprecated "0.4.0"} ->root-string
   "DEPRECATED. Use `root-string` instead."
   [zloc]
   (root-string zloc))

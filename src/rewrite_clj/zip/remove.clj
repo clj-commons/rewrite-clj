@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.remove
+(ns ^:no-doc rewrite-clj.zip.remove
   (:refer-clojure :exclude [remove])
   (:require [rewrite-clj.zip
              [move :as m]
@@ -21,13 +21,13 @@
    node that would have preceded it in a depth-first walk. Will remove whitespace
    appropriately.
 
-     [1  2  3]   => [1  3]
-     [1 2]       => [1]
-     [1 2]       => [2]
-     [1]         => []
-     [  1  ]     => []
-     [1 [2 3] 4] => [1 [2 3]]
-     [1 [2 3] 4] => [[2 3] 4]
+       [1  2  3]   => [1  3]
+       [1 2]       => [1]
+       [1 2]       => [2]
+       [1]         => []
+       [  1  ]     => []
+       [1 [2 3] 4] => [1 [2 3]]
+       [1 [2 3] 4] => [[2 3] 4]
 
    If a node is located rightmost, both preceding and trailing spaces are removed,
    otherwise only trailing spaces are touched. This means that a following element

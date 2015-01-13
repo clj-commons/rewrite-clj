@@ -1,4 +1,4 @@
-(ns rewrite-clj.parser.token
+(ns ^:no-doc rewrite-clj.parser.token
   (:require [rewrite-clj
              [node :as node]
              [reader :as r]]))

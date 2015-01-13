@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.whitespace
+(ns ^:no-doc rewrite-clj.node.whitespace
   (:require [rewrite-clj.node.protocols :as node]))
 
 ;; ## Newline Modifiers
@@ -100,16 +100,19 @@
 
 (let [comma (whitespace-node ", ")]
   (defn comma-separated
+    "Interleave the given seq of nodes with `\", \"` nodes."
     [nodes]
     (butlast (interleave nodes (repeat comma)))))
 
 (let [nl (newline-node "\n")]
   (defn line-separated
+    "Interleave the given seq of nodes with newline nodes."
     [nodes]
     (butlast (interleave nodes (repeat nl)))))
 
 (let [space (whitespace-node " ")]
   (defn space-separated
+    "Interleave the given seq of nodes with `\" \"` nodes."
     [nodes]
     (butlast (interleave nodes (repeat space)))))
 

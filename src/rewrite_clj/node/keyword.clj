@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.keyword
+(ns ^:no-doc rewrite-clj.node.keyword
   (:require [rewrite-clj.node.protocols :as node]))
 
 ;; ## Node
@@ -34,6 +34,9 @@
 ;; ## Constructor
 
 (defn keyword-node
+  "Create node representing a keyword. If `namespaced?` is given as `true`
+   a keyword à la `::x` (i.e. namespaced to the current namespace) is
+   generated."
   [k & [namespaced?]]
   {:pre [(keyword? k)]}
   (assert (or (not namespaced?) (not (namespace k)))

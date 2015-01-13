@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.move
+(ns ^:no-doc rewrite-clj.zip.move
   (:refer-clojure :exclude [next])
   (:require [rewrite-clj.zip.whitespace :as ws]
             [fast-zip.core :as z]))

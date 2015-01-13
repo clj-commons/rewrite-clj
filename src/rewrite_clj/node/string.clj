@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.string
+(ns ^:no-doc rewrite-clj.node.string
   (:require [rewrite-clj.node.protocols :as node]
             [clojure.tools.reader.edn :as edn]
             [clojure.string :as string]))
@@ -40,6 +40,9 @@
 ;; ## Constructors
 
 (defn string-node
+  "Create node representing a string value.
+   Takes either a seq of strings or a single one."
   [lines]
-  {:pre [(every? string? lines)]}
-  (->StringNode lines))
+  (if (string? lines)
+    (->StringNode [lines])
+    (->StringNode lines)))

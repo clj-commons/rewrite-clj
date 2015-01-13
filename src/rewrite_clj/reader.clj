@@ -1,4 +1,4 @@
-(ns rewrite-clj.reader
+(ns ^:no-doc rewrite-clj.reader
   (:refer-clojure :exclude [peek next])
   (:require [clojure.tools.reader
              [edn :as edn]

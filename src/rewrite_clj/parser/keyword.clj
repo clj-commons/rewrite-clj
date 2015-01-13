@@ -1,4 +1,4 @@
-(ns rewrite-clj.parser.keyword
+(ns ^:no-doc rewrite-clj.parser.keyword
   (:require [rewrite-clj.node :as node]
             [rewrite-clj.parser.utils :as u]
             [clojure.tools.reader

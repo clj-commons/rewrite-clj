@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.indent
+(ns ^:no-doc rewrite-clj.node.indent
   (:require [rewrite-clj.node
              [protocols :as node]
              [whitespace :as ws]]

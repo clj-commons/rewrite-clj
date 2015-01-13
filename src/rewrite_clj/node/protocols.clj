@@ -1,4 +1,6 @@
-(ns rewrite-clj.node.protocols
+(ns
+  ^{:added "0.4.0"}
+  rewrite-clj.node.protocols
   (:require [potemkin :refer [defprotocol+]]
             [clojure.string :as string]))
 
@@ -34,12 +36,12 @@
        (remove printable-only?)
        (map sexpr)))
 
-(defn sum-lengths
+(defn ^:no-doc sum-lengths
   "Sum up lengths of the given nodes."
   [nodes]
   (reduce + (map length nodes)))
 
-(defn concat-strings
+(defn ^:no-doc concat-strings
   "Convert nodes to strings and concatenate them."
   [nodes]
   (reduce str (map string nodes)))
@@ -77,7 +79,7 @@
 
 ;; ## Print Helper
 
-(defn node->string
+(defn ^:no-doc node->string
   [node]
   (let [n (str (if (printable-only? node)
                  (pr-str (string node))
@@ -88,7 +90,7 @@
              (str " " n))]
     (format "<%s:%s>" (name (tag node)) n')))
 
-(defmacro make-printable!
+(defmacro ^:no-doc make-printable!
   [class]
   `(defmethod print-method ~class
      [node# w#]
@@ -96,13 +98,13 @@
 
 ;; ## Helpers
 
-(defn assert-sexpr-count
+(defn ^:no-doc assert-sexpr-count
   [nodes c]
   (assert
     (= (count (sexprs nodes)) c)
     (format "can only contain %d non-whitespace form%s."
             c (if (= c 1) "" "s"))))
 
-(defn assert-single-sexpr
+(defn ^:no-doc assert-single-sexpr
   [nodes]
   (assert-sexpr-count nodes 1))

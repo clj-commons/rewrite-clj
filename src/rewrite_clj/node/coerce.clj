@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.coerce
+(ns ^:no-doc rewrite-clj.node.coerce
   (:require [potemkin :refer [defprotocol+]]
             [rewrite-clj.node
              comment forms integer keyword

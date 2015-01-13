@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.forms
+(ns ^:no-doc rewrite-clj.node.forms
   (:require [rewrite-clj.node.protocols :as node]))
 
 ;; ## Node
@@ -36,5 +36,7 @@
 ;; ## Constructor
 
 (defn forms-node
+  "Create top-level node wrapping multiple children
+   (equals an implicit `do` on the top-level)."
   [children]
   (->FormsNode children))

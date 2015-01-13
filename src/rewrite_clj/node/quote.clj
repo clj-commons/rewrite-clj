@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.quote
+(ns ^:no-doc rewrite-clj.node.quote
   (:require [rewrite-clj.node.protocols :as node]))
 
 ;; ## Node
@@ -35,6 +35,8 @@
   (->QuoteNode t prefix sym children))
 
 (defn quote-node
+  "Create node representing a quoted form.
+   Takes either a seq of nodes or a single one."
   [children]
   (if (sequential? children)
     (->node
@@ -43,6 +45,8 @@
     (recur [children])))
 
 (defn syntax-quote-node
+  "Create node representing a syntax-quoted form.
+   Takes either a seq of nodes or a single one."
   [children]
   (if (sequential? children)
     (->node
@@ -51,6 +55,8 @@
     (recur [children])))
 
 (defn unquote-node
+  "Create node representing an unquoted form. (`~...`)
+   Takes either a seq of nodes or a single one."
   [children]
   (if (sequential? children)
     (->node
@@ -59,6 +65,8 @@
     (recur [children])))
 
 (defn unquote-splicing-node
+  "Create node representing an unquote-spliced form. (`~@...`)
+   Takes either a seq of nodes or a single one."
   [children]
   (if (sequential? children)
     (->node

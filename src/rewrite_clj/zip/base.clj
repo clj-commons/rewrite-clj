@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.base
+(ns ^:no-doc rewrite-clj.zip.base
   (:refer-clojure :exclude [print])
   (:require [rewrite-clj
              [node :as node]
@@ -39,7 +39,7 @@
   [zloc]
   (some-> zloc z/node node/sexpr))
 
-(defn child-sexprs
+(defn ^{:added "0.4.0"} child-sexprs
   "Get children as s-expressions."
   [zloc]
   (some-> zloc z/node node/child-sexprs))
@@ -49,7 +49,7 @@
   [zloc]
   (or (some-> zloc z/node node/length) 0))
 
-(defn value
+(defn ^{:deprecated "0.4.0"} value
   "DEPRECATED. Return a tag/s-expression pair for inner nodes, or
    the s-expression itself for leaves."
   [zloc]
@@ -69,12 +69,12 @@
 
 ;; ## Write
 
-(defn string
+(defn ^{:added "0.4.0"} string
   "Create string representing the current zipper location."
   [zloc]
   (some-> zloc z/node node/string))
 
-(defn root-string
+(defn ^{:added "0.4.0"} root-string
   "Create string representing the zipped-up zipper."
   [zloc]
   (some-> zloc z/root node/string))

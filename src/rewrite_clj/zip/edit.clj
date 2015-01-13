@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.edit
+(ns ^:no-doc rewrite-clj.zip.edit
   (:refer-clojure :exclude [replace])
   (:require [rewrite-clj.zip
              [base :as base]

@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.seq
+(ns ^:no-doc rewrite-clj.zip.seq
   (:refer-clojure :exclude [map get assoc seq? vector? list? map? set?])
   (:require [rewrite-clj.zip
              [base :as base]

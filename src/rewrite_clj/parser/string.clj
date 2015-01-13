@@ -1,4 +1,4 @@
-(ns rewrite-clj.parser.string
+(ns ^:no-doc rewrite-clj.parser.string
   (:require [rewrite-clj.parser
              [utils :as u]]
             [rewrite-clj.node :as node]

@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.token
+(ns ^:no-doc rewrite-clj.node.token
   (:require [rewrite-clj.node.protocols :as node]))
 
 ;; ## Node

@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.insert
+(ns ^:no-doc rewrite-clj.zip.insert
   (:require [rewrite-clj.zip
              [base :as base]
              [whitespace :as ws]]

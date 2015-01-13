@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.seq
+(ns ^:no-doc rewrite-clj.node.seq
   (:require [rewrite-clj.node.protocols :as node]))
 
 ;; ## Node

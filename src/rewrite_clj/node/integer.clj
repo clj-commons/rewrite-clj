@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.integer
+(ns ^:no-doc rewrite-clj.node.integer
   (:require [rewrite-clj.node.protocols :as node]))
 
 ;; ## Node

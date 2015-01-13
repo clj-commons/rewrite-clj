@@ -1,4 +1,4 @@
-(ns rewrite-clj.parser.utils
+(ns ^:no-doc rewrite-clj.parser.utils
   (:require [clojure.tools.reader.reader-types :as r]))
 
 (defn whitespace?

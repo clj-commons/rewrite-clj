@@ -1,4 +1,6 @@
-(ns rewrite-clj.node
+(ns
+  ^{:added "0.4.0"}
+  rewrite-clj.node
   (:require [rewrite-clj.node
              coerce
              comment
@@ -99,7 +101,7 @@
 
 ;; ## Value
 
-(defn value
+(defn ^{:deprecated "0.4.0"} value
   "DEPRECATED: Get first child as a pair of tag/sexpr (if inner node),
    or just the node's own sexpr. (use explicit analysis of `children`
    `child-sexprs` instead) "

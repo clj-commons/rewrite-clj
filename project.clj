@@ -10,8 +10,10 @@
                  [potemkin "0.3.11"]]
   :profiles {:dev {:dependencies [[midje "1.6.3" :exclusions [joda-time]]
                                   [joda-time "2.5"]]
-                   :plugins [[lein-midje "3.1.3"]]
-                   :exclusions [org.clojure/clojure]}
+                   :plugins [[lein-midje "3.1.3"]
+                             [codox "0.8.10"]]
+                   :exclusions [org.clojure/clojure]
+                   :codox {:defaults {:doc/format :markdown}}}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}}
   :aliases {"all" ["with-profile" "dev,1.5:dev,1.6"]

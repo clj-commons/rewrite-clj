@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.meta
+(ns ^:no-doc rewrite-clj.node.meta
   (:require [rewrite-clj.node
              [protocols :as node]
              [whitespace :as ws]]))
@@ -35,6 +35,7 @@
 ;; ## Constructor
 
 (defn meta-node
+  "Create node representing a form and its metadata."
   ([children]
    (node/assert-sexpr-count children 2)
    (->MetaNode :meta "^" children))
@@ -42,6 +43,8 @@
    (meta-node [metadata (ws/spaces 1) data])))
 
 (defn raw-meta-node
+  "Create node representing a form and its metadata using the
+   `#^` prefix."
   ([children]
    (node/assert-sexpr-count children 2)
    (->MetaNode :meta* "#^" children))

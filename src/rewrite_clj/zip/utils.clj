@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.utils
+(ns ^:no-doc rewrite-clj.zip.utils
   (:require [fast-zip.core :as z])
   (:import [fast_zip.core ZipperPath ZipperLocation]))
 

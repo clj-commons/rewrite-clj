@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.subedit
+(ns ^:no-doc rewrite-clj.zip.subedit
   (:require [rewrite-clj.zip.base :as base]
             [fast-zip.core :as z]))
 

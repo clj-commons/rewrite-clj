@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.reader-macro
+(ns ^:no-doc rewrite-clj.node.reader-macro
   (:require [rewrite-clj.node
              [protocols :as node]
              [whitespace :as ws]]))

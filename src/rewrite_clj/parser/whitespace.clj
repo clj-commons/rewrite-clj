@@ -1,4 +1,4 @@
-(ns rewrite-clj.parser.whitespace
+(ns ^:no-doc rewrite-clj.parser.whitespace
   (:require [rewrite-clj
              [node :as node]
              [reader :as reader]]))
