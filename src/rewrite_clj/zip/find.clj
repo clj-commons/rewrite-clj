@@ -104,7 +104,7 @@
      (find-token zloc f p?))))
 
 (defn find-next-value
-  "Find token node whose value matches the given one by applying the
+  "Find next token node whose value matches the given one by applying the
    given movement function to the initial zipper location, defaulting
    to `right`."
   ([zloc v]

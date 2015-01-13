@@ -38,6 +38,8 @@
 
   [rewrite-clj.zip.find
    find find-next
+   find-depth-first
+   find-next-depth-first
    find-tag find-next-tag
    find-value find-next-value
    find-token find-next-token]
