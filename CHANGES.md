@@ -5,7 +5,7 @@
 - __BREAKING__ `rewrite-clj.zip.indent` no longer usable.
 - __BREAKING__ node creation/edit has stricter preconditions (e.g. `:meta` has to
   contain exactly two non-whitespace forms).
-- moved to a type/protocol based implementation of nodes.
+- __BREAKING__ moved to a type/protocol based implementation of nodes.
 - fix radix support. (see #13)
 - fix handling of spaces between certain forms. (see #7)
 
