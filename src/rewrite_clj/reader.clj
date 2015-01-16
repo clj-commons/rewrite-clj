@@ -148,12 +148,14 @@
 
 (defn string-reader
   "Create reader for strings."
+  ^clojure.tools.reader.reader_types.IndexingPushbackReader
   [s]
   (r/indexing-push-back-reader
     (r/string-push-back-reader s)))
 
 (defn file-reader
   "Create reader for files."
+  ^clojure.tools.reader.reader_types.IndexingPushbackReader
   [f]
   (-> (io/file f)
       (io/reader)

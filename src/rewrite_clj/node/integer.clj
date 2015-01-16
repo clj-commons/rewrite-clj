@@ -12,7 +12,7 @@
     (count (node/string this)))
   (string [_]
     (let [s (.toString (biginteger value) base)
-          prefix (case base
+          prefix (case (long base)
                    8  "0"
                    10 ""
                    16 "0x"

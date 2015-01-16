@@ -79,7 +79,8 @@
 
 ;; ## Print Helper
 
-(defn ^:no-doc node->string
+(defn- ^:no-doc node->string
+  ^String
   [node]
   (let [n (str (if (printable-only? node)
                  (pr-str (string node))
@@ -90,11 +91,15 @@
              (str " " n))]
     (format "<%s:%s>" (name (tag node)) n')))
 
+(defn ^:no-doc write-node
+  [^java.io.Writer writer node]
+  (.write writer (node->string node)))
+
 (defmacro ^:no-doc make-printable!
   [class]
   `(defmethod print-method ~class
      [node# w#]
-     (.write w# (node->string node#))))
+     (write-node w# node#)))
 
 ;; ## Helpers
 
