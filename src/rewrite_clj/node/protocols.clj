@@ -101,7 +101,7 @@
 (defn ^:no-doc assert-sexpr-count
   [nodes c]
   (assert
-    (= (count (sexprs nodes)) c)
+    (= (count (remove printable-only? nodes)) c)
     (format "can only contain %d non-whitespace form%s."
             c (if (= c 1) "" "s"))))
 
