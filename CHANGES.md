@@ -1,5 +1,10 @@
 ## Changelog
 
+### 0.4.2
+
+- fix `:fn` nodes (were `printable-only?` but should actually create an s-sexpression).
+- fix `assert-sexpr-count` to not actually create the s-expressions.
+
 ### 0.4.1
 
 - fixes infinite loop when trying to read a character.
