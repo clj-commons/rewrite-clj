@@ -4,6 +4,7 @@
   (:require [rewrite-clj.node
              coerce
              comment
+             fn
              forms
              integer
              keyword
@@ -39,6 +40,9 @@
    comment-node
    comment?]
 
+  [rewrite-clj.node.fn
+   fn-node]
+
   [rewrite-clj.node.forms
    forms-node]
 
@@ -55,7 +59,6 @@
   [rewrite-clj.node.reader-macro
    deref-node
    eval-node
-   fn-node
    reader-macro-node
    uneval-node
    var-node]

@@ -107,11 +107,6 @@
     (->node :var "'" "" #(list* 'var %) 1 children)
     (recur [children])))
 
-(defn fn-node
-  "Create node representing an anonymous function."
-  [children]
-  (->node :fn "(" ")" nil nil children))
-
 (defn eval-node
   "Create node representing an inline evaluation. (`#=...`)
    Takes either a seq of nodes or a single one."
