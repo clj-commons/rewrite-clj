@@ -39,7 +39,7 @@
   [zloc]
   (some-> zloc z/node node/sexpr))
 
-(defn ^{:added "0.4.0"} child-sexprs
+(defn ^{:added "0.4.4"} child-sexprs
   "Get children as s-expressions."
   [zloc]
   (some-> zloc z/node node/child-sexprs))

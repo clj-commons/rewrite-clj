@@ -26,6 +26,7 @@
    node root]
 
   [rewrite-clj.zip.base
+   child-sexprs
    edn* edn tag sexpr
    length value
    of-file of-string
