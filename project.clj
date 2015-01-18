@@ -16,8 +16,9 @@
                    :codox {:project {:name "rewrite-clj"}
                            :defaults {:doc/format :markdown}}}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
-             :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}}
-  :aliases {"all" ["with-profile" "dev,1.5:dev,1.6"]
+             :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
+             :1.7 {:dependencies [[org.clojure/clojure "1.7.0-alpha5"]]}}
+  :aliases {"all" ["with-profile" "dev,1.5:dev,1.6:dev,1.7"]
             "test" ["midje"]
-            "test-ancient" ["with-profile" "dev,1.5:dev,1.6" "midje"]}
+            "test-ancient" ["with-profile" "dev,1.5:dev,1.6:dev,1.7" "midje"]}
   :pedantic? :abort)
