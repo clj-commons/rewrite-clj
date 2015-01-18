@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.4.3
+
+- fix parsing of backslash `\\` character. (see #17)
+
 ### 0.4.2
 
 - fix `:fn` nodes (were `printable-only?` but should actually create an s-sexpression).
