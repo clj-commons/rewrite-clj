@@ -1,5 +1,14 @@
 ## Changelog
 
+### 0.4.5
+
+- fixes parsing of comments that are at the end of a file without linebreak. (see #18)
+
+### 0.4.4
+
+- upgrades dependencies.
+- add `rewrite-clj.zip/child-sexprs` to public API.
+
 ### 0.4.3
 
 - fix parsing of backslash `\\` character. (see #17)
