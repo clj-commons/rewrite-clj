@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.insert
+(ns rewrite-clj.zip.insert-test
   (:require [midje.sweet :refer :all]
             [rewrite-clj.zip
              [base :as base]
