@@ -3,7 +3,8 @@
             [rewrite-clj.zip
              [base :as base]
              [move :as m]
-             [insert :refer :all]]))
+             [insert :refer :all]]
+            [fast-zip.core :as z]))
 
 (tabular
   (fact "about whitespace-aware insertion."
@@ -29,3 +30,10 @@
   "[%s]"    0    append-child     "[1 2 3 4 x]"
   "[ %s]"   0    insert-child     "[x 1 2 3 4]"
   "[%s ]"   0    append-child     "[1 2 3 4 x]")
+
+(future-fact
+  "about inserting after comment."
+  (let [loc (-> (base/of-string "[1 2 3] ; this is a comment")
+                (z/rightmost)
+                (insert-right 'x))]
+    (base/root-string loc) => "[1 2 3] ; this is a comment\nx"))

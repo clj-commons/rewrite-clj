@@ -3,7 +3,8 @@
             [rewrite-clj.zip
              [base :as base]
              [move :as m]
-             [remove :as r]]))
+             [remove :as r]]
+            [fast-zip.core :as z]))
 
 (tabular
   (fact "about whitespace-aware removal."
@@ -34,3 +35,10 @@
         (-> root m/next m/down r/remove base/root-string)
         => (str "  :k [[d e f]]\n"
                 "  :keyword 0")))
+
+(future-fact
+  "about removing after comment."
+  (let [loc (-> (base/of-string "; comment\nx")
+                (z/rightmost)
+                (r/remove))]
+    (base/root-string loc) => "; comment"))
