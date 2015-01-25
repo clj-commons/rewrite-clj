@@ -188,6 +188,18 @@
                                                :token])
 
 (tabular
+  (fact "about parsing comments."
+        (let [n (p/parse-string ?s)]
+          n => node/printable-only?
+          (node/tag n) => :comment
+          (node/string n) => ?s))
+  ?s
+  "; this is a comment\n"
+  ";; this is a comment\n"
+  "; this is a comment"
+  ";; this is a comment")
+
+(tabular
   (fact "about parsing exceptions"
     (p/parse-string ?s) => (throws Exception ?p))
   ?s                      ?p

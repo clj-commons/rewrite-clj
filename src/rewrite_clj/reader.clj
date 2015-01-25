@@ -82,9 +82,11 @@
 (defn read-include-linebreak
   "Read until linebreak and include it."
   [reader]
-  (let [s (read-until reader linebreak?)
-        c (r/read-char reader)]
-    (str s c)))
+  (str
+    (read-until
+      reader
+      #(or (nil? %) (linebreak? %)))
+    (r/read-char reader)))
 
 (defn string->edn
   "Convert string to EDN value."
