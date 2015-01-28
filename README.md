@@ -5,7 +5,6 @@ way. It includes an EDN parser (based on [clojure.tools.reader](https://github.c
 printer, as well as an EDN-aware zipper implementation (based on [fast-zip](https://github.com/akhudek/fast-zip)).
 
 [![Build Status](https://travis-ci.org/xsc/rewrite-clj.svg?branch=master)](https://travis-ci.org/xsc/rewrite-clj)
-[![endorse](https://api.coderwall.com/xsc/endorsecount.png)](https://coderwall.com/xsc)
 
 This project is similar to Christophe Grand's [sjacket](https://github.com/cgrand/sjacket). In fact, I found it hard to _use_
 sjacket, partly because of the underlying data structure (a [parsely](https://github.com/cgrand/parsley)-generated tree including
@@ -159,7 +158,7 @@ containing said structures, e.g.:
 
 (z/vector? data)                ;; => true
 (z/sexpr data)                  ;; => [1 2 3]
-(-> data (z/get 1) z/node)      ;; => [:token 2]
+(-> data (z/get 1) z/node)      ;; => #<token: 2>
 (-> data (z/assoc 1 5) z/sexpr) ;; => [1 5 3]
 
 (->> data (z/map #(z/edit % + 4)) z/->root-string)
@@ -170,6 +169,6 @@ See the [auto-generated documentation](http://xsc.github.io/rewrite-clj/) for mo
 
 ## License
 
-Copyright &copy; 2013 Yannick Scherer
+Copyright &copy; 2013-2015 Yannick Scherer
 
 Distributed under the Eclipse Public License, the same as Clojure.
