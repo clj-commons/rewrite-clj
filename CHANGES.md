@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.4.7
+
+- fixes zipper creation over whitespace-/comment-only data. (see #20)
+
 ### 0.4.6
 
 - fixes parsing of empty comments. (see #19)
