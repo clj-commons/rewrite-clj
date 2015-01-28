@@ -22,9 +22,9 @@
    to the first non-whitespace/non-comment child."
   [node]
   (if (= (node/tag node) :forms)
-    (-> (edn* node)
-        (z/down)
-        (ws/skip-whitespace))
+    (let [top (edn* node)]
+      (or (-> top z/down ws/skip-whitespace)
+          top))
     (recur (node/forms-node [node]))))
 
 ;; ## Inspection
