@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.4.6
+
+- fixes parsing of empty comments. (see #19)
+
 ### 0.4.5
 
 - fixes parsing of comments that are at the end of a file without linebreak. (see #18)
