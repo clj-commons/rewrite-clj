@@ -197,7 +197,11 @@
   "; this is a comment\n"
   ";; this is a comment\n"
   "; this is a comment"
-  ";; this is a comment")
+  ";; this is a comment"
+  ";"
+  ";;"
+  ";\n"
+  ";;\n")
 
 (tabular
   (fact "about parsing exceptions"
