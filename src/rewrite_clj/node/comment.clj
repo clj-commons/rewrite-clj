@@ -25,7 +25,7 @@
 (defn comment-node
   "Create node representing an EDN comment."
   [s]
-  {:pre [(re-matches #"[^\r\n]+[\r\n]?" s)]}
+  {:pre [(re-matches #"[^\r\n]*[\r\n]?" s)]}
   (->CommentNode s))
 
 (defn comment?
