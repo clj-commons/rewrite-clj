@@ -1,1 +1,0 @@
-([:dependencies ([codox/codox.core "0.8.10"] [org.clojure/clojure "1.6.0"] [org.clojure/tools.reader "0.8.13"] [fast-zip/fast-zip "0.5.2"] [potemkin/potemkin "0.3.11"])])
