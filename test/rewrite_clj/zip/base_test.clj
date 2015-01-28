@@ -56,6 +56,18 @@
       (base/of-file (.getPath f)))))
 
 (tabular
+  (fact "about zipper creation for whitespace-only nodes."
+      (let [n (node/forms-node [?ws])
+            loc (base/edn n)]
+        (base/tag loc) => :forms
+        (base/sexpr loc) => nil
+        (base/string loc) => ?s
+        (base/root-string loc) => ?s))
+  ?ws                        ?s
+  (node/spaces 3)            "   "
+  (node/comment-node "foo")  ";foo")
+
+(tabular
   (fact "about length calculation."
         (let [s ?s
               loc (base/of-string s)]
