@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.4.8
+
+- allow parsing of aliased keywords, e.g. `::ns/foo`. (see #21)
+
 ### 0.4.7
 
 - fixes zipper creation over whitespace-/comment-only data. (see #20)
