@@ -50,6 +50,7 @@
   ":ns/key"                    :ns/key
   "::1.5.1"                    ::1.5.1
   "::key"                      ::key
+  "::xyz/key"                  :xyz/key
   "sym"                        'sym
   "sym#"                       'sym#
   "\"string\""                 "string")
