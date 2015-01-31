@@ -32,5 +32,8 @@
 (defn uneval-node
   "Create node representing an EDN uneval `#_` form."
   [children]
-  (node/assert-single-sexpr children)
-  (->UnevalNode children))
+  (if (sequential? children)
+    (do
+      (node/assert-single-sexpr children)
+      (->UnevalNode children))
+    (recur [children])))
