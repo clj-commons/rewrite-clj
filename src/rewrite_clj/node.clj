@@ -60,7 +60,6 @@
    deref-node
    eval-node
    reader-macro-node
-   uneval-node
    var-node]
 
   [rewrite-clj.node.seq

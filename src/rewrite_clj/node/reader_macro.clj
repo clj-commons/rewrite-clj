@@ -118,14 +118,6 @@
       1 children)
     (recur [children])))
 
-(defn uneval-node
-  "Create node representing a form ignored by the reader. (`#_...`)
-   Takes either a seq of nodes or a single one."
-  [children]
-  (if (sequential? children)
-    (->node :uneval "_" "" nil 1 children)
-    (recur [children])))
-
 (defn reader-macro-node
   "Create node representing a reader macro. (`#... ...`)"
   ([children]
