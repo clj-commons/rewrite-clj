@@ -1,5 +1,10 @@
 ## Changelog
 
+### 0.4.9
+
+- fix `replace-children` for `:uneval` nodes. (see #23)
+- add `rewrite-clj.zip/postwalk`. (see #22)
+
 ### 0.4.8
 
 - allow parsing of aliased keywords, e.g. `::ns/foo`. (see #21)
