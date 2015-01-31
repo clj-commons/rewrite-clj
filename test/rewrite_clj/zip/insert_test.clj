@@ -31,6 +31,24 @@
   "[ %s]"   0    insert-child     "[x 1 2 3 4]"
   "[%s ]"   0    append-child     "[1 2 3 4 x]")
 
+(tabular
+  (fact "about different node types that allow insertion."
+        (let [loc (-> (iterate m/down (base/of-string ?s))
+                      (nth (inc ?depth))
+                      m/right
+                      (insert-left 'x)
+                      (insert-right 'y))]
+          (base/root-string loc) => ?result))
+  ?s                ?depth           ?result
+  "[1 2]"           0                "[1 x 2 y]"
+  "(1 2)"           0                "(1 x 2 y)"
+  "#{1 2}"          0                "#{1 x 2 y}"
+  "#(1 2)"          0                "#(1 x 2 y)"
+  "'(1 2)"          1                "'(1 x 2 y)"
+  "#=(1 2)"         1                "#=(1 x 2 y)"
+  "#_(1 2)"         1                "#_(1 x 2 y)"
+  "@(f 2)"          1                "@(f x 2 y)")
+
 (future-fact
   "about inserting after comment."
   (let [loc (-> (base/of-string "[1 2 3] ; this is a comment")
