@@ -23,3 +23,21 @@
   ([zloc p? f]
    (->> (partial prewalk-subtree p? f)
         (subedit-node zloc))))
+
+(defn postwalk-subtree
+  [p? f loc]
+  (let [nloc (m/next loc)
+        loc' (if (m/end? nloc)
+               loc
+               (m/prev (postwalk-subtree p? f nloc)))]
+    (if (p? loc')
+      (or (f loc') loc')
+      loc')))
+
+(defn ^{:added "0.4.9"} postwalk
+  "Perform a depth-first post-order traversal starting at the given zipper location
+   and apply the given function to each child node. If a predicate `p?` is given,
+   only apply the function to nodes matching it."
+  ([zloc f] (postwalk zloc (constantly true) f))
+  ([zloc p? f]
+   (subedit-node zloc #(postwalk-subtree p? f %))))

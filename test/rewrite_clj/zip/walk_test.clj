@@ -23,3 +23,17 @@
         (-> (iterate #(w/prewalk % not-vec? inc-node) root)
             (nth 3)
             base/root-string) => "[3 [4 5 6] 7]"))
+
+(fact "about zipper tree postwalk."
+      (let [root (base/of-string "[0 [1 2 3] 4]")
+            wrap-node #(e/edit % list 'x)
+            wrap-node-p #(if (sq/vector? %) (wrap-node %) %)]
+        (-> root
+            (w/postwalk identity)
+            base/root-string) => "[0 [1 2 3] 4]"
+        (-> root
+            (w/postwalk wrap-node-p)
+            base/root-string) => "([0 ([1 2 3] x) 4] x)"
+        (-> root
+            (w/postwalk sq/vector? wrap-node)
+            base/root-string) => "([0 ([1 2 3] x) 4] x)"))

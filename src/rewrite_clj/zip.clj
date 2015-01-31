@@ -67,7 +67,8 @@
    subedit-node subedit-> subedit->>]
 
   [rewrite-clj.zip.walk
-   prewalk]
+   prewalk
+   postwalk]
 
   [rewrite-clj.zip.whitespace
    whitespace? linebreak?
