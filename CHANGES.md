@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.4.10
+
+- fix handling of symbols with trailing quote, e.g. `x'`. (see #24)
+
 ### 0.4.9
 
 - fix `replace-children` for `:uneval` nodes. (see #23)
