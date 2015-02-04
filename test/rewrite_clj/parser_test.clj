@@ -45,14 +45,17 @@
   "\\\\"                       \\
   "\\a"                        \a
   "\\space"                    \space
+  "\\'"                        \'
   ":1.5"                       :1.5
   ":1.5.0"                     :1.5.0
   ":ns/key"                    :ns/key
   "::1.5.1"                    ::1.5.1
   "::key"                      ::key
   "::xyz/key"                  :xyz/key
+  ":x'"                        :x'
   "sym"                        'sym
   "sym#"                       'sym#
+  "sym'"                       'sym'
   "\"string\""                 "string")
 
 (tabular
