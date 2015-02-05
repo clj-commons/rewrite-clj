@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.4.11
+
+- fix handling of symbols with boundary character inside. (see #25)
+
 ### 0.4.10
 
 - fix handling of symbols with trailing quote, e.g. `x'`. (see #24)
