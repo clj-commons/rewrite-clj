@@ -49,6 +49,7 @@
   ":1.5"                       :1.5
   ":1.5.0"                     :1.5.0
   ":ns/key"                    :ns/key
+  ":key:key"                   :key:key
   "::1.5.1"                    ::1.5.1
   "::key"                      ::key
   "::xyz/key"                  :xyz/key
@@ -56,6 +57,9 @@
   "sym"                        'sym
   "sym#"                       'sym#
   "sym'"                       'sym'
+  "sym'sym"                    'sym'sym
+  "sym:sym"                    'sym:sym
+  "sym:"                       (symbol "sym:")
   "\"string\""                 "string")
 
 (tabular
