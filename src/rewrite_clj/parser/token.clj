@@ -4,10 +4,12 @@
              [reader :as r]]))
 
 (defn- read-to-boundary
-  [reader]
-  (r/read-until
-    reader
-    r/whitespace-or-boundary?))
+  [reader & [allowed]]
+  (let [allowed? (set allowed)]
+    (r/read-until
+      reader
+      #(and (not (allowed? %))
+            (r/whitespace-or-boundary? %)))))
 
 (defn- read-to-char-boundary
   [reader]
@@ -18,15 +20,18 @@
            ""))))
 
 (defn- symbol-node
-  "Symbols allow for trailing quotes that have to be handled
-   explicitly."
+  "Symbols allow for certain boundary characters that have
+   to be handled explicitly."
   [reader value value-string]
-  (if (= (r/peek reader) \')
-    (let [s (str value-string (r/next reader))]
-      (node/token-node
-        (r/string->edn s)
-        s))
-    (node/token-node value value-string)))
+  (let [suffix (read-to-boundary
+                 reader
+                 [\' \:])]
+    (if (empty? suffix)
+      (node/token-node value value-string)
+      (let [s (str value-string suffix)]
+        (node/token-node
+          (r/string->edn s)
+          s)))))
 
 (defn parse-token
   "Parse a single token."
