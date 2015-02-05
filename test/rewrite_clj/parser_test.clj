@@ -224,11 +224,13 @@
   "\"abc"                 #".*EOF.*"
   "#\"abc"                #".*Unexpected EOF.*"
   "(def x 0]"             #".*Unmatched delimiter.*"
-  "#="                    #".*expects 1 value.*"
-  "#^"                    #".*expects 2 values.*"
-  "^:private"             #".*expects 2 values.*"
-  "#^:private"            #".*expects 2 values.*"
-  "#macro"                #".*expects 2 values.*")
+  "#="                    #".*:eval node expects 1 value.*"
+  "#^"                    #".*:meta node expects 2 values.*"
+  "^:private"             #".*:meta node expects 2 values.*"
+  "#^:private"            #".*:meta node expects 2 values.*"
+  "#_"                    #".*:uneval node expects 1 value.*"
+  "#'"                    #".*:var node expects 1 value.*"
+  "#macro"                #".*:reader-macro node expects 2 values.*")
 
 (fact "about parsing multiple forms"
   (let [s "1 2 3"

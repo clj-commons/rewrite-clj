@@ -43,11 +43,12 @@
        (reader/read-repeatedly reader)))
 
 (defn- parse-printables
-  [reader n & [ignore?]]
+  [reader node-tag n & [ignore?]]
   (when ignore?
     (reader/ignore reader))
   (reader/read-n
     reader
+    node-tag
     parse-next
     (complement node/printable-only?)
     n))
@@ -102,7 +103,7 @@
 (defmethod parse-next* :meta
   [reader]
   (reader/ignore reader)
-  (node/meta-node (parse-printables reader 2)))
+  (node/meta-node (parse-printables reader :meta 2)))
 
 ;; ### Reader Specialities
 
@@ -114,25 +115,25 @@
     \{ (node/set-node (parse-delim reader \}))
     \( (node/fn-node (parse-delim reader \)))
     \" (parse-regex reader)
-    \^ (node/raw-meta-node (parse-printables reader 2 true))
-    \' (node/var-node (parse-printables reader 1 true))
-    \= (node/eval-node (parse-printables reader 1 true))
-    \_ (node/uneval-node (parse-printables reader 1 true))
-    (node/reader-macro-node (parse-printables reader 2))))
+    \^ (node/raw-meta-node (parse-printables reader :meta 2 true))
+    \' (node/var-node (parse-printables reader :var 1 true))
+    \= (node/eval-node (parse-printables reader :eval 1 true))
+    \_ (node/uneval-node (parse-printables reader :uneval 1 true))
+    (node/reader-macro-node (parse-printables reader :reader-macro 2))))
 
 (defmethod parse-next* :deref
   [reader]
-  (node/deref-node (parse-printables reader 1 true)))
+  (node/deref-node (parse-printables reader :deref 1 true)))
 
 ;; ## Quotes
 
 (defmethod parse-next* :quote
   [reader]
-  (node/quote-node (parse-printables reader 1 true)))
+  (node/quote-node (parse-printables reader :quote 1 true)))
 
 (defmethod parse-next* :syntax-quote
   [reader]
-  (node/syntax-quote-node (parse-printables reader 1 true)))
+  (node/syntax-quote-node (parse-printables reader :syntax-quote 1 true)))
 
 (defmethod parse-next* :unquote
   [reader]
@@ -140,9 +141,9 @@
   (let [c (reader/peek reader)]
     (if (= c \@)
       (node/unquote-splicing-node
-        (parse-printables reader 1 true))
+        (parse-printables reader :unquote 1 true))
       (node/unquote-node
-        (parse-printables reader 1)))))
+        (parse-printables reader :unquote 1)))))
 
 ;; ### Seqs
 

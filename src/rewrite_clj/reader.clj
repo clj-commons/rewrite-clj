@@ -130,7 +130,7 @@
 (defn read-n
   "Call the given function on the given reader until `n` values matching `p?` have been
    collected."
-  [reader read-fn p? n]
+  [reader node-tag read-fn p? n]
   {:pre [(pos? n)]}
   (loop [c 0
          vs []]
@@ -141,7 +141,8 @@
           (conj vs v))
         (throw-reader
           reader
-          "expects %d value%s."
+          "%s node expects %d value%s."
+          node-tag
           n
           (if (= n 1) "" "s")))
       vs)))
