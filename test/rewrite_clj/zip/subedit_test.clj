@@ -4,7 +4,7 @@
              [base :as base]
              [move :as m]
              [subedit :refer :all]]
-            [fast-zip.core :as z]))
+            [clojure.zip :as z]))
 
 (let [root (base/of-string "[1 #{2 [3 4] 5} 6]")]
   (fact "about modifying subtrees."

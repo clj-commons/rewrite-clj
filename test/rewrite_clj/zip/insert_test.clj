@@ -4,7 +4,7 @@
              [base :as base]
              [move :as m]
              [insert :refer :all]]
-            [fast-zip.core :as z]))
+            [clojure.zip :as z]))
 
 (tabular
   (fact "about whitespace-aware insertion."

@@ -16,13 +16,13 @@
             [rewrite-clj
              [parser :as p]
              [node :as node]]
-            [fast-zip.core :as z]
+            [clojure.zip :as z]
             [potemkin :refer [import-vars]]))
 
 ;; ## API Facade
 
 (import-vars
-  [fast-zip.core
+  [clojure.zip
    node root]
 
   [rewrite-clj.zip.base
@@ -92,17 +92,17 @@
                :arglists `(quote ~arglists)})]
     `(def ~sym ~base)))
 
-(defbase right* fast-zip.core/right)
-(defbase left* fast-zip.core/left)
-(defbase up* fast-zip.core/up)
-(defbase down* fast-zip.core/down)
-(defbase next* fast-zip.core/next)
-(defbase prev* fast-zip.core/prev)
-(defbase rightmost* fast-zip.core/rightmost)
-(defbase leftmost* fast-zip.core/leftmost)
-(defbase replace* fast-zip.core/replace)
-(defbase edit* fast-zip.core/edit)
-(defbase remove* fast-zip.core/remove)
+(defbase right* clojure.zip/right)
+(defbase left* clojure.zip/left)
+(defbase up* clojure.zip/up)
+(defbase down* clojure.zip/down)
+(defbase next* clojure.zip/next)
+(defbase prev* clojure.zip/prev)
+(defbase rightmost* clojure.zip/rightmost)
+(defbase leftmost* clojure.zip/leftmost)
+(defbase replace* clojure.zip/replace)
+(defbase edit* clojure.zip/edit)
+(defbase remove* clojure.zip/remove)
 
 ;; ## DEPRECATED
 

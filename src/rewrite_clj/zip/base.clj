@@ -4,7 +4,7 @@
              [node :as node]
              [parser :as p]]
             [rewrite-clj.zip.whitespace :as ws]
-            [fast-zip.core :as z]))
+            [clojure.zip :as z]))
 
 ;; ## Zipper
 

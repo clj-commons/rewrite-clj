@@ -1,5 +1,5 @@
 (ns ^:no-doc rewrite-clj.zip.walk
-  (:require [fast-zip.core :as z]
+  (:require [clojure.zip :as z]
             [rewrite-clj.zip
              [subedit :refer [subedit-node]]
              [move :as m]]))

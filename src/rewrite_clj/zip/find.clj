@@ -4,7 +4,7 @@
              [base :as base]
              [move :as m]]
             [rewrite-clj.node :as node]
-            [fast-zip.core :as z]))
+            [clojure.zip :as z]))
 
 ;; ## Helpers
 
