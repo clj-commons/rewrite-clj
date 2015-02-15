@@ -1,4 +1,4 @@
-(ns rewrite-clj.potemkin)
+(ns ^:no-doc rewrite-clj.potemkin)
 
 ;; --- copied from ztellman/potemkin
 ;;
