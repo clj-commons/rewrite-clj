@@ -15,9 +15,9 @@
              [whitespace :as ws]]
             [rewrite-clj
              [parser :as p]
+             [potemkin :refer [import-vars]]
              [node :as node]]
-            [clojure.zip :as z]
-            [potemkin :refer [import-vars]]))
+            [clojure.zip :as z]))
 
 ;; ## API Facade
 

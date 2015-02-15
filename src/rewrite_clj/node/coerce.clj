@@ -1,5 +1,5 @@
 (ns ^:no-doc rewrite-clj.node.coerce
-  (:require [potemkin :refer [defprotocol+]]
+  (:require [rewrite-clj.potemkin :refer [defprotocol+]]
             [rewrite-clj.node
              comment forms integer keyword
              quote string uneval

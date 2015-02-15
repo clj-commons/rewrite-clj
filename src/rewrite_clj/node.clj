@@ -17,7 +17,7 @@
              token
              uneval
              whitespace]
-            [potemkin :refer [import-vars]]))
+            [rewrite-clj.potemkin :refer [import-vars]]))
 
 ;; ## API Facade
 

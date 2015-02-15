@@ -1,7 +1,7 @@
 (ns
   ^{:added "0.4.0"}
   rewrite-clj.node.protocols
-  (:require [potemkin :refer [defprotocol+]]
+  (:require [rewrite-clj.potemkin :refer [defprotocol+]]
             [clojure.string :as string]))
 
 ;; ## Node
