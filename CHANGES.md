@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.4.12
+
+- drop `fast-zip` and `potemkin` dependencies. (see #26)
+
 ### 0.4.11
 
 - fix handling of symbols with boundary character inside. (see #25)
