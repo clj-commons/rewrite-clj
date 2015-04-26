@@ -71,8 +71,7 @@ See the [auto-generated documentation](http://xsc.github.io/rewrite-clj/rewrite-
 ### Clojure Zipper
 
 To traverse/modify the generated structure you can use rewrite-clj's
-whitespace-/comment-/value-aware zipper operations, based on
-[fast-zip](https://github.com/akhudek/fast-zip).
+whitespace-/comment-/value-aware zipper operations.
 
 ```clojure
 (require '[rewrite-clj.zip :as z])
