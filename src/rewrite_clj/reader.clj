@@ -109,15 +109,20 @@
   [reader]
   (r/peek-char reader))
 
+(defn position
+  "Create map of `row-k` and `col-k` representing the current reader position."
+  [reader row-k col-k]
+  {row-k (r/get-line-number reader)
+   col-k (r/get-column-number reader)})
+
 (defn read-with-meta
   "Use the given function to read value, then attach row/col metadata."
   [reader read-fn]
-  (let [row (r/get-line-number reader)
-        col (r/get-column-number reader)]
+  (let [start-position (position reader :row :col)]
     (if-let [entry (read-fn reader)]
-      (with-meta
-        entry
-        {:row row :col col}))))
+      (->> (position reader :end-row :end-col)
+           (merge start-position)
+           (with-meta entry)))))
 
 (defn read-repeatedly
   "Call the given function on the given reader until it returns
