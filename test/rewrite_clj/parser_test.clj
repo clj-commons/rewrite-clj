@@ -59,7 +59,6 @@
   "sym'"                       'sym'
   "sym'sym"                    'sym'sym
   "sym:sym"                    'sym:sym
-  "sym:"                       (symbol "sym:")
   "\"string\""                 "string")
 
 (tabular
