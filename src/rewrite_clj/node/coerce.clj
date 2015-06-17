@@ -7,7 +7,8 @@
              [protocols :as node
               :refer [NodeCoerceable
                       coerce]]
-             [reader-macro :refer [var-node]]
+             [reader-macro
+              :refer [reader-macro-node var-node]]
              [seq :refer [vector-node
                           list-node
                           set-node
@@ -83,11 +84,19 @@
          (butlast)
          (vec))))
 
+(defn- record-node
+  [m]
+  (reader-macro-node
+    [(token-node (symbol (.getName ^Class (class m))))
+     (map-node (map->children m))]))
+
 (extend-protocol NodeCoerceable
   clojure.lang.IPersistentMap
   (coerce [m]
     (node-with-meta
-      (map-node (map->children m))
+      (if (record? m)
+        (record-node m)
+        (map-node (map->children m)))
       m)))
 
 ;; ## Vars
