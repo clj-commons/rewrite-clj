@@ -287,7 +287,9 @@
             (node/tag node)    => ?t
             (node/string node) => ?s
             (node/sexpr node)  => ?sexpr
-            end-pos            => ?end))
+            #_(fact
+                "reliable decision on end pos not currently possible."
+                end-pos => ?end)))
     ?pos   ?end   ?t      ?s             ?sexpr
     [1 1]  [3 14] :list   s              '(defn f [x] (println x))
     [1 2]  [1 5]  :token  "defn"         'defn
