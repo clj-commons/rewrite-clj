@@ -51,3 +51,12 @@
       (let [n (coerce #'identity)]
         n => #(satisfies? node/Node %)
         (node/sexpr n) => '(var clojure.core/identity)))
+
+(defrecord Foo-Bar [a])
+
+(fact "about records."
+      (let [v (Foo-Bar. 0)
+            n (coerce v)]
+        n => #(satisfies? node/Node %)
+        (node/tag n) => :reader-macro
+        (node/string n) => (pr-str v)))
