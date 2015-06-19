@@ -90,11 +90,15 @@
     [(token-node (symbol (.getName ^Class (class m))))
      (map-node (map->children m))]))
 
+(defn- is-record?
+  [v]
+  (instance? clojure.lang.IRecord v))
+
 (extend-protocol NodeCoerceable
   clojure.lang.IPersistentMap
   (coerce [m]
     (node-with-meta
-      (if (record? m)
+      (if (is-record? m)
         (record-node m)
         (map-node (map->children m)))
       m)))
