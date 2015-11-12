@@ -1,5 +1,6 @@
 (ns rewrite-clj.zip.whitespace-test
   (:require [midje.sweet :refer :all]
+            [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.zip :as z]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip.whitespace :refer :all]))
@@ -9,8 +10,7 @@
       c0 (node/comment-node "comment")
       t0 (node/token-node 0)
       t1 (node/token-node 1)
-      loc (z/vector-zip [space linebreak t0 space t1 c0])
-      ->str #(apply str (map node/string %))]
+      loc (base/edn* (node/forms-node [space linebreak t0 space t1 c0]))]
   (fact "about predicates."
         (-> loc z/down)             => whitespace?
         (-> loc z/down z/right)     => linebreak?
@@ -28,12 +28,12 @@
           (node/tag n) => :token
           (node/sexpr n) => 0))
   (fact "about prepending/appending spaces."
-        (let [n (-> loc z/down z/rightmost (prepend-space 3) z/root)]
-          (->str n) => " \n0 1   ;comment")
-        (let [n (-> loc z/down z/rightmost (append-space 3) z/root)]
-          (->str n) => " \n0 1;comment   "))
+        (let [n (-> loc z/down z/rightmost (prepend-space 3))]
+          (base/root-string n) => " \n0 1   ;comment")
+        (let [n (-> loc z/down z/rightmost (append-space 3))]
+          (base/root-string n) => " \n0 1;comment   "))
   (fact "about prepending/appending linebreaks."
-        (let [n (-> loc z/down z/rightmost (prepend-newline 3) z/root)]
-          (->str n) => " \n0 1\n\n\n;comment")
-        (let [n (-> loc z/down z/rightmost (append-newline 3) z/root)]
-          (->str n) => " \n0 1;comment\n\n\n")))
+        (let [n (-> loc z/down z/rightmost (prepend-newline 3))]
+          (base/root-string n) => " \n0 1\n\n\n;comment")
+        (let [n (-> loc z/down z/rightmost (append-newline 3))]
+          (base/root-string n) => " \n0 1;comment\n\n\n")))

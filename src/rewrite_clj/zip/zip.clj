@@ -32,15 +32,6 @@
     ^{:zip/branch? branch? :zip/children children :zip/make-node make-node}
     [root nil])
 
-(defn vector-zip
-  "Returns a zipper for nested vectors, given a root vector"
-  {:added "1.0"}
-  [root]
-    (zipper vector?
-            seq
-            (fn [node children] (with-meta (vec children) (meta node)))
-            root))
-
 (defn node
   "Returns the node at loc"
   {:added "1.0"}
@@ -255,7 +246,6 @@
 
 (refer 'zip)
 (def data '[[a * b] + [c * d]])
-(def dz (vector-zip data))
 
 (right (down (right (right (down dz)))))
 (lefts (right (down (right (right (down dz))))))
