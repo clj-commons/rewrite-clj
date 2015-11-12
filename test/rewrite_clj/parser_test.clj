@@ -270,8 +270,8 @@
   "Create map associating row/column number pairs with the node at that position."
   [n]
   (let [start-pos ((juxt :row :col) (meta n))
-        end-pos ((juxt :end-row :end-col) (meta n))
-        entry {start-pos {:node n, :end-pos end-pos}}]
+        next-pos ((juxt :next-row :next-col) (meta n))
+        entry {start-pos {:node n, :next-pos next-pos}}]
     (if (node/inner? n)
       (->> (node/children n)
            (map nodes-with-meta)
@@ -283,19 +283,17 @@
                      (nodes-with-meta))]
   (tabular
     (fact "about row/column metadata."
-          (let [{:keys [node end-pos]} (positions ?pos)]
+          (let [{:keys [node next-pos]} (positions ?pos)]
             (node/tag node)    => ?t
             (node/string node) => ?s
             (node/sexpr node)  => ?sexpr
-            #_(fact
-                "reliable decision on end pos not currently possible."
-                end-pos => ?end)))
-    ?pos   ?end   ?t      ?s             ?sexpr
-    [1 1]  [3 14] :list   s              '(defn f [x] (println x))
-    [1 2]  [1 5]  :token  "defn"         'defn
+            next-pos           => ?next))
+    ?pos   ?next  ?t      ?s             ?sexpr
+    [1 1]  [3 15] :list   s              '(defn f [x] (println x))
+    [1 2]  [1 6]  :token  "defn"         'defn
     [1 7]  [1 8]  :token  "f"            'f
-    [2 3]  [2 5]  :vector "[x]"          '[x]
+    [2 3]  [2 6]  :vector "[x]"          '[x]
     [2 4]  [2 5]  :token  "x"            'x
-    [3 3]  [3 13] :list   "(println x)"  '(println x)
-    [3 4]  [3 10] :token  "println"      'println
+    [3 3]  [3 14] :list   "(println x)"  '(println x)
+    [3 4]  [3 11] :token  "println"      'println
     [3 12] [3 13] :token  "x"            'x))
