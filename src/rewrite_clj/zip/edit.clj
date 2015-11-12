@@ -7,7 +7,7 @@
              [utils :as u]
              [whitespace :as ws]]
             [rewrite-clj.node :as node]
-            [clojure.zip :as z]))
+            [rewrite-clj.zip.zip :as z]))
 
 ;; ## In-Place Modification
 

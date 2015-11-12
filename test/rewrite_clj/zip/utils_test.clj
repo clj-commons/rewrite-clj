@@ -1,6 +1,6 @@
 (ns rewrite-clj.zip.utils-test
   (:require [midje.sweet :refer :all]
-            [clojure.zip :as z]
+            [rewrite-clj.zip.zip :as z]
             [rewrite-clj.zip.utils :refer :all]))
 
 (let [loc (z/down (z/vector-zip '[a b c d]))]

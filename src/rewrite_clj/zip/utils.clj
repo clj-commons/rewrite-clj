@@ -1,5 +1,5 @@
 (ns ^:no-doc rewrite-clj.zip.utils
-  (:require [clojure.zip :as z]))
+  (:require [rewrite-clj.zip.zip :as z]))
 
 ;; ## Remove
 
