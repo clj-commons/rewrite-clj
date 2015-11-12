@@ -283,17 +283,24 @@
                      (nodes-with-meta))]
   (tabular
     (fact "about row/column metadata."
-          (let [{:keys [node next-pos]} (positions ?pos)]
+          (let [{:keys [node next-pos]} (positions ?pos)
+                node-sexpr (and ?sok (node/sexpr node))]
             (node/tag node)    => ?t
             (node/string node) => ?s
-            (node/sexpr node)  => ?sexpr
+            node-sexpr         => ?sexpr
             next-pos           => ?next))
-    ?pos   ?next  ?t      ?s             ?sexpr
-    [1 1]  [3 15] :list   s              '(defn f [x] (println x))
-    [1 2]  [1 6]  :token  "defn"         'defn
-    [1 7]  [1 8]  :token  "f"            'f
-    [2 3]  [2 6]  :vector "[x]"          '[x]
-    [2 4]  [2 5]  :token  "x"            'x
-    [3 3]  [3 14] :list   "(println x)"  '(println x)
-    [3 4]  [3 11] :token  "println"      'println
-    [3 12] [3 13] :token  "x"            'x))
+    ?pos   ?next  ?t          ?s             ?sok  ?sexpr
+    [1 1]  [3 15] :list       s              true  '(defn f [x] (println x))
+    [1 2]  [1 6]  :token      "defn"         true  'defn
+    [1 6]  [1 7]  :whitespace " "            false false
+    [1 7]  [1 8]  :token      "f"            true  'f
+    [1 8]  [2 1]  :newline    "\n"           false false
+    [2 1]  [2 3]  :whitespace "  "           false false
+    [2 3]  [2 6]  :vector     "[x]"          true  '[x]
+    [2 4]  [2 5]  :token      "x"            true  'x
+    [2 6]  [3 1]  :newline    "\n"           false false
+    [3 1]  [3 3]  :whitespace "  "           false false
+    [3 3]  [3 14] :list       "(println x)"  true  '(println x)
+    [3 4]  [3 11] :token      "println"      true  'println
+    [3 11] [3 12] :whitespace " "            false false
+    [3 12] [3 13] :token      "x"            true  'x))
