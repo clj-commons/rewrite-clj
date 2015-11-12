@@ -14,9 +14,12 @@
   [move-fn insert-fn prefix zloc item]
   (let [item-node (node/coerce item)
         next-node (move-fn zloc)]
-    (->> (if (or (not next-node) (ws/whitespace? next-node))
-           (concat [item-node] prefix)
-           (concat [space item-node] prefix))
+    (->> (concat
+           (if (not (or (not next-node) (ws/whitespace? next-node)))
+             [space])
+           [item-node]
+           (if (not (ws/whitespace? zloc))
+             prefix)) 
          (reduce insert-fn zloc))))
 
 (defn insert-right
