@@ -113,3 +113,7 @@
 (defn ^:no-doc assert-single-sexpr
   [nodes]
   (assert-sexpr-count nodes 1))
+
+(defn ^:no-doc replace-children*
+  [node children']
+  (assoc node :children children'))

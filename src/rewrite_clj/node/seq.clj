@@ -26,7 +26,7 @@
   (children [_]
     children)
   (replace-children [this children']
-    (assoc this :children children'))
+    (node/replace-children* this children'))
 
   Object
   (toString [this]
