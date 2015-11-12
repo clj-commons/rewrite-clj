@@ -11,11 +11,7 @@
 (defn edn*
   "Create zipper over the given Clojure/EDN node."
   [node]
-  (z/zipper
-    node/inner?
-    (comp seq node/children)
-    node/replace-children
-    node))
+  (z/zipper node))
 
 (defn edn
   "Create zipper over the given Clojure/EDN node and move

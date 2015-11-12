@@ -13,24 +13,14 @@
   and enumeration.  See Huet"
        :author "Rich Hickey"}
   rewrite-clj.zip.zip
-  (:refer-clojure :exclude (replace remove next)))
+  (:refer-clojure :exclude (replace remove next))
+  (:require [rewrite-clj.node :as node]))
 
 (defn zipper
-  "Creates a new zipper structure. 
-
-  branch? is a fn that, given a node, returns true if can have
-  children, even if it currently doesn't.
-
-  children is a fn that, given a branch node, returns a seq of its
-  children.
-
-  make-node is a fn that, given an existing node and a seq of
-  children, returns a new branch node with the supplied children.
-  root is the root node."
+  "Creates a new zipper structure."
   {:added "1.0"}
-  [branch? children make-node root]
-    ^{:zip/branch? branch? :zip/children children :zip/make-node make-node}
-    [root nil])
+  [root]
+  [root nil])
 
 (defn node
   "Returns the node at loc"
@@ -41,14 +31,14 @@
   "Returns true if the node at loc is a branch"
   {:added "1.0"}
   [loc]
-    ((:zip/branch? (meta loc)) (node loc)))
+    (node/inner? (node loc)))
 
 (defn children
   "Returns a seq of the children of node at loc, which must be a branch"
   {:added "1.0"}
   [loc]
     (if (branch? loc)
-      ((:zip/children (meta loc)) (node loc))
+      (seq (node/children (node loc)))
       (throw (Exception. "called children on a leaf node"))))
 
 (defn make-node
@@ -56,7 +46,7 @@
   children. The loc is only used to supply the constructor."
   {:added "1.0"}
   [loc node children]
-    ((:zip/make-node (meta loc)) node children))
+    (node/replace-children node children))
 
 (defn path
   "Returns a seq of nodes leading to this loc"
