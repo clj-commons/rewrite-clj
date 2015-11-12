@@ -2,7 +2,7 @@
 
 __rewrite-clj__ is a library offering mechanisms to easily rewrite Clojure/EDN documents in a whitespace- and comment-preserving
 way. It includes an EDN parser (based on [clojure.tools.reader](https://github.com/clojure/tools.reader)), a corresponding
-printer, as well as an EDN-aware zipper implementation (based on [fast-zip](https://github.com/akhudek/fast-zip)).
+printer, as well as an EDN-aware zipper implementation (based on [clojure.zip](https://clojure.github.io/clojure/clojure.zip-api.html)).
 
 [![Build Status](https://travis-ci.org/xsc/rewrite-clj.svg?branch=master)](https://travis-ci.org/xsc/rewrite-clj)
 
