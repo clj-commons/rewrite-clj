@@ -32,15 +32,6 @@
     ^{:zip/branch? branch? :zip/children children :zip/make-node make-node}
     [root nil])
 
-(defn seq-zip
-  "Returns a zipper for nested sequences, given a root sequence"
-  {:added "1.0"}
-  [root]
-    (zipper seq?
-            identity
-            (fn [node children] (with-meta children (meta node)))
-            root))
-
 (defn vector-zip
   "Returns a zipper for nested vectors, given a root vector"
   {:added "1.0"}
@@ -48,17 +39,6 @@
     (zipper vector?
             seq
             (fn [node children] (with-meta (vec children) (meta node)))
-            root))
-
-(defn xml-zip
-  "Returns a zipper for xml elements (as from xml/parse),
-  given a root element"
-  {:added "1.0"}
-  [root]
-    (zipper (complement string?) 
-            (comp seq :content)
-            (fn [node children]
-              (assoc node :content (and children (apply vector children))))
             root))
 
 (defn node
@@ -98,13 +78,6 @@
   {:added "1.0"}
   [loc]
     (seq (:l (loc 1))))
-
-(defn rights
-  "Returns a seq of the right siblings of this loc"
-  {:added "1.0"}
-  [loc]
-    (:r (loc 1)))
-
 
 (defn down
   "Returns the loc of the leftmost child of the node at this loc, or
@@ -280,14 +253,12 @@
   
 (comment
 
-(load-file "/Users/rich/dev/clojure/src/zip.clj")
 (refer 'zip)
 (def data '[[a * b] + [c * d]])
 (def dz (vector-zip data))
 
 (right (down (right (right (down dz)))))
 (lefts (right (down (right (right (down dz))))))
-(rights (right (down (right (right (down dz))))))
 (up (up (right (down (right (right (down dz)))))))
 (path (right (down (right (right (down dz))))))
 
