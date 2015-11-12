@@ -15,7 +15,7 @@
   (let [item-node (node/coerce item)
         next-node (move-fn zloc)]
     (->> (concat
-           (if (not (or (not next-node) (ws/whitespace? next-node)))
+           (if (and next-node (not (ws/whitespace? next-node)))
              [space])
            [item-node]
            (if (not (ws/whitespace? zloc))
