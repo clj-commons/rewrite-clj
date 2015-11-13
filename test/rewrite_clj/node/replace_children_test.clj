@@ -1,6 +1,10 @@
 (ns rewrite-clj.node.replace-children-test
-  (:require [midje.sweet :refer :all]
-            [rewrite-clj.node :refer :all]))
+  (:require [clojure.test.check :as tc]
+            [clojure.test.check.properties :as prop]
+            [midje.sweet :refer :all]
+            [rewrite-clj.node :as node]
+            [rewrite-clj.node.generators :as g]
+            [rewrite-clj.test-helpers :refer :all]))
 
 (defn positions
   [node]
@@ -14,15 +18,11 @@
                    :next-row next-row
                    :next-col next-col}))
 
-(tabular
-  (facts "replace-children fixes child positions"
-    (let [node (with-positions (?ctor []) ?pos)
-          children (map
-                     #(with-positions (token-node "foo") %)
-                     ?children)
-          node (replace-children node children)]
-      (positions node) => ?result))
-    ?ctor      ?pos      ?children             ?result
-    forms-node [1 1 1 5] [[1 1 1 3]]           [1 1 1 3]
-    forms-node [1 1 1 5] [[1 1 1 3] [1 1 1 3]] [1 1 1 5]
-    forms-node [1 1 1 5] [[1 3 2 4] [1 1 1 3]] [1 1 2 6])
+
+(facts "about replacing children"
+  (facts "replace-children preserves the meaning of the operation"
+    (property "replace-children does not alter the number of children"
+      (prop/for-all [node g/node
+                     children g/children]
+        (= (count children)
+           (count (node/children (node/replace-children node children))))))))
