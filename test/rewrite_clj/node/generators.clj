@@ -2,6 +2,8 @@
   (:require [clojure.test.check.generators :as gen]
             [rewrite-clj.node :as node]))
 
+;; Leaf nodes
+
 (def comment-node
   (gen/fmap
     (fn [[text eol]]
@@ -11,12 +13,6 @@
         #(re-matches #"[^\r\n]*" %)
         gen/string-ascii)
       (gen/elements ["" "\r" "\n"]))))
-
-;;fn-node
-
-(defn forms-node*
-  [children-generator]
-  (gen/fmap node/forms-node children-generator))
 
 (def integer-node
   (gen/fmap
@@ -34,17 +30,10 @@
       gen/keyword
       gen/boolean)))
 
-;;meta-node
-;;raw-meta-node
 ;;deref-node
 ;;eval-node
 ;;reader-macro-node
 ;;var-node
-;;list-node
-;;map-node
-;;set-node
-;;vector-node
-;;string-node
 ;;quote-node
 ;;syntax-quote-node
 ;;unquote-node
@@ -57,6 +46,9 @@
     (comp node/newline-node (partial apply str))
     (gen/vector (gen/elements [\newline \return]) 1 5)))
 
+(def string-node
+  (gen/fmap node/string-node gen/string-ascii))
+
 (def whitespace-node
   (gen/fmap
     (comp node/whitespace-node (partial apply str))
@@ -67,7 +59,22 @@
                integer-node
                keyword-node
                newline-node
+               string-node
                whitespace-node]))
+
+;; Container nodes
+
+;;fn-node
+;;list-node
+;;map-node
+;;meta-node
+;;raw-meta-node
+;;set-node
+;;vector-node
+
+(defn forms-node*
+  [children-generator]
+  (gen/fmap node/forms-node children-generator))
 
 (defn container-node
   [inner-generator]
