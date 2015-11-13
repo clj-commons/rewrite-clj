@@ -26,7 +26,14 @@
       (gen/choose Long/MIN_VALUE Long/MAX_VALUE)
       (gen/choose 2 36))))
 
-;;keyword-node
+(def keyword-node
+  (gen/fmap
+    (fn [[kw namespaced?]]
+      (node/keyword-node kw namespaced?))
+    (gen/tuple
+      gen/keyword
+      gen/boolean)))
+
 ;;meta-node
 ;;raw-meta-node
 ;;deref-node
@@ -49,7 +56,8 @@
 
 (def leaf-node
   (gen/one-of [comment-node
-               integer-node]))
+               integer-node
+               keyword-node]))
 
 (defn container-node
   [inner-generator]
