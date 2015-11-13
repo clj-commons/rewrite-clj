@@ -68,7 +68,6 @@
 ;; Container nodes
 
 ;;fn-node
-;;map-node
 ;;meta-node
 ;;raw-meta-node
 
@@ -79,6 +78,11 @@
 (defn list-node*
   [child-generator]
   (gen/fmap node/list-node (gen/vector child-generator)))
+
+;; TODO: Ensure an even number of non-whitespace nodes
+(defn map-node*
+  [child-generator]
+  (gen/fmap node/map-node (gen/vector child-generator)))
 
 (defn set-node*
   [child-generator]
@@ -92,6 +96,7 @@
   [inner-generator]
   (gen/one-of [(forms-node* inner-generator)
                (list-node* inner-generator)
+               (map-node* inner-generator)
                (set-node* inner-generator)
                (vector-node* inner-generator)]))
 
@@ -103,5 +108,6 @@
 
 (def forms-node (forms-node* node))
 (def list-node (list-node* node))
+(def map-node (map-node* node))
 (def set-node (set-node* node))
 (def vector-node (vector-node* node))
