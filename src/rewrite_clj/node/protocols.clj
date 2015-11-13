@@ -114,6 +114,10 @@
   [nodes]
   (assert-sexpr-count nodes 1))
 
+(defn- extent
+  [node]
+  (meta node))
+
 (defn- adjust-child
   [[new-row new-col] node]
   ;; TODO: Fix the case where we don't have existing metadata information
@@ -123,13 +127,12 @@
   ;; the check.
 
   ;; TODO: Remove the `and` check entirely after handling all cases.
-
-  ;; TODO: Column handling is dependent on row handling; e.g. if the node
-  ;; spans more than one row, the column delta should not be applied.
-  (let [{:keys [row col next-row next-col]} (meta node)]
+  (let [{:keys [row col next-row next-col]} (extent node)]
     (if (and new-row new-col row col next-row next-col)
       (let [row-delta (- new-row row)
-            col-delta (- new-col col)
+            col-delta (if (= row next-row)
+                        (- new-col col)
+                        0)
             next-row (+ next-row row-delta)
             next-col (+ next-col col-delta)]
         [[next-row next-col] (with-meta node {:row new-row
