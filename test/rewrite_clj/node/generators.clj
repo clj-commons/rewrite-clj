@@ -73,15 +73,19 @@
 ;;meta-node
 ;;raw-meta-node
 ;;set-node
-;;vector-node
 
 (defn forms-node*
   [child-generator]
   (gen/fmap node/forms-node (gen/vector child-generator)))
 
+(defn vector-node*
+  [child-generator]
+  (gen/fmap node/vector-node (gen/vector child-generator)))
+
 (defn container-node
   [inner-generator]
-  (gen/one-of [(forms-node* inner-generator)]))
+  (gen/one-of [(forms-node* inner-generator)
+               (vector-node* inner-generator)]))
 
 (def node
   (gen/recursive-gen container-node leaf-node))
@@ -89,5 +93,5 @@
 (def children
   (gen/vector node))
 
-(def forms-node
-  (forms-node* children))
+(def forms-node (forms-node* children))
+(def vector-node (vector-node* children))
