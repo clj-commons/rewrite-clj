@@ -30,16 +30,6 @@
       gen/keyword
       gen/boolean)))
 
-;;deref-node
-;;eval-node
-;;reader-macro-node
-;;var-node
-;;quote-node
-;;syntax-quote-node
-;;unquote-node
-;;unquote-splicing-node
-;;uneval-node
-
 (def newline-node
   (gen/fmap
     (comp node/newline-node (partial apply str))
@@ -67,9 +57,18 @@
 
 ;; Container nodes
 
+;;deref-node
+;;eval-node
 ;;fn-node
 ;;meta-node
+;;quote-node
 ;;raw-meta-node
+;;reader-macro-node
+;;syntax-quote-node
+;;uneval-node
+;;unquote-node
+;;unquote-splicing-node
+;;var-node
 
 (defn forms-node*
   [child-generator]
