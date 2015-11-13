@@ -13,7 +13,10 @@
       (gen/elements ["" "\r" "\n"]))))
 
 ;;fn-node
-;;forms-node
+
+(defn forms-node*
+  [children-generator]
+  (gen/fmap node/forms-node children-generator))
 
 (def integer-node
   (gen/fmap
@@ -44,8 +47,19 @@
 ;;newline-node
 ;;whitespace-node
 
+(def leaf-node
+  (gen/one-of [comment-node
+               integer-node]))
+
+(defn container-node
+  [inner-generator]
+  (gen/one-of [(forms-node* inner-generator)]))
+
 (def node
-  (gen/one-of [comment-node]))
+  (gen/recursive-gen container-node leaf-node))
 
 (def children
   (gen/vector node))
+
+(def forms-node
+  (forms-node* children))
