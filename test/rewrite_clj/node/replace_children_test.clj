@@ -1,5 +1,6 @@
 (ns rewrite-clj.node.replace-children-test
   (:require [clojure.test.check :as tc]
+            [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
             [midje.sweet :refer :all]
             [rewrite-clj.node :as node]
@@ -22,7 +23,7 @@
 (facts "about replacing children"
   (facts "replace-children preserves the meaning of the operation"
     (property "replace-children does not alter the number of children"
-      (prop/for-all [node g/node
+      (prop/for-all [node (gen/such-that node/inner? g/node)
                      children g/children]
         (= (count children)
            (count (node/children (node/replace-children node children))))))))

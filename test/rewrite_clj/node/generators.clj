@@ -51,13 +51,19 @@
 ;;unquote-splicing-node
 ;;token-node
 ;;uneval-node
-;;newline-node
+
+(def newline-node
+  (gen/fmap
+    (comp node/newline-node (partial apply str))
+    (gen/vector (gen/elements [\newline \return]) 1 5)))
+
 ;;whitespace-node
 
 (def leaf-node
   (gen/one-of [comment-node
                integer-node
-               keyword-node]))
+               keyword-node
+               newline-node]))
 
 (defn container-node
   [inner-generator]
