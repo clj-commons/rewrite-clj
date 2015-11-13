@@ -97,6 +97,6 @@
 (def children
   (gen/vector node))
 
-(def forms-node (forms-node* children))
-(def set-node (set-node* children))
-(def vector-node (vector-node* children))
+(def forms-node (forms-node* node))
+(def set-node (set-node* node))
+(def vector-node (vector-node* node))
