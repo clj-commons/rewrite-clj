@@ -57,13 +57,17 @@
     (comp node/newline-node (partial apply str))
     (gen/vector (gen/elements [\newline \return]) 1 5)))
 
-;;whitespace-node
+(def whitespace-node
+  (gen/fmap
+    (comp node/whitespace-node (partial apply str))
+    (gen/vector (gen/elements [\, \space \tab]) 1 5)))
 
 (def leaf-node
   (gen/one-of [comment-node
                integer-node
                keyword-node
-               newline-node]))
+               newline-node
+               whitespace-node]))
 
 (defn container-node
   [inner-generator]
