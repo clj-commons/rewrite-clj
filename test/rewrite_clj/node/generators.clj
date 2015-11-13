@@ -76,8 +76,8 @@
 ;;vector-node
 
 (defn forms-node*
-  [children-generator]
-  (gen/fmap node/forms-node children-generator))
+  [child-generator]
+  (gen/fmap node/forms-node (gen/vector child-generator)))
 
 (defn container-node
   [inner-generator]
