@@ -38,7 +38,6 @@
 ;;syntax-quote-node
 ;;unquote-node
 ;;unquote-splicing-node
-;;token-node
 ;;uneval-node
 
 (def newline-node
@@ -48,6 +47,9 @@
 
 (def string-node
   (gen/fmap node/string-node gen/string-ascii))
+
+(def token-node
+  (gen/fmap node/token-node gen/symbol))
 
 (def whitespace-node
   (gen/fmap
@@ -60,6 +62,7 @@
                keyword-node
                newline-node
                string-node
+               token-node
                whitespace-node]))
 
 ;; Container nodes
