@@ -22,5 +22,6 @@
                      ?children)
           node (replace-children node children)]
       (positions node) => ?result))
-    ?ctor      ?pos      ?children   ?result
-    forms-node [1 1 1 5] [[1 1 1 3]] [1 1 1 3])
+    ?ctor      ?pos      ?children             ?result
+    forms-node [1 1 1 5] [[1 1 1 3]]           [1 1 1 3]
+    forms-node [1 1 1 5] [[1 1 1 3] [1 1 1 3]] [1 1 1 5])
