@@ -23,7 +23,11 @@
 (facts "about replacing children"
   (facts "replace-children preserves the meaning of the operation"
     (property "replace-children does not alter the number of children"
-      (prop/for-all [node (gen/such-that node/inner? g/node)
-                     children g/children]
+      (prop/for-all [[node children] (gen/bind
+                                       (gen/such-that node/inner? g/node)
+                                       (fn [node]
+                                         (gen/tuple
+                                           (gen/return node)
+                                           (gen/vector g/node (count (node/children node))))))]
         (= (count children)
            (count (node/children (node/replace-children node children))))))))
