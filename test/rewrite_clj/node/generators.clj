@@ -70,43 +70,27 @@
 ;;unquote-splicing-node
 ;;var-node
 
-(defn forms-node*
-  [child-generator]
-  (gen/fmap node/forms-node (gen/vector child-generator)))
+(def ^:private containers
+  [node/forms-node
+   node/list-node
+   node/map-node
+   node/set-node
+   node/vector-node])
 
-(defn list-node*
+(defn- container-node*
   [child-generator]
-  (gen/fmap node/list-node (gen/vector child-generator)))
+  (fn [ctor]
+    (gen/fmap ctor (gen/vector child-generator))))
 
-;; TODO: Ensure an even number of non-whitespace nodes
-(defn map-node*
-  [child-generator]
-  (gen/fmap node/map-node (gen/vector child-generator)))
-
-(defn set-node*
-  [child-generator]
-  (gen/fmap node/set-node (gen/vector child-generator)))
-
-(defn vector-node*
-  [child-generator]
-  (gen/fmap node/vector-node (gen/vector child-generator)))
-
-(defn container-node
+(defn- container-node
   [inner-generator]
-  (gen/one-of [(forms-node* inner-generator)
-               (list-node* inner-generator)
-               (map-node* inner-generator)
-               (set-node* inner-generator)
-               (vector-node* inner-generator)]))
+  (gen/one-of
+    (map
+      (container-node* inner-generator)
+      containers)))
 
 (def node
   (gen/recursive-gen container-node leaf-node))
 
 (def children
   (gen/vector node))
-
-(def forms-node (forms-node* node))
-(def list-node (list-node* node))
-(def map-node (map-node* node))
-(def set-node (set-node* node))
-(def vector-node (vector-node* node))
