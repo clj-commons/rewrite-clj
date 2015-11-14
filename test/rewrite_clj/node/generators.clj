@@ -74,6 +74,7 @@
    [#'node/map-node    0   5]
    [#'node/quote-node  1   1]
    [#'node/set-node    0   5]
+   [#'node/var-node    1   1]
    [#'node/vector-node 0   5]])
 
 (defn- container*
