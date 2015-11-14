@@ -46,14 +46,11 @@
     (comp node/whitespace-node (partial apply str))
     (gen/vector (gen/elements [\, \space \tab]) 1 5)))
 
-(def leaf-node
-  (gen/one-of [comment-node
-               integer-node
+(def atom-node
+  (gen/one-of [integer-node
                keyword-node
-               newline-node
                string-node
-               token-node
-               whitespace-node]))
+               token-node]))
 
 ;; Container nodes
 
@@ -71,26 +68,26 @@
 ;;var-node
 
 (def ^:private containers
-  [node/forms-node
-   node/list-node
-   node/map-node
-   node/set-node
-   node/vector-node])
+  [;ctor               min max
+   [#'node/forms-node  0   5]
+   [#'node/list-node   0   5]
+   [#'node/map-node    0   5]
+   [#'node/quote-node  1   1]
+   [#'node/set-node    0   5]
+   [#'node/vector-node 0   5]])
 
-(defn- container-node*
-  [child-generator]
-  (fn [ctor]
-    (gen/fmap ctor (gen/vector child-generator))))
-
-(defn- container-node
-  [inner-generator]
-  (gen/one-of
-    (map
-      (container-node* inner-generator)
-      containers)))
+(defn- container*
+  [child-generator [ctor min max]]
+  (gen/fmap ctor (gen/vector child-generator min max)))
 
 (def node
-  (gen/recursive-gen container-node leaf-node))
+  (gen/recursive-gen 
+    (fn [inner]
+      (gen/one-of
+        (map
+          (partial container* inner)
+          containers)))
+    atom-node))
 
 (def children
   (gen/vector node))
