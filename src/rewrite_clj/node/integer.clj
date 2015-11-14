@@ -11,13 +11,16 @@
   (length [this]
     (count (node/string this)))
   (string [_]
-    (let [s (.toString (biginteger value) base)
+    (let [sign (if (< value 0)
+                 "-")
+          abs-value (cond-> value (< value 0) -)
+          s (.toString (biginteger abs-value) base)
           prefix (case (long base)
                    8  "0"
                    10 ""
                    16 "0x"
                    (str base "r"))]
-      (str prefix s)))
+      (str sign prefix s)))
 
   Object
   (toString [this]
