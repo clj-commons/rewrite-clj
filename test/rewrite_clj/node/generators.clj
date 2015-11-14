@@ -46,11 +46,14 @@
     (comp node/whitespace-node (partial apply str))
     (gen/vector (gen/elements [\, \space \tab]) 1 5)))
 
-(def atom-node
-  (gen/one-of [integer-node
+(def leaf-node
+  (gen/one-of [comment-node
+               integer-node
                keyword-node
+               newline-node
                string-node
-               token-node]))
+               token-node
+               whitespace-node]))
 
 ;; Container nodes
 
@@ -80,7 +83,8 @@
     ctor
     (gen/vector (gen/such-that
                   (complement node/printable-only?)
-                  child-generator)
+                  child-generator
+                  50)
                 min
                 max)))
 
@@ -91,4 +95,4 @@
         (map
           (partial container* inner)
           containers)))
-    atom-node))
+    leaf-node))
