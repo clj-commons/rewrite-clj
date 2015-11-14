@@ -54,21 +54,19 @@
 
 ;; Container nodes
 
-;;deref-node
 ;;eval-node
 ;;fn-node
 ;;meta-node
-;;quote-node
 ;;raw-meta-node
 ;;reader-macro-node
 ;;syntax-quote-node
 ;;uneval-node
 ;;unquote-node
 ;;unquote-splicing-node
-;;var-node
 
 (def ^:private containers
   [;ctor               min max
+   [#'node/deref-node  1   1]
    [#'node/forms-node  0   5]
    [#'node/list-node   0   5]
    [#'node/map-node    0   5]

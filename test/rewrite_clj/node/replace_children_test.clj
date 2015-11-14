@@ -22,7 +22,7 @@
 
 (facts "about replacing children"
   (facts "replace-children preserves the meaning of the operation"
-    (property "replace-children does not alter the number of children"
+    (property "replace-children does not alter the number of children" 50
       (prop/for-all [[node children] (gen/bind
                                        (gen/such-that node/inner? g/node)
                                        (fn [node]
