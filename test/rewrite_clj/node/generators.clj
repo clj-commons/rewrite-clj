@@ -88,6 +88,9 @@
     (map first)
     (into #{})))
 
+(def container-node-types
+  (set/difference all-node-types leaf-node-types))
+
 (def printable-only-types
   #{:comment
     :newline
@@ -95,29 +98,33 @@
     :uneval})
 
 (defn- container*
-  [child-generator [min max ctor]]
+  [child-generator printable-only-generator [min max ctor]]
   (gen/fmap
     ctor
-    (gen/vector (gen/such-that
-                  (complement node/printable-only?)
-                  child-generator
-                  50)
-                min
-                max)))
+    (gen/fmap
+      first
+      (gen/tuple
+        (gen/vector child-generator min max)
+        (gen/vector printable-only-generator 0 (inc max))))))
 
 (defn node
   ([]
+   (node all-node-types))
+  ([types]
    (gen/bind
      (gen/choose 1 5)
      (fn [depth]
-       (node all-node-types depth))))
+       (node types depth))))
   ([types depth]
-   (gen/bind
-     (gen/elements (cond-> types
-                     (zero? depth)
-                     (set/intersection leaf-node-types)))
-     (fn [type]
-       (let [details (node-specs type)]
-         (if (gen/generator? details)
-           details
-           (container* (node types (dec depth)) details)))))))
+   (let [types (cond-> types
+                 (zero? depth)
+                 (set/intersection leaf-node-types))]
+     (gen/bind
+       (gen/elements types)
+       (fn [type]
+         (let [details (node-specs type)]
+           (if (gen/generator? details)
+             details
+             (let [child-generator (node (set/difference all-node-types printable-only-types) (dec depth))
+                   printable-only-generator (node printable-only-types (dec depth))]
+               (container* child-generator printable-only-generator details)))))))))

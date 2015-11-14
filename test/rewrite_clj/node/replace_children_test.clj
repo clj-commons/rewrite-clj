@@ -24,14 +24,10 @@
   (facts "replace-children preserves the meaning of the operation"
     (property "replace-children does not alter the number of children" 50
       (prop/for-all [[node children] (gen/bind
-                                       (gen/such-that node/inner? (g/node))
-                                       (fn [node]
+                                       (gen/elements g/container-node-types)
+                                       (fn [type]
                                          (gen/tuple
-                                           (gen/return node)
-                                           (gen/vector
-                                             (gen/such-that
-                                               (complement node/printable-only?)
-                                                (g/node))
-                                             (count (remove node/printable-only? (node/children node)))))))]
+                                           (g/node #{type})
+                                           (gen/fmap node/children (g/node #{type})))))]
         (= (count children)
            (count (node/children (node/replace-children node children))))))))
