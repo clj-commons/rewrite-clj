@@ -78,6 +78,22 @@
    :var              [1 1 node/var-node              ]
    :vector           [0 5 node/vector-node           ]})
 
+
+(def all-node-types
+  (into #{} (keys node-specs)))
+
+(def leaf-node-types
+  (->> node-specs
+    (filter (comp gen/generator? second))
+    (map first)
+    (into #{})))
+
+(def printable-only-types
+  #{:comment
+    :newline
+    :whitespace
+    :uneval})
+
 (defn- container*
   [child-generator [min max ctor]]
   (gen/fmap
@@ -88,15 +104,6 @@
                   50)
                 min
                 max)))
-
-(def all-node-types
-  (into #{} (keys node-specs)))
-
-(def leaf-node-types
-  (->> node-specs
-    (filter (comp gen/generator? second))
-    (map first)
-    (into #{})))
 
 (defn node
   ([]
