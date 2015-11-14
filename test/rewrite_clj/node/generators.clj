@@ -55,7 +55,6 @@
 ;; Container nodes
 
 ;;eval-node
-;;raw-meta-node
 ;;reader-macro-node
 ;;uneval-node
 ;;unquote-node
@@ -70,6 +69,7 @@
    [#'node/map-node          0   5]
    [#'node/meta-node         2   2]
    [#'node/quote-node        1   1]
+   [#'node/raw-meta-node     2   2]
    [#'node/set-node          0   5]
    [#'node/syntax-quote-node 1   1]
    [#'node/var-node          1   1]
