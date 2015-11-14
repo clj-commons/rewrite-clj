@@ -57,23 +57,23 @@
 ;;reader-macro-node
 ;;uneval-node
 ;;unquote-node
-;;unquote-splicing-node
 
 (def ^:private containers
-  [;ctor                     min max
-   [#'node/deref-node        1   1]
-   [#'node/eval-node         1   1]
-   [#'node/fn-node           1   5]
-   [#'node/forms-node        0   5]
-   [#'node/list-node         0   5]
-   [#'node/map-node          0   5]
-   [#'node/meta-node         2   2]
-   [#'node/quote-node        1   1]
-   [#'node/raw-meta-node     2   2]
-   [#'node/set-node          0   5]
-   [#'node/syntax-quote-node 1   1]
-   [#'node/var-node          1   1]
-   [#'node/vector-node       0   5]])
+  [;ctor                         min max
+   [#'node/deref-node            1   1]
+   [#'node/eval-node             1   1]
+   [#'node/fn-node               1   5]
+   [#'node/forms-node            0   5]
+   [#'node/list-node             0   5]
+   [#'node/map-node              0   5]
+   [#'node/meta-node             2   2]
+   [#'node/quote-node            1   1]
+   [#'node/raw-meta-node         2   2]
+   [#'node/set-node              0   5]
+   [#'node/syntax-quote-node     1   1]
+   [#'node/unquote-splicing-node 1   1]
+   [#'node/var-node              1   1]
+   [#'node/vector-node           0   5]])
 
 (defn- container*
   [child-generator [ctor min max]]
