@@ -28,6 +28,10 @@
                                        (fn [node]
                                          (gen/tuple
                                            (gen/return node)
-                                           (gen/vector g/node (count (node/children node))))))]
+                                           (gen/vector
+                                             (gen/such-that
+                                               (complement node/printable-only?)
+                                                g/node)
+                                             (count (remove node/printable-only? (node/children node)))))))]
         (= (count children)
            (count (node/children (node/replace-children node children))))))))

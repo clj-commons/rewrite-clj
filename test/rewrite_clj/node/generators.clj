@@ -54,8 +54,6 @@
 
 ;; Container nodes
 
-;;uneval-node       (???)
-
 (def ^:private containers
   [;ctor                         min max
    [#'node/deref-node            1   1]
@@ -70,6 +68,7 @@
    [#'node/reader-macro-node     2   2]
    [#'node/set-node              0   5]
    [#'node/syntax-quote-node     1   1]
+   [#'node/uneval-node           1   1]
    [#'node/unquote-node          1   1]
    [#'node/unquote-splicing-node 1   1]
    [#'node/var-node              1   1]
@@ -77,7 +76,13 @@
 
 (defn- container*
   [child-generator [ctor min max]]
-  (gen/fmap ctor (gen/vector child-generator min max)))
+  (gen/fmap
+    ctor
+    (gen/vector (gen/such-that
+                  (complement node/printable-only?)
+                  child-generator)
+                min
+                max)))
 
 (def node
   (gen/recursive-gen 
