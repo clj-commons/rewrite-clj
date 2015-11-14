@@ -87,6 +87,3 @@
           (partial container* inner)
           containers)))
     atom-node))
-
-(def children
-  (gen/vector node))
