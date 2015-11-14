@@ -54,7 +54,6 @@
 
 ;; Container nodes
 
-;;eval-node
 ;;reader-macro-node
 ;;uneval-node
 ;;unquote-node
@@ -63,6 +62,7 @@
 (def ^:private containers
   [;ctor                     min max
    [#'node/deref-node        1   1]
+   [#'node/eval-node         1   1]
    [#'node/fn-node           1   5]
    [#'node/forms-node        0   5]
    [#'node/list-node         0   5]
