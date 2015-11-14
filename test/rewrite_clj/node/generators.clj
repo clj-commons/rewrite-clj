@@ -1,5 +1,6 @@
 (ns rewrite-clj.node.generators
-  (:require [clojure.test.check.generators :as gen]
+  (:require [clojure.set :as set]
+            [clojure.test.check.generators :as gen]
             [rewrite-clj.node :as node]))
 
 ;; Leaf nodes
@@ -46,39 +47,39 @@
     (comp node/whitespace-node (partial apply str))
     (gen/vector (gen/elements [\, \space \tab]) 1 5)))
 
-(def leaf-node
-  (gen/one-of [comment-node
-               integer-node
-               keyword-node
-               newline-node
-               string-node
-               token-node
-               whitespace-node]))
-
 ;; Container nodes
 
-(def ^:private containers
-  [;ctor                         min max
-   [#'node/deref-node            1   1]
-   [#'node/eval-node             1   1]
-   [#'node/fn-node               1   5]
-   [#'node/forms-node            0   5]
-   [#'node/list-node             0   5]
-   [#'node/map-node              0   5]
-   [#'node/meta-node             2   2]
-   [#'node/quote-node            1   1]
-   [#'node/raw-meta-node         2   2]
-   [#'node/reader-macro-node     2   2]
-   [#'node/set-node              0   5]
-   [#'node/syntax-quote-node     1   1]
-   [#'node/uneval-node           1   1]
-   [#'node/unquote-node          1   1]
-   [#'node/unquote-splicing-node 1   1]
-   [#'node/var-node              1   1]
-   [#'node/vector-node           0   5]])
+(def ^:private node-specs
+  {;leaves           generator
+   :comment          comment-node
+   :integer          integer-node
+   :keyword          keyword-node
+   :newline          newline-node
+   :string           string-node
+   :token            token-node
+   :whitespace       whitespace-node
+
+   ;containers        < > ctor
+   :deref            [1 1 node/deref-node            ]
+   :eval             [1 1 node/eval-node             ]
+   :fn               [1 5 node/fn-node               ]
+   :forms            [0 5 node/forms-node            ]
+   :list             [0 5 node/list-node             ]
+   :map              [0 5 node/map-node              ]
+   :meta             [2 2 node/meta-node             ]
+   :quote            [1 1 node/quote-node            ]
+   :raw-meta         [2 2 node/raw-meta-node         ]
+   :reader-macro     [2 2 node/reader-macro-node     ]
+   :set              [0 5 node/set-node              ]
+   :syntax-quote     [1 1 node/syntax-quote-node     ]
+   :uneval           [1 1 node/uneval-node           ]
+   :unquote          [1 1 node/unquote-node          ]
+   :unquote-splicing [1 1 node/unquote-splicing-node ]
+   :var              [1 1 node/var-node              ]
+   :vector           [0 5 node/vector-node           ]})
 
 (defn- container*
-  [child-generator [ctor min max]]
+  [child-generator [min max ctor]]
   (gen/fmap
     ctor
     (gen/vector (gen/such-that
@@ -88,11 +89,28 @@
                 min
                 max)))
 
-(def node
-  (gen/recursive-gen 
-    (fn [inner]
-      (gen/one-of
-        (map
-          (partial container* inner)
-          containers)))
-    leaf-node))
+(def all-node-types
+  (into #{} (keys node-specs)))
+
+(def leaf-node-types
+  (->> node-specs
+    (filter (comp gen/generator? second))
+    (map first)
+    (into #{})))
+
+(defn node
+  ([]
+   (gen/bind
+     (gen/choose 1 5)
+     (fn [depth]
+       (node all-node-types depth))))
+  ([types depth]
+   (gen/bind
+     (gen/elements (cond-> types
+                     (zero? depth)
+                     (set/intersection leaf-node-types)))
+     (fn [type]
+       (let [details (node-specs type)]
+         (if (gen/generator? details)
+           details
+           (container* (node types (dec depth)) details)))))))
