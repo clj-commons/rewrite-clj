@@ -54,8 +54,7 @@
 
 ;; Container nodes
 
-;;reader-macro-node
-;;uneval-node
+;;uneval-node       (???)
 
 (def ^:private containers
   [;ctor                         min max
@@ -68,6 +67,7 @@
    [#'node/meta-node             2   2]
    [#'node/quote-node            1   1]
    [#'node/raw-meta-node         2   2]
+   [#'node/reader-macro-node     2   2]
    [#'node/set-node              0   5]
    [#'node/syntax-quote-node     1   1]
    [#'node/unquote-node          1   1]
