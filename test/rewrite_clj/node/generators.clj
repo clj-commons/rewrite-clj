@@ -56,7 +56,6 @@
 
 ;;reader-macro-node
 ;;uneval-node
-;;unquote-node
 
 (def ^:private containers
   [;ctor                         min max
@@ -71,6 +70,7 @@
    [#'node/raw-meta-node         2   2]
    [#'node/set-node              0   5]
    [#'node/syntax-quote-node     1   1]
+   [#'node/unquote-node          1   1]
    [#'node/unquote-splicing-node 1   1]
    [#'node/var-node              1   1]
    [#'node/vector-node           0   5]])
