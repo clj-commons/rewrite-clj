@@ -1,24 +1,11 @@
 (ns rewrite-clj.node.replace-children-test
-  (:require [clojure.test.check :as tc]
-            [clojure.test.check.generators :as gen]
+  (:require [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
             [midje.sweet :refer :all]
             [rewrite-clj.node :as node]
             [rewrite-clj.node.generators :as g]
             [rewrite-clj.node.protocols :refer [extent]]
             [rewrite-clj.test-helpers :refer :all]))
-
-(defn positions
-  [node]
-  (let [{:keys [row col next-row next-col]} (meta node)]
-    [row col next-row next-col]))
-
-(defn with-positions
-  [node [row col next-row next-col]]
-  (with-meta node {:row row
-                   :col col
-                   :next-row next-row
-                   :next-col next-col}))
 
 (def node-and-replacement-children
   (gen/bind
