@@ -30,4 +30,13 @@
                                            (g/node #{type})
                                            (gen/fmap node/children (g/node #{type})))))]
         (= (count children)
-           (count (node/children (node/replace-children node children))))))))
+           (count (node/children (node/replace-children node children))))))
+    (property "post-replace-children children are equivalent to the requested ones" 50
+      (prop/for-all [[node children] (gen/bind
+                                       (gen/elements g/container-node-types)
+                                       (fn [type]
+                                         (gen/tuple
+                                           (g/node #{type})
+                                           (gen/fmap node/children (g/node #{type})))))]
+        (= (map node/string children)
+           (map node/string (node/children (node/replace-children node children))))))))
