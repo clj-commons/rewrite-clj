@@ -30,7 +30,11 @@
   (replace-children [this children']
     (when sexpr-count
       (node/assert-sexpr-count children' sexpr-count))
-    (assoc this :children children'))
+    (node/replace-children* this children'))
+  (leader-length [_]
+    (inc (count prefix)))
+  (trailer-length [_]
+    (count suffix))
 
   Object
   (toString [this]
@@ -54,7 +58,11 @@
     children)
   (replace-children [this children']
     (node/assert-sexpr-count children' 2)
-    (assoc this :children children'))
+    (node/replace-children* this children'))
+  (leader-length [_]
+    1)
+  (trailer-length [_]
+    0)
 
   Object
   (toString [this]
@@ -78,7 +86,11 @@
     children)
   (replace-children [this children']
     (node/assert-sexpr-count children' 1)
-    (assoc this :children children'))
+    (node/replace-children* this children'))
+  (leader-length [_]
+    1)
+  (trailer-length [_]
+    0)
 
   Object
   (toString [this]

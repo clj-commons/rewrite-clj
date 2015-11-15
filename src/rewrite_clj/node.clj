@@ -28,13 +28,15 @@
    child-sexprs
    concat-strings
    inner?
+   leader-length
    length
    printable-only?
    replace-children
    sexpr
    sexprs
    string
-   tag]
+   tag
+   trailer-length]
 
   [rewrite-clj.node.comment
    comment-node

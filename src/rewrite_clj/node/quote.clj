@@ -19,7 +19,11 @@
   (children [_] children)
   (replace-children [this children']
     (node/assert-single-sexpr children')
-    (assoc this :children children'))
+    (node/replace-children* this children'))
+  (leader-length [_]
+    (count prefix))
+  (trailer-length [_]
+    0)
 
   Object
   (toString [this]

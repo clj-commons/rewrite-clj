@@ -25,7 +25,11 @@
   (children [_]
     children)
   (replace-children [this children']
-    (assoc this :children children'))
+    (node/replace-children* this children'))
+  (leader-length [_]
+    0)
+  (trailer-length [_]
+    0)
 
   Object
   (toString [this]

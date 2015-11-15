@@ -120,7 +120,7 @@
   [reader read-fn]
   (let [start-position (position reader :row :col)]
     (if-let [entry (read-fn reader)]
-      (->> (position reader :end-row :end-col)
+      (->> (position reader :next-row :next-col)
            (merge start-position)
            (with-meta entry)))))
 

@@ -55,7 +55,11 @@
   (children [_]
     "Get child nodes.")
   (replace-children [_ children]
-    "Replace the node's children."))
+    "Replace the node's children.")
+  (leader-length [_]
+    "How many characters appear before children?")
+  (trailer-length [_]
+    "How many characters appear after children?"))
 
 (extend-protocol InnerNode
   Object
@@ -63,6 +67,10 @@
   (children [_]
     (throw (UnsupportedOperationException.)))
   (replace-children [_ _]
+    (throw (UnsupportedOperationException.)))
+  (leader-length [_]
+    (throw (UnsupportedOperationException.)))
+  (trailer-length [_]
     (throw (UnsupportedOperationException.))))
 
 (defn child-sexprs
@@ -113,3 +121,61 @@
 (defn ^:no-doc assert-single-sexpr
   [nodes]
   (assert-sexpr-count nodes 1))
+
+(defn ^:no-doc extent
+  "A node's extent is how far it moves the \"cursor\".
+
+  Rows are simple - if we have x newlines in the string representation, we
+  will always move the \"cursor\" x rows.
+
+  Columns are strange.  If we have *any* newlines at all in the textual
+  representation of a node, following nodes' column positions are not
+  affected by our startting column position at all.  So the second number
+  in the pair we return is interpreted as a relative column adjustment
+  when the first number in the pair (rows) is zero, and as an absolute
+  column position when rows is non-zero."
+  [node]
+  (let [{:keys [row col next-row next-col]} (meta node)]
+    (if (and row col next-row next-col)
+      [(- next-row row)
+       (if (= row next-row row)
+         (- next-col col)
+         next-col)]
+      (let [s (string node)
+            rows (->> s (filter (partial = \newline)) count)
+            cols (if (zero? rows)
+                   (count s)
+                   (->> s
+                     reverse
+                     (take-while (complement (partial = \newline)))
+                     count))]
+        [rows cols]))))
+
+(defn- adjust-child
+  [[new-row new-col] node]
+  (let [[rows cols] (extent node)
+        next-row (+ new-row rows)
+        next-col (if (zero? rows)
+                   (+ new-col cols)
+                   cols)]
+    [[next-row next-col] (with-meta node {:row new-row
+                                          :col new-col
+                                          :next-row next-row
+                                          :next-col next-col})]))
+
+(defn ^:no-doc replace-children*
+  [node children]
+  (let [{:keys [row col] :or {row 1 col 1}} (meta node)
+        [[next-row next-col] children'] (reduce
+                                          (fn [[pos children] child]
+                                            (let [[next-pos child'] (adjust-child pos child)]
+                                              [next-pos (conj children child')]))
+                                          [[row (+ col (leader-length node))] []]
+                                          children)
+        next-col (+ next-col (trailer-length node))]
+   (-> node
+     (assoc :children children')
+     (with-meta {:row row
+                 :col col
+                 :next-row next-row
+                 :next-col next-col}))))
