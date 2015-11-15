@@ -117,6 +117,25 @@
         (gen/vector (gen/choose 0 Long/MAX_VALUE) (+ max (inc max)))))))
 
 (defn node
+  "Generate parse nodes at random.
+  
+  `types` is a set of permissable top-level nodes.  If not specified, all
+  known top-level nodes are allowed.  This does not affect non-top-level
+  nodes.
+  
+  `depth` is the maximum depth of the tree.  It's possible the tree will be
+  shallower if we pick a lot of leaf-type nodes, but this is a limit.  If
+  not specified, the generator will pick depths from 1 through 5 at random.
+
+  Current implementation notes:
+
+   1. There's no attempt to nest things correctly.  For example, `#( ... )`
+      forms may be nested, and unquote operators may appear outside
+      syntax-quote forms.
+
+   2. Spaces and newlines are added at random, not in a smart way that
+      allows the tree to be converted to a string and reparsed.  Symbols
+      and constants will probably run together."
   ([]
    (node all-node-types))
   ([types]
