@@ -98,14 +98,23 @@
     :uneval})
 
 (defn- container*
+  "Helper to generate a container type.  Generates from `min` to `max` usable
+  nodes and from 0 to `(inc max)` printable-only nodes, then interleaves them
+  randomly.  The containers constructor, `ctor`, is then applied to the
+  resulting vector of children."
   [child-generator printable-only-generator [min max ctor]]
   (gen/fmap
     ctor
     (gen/fmap
-      first
+      (fn [[children printable-only ordering]]
+        (->> (concat children printable-only)
+          (map vector ordering)
+          (sort-by first)
+          (map second)))
       (gen/tuple
         (gen/vector child-generator min max)
-        (gen/vector printable-only-generator 0 (inc max))))))
+        (gen/vector printable-only-generator 0 (inc max))
+        (gen/vector (gen/choose 0 Long/MAX_VALUE) (+ max (inc max)))))))
 
 (defn node
   ([]
