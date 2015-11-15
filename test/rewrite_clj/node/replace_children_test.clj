@@ -43,4 +43,14 @@
   (property "replace-children does not affect the children's extents"
     (prop/for-all [[node children] node-and-replacement-children]
       (= (map extent children)
-         (map extent (node/children (node/replace-children node children)))))))
+         (map extent (node/children (node/replace-children node children))))))
+
+  (property "replace-children does not move the parent's starting position"
+    (prop/for-all [[node children] node-and-replacement-children
+                   row (gen/choose 1 25)
+                   col (gen/choose 1 78)]
+      (let [{after-row :row after-col :col} (-> node
+                                              (with-meta {:row row :col col})
+                                              (node/replace-children children)
+                                              meta)]
+        (= [row col] [after-row after-col])))))
