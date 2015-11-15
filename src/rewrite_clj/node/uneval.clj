@@ -22,6 +22,8 @@
     (node/replace-children* this children'))
   (leader-length [_]
     2)
+  (trailer-length [_]
+    0)
 
   Object
   (toString [this]

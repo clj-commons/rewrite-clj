@@ -35,7 +35,8 @@
    sexpr
    sexprs
    string
-   tag]
+   tag
+   trailer-length]
 
   [rewrite-clj.node.comment
    comment-node

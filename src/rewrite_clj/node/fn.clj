@@ -80,6 +80,8 @@
     (node/replace-children* this children'))
   (leader-length [_]
     2)
+  (trailer-length [_]
+    1)
 
   Object
   (toString [this]

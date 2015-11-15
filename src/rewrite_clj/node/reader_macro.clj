@@ -33,6 +33,8 @@
     (node/replace-children* this children'))
   (leader-length [_]
     (inc (count prefix)))
+  (trailer-length [_]
+    (count suffix))
 
   Object
   (toString [this]
@@ -59,6 +61,8 @@
     (node/replace-children* this children'))
   (leader-length [_]
     1)
+  (trailer-length [_]
+    0)
 
   Object
   (toString [this]
@@ -85,6 +89,8 @@
     (node/replace-children* this children'))
   (leader-length [_]
     1)
+  (trailer-length [_]
+    0)
 
   Object
   (toString [this]

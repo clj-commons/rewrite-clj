@@ -27,6 +27,8 @@
     (node/replace-children* this children'))
   (leader-length [_]
     (count prefix))
+  (trailer-length [_]
+    0)
 
   Object
   (toString [this]
