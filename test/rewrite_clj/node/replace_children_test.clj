@@ -53,4 +53,15 @@
                                               (with-meta {:row row :col col})
                                               (node/replace-children children)
                                               meta)]
-        (= [row col] [after-row after-col])))))
+        (= [row col] [after-row after-col]))))
+
+  (property "adjacency: all replaced children are adjacent"
+    (prop/for-all [[node children] node-and-replacement-children]
+      (->> (node/children (node/replace-children node children))
+        (iterate rest)
+        (take-while #(>= (count %) 2))
+        (every?
+          (fn [[a b]]
+            (let [{:keys [next-row next-col]} (meta a)
+                  {:keys [row col]} (meta b)]
+              (= [next-row next-col] [row col]))))))))
