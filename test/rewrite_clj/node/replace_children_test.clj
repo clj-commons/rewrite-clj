@@ -42,6 +42,18 @@
                                               meta)]
         (= [row col] [after-row after-col]))))
 
+  (property "first replaced child starts after leader"
+    (prop/for-all [[node children] (gen/such-that
+                                     (fn [[node children]]
+                                       (not (zero? (count children))))
+                                     node-and-replacement-children)]
+      (let [updated-node (node/replace-children node children)
+            {:keys [row col]} (meta updated-node)
+            {child-row :row child-col :col} (meta (first (node/children updated-node)))]
+
+        (= [row (+ col (node/leader-length updated-node))]
+           [child-row child-col]))))
+
   (property "adjacency: all replaced children are adjacent"
     (prop/for-all [[node children] node-and-replacement-children]
       (->> (node/children (node/replace-children node children))
