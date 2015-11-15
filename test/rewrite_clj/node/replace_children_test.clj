@@ -19,24 +19,22 @@
                    :next-row next-row
                    :next-col next-col}))
 
+(def node-and-replacement-children
+  (gen/bind
+    (gen/elements g/container-node-types)
+    (fn [type]
+      (gen/tuple
+        (g/node #{type})
+        (gen/fmap node/children (g/node #{type}))))))
 
 (facts "about replacing children"
+
   (facts "replace-children preserves the meaning of the operation"
     (property "replace-children does not alter the number of children" 50
-      (prop/for-all [[node children] (gen/bind
-                                       (gen/elements g/container-node-types)
-                                       (fn [type]
-                                         (gen/tuple
-                                           (g/node #{type})
-                                           (gen/fmap node/children (g/node #{type})))))]
+      (prop/for-all [[node children] node-and-replacement-children]
         (= (count children)
            (count (node/children (node/replace-children node children))))))
     (property "post-replace-children children are equivalent to the requested ones" 50
-      (prop/for-all [[node children] (gen/bind
-                                       (gen/elements g/container-node-types)
-                                       (fn [type]
-                                         (gen/tuple
-                                           (g/node #{type})
-                                           (gen/fmap node/children (g/node #{type})))))]
+      (prop/for-all [[node children] node-and-replacement-children]
         (= (map node/string children)
            (map node/string (node/children (node/replace-children node children))))))))
