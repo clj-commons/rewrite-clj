@@ -65,6 +65,13 @@
         (= [next-row next-col]
            [child-next-row (+ child-next-col (node/trailer-length updated-node))]))))
 
+  (property "removing all children sets width according to leader and trailer"
+    (prop/for-all [node (g/node #{:fn :forms :list :map :set :vector})]
+      (let [updated-node (node/replace-children node [])
+            {:keys [row col next-row next-col]} (meta updated-node)]
+        (= [next-row next-col]
+           [row (+ col (node/leader-length node) (node/trailer-length node))]))))
+
   (property "adjacency: all replaced children are adjacent"
     (prop/for-all [[node children] node-and-replacement-children]
       (->> (node/children (node/replace-children node children))

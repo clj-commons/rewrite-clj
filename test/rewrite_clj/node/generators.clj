@@ -62,7 +62,7 @@
    ;containers        < > ctor
    :deref            [1 1 node/deref-node            ]
    :eval             [1 1 node/eval-node             ]
-   :fn               [1 5 node/fn-node               ]
+   :fn               [0 5 node/fn-node               ]
    :forms            [0 5 node/forms-node            ]
    :list             [0 5 node/list-node             ]
    :map              [0 5 node/map-node              ]
