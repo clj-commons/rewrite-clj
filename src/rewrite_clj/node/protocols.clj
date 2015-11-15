@@ -114,7 +114,7 @@
   [nodes]
   (assert-sexpr-count nodes 1))
 
-(defn extent
+(defn ^:no-doc extent
   "A node's extent is how far it moves the \"cursor\".
 
   Rows are simple - if we have x newlines in the string representation, we
