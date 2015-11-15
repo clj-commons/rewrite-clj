@@ -27,6 +27,8 @@
     children)
   (replace-children [this children']
     (node/replace-children* this children'))
+  (leader-length [_]
+    (dec wrap-length))
 
   Object
   (toString [this]

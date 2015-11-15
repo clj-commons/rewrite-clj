@@ -25,6 +25,8 @@
   (replace-children [this children']
     (node/assert-sexpr-count children' 2)
     (node/replace-children* this children'))
+  (leader-length [_]
+    (count prefix))
 
   Object
   (toString [this]

@@ -28,6 +28,7 @@
    child-sexprs
    concat-strings
    inner?
+   leader-length
    length
    printable-only?
    replace-children

@@ -55,7 +55,9 @@
   (children [_]
     "Get child nodes.")
   (replace-children [_ children]
-    "Replace the node's children."))
+    "Replace the node's children.")
+  (leader-length [_]
+    "How many characters appear before children?"))
 
 (extend-protocol InnerNode
   Object
@@ -63,6 +65,8 @@
   (children [_]
     (throw (UnsupportedOperationException.)))
   (replace-children [_ _]
+    (throw (UnsupportedOperationException.)))
+  (leader-length [_]
     (throw (UnsupportedOperationException.))))
 
 (defn child-sexprs

@@ -52,3 +52,11 @@
             (let [{:keys [next-row next-col]} (meta a)
                   {:keys [row col]} (meta b)]
               (= [next-row next-col] [row col]))))))))
+
+(property "nodes with children report accurate leader lengths"
+  (prop/for-all [node (g/node g/container-node-types)]
+    (let [node-str (node/string node)
+          children-str (apply str (map node/string (node/children node)))
+          leader (node/leader-length node)]
+      (= (subs node-str leader (+ leader (count children-str)))
+         children-str))))

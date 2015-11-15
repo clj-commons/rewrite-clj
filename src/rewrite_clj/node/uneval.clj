@@ -20,6 +20,8 @@
   (replace-children [this children']
     (node/assert-single-sexpr children')
     (node/replace-children* this children'))
+  (leader-length [_]
+    2)
 
   Object
   (toString [this]
