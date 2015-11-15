@@ -114,7 +114,7 @@
   [nodes]
   (assert-sexpr-count nodes 1))
 
-(defn- extent
+(defn extent
   [node]
   (meta node))
 

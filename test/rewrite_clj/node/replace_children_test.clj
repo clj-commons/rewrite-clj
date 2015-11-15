@@ -5,6 +5,7 @@
             [midje.sweet :refer :all]
             [rewrite-clj.node :as node]
             [rewrite-clj.node.generators :as g]
+            [rewrite-clj.node.protocols :refer [extent]]
             [rewrite-clj.test-helpers :refer :all]))
 
 (defn positions
@@ -37,4 +38,9 @@
     (property "post-replace-children children are equivalent to the requested ones" 50
       (prop/for-all [[node children] node-and-replacement-children]
         (= (map node/string children)
-           (map node/string (node/children (node/replace-children node children))))))))
+           (map node/string (node/children (node/replace-children node children)))))))
+
+  (property "replace-children does not affect the children's extents"
+    (prop/for-all [[node children] node-and-replacement-children]
+      (= (map extent children)
+         (map extent (node/children (node/replace-children node children)))))))
