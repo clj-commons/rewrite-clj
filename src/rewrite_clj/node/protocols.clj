@@ -115,35 +115,49 @@
   (assert-sexpr-count nodes 1))
 
 (defn extent
+  "A node's extent is how far it moves the \"cursor\".
+
+  Rows are simple - if we have x newlines in the string representation, we
+  will always move the \"cursor\" x rows.
+
+  Columns are strange.  If we have *any* newlines at all in the textual
+  representation of a node, following nodes' column positions are not
+  affected by our startting column position at all.  So the second number
+  in the pair we return is interpreted as a relative column adjustment
+  when the first number in the pair (rows) is zero, and as an absolute
+  column position when rows is non-zero."
   [node]
-  (meta node))
+  (let [{:keys [row col next-row next-col]} (meta node)]
+    (if (and row col next-row next-col)
+      [(- next-row row)
+       (if (= row next-row row)
+         (- next-col col)
+         next-col)]
+      (let [s (string node)
+            rows (->> s (filter (partial = \newline)) count)
+            cols (if (zero? rows)
+                   (count s)
+                   (->> s
+                     reverse
+                     (take-while (complement (partial = \newline)))
+                     count))]
+        [rows cols]))))
 
 (defn- adjust-child
   [[new-row new-col] node]
-  ;; TODO: Fix the case where we don't have existing metadata information
-  ;; for the node by computing the number of rows/cols.
-  
-  ;; TODO: Ensure new-row/new-col won't ever be nil and remove them from
-  ;; the check.
-
-  ;; TODO: Remove the `and` check entirely after handling all cases.
-  (let [{:keys [row col next-row next-col]} (extent node)]
-    (if (and new-row new-col row col next-row next-col)
-      (let [row-delta (- new-row row)
-            col-delta (if (= row next-row)
-                        (- new-col col)
-                        0)
-            next-row (+ next-row row-delta)
-            next-col (+ next-col col-delta)]
-        [[next-row next-col] (with-meta node {:row new-row
-                                              :col new-col
-                                              :next-row next-row
-                                              :next-col next-col})])
-    [[new-row new-col] node])))
+  (let [[rows cols] (extent node)
+        next-row (+ new-row rows)
+        next-col (if (zero? rows)
+                   (+ new-col cols)
+                   cols)]
+    [[next-row next-col] (with-meta node {:row new-row
+                                          :col new-col
+                                          :next-row next-row
+                                          :next-col next-col})]))
 
 (defn ^:no-doc replace-children*
   [node children]
-  (let [{:keys [row col]} (meta node)
+  (let [{:keys [row col] :or {row 1 col 1}} (meta node)
         [[next-row next-col] children'] (reduce
                                           (fn [[pos children] child]
                                             (let [[next-pos child'] (adjust-child pos child)]
