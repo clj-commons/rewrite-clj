@@ -54,6 +54,17 @@
         (= [row (+ col (node/leader-length updated-node))]
            [child-row child-col]))))
 
+  (property "last replaced child ends before trailer"
+    (prop/for-all [[node children] (gen/such-that
+                                     (fn [[node children]]
+                                       (not (zero? (count children))))
+                                     node-and-replacement-children)]
+      (let [updated-node (node/replace-children node children)
+            {:keys [next-row next-col]} (meta updated-node)
+            {child-next-row :next-row child-next-col :next-col} (meta (last (node/children updated-node)))]
+        (= [next-row next-col]
+           [child-next-row (+ child-next-col (node/trailer-length updated-node))]))))
+
   (property "adjacency: all replaced children are adjacent"
     (prop/for-all [[node children] node-and-replacement-children]
       (->> (node/children (node/replace-children node children))

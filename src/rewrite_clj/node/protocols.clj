@@ -171,7 +171,8 @@
                                             (let [[next-pos child'] (adjust-child pos child)]
                                               [next-pos (conj children child')]))
                                           [[row (+ col (leader-length node))] []]
-                                          children)]
+                                          children)
+        next-col (+ next-col (trailer-length node))]
    (-> node
      (assoc :children children')
      (with-meta {:row row
