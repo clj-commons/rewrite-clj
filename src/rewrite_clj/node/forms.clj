@@ -26,6 +26,8 @@
     children)
   (replace-children [this children']
     (assoc this :children children'))
+  (leader-length [_]
+    0)
 
   Object
   (toString [this]
