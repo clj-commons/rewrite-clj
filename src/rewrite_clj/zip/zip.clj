@@ -14,7 +14,7 @@
        :author "Rich Hickey"}
   rewrite-clj.zip.zip
   (:refer-clojure :exclude (replace remove next))
-  (:require [rewrite-clj.node :as node]))
+  (:require [rewrite-clj.node.protocols :as node]))
 
 (defn zipper
   "Creates a new zipper structure."
@@ -71,14 +71,16 @@
   {:added "1.0"}
   [loc]
     (when (branch? loc)
-      (let [[node path] loc
+      (let [[node path [row col]] loc
             [c & cnext :as cs] (children loc)]
         (when cs
-          (with-meta [c {:l [] 
-                         :pnodes (if path (conj (:pnodes path) node) [node]) 
-                         :ppath path 
-                         :r cnext}
-                      (loc 2)] (meta loc))))))
+          (with-meta [c
+                      {:l [] 
+                       :pnodes (if path (conj (:pnodes path) node) [node]) 
+                       :ppath path 
+                       :r cnext}
+                      [row (+ col (node/leader-length node))]]
+                     (meta loc))))))
 
 (defn up
   "Returns the loc of the parent of the node at this loc, or nil if at
