@@ -124,10 +124,9 @@
   "Returns the loc of the rightmost sibling of the node at this loc, or self"
   {:added "1.0"}
   [loc]
-    (let [[node {l :l r :r :as path}] loc]
-      (if (and path r)
-        (with-meta [(last r) (assoc path :l (apply conj l node (butlast r)) :r nil) (loc 2)] (meta loc))
-        loc)))
+  (if-let [next (right loc)]
+    (recur next)
+    loc))
 
 (defn left
   "Returns the loc of the left sibling of the node at this loc, or nil"

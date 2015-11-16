@@ -28,3 +28,7 @@
   0  [1 2]
   1  [1 7]
   2  [1 8])
+
+(fact "z/rightmost tracks position correctly"
+  (let [root (base/of-string "[hello world]")]
+    (-> root z/down z/rightmost z/position) => [1 8]))
