@@ -20,7 +20,7 @@
   "Creates a new zipper structure."
   {:added "1.0"}
   [root]
-  [root nil])
+  [root nil [1 1]])
 
 (defn node
   "Returns the node at loc"
@@ -53,6 +53,11 @@
   {:added "1.0"}
   [loc]
     (:pnodes (loc 1)))
+
+(defn position
+  "Returns [row col] of the start of the current node"
+  [loc]
+  (loc 2))
 
 (defn lefts
   "Returns a seq of the left siblings of this loc"
