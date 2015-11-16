@@ -117,3 +117,32 @@
 (defn ^:no-doc assert-single-sexpr
   [nodes]
   (assert-sexpr-count nodes 1))
+
+(defn ^:no-doc extent
+  "A node's extent is how far it moves the \"cursor\".
+
+  Rows are simple - if we have x newlines in the string representation, we
+  will always move the \"cursor\" x rows.
+
+  Columns are strange.  If we have *any* newlines at all in the textual
+  representation of a node, following nodes' column positions are not
+  affected by our startting column position at all.  So the second number
+  in the pair we return is interpreted as a relative column adjustment
+  when the first number in the pair (rows) is zero, and as an absolute
+  column position when rows is non-zero."
+  [node]
+  (let [{:keys [row col next-row next-col]} (meta node)]
+    (if (and row col next-row next-col)
+      [(- next-row row)
+       (if (= row next-row row)
+         (- next-col col)
+         next-col)]
+      (let [s (string node)
+            rows (->> s (filter (partial = \newline)) count)
+            cols (if (zero? rows)
+                   (count s)
+                   (->> s
+                     reverse
+                     (take-while (complement (partial = \newline)))
+                     count))]
+        [rows cols]))))
