@@ -113,9 +113,12 @@
   "Returns the loc of the right sibling of the node at this loc, or nil"
   {:added "1.0"}
   [loc]
-    (let [[node {l :l  [r & rnext :as rs] :r :as path}] loc]
+    (let [[node {l :l  [r & rnext :as rs] :r :as path} pos] loc]
       (when (and path rs)
-        (with-meta [r (assoc path :l (conj l node) :r rnext) (loc 2)] (meta loc)))))
+        (with-meta [r
+                    (assoc path :l (conj l node) :r rnext)
+                    (node/+extent pos (node/extent node))]
+                   (meta loc)))))
 
 (defn rightmost
   "Returns the loc of the rightmost sibling of the node at this loc, or self"
