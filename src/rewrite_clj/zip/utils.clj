@@ -4,12 +4,12 @@
 ;; ## Remove
 
 (defn- update-in-path
-  [[node path :as loc] k f]
+  [{:keys [node path position] :as loc} k f]
   (let [v (get path k)]
     (if (seq v)
-      (with-meta
-        [node (assoc path k (f v) :changed? true) (loc 2)]
-        (meta loc))
+      {:node node
+       :path (assoc path k (f v) :changed? true)
+       :position position}
       loc)))
 
 (defn remove-right
@@ -49,25 +49,21 @@
 (defn remove-and-move-left
   "Remove current node and move left. If current node is at the leftmost
    location, returns `nil`."
-  [[_ {:keys [l] :as path} :as loc]]
+  [{:keys [position] {:keys [l] :as path} :path :as loc}]
   (if (seq l)
-    (with-meta
-      [(peek l)
-       (-> path
-           (update-in [:l] pop)
-           (assoc :changed? true))
-       (loc 2)]
-      (meta loc))))
+    {:node (peek l)
+     :path (-> path
+               (update-in [:l] pop)
+               (assoc :changed? true))
+     :position position}))
 
 (defn remove-and-move-right
   "Remove current node and move right. If current node is at the rightmost
    location, returns `nil`."
-  [[_ {:keys [r] :as path} :as loc]]
+  [{:keys [position] {:keys [r] :as path} :path :as loc}]
   (if (seq r)
-    (with-meta
-      [(first r)
-       (-> path
-           (update-in [:r] next)
-           (assoc :changed? true))
-       (loc 2)]
-      (meta loc))))
+    {:node (first r)
+     :path (-> path
+               (update-in [:r] next)
+               (assoc :changed? true))
+     :position position}))
