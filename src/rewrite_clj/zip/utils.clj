@@ -8,7 +8,7 @@
   (let [v (get path k)]
     (if (seq v)
       (with-meta
-        [node (assoc path k (f v) :changed? true)]
+        [node (assoc path k (f v) :changed? true) (loc 2)]
         (meta loc))
       loc)))
 
@@ -52,9 +52,11 @@
   [[_ {:keys [l] :as path} :as loc]]
   (if (seq l)
     (with-meta
-      [(peek l) (-> path
-                    (update-in [:l] pop)
-                    (assoc :changed? true))]
+      [(peek l)
+       (-> path
+           (update-in [:l] pop)
+           (assoc :changed? true))
+       (loc 2)]
       (meta loc))))
 
 (defn remove-and-move-right
@@ -63,7 +65,9 @@
   [[_ {:keys [r] :as path} :as loc]]
   (if (seq r)
     (with-meta
-      [(first r) (-> path
-                     (update-in [:r] next)
-                     (assoc :changed? true))]
+      [(first r)
+       (-> path
+           (update-in [:r] next)
+           (assoc :changed? true))
+       (loc 2)]
       (meta loc))))

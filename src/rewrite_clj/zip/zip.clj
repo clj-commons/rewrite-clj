@@ -77,7 +77,8 @@
           (with-meta [c {:l [] 
                          :pnodes (if path (conj (:pnodes path) node) [node]) 
                          :ppath path 
-                         :r cnext}] (meta loc))))))
+                         :r cnext}
+                      (loc 2)] (meta loc))))))
 
 (defn up
   "Returns the loc of the parent of the node at this loc, or nil if at
@@ -89,8 +90,9 @@
         (let [pnode (peek pnodes)]
           (with-meta (if changed?
                        [(make-node loc pnode (concat l (cons node r))) 
-                        (and ppath (assoc ppath :changed? true))]
-                       [pnode ppath])
+                        (and ppath (assoc ppath :changed? true))
+                        (loc 2)]
+                       [pnode ppath (loc 2)])
                      (meta loc))))))
 
 (defn root
@@ -111,7 +113,7 @@
   [loc]
     (let [[node {l :l  [r & rnext :as rs] :r :as path}] loc]
       (when (and path rs)
-        (with-meta [r (assoc path :l (conj l node) :r rnext)] (meta loc)))))
+        (with-meta [r (assoc path :l (conj l node) :r rnext) (loc 2)] (meta loc)))))
 
 (defn rightmost
   "Returns the loc of the rightmost sibling of the node at this loc, or self"
@@ -119,7 +121,7 @@
   [loc]
     (let [[node {l :l r :r :as path}] loc]
       (if (and path r)
-        (with-meta [(last r) (assoc path :l (apply conj l node (butlast r)) :r nil)] (meta loc))
+        (with-meta [(last r) (assoc path :l (apply conj l node (butlast r)) :r nil) (loc 2)] (meta loc))
         loc)))
 
 (defn left
@@ -128,7 +130,7 @@
   [loc]
     (let [[node {l :l r :r :as path}] loc]
       (when (and path (seq l))
-        (with-meta [(peek l) (assoc path :l (pop l) :r (cons node r))] (meta loc)))))
+        (with-meta [(peek l) (assoc path :l (pop l) :r (cons node r)) (loc 2)] (meta loc)))))
 
 (defn leftmost
   "Returns the loc of the leftmost sibling of the node at this loc, or self"
@@ -136,7 +138,7 @@
   [loc]
     (let [[node {l :l r :r :as path}] loc]
       (if (and path (seq l))
-        (with-meta [(first l) (assoc path :l [] :r (concat (rest l) [node] r))] (meta loc))
+        (with-meta [(first l) (assoc path :l [] :r (concat (rest l) [node] r)) (loc 2)] (meta loc))
         loc)))
 
 (defn insert-left
@@ -147,7 +149,7 @@
     (let [[node {l :l :as path}] loc]
       (if (nil? path)
         (throw (new Exception "Insert at top"))
-        (with-meta [node (assoc path :l (conj l item) :changed? true)] (meta loc)))))
+        (with-meta [node (assoc path :l (conj l item) :changed? true) (loc 2)] (meta loc)))))
 
 (defn insert-right
   "Inserts the item as the right sibling of the node at this loc,
@@ -157,14 +159,14 @@
     (let [[node {r :r :as path}] loc]
       (if (nil? path)
         (throw (new Exception "Insert at top"))
-        (with-meta [node (assoc path :r (cons item r) :changed? true)] (meta loc)))))
+        (with-meta [node (assoc path :r (cons item r) :changed? true) (loc 2)] (meta loc)))))
 
 (defn replace
   "Replaces the node at this loc, without moving"
   {:added "1.0"}
   [loc node]
     (let [[_ path] loc]
-      (with-meta [node (assoc path :changed? true)] (meta loc))))
+      (with-meta [node (assoc path :changed? true) (loc 2)] (meta loc))))
 
 (defn edit
   "Replaces the node at this loc with the value of (f node args)"
@@ -200,7 +202,7 @@
        (loop [p loc]
          (if (up p)
            (or (right (up p)) (recur (up p)))
-           [(node p) :end])))))
+           [(node p) :end (loc 2)])))))
 
 (defn prev
   "Moves to the previous loc in the hierarchy, depth-first. If already
@@ -229,12 +231,13 @@
       (if (nil? path)
         (throw (new Exception "Remove at top"))
         (if (pos? (count l))
-          (loop [loc (with-meta [(peek l) (assoc path :l (pop l) :changed? true)] (meta loc))]
+          (loop [loc (with-meta [(peek l) (assoc path :l (pop l) :changed? true) (loc 2)] (meta loc))]
             (if-let [child (and (branch? loc) (down loc))]
               (recur (rightmost child))
               loc))
           (with-meta [(make-node loc (peek pnodes) rs) 
-                      (and ppath (assoc ppath :changed? true))]
+                      (and ppath (assoc ppath :changed? true))
+                      (loc 2)]
                      (meta loc))))))
   
 (comment
