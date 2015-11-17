@@ -36,3 +36,13 @@
   3  [1 3]
   5  [1 6]
   2  [1 2])
+
+(tabular
+  (fact "`remove-and-move-right` does not affect position"
+    (let [root (base/of-string "[a bb ccc]")
+          zloc (nth (iterate z/next root) ?n)]
+      (z/position (remove-and-move-right zloc)) => ?pos))
+  ?n ?pos
+  3  [1 4]
+  1  [1 2]
+  2  [1 3])
