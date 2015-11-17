@@ -190,7 +190,7 @@
   [{:keys [end?] :as loc}]
   (if end?
     loc
-    (or 
+    (or
      (and (branch? loc) (down loc))
      (right loc)
      (loop [p loc]
@@ -229,7 +229,7 @@
           (if-let [child (and (branch? loc) (down loc))]
             (recur (rightmost child))
             loc))
-        {:node (make-node loc (:node parent) r) 
+        {:node (make-node loc (:node parent) r)
          :path (and ppath (assoc ppath :changed? true))
          :parent (:parent parent)
          :position position}))))
