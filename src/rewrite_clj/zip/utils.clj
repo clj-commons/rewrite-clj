@@ -4,7 +4,7 @@
 ;; ## Remove
 
 (defn- update-in-path
-  [{:keys [node path] :as loc} k f]
+  [loc k f]
   (if-let [v (get loc k)]
     (assoc loc :changed? true k (f v))
     loc))
@@ -16,8 +16,13 @@
 
 (defn remove-left
   "Remove left sibling of the current node (if there is one)."
-  [loc]
-  (update-in-path loc :left pop))
+  [{:keys [left] :as loc}]
+  (if-let [[_ lpos] (peek left)]
+    (assoc loc
+           :left (pop left)
+           :position lpos
+           :changed? true)
+    loc))
 
 (defn remove-right-while
   "Remove elements to the right of the current zipper location as long as

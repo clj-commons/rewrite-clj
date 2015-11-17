@@ -46,3 +46,12 @@
   3  [1 4]
   1  [1 2]
   2  [1 3])
+
+(tabular
+  (fact "`remove-left` tracks current position correctly"
+    (let [root (base/of-string "[a bb ccc]")
+          zloc (nth (iterate z/next root) ?n)]
+      (z/position (remove-left zloc)) => ?pos))
+  ?n ?pos
+  3  [1 3]
+  5  [1 6])
