@@ -23,7 +23,7 @@
 
 (import-vars
   [rewrite-clj.zip.zip
-   node root]
+   node position root]
 
   [rewrite-clj.zip.base
    child-sexprs
