@@ -7,10 +7,10 @@
   [{:keys [node path parent position] :as loc} k f]
   (let [v (get path k)]
     (if (seq v)
-      {:node node
-       :path (assoc path k (f v) :changed? true)
-       :parent parent
-       :position position}
+      (assoc loc
+             :changed? true
+             :node node
+             :path (assoc path k (f v)))
       loc)))
 
 (defn remove-right
@@ -52,21 +52,17 @@
    location, returns `nil`."
   [{:keys [position parent] {:keys [l] :as path} :path :as loc}]
   (if (seq l)
-    {:node (peek l)
-     :path (-> path
-               (update-in [:l] pop)
-               (assoc :changed? true))
-     :parent parent
-     :position position}))
+    (assoc loc
+           :changed? true
+           :node (peek l)
+           :path (update-in path [:l] pop))))
 
 (defn remove-and-move-right
   "Remove current node and move right. If current node is at the rightmost
    location, returns `nil`."
   [{:keys [position parent] {:keys [r] :as path} :path :as loc}]
   (if (seq r)
-    {:node (first r)
-     :path (-> path
-               (update-in [:r] next)
-               (assoc :changed? true))
-     :parent parent
-     :position position}))
+    (assoc loc
+           :changed? true
+           :node (first r)
+           :path (update-in path [:r] next))))
