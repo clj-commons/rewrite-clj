@@ -26,3 +26,13 @@
         (let [loc' (-> loc z/right remove-and-move-left)]
           (base/sexpr loc') => 'a
           (base/root-string loc') => "acd")))
+
+(tabular
+  (fact "`remove-and-move-left` tracks current position correctly"
+    (let [root (base/of-string "[a bb ccc]")
+          zloc (nth (iterate z/next root) ?n)]
+      (z/position (remove-and-move-left zloc)) => ?pos))
+  ?n ?pos
+  3  [1 3]
+  5  [1 6]
+  2  [1 2])
