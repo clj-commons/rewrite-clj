@@ -46,11 +46,6 @@
   [loc node children]
   (node/replace-children node children))
 
-(defn path
-  "Returns a seq of nodes leading to this loc"
-  [loc]
-  (:pnodes (:path loc)))
-
 (defn position
   "Returns [row col] of the start of the current node"
   [loc]
