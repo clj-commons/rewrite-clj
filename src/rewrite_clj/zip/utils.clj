@@ -48,10 +48,12 @@
    location, returns `nil`."
   [{:keys [position left] :as loc}]
   (if (seq left)
-    (assoc loc
-           :changed? true
-           :node (peek left)
-           :left (pop left))))
+    (let [[lnode lpos] (peek left)]
+      (assoc loc
+             :changed? true
+             :node lnode
+             :position lpos
+             :left (pop left)))))
 
 (defn remove-and-move-right
   "Remove current node and move right. If current node is at the rightmost

@@ -56,7 +56,7 @@
 (defn lefts
   "Returns a seq of the left siblings of this loc"
   [loc]
-  (seq (:left loc)))
+  (map first (:left loc)))
 
 (defn down
   "Returns the loc of the leftmost child of the node at this loc, or
@@ -81,7 +81,9 @@
       (if changed?
         (assoc parent
                :changed? true
-               :node (make-node loc (:node parent) (concat left (cons node right))))
+               :node (make-node loc
+                                (:node parent)
+                                (concat (map first left) (cons node right))))
         parent))))
 
 (defn root
@@ -101,7 +103,7 @@
     (when (and parent right)
       (assoc loc
              :node r
-             :left (conj left node)
+             :left (conj left [node position])
              :right rnext
              :position (node/+extent position (node/extent node))))))
 
@@ -117,10 +119,12 @@
   [loc]
   (let [{:keys [node parent left right]} loc]
     (when (and parent (seq left))
-      (assoc loc
-             :node (peek left)
-             :left (pop left)
-             :right (cons node right)))))
+      (let [[lnode lpos] (peek left)]
+        (assoc loc
+               :node lnode
+               :position lpos
+               :left (pop left)
+               :right (cons node right))))))
 
 (defn leftmost
   "Returns the loc of the leftmost sibling of the node at this loc, or self"
@@ -128,21 +132,21 @@
   (let [{:keys [node parent left right]} loc]
     (if (and parent (seq left))
       (assoc loc
-             :node (first left)
+             :node (ffirst left)
              :left []
-             :right (concat (rest left) [node] right))
+             :right (concat (map first (rest left)) [node] right))
       loc)))
 
 (defn insert-left
   "Inserts the item as the left sibling of the node at this loc,
  without moving"
   [loc item]
-    (let [{:keys [parent left]} loc]
-      (if-not parent
-        (throw (new Exception "Insert at top"))
-        (assoc loc
-               :changed? true
-               :left (conj left item)))))
+  (let [{:keys [parent position left]} loc]
+    (if-not parent
+      (throw (new Exception "Insert at top"))
+      (assoc loc
+             :changed? true
+             :left (conj left [item position])))))
 
 (defn insert-right
   "Inserts the item as the right sibling of the node at this loc,
@@ -216,10 +220,12 @@
     (if-not parent
       (throw (new Exception "Remove at top"))
       (if (seq left)
-        (loop [loc (assoc loc
-                          :changed? true
-                          :node (peek left)
-                          :left (pop left))]
+        (loop [loc (let [[lnode lpos] (peek left)]
+                     (assoc loc
+                            :changed? true
+                            :position lpos
+                            :node lnode
+                            :left (pop left)))]
           (if-let [child (and (branch? loc) (down loc))]
             (recur (rightmost child))
             loc))

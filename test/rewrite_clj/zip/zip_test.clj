@@ -32,3 +32,13 @@
 (fact "z/rightmost tracks position correctly"
   (let [root (base/of-string "[hello world]")]
     (-> root z/down z/rightmost z/position) => [1 8]))
+
+(tabular
+  (fact "z/left tracks position correctly"
+    (let [root (base/of-string "[hello world]")
+          zloc (nth (iterate z/left (z/rightmost (z/down root))) ?n)]
+      (z/position zloc) => ?pos))
+  ?n ?pos
+  0 [1 8]
+  1 [1 7]
+  2 [1 2])
