@@ -68,19 +68,18 @@
         {:node c
          :position [row (+ col (node/leader-length node))]
          :parent loc
-         :path {:l [] 
-                :pnodes (if path (conj (:pnodes path) node) [node]) 
-                :ppath path 
+         :path {:l []
+                :ppath path
                 :r cnext}}))))
 
 (defn up
   "Returns the loc of the parent of the node at this loc, or nil if at
   the top"
   [loc]
-  (let [{:keys [node parent position] {:keys [l ppath pnodes r changed?]} :path} loc]
+  (let [{:keys [node parent position] {:keys [l ppath r changed?]} :path} loc]
     (when parent
       (if changed?
-        {:node (make-node loc (peek pnodes) (concat l (cons node r)))
+        {:node (make-node loc (:node parent) (concat l (cons node r)))
          :path (and ppath (assoc ppath :changed? true))
          :parent (:parent parent)
          :position position}
@@ -219,7 +218,7 @@
   "Removes the node at loc, returning the loc that would have preceded
   it in a depth-first walk."
   [loc]
-  (let [{:keys [node parent position] {:keys [l ppath pnodes r] :as path} :path} loc]
+  (let [{:keys [node parent position] {:keys [l ppath r] :as path} :path} loc]
     (if (nil? path)
       (throw (new Exception "Remove at top"))
       (if (pos? (count l))
@@ -230,7 +229,7 @@
           (if-let [child (and (branch? loc) (down loc))]
             (recur (rightmost child))
             loc))
-        {:node (make-node loc (peek pnodes) r) 
+        {:node (make-node loc (:node parent) r) 
          :path (and ppath (assoc ppath :changed? true))
          :parent (:parent parent)
          :position position}))))
