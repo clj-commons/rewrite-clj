@@ -70,3 +70,9 @@
   (let [root (base/of-string "[hello world]")]
     (-> root z/down z/remove z/position) => [1 1]
     (-> root z/down z/right z/remove z/position) => [1 2]))
+
+(fact "z/replace doesn't change the current position"
+  (-> (base/of-string "[hello world]")
+    z/down
+    (z/replace 'x)
+    z/position) => [1 2])
