@@ -3,16 +3,12 @@
 
 ;; ## Remove
 
-(defn- update-in-path
-  [loc k f]
-  (if-let [v (get loc k)]
-    (assoc loc :changed? true k (f v))
-    loc))
-
 (defn remove-right
   "Remove right sibling of the current node (if there is one)."
-  [loc]
-  (update-in-path loc :right next))
+  [{[r & rs] :right :as loc}]
+  (assoc loc
+         :right rs
+         :changed? true))
 
 (defn remove-left
   "Remove left sibling of the current node (if there is one)."
