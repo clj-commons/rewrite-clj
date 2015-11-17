@@ -16,7 +16,7 @@
   (:refer-clojure :exclude (replace remove next))
   (:require [rewrite-clj.node.protocols :as node]))
 
-(defn zipper
+(defn ^:no-doc zipper
   "Creates a new zipper structure."
   [root]
   {:node root
@@ -42,14 +42,14 @@
     (seq (node/children node))
     (throw (Exception. "called children on a leaf node"))))
 
-(defn make-node
+(defn ^:no-doc make-node
   "Returns a new branch node, given an existing node and new
   children. The loc is only used to supply the constructor."
   [loc node children]
   (node/replace-children node children))
 
 (defn position
-  "Returns [row col] of the start of the current node"
+  "Returns the ones-based [row col] of the start of the current node"
   [loc]
   (:position loc))
 
