@@ -42,3 +42,19 @@
   0 [1 8]
   1 [1 7]
   2 [1 2])
+
+(tabular
+  (fact "z/up tracks position correctly"
+    (let [bottom (-> (base/of-string "[x [y [1]]]")
+                   z/down
+                   z/right z/right
+                   z/down
+                   z/right z/right
+                   z/down)
+          zloc (nth (iterate z/up bottom) ?n)]
+      (z/position zloc) => ?pos))
+  ?n ?pos
+  0  [1 8]
+  1  [1 7]
+  2  [1 4]
+  3  [1 1])
