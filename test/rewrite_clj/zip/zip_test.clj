@@ -76,3 +76,9 @@
     z/down
     (z/replace 'x)
     z/position) => [1 2])
+
+(fact "z/insert-right doesn't change the current position"
+  (-> (base/of-string "[hello world]")
+    z/down
+    (z/insert-right 'x)
+    z/position) => [1 2])

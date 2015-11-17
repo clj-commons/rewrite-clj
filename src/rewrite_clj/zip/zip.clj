@@ -154,7 +154,7 @@
   "Inserts the item as the right sibling of the node at this loc,
   without moving"
   [loc item]
-  (let [{:keys [node parent right]} loc]
+  (let [{:keys [parent right]} loc]
     (if-not parent
       (throw (new Exception "Insert at top"))
       (assoc loc
