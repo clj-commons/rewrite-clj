@@ -21,6 +21,7 @@
   [root]
   {:node root
    :position [1 1]
+   :parent nil
    :path nil})
 
 (defn node
@@ -66,6 +67,7 @@
       (when cs
         {:node c
          :position [row (+ col (node/leader-length node))]
+         :parent loc
          :path {:l [] 
                 :pnodes (if path (conj (:pnodes path) node) [node]) 
                 :ppath path 
@@ -75,16 +77,14 @@
   "Returns the loc of the parent of the node at this loc, or nil if at
   the top"
   [loc]
-    (let [{:keys [node position] {:keys [l ppath pnodes r changed?]} :path} loc]
-      (when pnodes
-        (let [pnode (peek pnodes)]
-          (if changed?
-            {:node (make-node loc pnode (concat l (cons node r))) 
-             :path (and ppath (assoc ppath :changed? true))
-             :position position}
-            {:node pnode
-             :path ppath
-             :position position})))))
+  (let [{:keys [node parent position] {:keys [l ppath pnodes r changed?]} :path} loc]
+    (when parent
+      (if changed?
+        {:node (make-node loc (peek pnodes) (concat l (cons node r)))
+         :path (and ppath (assoc ppath :changed? true))
+         :parent (:parent parent)
+         :position position}
+        parent))))
 
 (defn root
   "zips all the way up and returns the root node, reflecting any
@@ -100,10 +100,11 @@
 (defn right
   "Returns the loc of the right sibling of the node at this loc, or nil"
   [loc]
-  (let [{:keys [node position] {l :l [r & rnext :as rs] :r :as path} :path} loc]
+  (let [{:keys [node parent position] {l :l [r & rnext :as rs] :r :as path} :path} loc]
     (when (and path rs)
       {:node r
        :path (assoc path :l (conj l node) :r rnext)
+       :parent parent
        :position (node/+extent position (node/extent node))})))
 
 (defn rightmost
@@ -116,19 +117,21 @@
 (defn left
   "Returns the loc of the left sibling of the node at this loc, or nil"
   [loc]
-  (let [{:keys [node position] {:keys [l r] :as path} :path} loc]
+  (let [{:keys [node parent position] {:keys [l r] :as path} :path} loc]
     (when (and path (seq l))
       {:node (peek l)
        :path (assoc path :l (pop l) :r (cons node r))
+       :parent parent
        :position position})))
 
 (defn leftmost
   "Returns the loc of the leftmost sibling of the node at this loc, or self"
   [loc]
-  (let [{:keys [node position] {:keys [l r] :as path} :path} loc]
+  (let [{:keys [node parent position] {:keys [l r] :as path} :path} loc]
     (if (and path (seq l))
       {:node (first l)
        :path (assoc path :l [] :r (concat (rest l) [node] r))
+       :parent parent
        :position position}
       loc)))
 
@@ -136,22 +139,24 @@
   "Inserts the item as the left sibling of the node at this loc,
  without moving"
   [loc item]
-    (let [{:keys [node position] {:keys [l] :as path} :path} loc]
+    (let [{:keys [node parent position] {:keys [l] :as path} :path} loc]
       (if (nil? path)
         (throw (new Exception "Insert at top"))
         {:node node
          :path (assoc path :l (conj l item) :changed? true)
+         :parent parent
          :position position})))
 
 (defn insert-right
   "Inserts the item as the right sibling of the node at this loc,
   without moving"
   [loc item]
-  (let [{:keys [node position] {:keys [r] :as path} :path} loc]
+  (let [{:keys [node parent position] {:keys [r] :as path} :path} loc]
     (if (nil? path)
       (throw (new Exception "Insert at top"))
       {:node node
        :path (assoc path :r (cons item r) :changed? true)
+       :parent parent
        :position position})))
 
 (defn replace
@@ -214,16 +219,18 @@
   "Removes the node at loc, returning the loc that would have preceded
   it in a depth-first walk."
   [loc]
-  (let [{:keys [node position] {:keys [l ppath pnodes r] :as path} :path} loc]
+  (let [{:keys [node parent position] {:keys [l ppath pnodes r] :as path} :path} loc]
     (if (nil? path)
       (throw (new Exception "Remove at top"))
       (if (pos? (count l))
         (loop [loc {:node (peek l)
                     :path (assoc path :l (pop l) :changed? true)
+                    :parent parent
                     :position position}]
           (if-let [child (and (branch? loc) (down loc))]
             (recur (rightmost child))
             loc))
         {:node (make-node loc (peek pnodes) r) 
          :path (and ppath (assoc ppath :changed? true))
+         :parent (:parent parent)
          :position position}))))
