@@ -65,3 +65,8 @@
     z/right z/right
     z/leftmost
     z/position) => [1 2])
+
+(fact "z/remove tracks position correctly"
+  (let [root (base/of-string "[hello world]")]
+    (-> root z/down z/remove z/position) => [1 1]
+    (-> root z/down z/right z/remove z/position) => [1 2]))
