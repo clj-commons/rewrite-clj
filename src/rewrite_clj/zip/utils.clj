@@ -4,24 +4,20 @@
 ;; ## Remove
 
 (defn- update-in-path
-  [{:keys [node path parent position] :as loc} k f]
-  (let [v (get path k)]
-    (if (seq v)
-      (assoc loc
-             :changed? true
-             :node node
-             :path (assoc path k (f v)))
-      loc)))
+  [{:keys [node path] :as loc} k f]
+  (if-let [v (get loc k)]
+    (assoc loc :changed? true k (f v))
+    loc))
 
 (defn remove-right
   "Remove right sibling of the current node (if there is one)."
   [loc]
-  (update-in-path loc :r next))
+  (update-in-path loc :right next))
 
 (defn remove-left
   "Remove left sibling of the current node (if there is one)."
   [loc]
-  (update-in-path loc :l pop))
+  (update-in-path loc :left pop))
 
 (defn remove-right-while
   "Remove elements to the right of the current zipper location as long as
@@ -50,19 +46,19 @@
 (defn remove-and-move-left
   "Remove current node and move left. If current node is at the leftmost
    location, returns `nil`."
-  [{:keys [position parent] {:keys [l] :as path} :path :as loc}]
-  (if (seq l)
+  [{:keys [position left] :as loc}]
+  (if (seq left)
     (assoc loc
            :changed? true
-           :node (peek l)
-           :path (update-in path [:l] pop))))
+           :node (peek left)
+           :left (pop left))))
 
 (defn remove-and-move-right
   "Remove current node and move right. If current node is at the rightmost
    location, returns `nil`."
-  [{:keys [position parent] {:keys [r] :as path} :path :as loc}]
-  (if (seq r)
+  [{:keys [position right] :as loc}]
+  (if (seq right)
     (assoc loc
            :changed? true
-           :node (first r)
-           :path (update-in path [:r] next))))
+           :node (first right)
+           :right (next right))))
