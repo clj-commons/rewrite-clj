@@ -83,9 +83,11 @@
     (z/insert-right 'x)
     z/position) => [1 2])
 
-(fact "z/insert-left fixes the position"
-  (-> (base/of-string "[hello world]")
-    z/down
-    z/right
-    (z/insert-left 'x)
-    z/position) => [1 8])
+(tabular
+  (fact "z/insert-left fixes the position"
+    (let [root (base/of-string "[hello world]")
+          zloc (nth (iterate z/right (z/down root)) ?n)]
+      (z/position (z/insert-left zloc 'x)) => ?pos))
+  ?n ?pos
+  0 [1 3]
+  1 [1 8])
