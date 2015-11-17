@@ -58,3 +58,10 @@
   1  [1 7]
   2  [1 4]
   3  [1 1])
+
+(fact "z/leftmost tracks position correctly"
+  (-> (base/of-string "[hello world]")
+    z/down
+    z/right z/right
+    z/leftmost
+    z/position) => [1 2])

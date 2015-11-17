@@ -131,10 +131,12 @@
   [loc]
   (let [{:keys [node parent left right]} loc]
     (if (and parent (seq left))
-      (assoc loc
-             :node (ffirst left)
-             :left []
-             :right (concat (map first (rest left)) [node] right))
+      (let [[lnode lpos] (first left)]
+        (assoc loc
+               :node lnode
+               :position lpos
+               :left []
+               :right (concat (map first (rest left)) [node] right)))
       loc)))
 
 (defn insert-left
