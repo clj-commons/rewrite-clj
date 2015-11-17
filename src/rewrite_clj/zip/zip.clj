@@ -94,8 +94,8 @@
 (defn root
   "zips all the way up and returns the root node, reflecting any
  changes."
-  [loc]
-  (if (= :end (:path loc))
+  [{:keys [end?] :as loc}]
+  (if end?
     (node loc)
     (let [p (up loc)]
       (if p
@@ -188,8 +188,8 @@
   "Moves to the next loc in the hierarchy, depth-first. When reaching
   the end, returns a distinguished loc detectable via end?. If already
   at the end, stays there."
-  [loc]
-  (if (= :end (:path loc))
+  [{:keys [end?] :as loc}]
+  (if end?
     loc
     (or 
      (and (branch? loc) (down loc))
@@ -197,7 +197,7 @@
      (loop [p loc]
        (if (up p)
          (or (right (up p)) (recur (up p)))
-         (assoc p :path :end))))))
+         (assoc p :end? true))))))
 
 (defn prev
   "Moves to the previous loc in the hierarchy, depth-first. If already
@@ -213,7 +213,7 @@
 (defn end?
   "Returns true if loc represents the end of a depth-first walk"
   [loc]
-  (= :end (:path loc)))
+  (:end? loc))
 
 (defn remove
   "Removes the node at loc, returning the loc that would have preceded
