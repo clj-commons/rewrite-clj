@@ -148,7 +148,8 @@
       (throw (new Exception "Insert at top"))
       (assoc loc
              :changed? true
-             :left (conj left [item position])))))
+             :left (conj left [item position])
+             :position (node/+extent position (node/extent item))))))
 
 (defn insert-right
   "Inserts the item as the right sibling of the node at this loc,
