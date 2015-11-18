@@ -21,13 +21,14 @@
 
 (tabular
   (fact "z/right tracks position correctly"
-    (let [root (base/of-string "[hello world]")
-          zloc (nth (iterate z/right (z/down root)) ?n)]
+    (let [root (base/of-string "[hello \nworld]")
+          zloc (nth (iterate z/next root) ?n)]
       (z/position zloc) => ?pos))
   ?n ?pos
-  0  [1 2]
-  1  [1 7]
-  2  [1 8])
+  1  [1 2]
+  2  [1 7]
+  3  [1 8]
+  4  [2 1])
 
 (fact "z/rightmost tracks position correctly"
   (let [root (base/of-string "[hello world]")]

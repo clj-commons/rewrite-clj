@@ -144,10 +144,12 @@
                    (->> s
                      reverse
                      (take-while (complement (partial = \newline)))
-                     count))]
+                     count
+                     inc))]
         [rows cols]))))
 
 (defn ^:no-doc +extent
   [[row col] [row-extent col-extent]]
   [(+ row row-extent)
    (cond-> col-extent (zero? row-extent) (+ col))])
+
