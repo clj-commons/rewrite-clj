@@ -1,9 +1,15 @@
 (ns rewrite-clj.zip.zip-test
-  (:require [midje.sweet :refer :all]
+  (:require [clojure.test.check
+              [generators :as gen]
+              [properties :as prop]]
+            [midje.sweet :refer :all]
             [rewrite-clj.node :as node]
+            [rewrite-clj.node.generators :as g]
             [rewrite-clj.test-helpers :refer :all]
             [rewrite-clj.zip
               [base :as base]
+              [utils :as u]
+              [whitespace :as ws]
               [zip :as z]]))
 
 (fact "zipper starts with position [1 1]"
@@ -92,3 +98,72 @@
   ?n ?pos
   0 [1 3]
   1 [1 8])
+
+(def operations
+  {:left                  z/left
+   :right                 z/right
+   :up                    z/up
+   :down                  z/down
+   :rightmost             z/rightmost
+   :leftmost              z/leftmost
+   :insert-right          #(z/insert-right % (node/newline-node "\n"))
+   :insert-left           #(z/insert-left % (node/whitespace-node "  "))
+   :replace               #(z/replace % (node/token-node 'RR))
+   :next                  #(some-> % z/next (dissoc :end?))
+   :prev                  z/prev
+   :remove                z/remove
+   :remove-left           u/remove-left
+   :remove-right          u/remove-right
+   :remove-and-move-left  u/remove-and-move-left
+   :remove-and-move-right u/remove-and-move-right})
+
+(defn apply-operations
+  "Apply a sequence of operations to `zloc`, rejecting any operations which
+  either throw or make `zloc` nil.  Note: we have to verify that zipping back
+  up to the root doesn't fail, also."
+  [zloc [op & ops]]
+  (if-not op
+    zloc
+    (recur (or (try
+                 (let [zloc' ((operations op) zloc)]
+                   (z/root zloc')
+                   zloc')
+                 (catch Throwable t
+                   nil))
+               zloc)
+           ops)))
+
+(defn char-at-position
+  [s [row col]]
+  (loop [[c & cs] (seq s)
+         [cur-row cur-col] [1 1]]
+    (cond
+      (= [row col] [cur-row cur-col])
+      c
+
+      (< (compare [row col] [cur-row cur-col]) 0)
+      nil
+
+      :else
+      (recur cs (if (= c \newline)
+                  [(inc cur-row) 1]
+                  [cur-row (inc cur-col)])))))
+
+(defn char-here
+  [zloc]
+  (cond
+    (z/end? zloc)
+    nil
+
+    (= "" (node/string (z/node zloc)))
+    (recur (z/next zloc))
+
+    :else
+    (first (node/string (z/node zloc)))))
+
+(property "zipper position always matches row and column in root-string"
+  (prop/for-all [node (g/node)
+                 operations (gen/vector (gen/elements (keys operations)) 1 8)]
+    (let [zloc (apply-operations (base/edn* node) operations)]
+      (= (char-here zloc)
+         (char-at-position (base/root-string zloc) (z/position zloc))))))
