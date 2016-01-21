@@ -2,7 +2,7 @@
   (:require [midje.sweet :refer :all]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip.base :as base]
-            [clojure.zip :as z]))
+            [rewrite-clj.zip.zip :as z]))
 
 (let [n (node/forms-node
           [(node/spaces 3)

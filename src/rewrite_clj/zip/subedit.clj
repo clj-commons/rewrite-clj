@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-clj.zip.subedit
   (:require [rewrite-clj.zip.base :as base]
-            [clojure.zip :as z]))
+            [rewrite-clj.zip.zip :as z]))
 
 ;; ## Edit Scope
 

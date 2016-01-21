@@ -6,7 +6,7 @@
              [find :as f]
              [insert :as i]
              [move :as m]]
-            [clojure.zip :as z]))
+            [rewrite-clj.zip.zip :as z]))
 
 ;; ## Predicates
 

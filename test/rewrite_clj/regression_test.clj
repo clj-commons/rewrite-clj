@@ -3,7 +3,7 @@
             [rewrite-clj
              [node :as node]
              [zip :as z]]
-            [clojure.zip :as fz]))
+            [rewrite-clj.zip.zip :as fz]))
 
 ;; ## Regression Tests for 0.3.x -> 0.4.x
 

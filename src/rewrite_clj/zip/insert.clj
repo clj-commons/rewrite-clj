@@ -3,7 +3,7 @@
              [base :as base]
              [whitespace :as ws]]
             [rewrite-clj.node :as node]
-            [clojure.zip :as z]))
+            [rewrite-clj.zip.zip :as z]))
 
 (def ^:private space
   (node/spaces 1))

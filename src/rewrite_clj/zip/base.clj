@@ -4,18 +4,14 @@
              [node :as node]
              [parser :as p]]
             [rewrite-clj.zip.whitespace :as ws]
-            [clojure.zip :as z]))
+            [rewrite-clj.zip.zip :as z]))
 
 ;; ## Zipper
 
 (defn edn*
   "Create zipper over the given Clojure/EDN node."
   [node]
-  (z/zipper
-    node/inner?
-    (comp seq node/children)
-    node/replace-children
-    node))
+  (z/zipper node))
 
 (defn edn
   "Create zipper over the given Clojure/EDN node and move

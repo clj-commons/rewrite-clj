@@ -4,7 +4,7 @@
              [move :as m]
              [utils :as u]
              [whitespace :as ws]]
-            [clojure.zip :as z]))
+            [rewrite-clj.zip.zip :as z]))
 
 (defn- remove-trailing-space
   "Remove all whitespace following a given node."

@@ -17,13 +17,13 @@
              [parser :as p]
              [potemkin :refer [import-vars]]
              [node :as node]]
-            [clojure.zip :as z]))
+            [rewrite-clj.zip.zip :as z]))
 
 ;; ## API Facade
 
 (import-vars
-  [clojure.zip
-   node root]
+  [rewrite-clj.zip.zip
+   node position root]
 
   [rewrite-clj.zip.base
    child-sexprs
@@ -92,17 +92,19 @@
                :arglists `(quote ~arglists)})]
     `(def ~sym ~base)))
 
-(defbase right* clojure.zip/right)
-(defbase left* clojure.zip/left)
-(defbase up* clojure.zip/up)
-(defbase down* clojure.zip/down)
-(defbase next* clojure.zip/next)
-(defbase prev* clojure.zip/prev)
-(defbase rightmost* clojure.zip/rightmost)
-(defbase leftmost* clojure.zip/leftmost)
-(defbase replace* clojure.zip/replace)
-(defbase edit* clojure.zip/edit)
-(defbase remove* clojure.zip/remove)
+(defbase right* rewrite-clj.zip.zip/right)
+(defbase left* rewrite-clj.zip.zip/left)
+(defbase up* rewrite-clj.zip.zip/up)
+(defbase down* rewrite-clj.zip.zip/down)
+(defbase next* rewrite-clj.zip.zip/next)
+(defbase prev* rewrite-clj.zip.zip/prev)
+(defbase rightmost* rewrite-clj.zip.zip/rightmost)
+(defbase leftmost* rewrite-clj.zip.zip/leftmost)
+(defbase replace* rewrite-clj.zip.zip/replace)
+(defbase edit* rewrite-clj.zip.zip/edit)
+(defbase remove* rewrite-clj.zip.zip/remove)
+(defbase insert-left* rewrite-clj.zip.zip/insert-left)
+(defbase insert-right* rewrite-clj.zip.zip/insert-right)
 
 ;; ## DEPRECATED
 
