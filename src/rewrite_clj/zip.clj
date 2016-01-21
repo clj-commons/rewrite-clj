@@ -103,6 +103,8 @@
 (defbase replace* rewrite-clj.zip.zip/replace)
 (defbase edit* rewrite-clj.zip.zip/edit)
 (defbase remove* rewrite-clj.zip.zip/remove)
+(defbase insert-left* rewrite-clj.zip.zip/insert-left)
+(defbase insert-right* rewrite-clj.zip.zip/insert-right)
 
 ;; ## DEPRECATED
 
