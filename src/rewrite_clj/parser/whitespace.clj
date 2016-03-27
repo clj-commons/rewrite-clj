@@ -9,6 +9,6 @@
   [reader]
   (if (reader/linebreak? (reader/peek reader))
     (node/newline-node
-      (reader/read-while reader reader/linebreak?))
-    (node/whitespace-node
-      (reader/read-while reader reader/space?))))
+     (reader/read-while reader reader/linebreak?))
+    (node/whitespace-nodes
+     (reader/read-while reader reader/space?))))

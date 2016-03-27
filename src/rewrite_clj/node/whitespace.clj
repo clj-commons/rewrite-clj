@@ -1,5 +1,6 @@
 (ns ^:no-doc rewrite-clj.node.whitespace
-  (:require [rewrite-clj.node.protocols :as node]))
+  (:require [rewrite-clj.node.protocols :as node]
+            [rewrite-clj.reader :as r]))
 
 ;; ## Newline Modifiers
 
@@ -36,6 +37,18 @@
   (toString [this]
     (node/string this)))
 
+(defrecord CommaNode [commas]
+  node/Node
+  (tag [_] :comma)
+  (printable-only? [_] true)
+  (sexpr [_] (throw (UnsupportedOperationException.)))
+  (length [_] (count commas))
+  (string [_] commas)
+
+  Object
+  (toString [this]
+    (node/string this)))
+
 (defrecord NewlineNode [newlines]
   node/Node
   (tag [_] :newline)
@@ -49,6 +62,7 @@
     (node/string this)))
 
 (node/make-printable! WhitespaceNode)
+(node/make-printable! CommaNode)
 (node/make-printable! NewlineNode)
 
 ;; ## Constructors
@@ -57,9 +71,17 @@
   "Create whitespace node."
   [s]
   {:pre [(string? s)
-         (re-matches #"(\s|,)+" s)
-         (not (re-matches #".*[\n\r].*" s))]}
+         (re-matches #"\s+" s)
+         (not (re-matches #".*[\n\r,].*" s))]}
   (->WhitespaceNode s))
+
+(defn comma-node
+  "Create comma node."
+  [s]
+  {:pre [(string? s)
+         (re-matches #",+" s)
+         (not (re-matches #".*[\n\r\s].*" s))]}
+  (->CommaNode s))
 
 (defn newline-node
   "Create newline node."
@@ -68,23 +90,28 @@
          (re-matches #"[\n\r]+" s)]}
   (->NewlineNode s))
 
-(defn- newline?
-  "Check whether a character represents a linebreak."
-  [c]
-  (contains? #{\return \newline} c))
-
 (defn whitespace-nodes
   "Convert a string of whitespace to whitespace/newline nodes."
   [s]
   {:pre [(string? s)
          (re-matches #"(\s|,)+" s)]}
-  (->> (partition-by newline? s)
-       (map
-         (fn [char-seq]
-           (let [s (apply str char-seq)]
-             (if (newline? (first char-seq))
-               (newline-node s)
-               (whitespace-node s)))))))
+  (loop [[c & s' :as s] s
+         acc            []]
+    (cond
+      (empty? s)
+      ,,acc
+
+      (r/linebreak? c)
+      ,,(let [[head tail] (split-with r/linebreak? s)]
+          (recur tail (->> head (apply str) newline-node (conj acc))))
+
+      (r/comma? c)
+      ,,(let [[head tail] (split-with r/comma? s)]
+          (recur tail (->> head (apply str) comma-node (conj acc))))
+
+      :else
+      ,,(let [[head tail] (split-with #(and (r/space? %) (not (r/comma? %))) s)]
+          (recur tail (->> head (apply str) whitespace-node (conj acc)))))))
 
 ;; ## Utilities
 
@@ -98,7 +125,7 @@
   [n]
   (newline-node (apply str (repeat n \newline))))
 
-(let [comma (whitespace-node ", ")]
+(let [comma (whitespace-nodes ", ")]
   (defn comma-separated
     "Interleave the given seq of nodes with `\", \"` nodes."
     [nodes]
@@ -122,11 +149,17 @@
   "Check whether a node represents whitespace."
   [node]
   (contains?
-    #{:whitespace
-      :newline}
-    (node/tag node)))
+   #{:whitespace
+     :newline
+     :comma}
+   (node/tag node)))
 
 (defn linebreak?
   "Check whether a ndoe represents linebreaks."
   [node]
   (= (node/tag node) :newline))
+
+(defn comma?
+  "Check whether a node represents a comma."
+  [node]
+  (= (node/tag node) :comma))
