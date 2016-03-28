@@ -129,7 +129,9 @@
   (defn comma-separated
     "Interleave the given seq of nodes with `\", \"` nodes."
     [nodes]
-    (butlast (interleave nodes (repeat comma)))))
+    (->> nodes
+         (mapcat #(cons % comma))
+         (drop-last (count comma)))))
 
 (let [nl (newline-node "\n")]
   (defn line-separated
