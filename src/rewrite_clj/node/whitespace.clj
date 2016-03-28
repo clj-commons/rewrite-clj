@@ -72,7 +72,7 @@
   [s]
   {:pre [(string? s)
          (re-matches #"\s+" s)
-         (not (re-matches #".*[\n\r,].*" s))]}
+         (not (re-matches #".*[\n\r].*" s))]}
   (->WhitespaceNode s))
 
 (defn comma-node
