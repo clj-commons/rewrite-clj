@@ -79,9 +79,9 @@
     [m]
     (->> (mapcat
           (fn [[k v]]
-            [(coerce k) space (coerce v) comma])
+            (list* (coerce k) space (coerce v) comma))
           m)
-         (butlast)
+         (drop-last (count comma))
          (vec))))
 
 (defn- record-node
