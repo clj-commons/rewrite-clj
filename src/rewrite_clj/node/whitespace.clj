@@ -90,28 +90,25 @@
          (re-matches #"[\n\r]+" s)]}
   (->NewlineNode s))
 
+(defn- classify-whitespace
+  [c]
+  (cond (r/comma? c)     :comma
+        (r/linebreak? c) :newline
+        :else :whitespace))
+
 (defn whitespace-nodes
   "Convert a string of whitespace to whitespace/newline nodes."
   [s]
   {:pre [(string? s)
          (re-matches #"(\s|,)+" s)]}
-  (loop [[c & s' :as s] s
-         acc            []]
-    (cond
-      (empty? s)
-      ,,acc
-
-      (r/linebreak? c)
-      ,,(let [[head tail] (split-with r/linebreak? s)]
-          (recur tail (->> head (apply str) newline-node (conj acc))))
-
-      (r/comma? c)
-      ,,(let [[head tail] (split-with r/comma? s)]
-          (recur tail (->> head (apply str) comma-node (conj acc))))
-
-      :else
-      ,,(let [[head tail] (split-with #(and (r/space? %) (not (r/comma? %))) s)]
-          (recur tail (->> head (apply str) whitespace-node (conj acc)))))))
+  (->> (partition-by classify-whitespace s)
+       (map
+         (fn [char-seq]
+           (let [s (apply str char-seq)]
+             (case (classify-whitespace (first char-seq))
+               :comma   (comma-node s)
+               :newline (newline-node s)
+               (whitespace-node s)))))))
 
 ;; ## Utilities
 
