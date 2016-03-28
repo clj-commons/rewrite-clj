@@ -45,7 +45,12 @@
 (def whitespace-node
   (gen/fmap
     (comp node/whitespace-node (partial apply str))
-    (gen/vector (gen/elements [\, \space \tab]) 1 5)))
+    (gen/vector (gen/elements [\space \tab]) 1 5)))
+
+(def comma-node
+  (gen/fmap
+    (comp node/comma-node (partial apply str))
+    (gen/vector (gen/return \,) 1 5)))
 
 ;; Container nodes
 
@@ -58,6 +63,7 @@
    :string           string-node
    :token            token-node
    :whitespace       whitespace-node
+   :comma            comma-node
 
    ;containers        < > ctor
    :deref            [1 1 node/deref-node            ]
@@ -95,6 +101,7 @@
   #{:comment
     :newline
     :whitespace
+    :comma
     :uneval})
 
 (defn- container*
