@@ -79,8 +79,7 @@
   "Create comma node."
   [s]
   {:pre [(string? s)
-         (re-matches #",+" s)
-         (not (re-matches #".*[\n\r\s].*" s))]}
+         (re-matches #",+" s)]}
   (->CommaNode s))
 
 (defn newline-node
