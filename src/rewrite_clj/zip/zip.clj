@@ -14,35 +14,73 @@
        :author "Rich Hickey"}
   rewrite-clj.zip.zip
   (:refer-clojure :exclude (replace remove next))
-  (:require [rewrite-clj.node.protocols :as node]))
+  (:require [rewrite-clj.node.protocols :as node]
+            [clojure.zip :as clj-zip]))
+
+;; ## Switch
+;;
+;; To not force users into using this custom zipper, the following flag
+;; is used to dispatch to `clojure.zip` when set to `false`.
+
+(def ^:dynamic *active?*
+  "Set this to true to activate the custom, position-tracking zipper
+   implementation."
+  false)
+
+(defmacro ^:private defn-switchable
+  [sym docstring params & body]
+  (let [placeholders (repeatedly (count params) gensym)]
+    `(defn ~sym
+       ~docstring
+       [~@placeholders]
+       (if *active?*
+         (let [~@(interleave params placeholders)]
+           ~@body)
+         (~(symbol "clojure.zip" (name sym)) ~@placeholders)))))
+
+(defmacro with-positional-zipper
+  "Do not use `clojure.zip` to evaluate any rewrite-clj zipper operations in
+   `body` but a custom position-tracking zipper that offers the function
+   `position` to return row and column of a node."
+  [& body]
+  `(binding [*active?* true]
+     ~@body))
+
+;; ## Implementation
 
 (defn ^:no-doc zipper
   "Creates a new zipper structure."
   [root]
-  {:node root
-   :position [1 1]
-   :parent nil
-   :left []
-   :right '()})
+  (if *active?*
+    {:node root
+     :position [1 1]
+     :parent nil
+     :left []
+     :right '()}
+    (clj-zip/zipper
+      node/inner?
+      (comp seq node/children)
+      node/replace-children
+      root)))
 
-(defn node
+(defn-switchable node
   "Returns the node at loc"
   [{:keys [node]}]
   node)
 
-(defn branch?
+(defn-switchable branch?
   "Returns true if the node at loc is a branch"
   [{:keys [node]}]
   (node/inner? node))
 
-(defn children
+(defn-switchable children
   "Returns a seq of the children of node at loc, which must be a branch"
   [{:keys [node] :as loc}]
   (if (branch? loc)
     (seq (node/children node))
     (throw (Exception. "called children on a leaf node"))))
 
-(defn ^:no-doc make-node
+(defn-switchable ^:no-doc make-node
   "Returns a new branch node, given an existing node and new
   children. The loc is only used to supply the constructor."
   [loc node children]
@@ -51,14 +89,19 @@
 (defn position
   "Returns the ones-based [row col] of the start of the current node"
   [loc]
-  (:position loc))
+  (if *active?*
+    (:position loc)
+    (throw
+      (IllegalStateException.
+        (str "to use the positional zipper functions, please use "
+             "`rewrite-clj.zip.zip/with-positional-zipper`.")))))
 
-(defn lefts
+(defn-switchable lefts
   "Returns a seq of the left siblings of this loc"
   [loc]
   (map first (:left loc)))
 
-(defn down
+(defn-switchable down
   "Returns the loc of the leftmost child of the node at this loc, or
   nil if no children"
   [loc]
@@ -72,7 +115,7 @@
          :left []
          :right cnext}))))
 
-(defn up
+(defn-switchable up
   "Returns the loc of the parent of the node at this loc, or nil if at
   the top"
   [loc]
@@ -86,7 +129,7 @@
                                 (concat (map first left) (cons node right))))
         parent))))
 
-(defn root
+(defn-switchable root
   "zips all the way up and returns the root node, reflecting any changes."
   [{:keys [end?] :as loc}]
   (if end?
@@ -96,7 +139,7 @@
         (recur p)
         (node loc)))))
 
-(defn right
+(defn-switchable right
   "Returns the loc of the right sibling of the node at this loc, or nil"
   [loc]
   (let [{:keys [node parent position left] [r & rnext :as right] :right} loc]
@@ -107,14 +150,14 @@
              :right rnext
              :position (node/+extent position (node/extent node))))))
 
-(defn rightmost
+(defn-switchable rightmost
   "Returns the loc of the rightmost sibling of the node at this loc, or self"
   [loc]
   (if-let [next (right loc)]
     (recur next)
     loc))
 
-(defn left
+(defn-switchable left
   "Returns the loc of the left sibling of the node at this loc, or nil"
   [loc]
   (let [{:keys [node parent left right]} loc]
@@ -126,7 +169,7 @@
                :left (pop left)
                :right (cons node right))))))
 
-(defn leftmost
+(defn-switchable leftmost
   "Returns the loc of the leftmost sibling of the node at this loc, or self"
   [loc]
   (let [{:keys [node parent left right]} loc]
@@ -139,7 +182,7 @@
                :right (concat (map first (rest left)) [node] right)))
       loc)))
 
-(defn insert-left
+(defn-switchable insert-left
   "Inserts the item as the left sibling of the node at this loc,
  without moving"
   [loc item]
@@ -151,7 +194,7 @@
              :left (conj left [item position])
              :position (node/+extent position (node/extent item))))))
 
-(defn insert-right
+(defn-switchable insert-right
   "Inserts the item as the right sibling of the node at this loc,
   without moving"
   [loc item]
@@ -162,7 +205,7 @@
              :changed? true
              :right (cons item right)))))
 
-(defn replace
+(defn-switchable replace
   "Replaces the node at this loc, without moving"
   [loc node]
   (assoc loc :changed? true :node node))
@@ -170,21 +213,23 @@
 (defn edit
   "Replaces the node at this loc with the value of (f node args)"
   [loc f & args]
-  (replace loc (apply f (node loc) args)))
+  (if *active?*
+    (replace loc (apply f (node loc) args))
+    (apply clj-zip/edit loc f args)))
 
-(defn insert-child
+(defn-switchable insert-child
   "Inserts the item as the leftmost child of the node at this loc,
   without moving"
   [loc item]
   (replace loc (make-node loc (node loc) (cons item (children loc)))))
 
-(defn append-child
+(defn-switchable append-child
   "Inserts the item as the rightmost child of the node at this loc,
   without moving"
   [loc item]
   (replace loc (make-node loc (node loc) (concat (children loc) [item]))))
 
-(defn next
+(defn-switchable next
   "Moves to the next loc in the hierarchy, depth-first. When reaching
   the end, returns a distinguished loc detectable via end?. If already
   at the end, stays there."
@@ -199,7 +244,7 @@
          (or (right (up p)) (recur (up p)))
          (assoc p :end? true))))))
 
-(defn prev
+(defn-switchable prev
   "Moves to the previous loc in the hierarchy, depth-first. If already
   at the root, returns nil."
   [loc]
@@ -210,12 +255,12 @@
         loc))
     (up loc)))
 
-(defn end?
+(defn-switchable end?
   "Returns true if loc represents the end of a depth-first walk"
   [loc]
   (:end? loc))
 
-(defn remove
+(defn-switchable remove
   "Removes the node at loc, returning the loc that would have preceded
   it in a depth-first walk."
   [loc]
