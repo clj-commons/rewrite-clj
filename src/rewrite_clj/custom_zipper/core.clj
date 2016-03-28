@@ -106,8 +106,9 @@
     (:position loc)
     (throw
       (IllegalStateException.
-        (str "to use the positional zipper functions, please use "
-             "`rewrite-clj.zip.zip/with-positional-zipper`.")))))
+        (str
+          "to use the positional zipper functions, please wrap your rewrite-clj"
+          " calls with `rewrite-clj.zip/with-positional-zipper`.")))))
 
 (defn-switchable lefts
   "Returns a seq of the left siblings of this loc"
