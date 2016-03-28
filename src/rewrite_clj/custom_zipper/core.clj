@@ -56,7 +56,7 @@
   "Force usage of `clojure.zip` to evaluate any rewrite-clj zipper operations in
    `body` instead of a custom position-tracking zipper."
   [& body]
-  `(binding [*active?* true]
+  `(binding [*active?* false]
      ~@body))
 
 ;; ## Implementation
