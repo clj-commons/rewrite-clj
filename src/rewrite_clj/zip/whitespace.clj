@@ -44,13 +44,19 @@
   "Prepend a whitespace node representing the given number of spaces (default: 1)."
   ([zloc] (prepend-space zloc 1))
   ([zloc n]
-   (z/insert-left zloc (node/spaces n))))
+   {:pre [(>= n 0)]}
+   (if (pos? n)
+     (z/insert-left zloc (node/spaces n))
+     zloc)))
 
 (defn append-space
   "Append a whitespace node representing the given number of spaces (default: 1)."
   ([zloc] (append-space zloc 1))
   ([zloc n]
-   (z/insert-right zloc (node/spaces n))))
+   {:pre [(>= n 0)]}
+   (if (pos? n)
+     (z/insert-right zloc (node/spaces n))
+     zloc)))
 
 (defn prepend-newline
   "Prepend a whitespace node representing the given number of spaces (default: 1)."
