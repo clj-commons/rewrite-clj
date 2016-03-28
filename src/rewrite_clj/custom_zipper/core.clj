@@ -27,6 +27,12 @@
    implementation."
   false)
 
+(defn use-positional-zipper!
+  "Globally activate the position-tracking zipper. You can locally revert
+   behaviour to `clojure.zip`'s by using `without-positional-zipper`."
+  []
+  (alter-var-root #'*active?* (constantly true)))
+
 (defmacro ^:private defn-switchable
   [sym docstring params & body]
   (let [placeholders (repeatedly (count params) gensym)]
@@ -42,6 +48,13 @@
   "Do not use `clojure.zip` to evaluate any rewrite-clj zipper operations in
    `body` but a custom position-tracking zipper that offers the function
    `position` to return row and column of a node."
+  [& body]
+  `(binding [*active?* true]
+     ~@body))
+
+(defmacro without-positional-zipper
+  "Force usage of `clojure.zip` to evaluate any rewrite-clj zipper operations in
+   `body` instead of a custom position-tracking zipper."
   [& body]
   `(binding [*active?* true]
      ~@body))

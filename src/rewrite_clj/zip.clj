@@ -24,7 +24,9 @@
 (import-vars
   [rewrite-clj.custom-zipper.core
    node position root
-   with-positional-zipper]
+   use-positional-zipper!
+   with-positional-zipper
+   without-positional-zipper]
 
   [rewrite-clj.zip.base
    child-sexprs
