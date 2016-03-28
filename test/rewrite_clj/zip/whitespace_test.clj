@@ -1,7 +1,7 @@
 (ns rewrite-clj.zip.whitespace-test
   (:require [midje.sweet :refer :all]
             [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.zip :as z]
+            [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip.whitespace :refer :all]))
 

@@ -1,5 +1,5 @@
-(ns ^:no-doc rewrite-clj.zip.utils
-  (:require [rewrite-clj.zip.zip :as z]))
+(ns ^:no-doc rewrite-clj.custom-zipper.utils
+  (:require [rewrite-clj.custom-zipper.core :as z]))
 
 ;; ## Remove
 

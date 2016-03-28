@@ -4,7 +4,7 @@
              [base :as base]
              [move :as m]
              [remove :as r]]
-            [rewrite-clj.zip.zip :as z]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 (tabular
   (fact "about whitespace-aware removal."

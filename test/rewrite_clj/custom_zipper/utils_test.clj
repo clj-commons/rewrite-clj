@@ -1,9 +1,9 @@
-(ns rewrite-clj.zip.utils-test
+(ns rewrite-clj.custom-zipper.utils-test
   (:require [midje.sweet :refer :all]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.zip :as z]
-            [rewrite-clj.zip.utils :refer :all]))
+            [rewrite-clj.custom-zipper.core :as z]
+            [rewrite-clj.custom-zipper.utils :refer :all]))
 
 (let [a (node/token-node 'a)
       b (node/token-node 'b)

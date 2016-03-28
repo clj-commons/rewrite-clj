@@ -17,12 +17,12 @@
              [parser :as p]
              [potemkin :refer [import-vars]]
              [node :as node]]
-            [rewrite-clj.zip.zip :as z]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 ;; ## API Facade
 
 (import-vars
-  [rewrite-clj.zip.zip
+  [rewrite-clj.custom-zipper.core
    node position root]
 
   [rewrite-clj.zip.base
@@ -92,19 +92,19 @@
                :arglists `(quote ~arglists)})]
     `(def ~sym ~base)))
 
-(defbase right* rewrite-clj.zip.zip/right)
-(defbase left* rewrite-clj.zip.zip/left)
-(defbase up* rewrite-clj.zip.zip/up)
-(defbase down* rewrite-clj.zip.zip/down)
-(defbase next* rewrite-clj.zip.zip/next)
-(defbase prev* rewrite-clj.zip.zip/prev)
-(defbase rightmost* rewrite-clj.zip.zip/rightmost)
-(defbase leftmost* rewrite-clj.zip.zip/leftmost)
-(defbase replace* rewrite-clj.zip.zip/replace)
-(defbase edit* rewrite-clj.zip.zip/edit)
-(defbase remove* rewrite-clj.zip.zip/remove)
-(defbase insert-left* rewrite-clj.zip.zip/insert-left)
-(defbase insert-right* rewrite-clj.zip.zip/insert-right)
+(defbase right* rewrite-clj.custom-zipper.core/right)
+(defbase left* rewrite-clj.custom-zipper.core/left)
+(defbase up* rewrite-clj.custom-zipper.core/up)
+(defbase down* rewrite-clj.custom-zipper.core/down)
+(defbase next* rewrite-clj.custom-zipper.core/next)
+(defbase prev* rewrite-clj.custom-zipper.core/prev)
+(defbase rightmost* rewrite-clj.custom-zipper.core/rightmost)
+(defbase leftmost* rewrite-clj.custom-zipper.core/leftmost)
+(defbase replace* rewrite-clj.custom-zipper.core/replace)
+(defbase edit* rewrite-clj.custom-zipper.core/edit)
+(defbase remove* rewrite-clj.custom-zipper.core/remove)
+(defbase insert-left* rewrite-clj.custom-zipper.core/insert-left)
+(defbase insert-right* rewrite-clj.custom-zipper.core/insert-right)
 
 ;; ## DEPRECATED
 

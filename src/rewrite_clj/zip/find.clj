@@ -4,7 +4,7 @@
              [base :as base]
              [move :as m]]
             [rewrite-clj.node :as node]
-            [rewrite-clj.zip.zip :as z]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 ;; ## Helpers
 

@@ -1,4 +1,4 @@
-(ns rewrite-clj.zip.zip-test
+(ns rewrite-clj.custom-zipper.core-test
   (:require [clojure.test.check
               [generators :as gen]
               [properties :as prop]]
@@ -8,9 +8,10 @@
             [rewrite-clj.test-helpers :refer :all]
             [rewrite-clj.zip
               [base :as base]
-              [whitespace :as ws]
-              [utils :as u]
-              [zip :as z]]))
+              [whitespace :as ws]]
+            [rewrite-clj.custom-zipper
+             [core :as z]
+             [utils :as u]]))
 
 (z/with-positional-zipper
   (fact "zipper starts with position [1 1]"

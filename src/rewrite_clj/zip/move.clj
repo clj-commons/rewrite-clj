@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-clj.zip.move
   (:refer-clojure :exclude [next])
   (:require [rewrite-clj.zip.whitespace :as ws]
-            [rewrite-clj.zip.zip :as z]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 (defn right
   "Move right to next non-whitespace/non-comment location."

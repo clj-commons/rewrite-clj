@@ -12,7 +12,7 @@
 (ns ^{:doc "Functional hierarchical zipper, with navigation, editing,
   and enumeration.  See Huet"
        :author "Rich Hickey"}
-  rewrite-clj.zip.zip
+  rewrite-clj.custom-zipper.core
   (:refer-clojure :exclude (replace remove next))
   (:require [rewrite-clj.node.protocols :as node]
             [clojure.zip :as clj-zip]))
