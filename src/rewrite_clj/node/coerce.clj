@@ -73,15 +73,15 @@
 
 ;; ## Maps
 
-(let [comma (ws/whitespace-node ", ")
+(let [comma (ws/whitespace-nodes ", ")
       space (ws/whitespace-node " ")]
   (defn- map->children
     [m]
     (->> (mapcat
-           (fn [[k v]]
-             [(coerce k) space (coerce v) comma])
-           m)
-         (butlast)
+          (fn [[k v]]
+            (list* (coerce k) space (coerce v) comma))
+          m)
+         (drop-last (count comma))
          (vec))))
 
 (defn- record-node

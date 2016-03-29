@@ -28,11 +28,15 @@
       \( \) \[ \] \{ \} \\ nil}
     c))
 
+(defn comma?
+  [^java.lang.Character c]
+  (= c \,))
+
 (defn whitespace?
   [^java.lang.Character c]
   (and c
-       (or (Character/isWhitespace c)
-           (= c \,))))
+       (or (comma? c)
+           (Character/isWhitespace c))))
 
 (defn linebreak?
   [^java.lang.Character c]

@@ -92,7 +92,10 @@
    newline-node
    spaces
    whitespace-node
-   whitespace?])
+   whitespace?
+   comma-node
+   comma?
+   whitespace-nodes])
 
 ;; ## Predicates
 
