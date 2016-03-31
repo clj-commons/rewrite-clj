@@ -2,7 +2,7 @@
   :description "Comment-/Whitespace-preserving rewriting of EDN documents."
   :url "https://github.com/xsc/rewrite-clj"
   :license {:name "MIT License"
-            :url "http://opensource.org/licenses/MIT"
+            :url "https://opensource.org/licenses/MIT"
             :year 2013
             :key "mit"}
   :repositories  {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
