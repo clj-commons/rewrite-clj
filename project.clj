@@ -6,11 +6,11 @@
             :year 2013
             :key "mit"}
   :repositories  {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
-  :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/tools.reader "0.9.2"]]
-  :profiles {:dev {:dependencies [[midje "1.7.0" :exclusions [joda-time]]
-                                  [joda-time "2.8.2"]
-                                  [org.clojure/test.check "0.7.0"]]
+  :dependencies [[org.clojure/clojure "1.8.0"]
+                 [org.clojure/tools.reader "0.10.0"]]
+  :profiles {:dev {:dependencies [[midje "1.8.3" :exclusions [joda-time]]
+                                  [joda-time "2.9.3"]
+                                  [org.clojure/test.check "0.9.0"]]
                    :plugins [[lein-midje "3.1.3"]
                              [codox "0.8.10"]]
                    :exclusions [org.clojure/clojure]
