@@ -13,9 +13,9 @@
              [subedit :as subedit]
              [walk :as walk]
              [whitespace :as ws]]
+            [rewrite-clj.potemkin :refer [import-vars]]
             [rewrite-clj
              [parser :as p]
-             [potemkin :refer [import-vars]]
              [node :as node]]
             [rewrite-clj.zip.zip :as z]))
 
