@@ -10,7 +10,7 @@
                  [org.clojure/tools.reader "0.10.0"]]
   :profiles {:dev {:dependencies [[midje "1.8.3" :exclusions [joda-time]]
                                   [joda-time "2.9.3"]
-                                  [org.clojure/test.check "0.9.0"]]
+                                  [org.clojure/test.check "0.7.0"]]
                    :plugins [[lein-midje "3.1.3"]
                              [codox "0.8.10"]]
                    :exclusions [org.clojure/clojure]
