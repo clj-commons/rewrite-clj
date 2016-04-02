@@ -1,5 +1,18 @@
 ## Changelog
 
+### 0.5.0
+
+### 0.4.13
+
+_Development has branched off, using the `0.4.x` branch_
+
+- upgrades dependencies.
+- fixes a compatibility issue when running 'benedekfazekas/mranderson' on
+  a project with both 'rewrite-clj' and 'potemkin'.
+- switch to Clojure 1.8.0 as base Clojure dependency; mark as "provided".
+- switch to MIT License.
+- drop support for JDK6.
+
 ### 0.4.12
 
 - drop `fast-zip` and `potemkin` dependencies. (see #26)
