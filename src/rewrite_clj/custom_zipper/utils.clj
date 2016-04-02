@@ -15,7 +15,7 @@
 (defn remove-right
   "Remove right sibling of the current node (if there is one)."
   [loc]
-  (if z/*active?*
+  (if (z/custom-zipper? loc)
     (let [{[r & rs] :right} loc]
       (assoc loc
              :right rs
@@ -25,7 +25,7 @@
 (defn remove-left
   "Remove left sibling of the current node (if there is one)."
   [loc]
-  (if z/*active?*
+  (if (z/custom-zipper? loc)
     (let [{:keys [left]} loc]
       (if-let [[_ lpos] (peek left)]
         (assoc loc
@@ -63,7 +63,7 @@
   "Remove current node and move left. If current node is at the leftmost
    location, returns `nil`."
   [loc]
-  (if z/*active?*
+  (if (z/custom-zipper? loc)
     (let [{:keys [position left]} loc]
       (if (seq left)
         (let [[lnode lpos] (peek left)]
@@ -84,7 +84,7 @@
   "Remove current node and move right. If current node is at the rightmost
    location, returns `nil`."
   [loc]
-  (if z/*active?*
+  (if (z/custom-zipper? loc)
     (let [{:keys [position right]} loc]
       (if (seq right)
         (assoc loc

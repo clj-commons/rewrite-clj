@@ -23,10 +23,7 @@
 
 (import-vars
   [rewrite-clj.custom-zipper.core
-   node position root
-   use-positional-zipper!
-   with-positional-zipper
-   without-positional-zipper]
+   node position root]
 
   [rewrite-clj.zip.base
    child-sexprs

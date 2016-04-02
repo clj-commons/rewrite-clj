@@ -22,16 +22,26 @@
 ;; To not force users into using this custom zipper, the following flag
 ;; is used to dispatch to `clojure.zip` when set to `false`.
 
-(def ^:dynamic *active?*
-  "Set this to true to activate the custom, position-tracking zipper
-   implementation."
-  false)
+(defn ^:no-doc custom-zipper
+  [root]
+  {::custom? true
+   :node     root
+   :position [1 1]
+   :parent   nil
+   :left     []
+   :right   '()})
 
-(defn use-positional-zipper!
-  "Globally activate the position-tracking zipper. You can locally revert
-   behaviour to `clojure.zip`'s by using `without-positional-zipper`."
-  []
-  (alter-var-root #'*active?* (constantly true)))
+(defn ^:no-doc zipper
+  [root]
+  (clj-zip/zipper
+    node/inner?
+    (comp seq node/children)
+    node/replace-children
+    root))
+
+(defn ^:no-doc custom-zipper?
+  [value]
+  (::custom? value))
 
 (defmacro ^:private defn-switchable
   [sym docstring params & body]
@@ -39,42 +49,12 @@
     `(defn ~sym
        ~docstring
        [~@placeholders]
-       (if *active?*
+       (if (custom-zipper? ~(first placeholders))
          (let [~@(interleave params placeholders)]
            ~@body)
          (~(symbol "clojure.zip" (name sym)) ~@placeholders)))))
 
-(defmacro with-positional-zipper
-  "Do not use `clojure.zip` to evaluate any rewrite-clj zipper operations in
-   `body` but a custom position-tracking zipper that offers the function
-   `position` to return row and column of a node."
-  [& body]
-  `(binding [*active?* true]
-     ~@body))
-
-(defmacro without-positional-zipper
-  "Force usage of `clojure.zip` to evaluate any rewrite-clj zipper operations in
-   `body` instead of a custom position-tracking zipper."
-  [& body]
-  `(binding [*active?* false]
-     ~@body))
-
 ;; ## Implementation
-
-(defn ^:no-doc zipper
-  "Creates a new zipper structure."
-  [root]
-  (if *active?*
-    {:node root
-     :position [1 1]
-     :parent nil
-     :left []
-     :right '()}
-    (clj-zip/zipper
-      node/inner?
-      (comp seq node/children)
-      node/replace-children
-      root)))
 
 (defn-switchable node
   "Returns the node at loc"
@@ -102,13 +82,13 @@
 (defn position
   "Returns the ones-based [row col] of the start of the current node"
   [loc]
-  (if *active?*
+  (if (custom-zipper? loc)
     (:position loc)
     (throw
       (IllegalStateException.
         (str
-          "to use the positional zipper functions, please wrap your rewrite-clj"
-          " calls with `rewrite-clj.zip/with-positional-zipper`.")))))
+          "to use the 'position' function, please construct your zipper with "
+           "':track-position?'  set to true.")))))
 
 (defn-switchable lefts
   "Returns a seq of the left siblings of this loc"
@@ -123,11 +103,12 @@
     (let [{:keys [node path] [row col] :position} loc
           [c & cnext :as cs] (children loc)]
       (when cs
-        {:node c
+        {::custom? true
+         :node     c
          :position [row (+ col (node/leader-length node))]
-         :parent loc
-         :left []
-         :right cnext}))))
+         :parent   loc
+         :left     []
+         :right    cnext}))))
 
 (defn-switchable up
   "Returns the loc of the parent of the node at this loc, or nil if at
@@ -227,7 +208,7 @@
 (defn edit
   "Replaces the node at this loc with the value of (f node args)"
   [loc f & args]
-  (if *active?*
+  (if (custom-zipper? loc)
     (replace loc (apply f (node loc) args))
     (apply clj-zip/edit loc f args)))
 

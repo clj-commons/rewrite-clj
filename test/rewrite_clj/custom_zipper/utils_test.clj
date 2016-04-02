@@ -29,10 +29,9 @@
 
 (tabular
   (fact "`remove-and-move-left` tracks current position correctly"
-    (z/with-positional-zipper
-      (let [root (base/of-string "[a bb ccc]")
-            zloc (nth (iterate z/next root) ?n)]
-        (z/position (remove-and-move-left zloc)) => ?pos)))
+    (let [root (base/of-string "[a bb ccc]" {:track-position? true})
+          zloc (nth (iterate z/next root) ?n)]
+      (z/position (remove-and-move-left zloc)) => ?pos))
   ?n ?pos
   3  [1 3]
   5  [1 6]
@@ -40,10 +39,9 @@
 
 (tabular
   (fact "`remove-and-move-right` does not affect position"
-    (z/with-positional-zipper
-      (let [root (base/of-string "[a bb ccc]")
-            zloc (nth (iterate z/next root) ?n)]
-        (z/position (remove-and-move-right zloc)) => ?pos)))
+    (let [root (base/of-string "[a bb ccc]" {:track-position? true})
+          zloc (nth (iterate z/next root) ?n)]
+      (z/position (remove-and-move-right zloc)) => ?pos))
   ?n ?pos
   3  [1 4]
   1  [1 2]
@@ -51,10 +49,9 @@
 
 (tabular
   (fact "`remove-left` tracks current position correctly"
-    (z/with-positional-zipper
-      (let [root (base/of-string "[a bb ccc]")
-            zloc (nth (iterate z/next root) ?n)]
-        (z/position (remove-left zloc)) => ?pos)))
+    (let [root (base/of-string "[a bb ccc]" {:track-position? true})
+          zloc (nth (iterate z/next root) ?n)]
+      (z/position (remove-left zloc)) => ?pos))
   ?n ?pos
   3  [1 3]
   5  [1 6])
