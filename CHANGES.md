@@ -6,6 +6,7 @@
   `:comma`. (see #44 - thanks @arrdem!)
 - __BREAKING__: `position` will throw exception if not used on rewrite-clj
   custom zipper. (see #45)
+- __BREAKING__: drops testing against JDK6.
 - __DEPRECATED__:
   - `append-space` in favour of `insert-space-right`
   - `prepend-space` in favour of `insert-space-left`
@@ -18,6 +19,7 @@
   thanks @eraserhd!)
 - fix parsing of whitespace, e.g. `<U+2028>`. (see #43)
 - fix serialization of `integer-node`s. (see #37 - thanks @eraserhd!)
+- adds `insert-left*` and `insert-right*` to facade.
 - generative tests. (see #41 - thanks @eraserhd!)
 
 ### 0.4.13
