@@ -25,6 +25,7 @@
   "   \n   "     [[:whitespace "   "]
                   [:newline "\n"]
                   [:whitespace "   "]]
+  "\u2028"       [[:whitespace "\u2028"]]
   " \t \r\n \t " [[:whitespace " \t "]
                   [:newline "\n"]
                   [:whitespace " \t "]])
