@@ -17,6 +17,7 @@
   zipper implementation allowing `position` to be called on. (see #41, #45 -
   thanks @eraserhd!)
 - fix parsing of whitespace, e.g. `<U+2028>`. (see #43)
+- fix serialization of `integer-node`s. (see #37 - thanks @eraserhd!)
 - generative tests. (see #41 - thanks @eraserhd!)
 
 ### 0.4.13
