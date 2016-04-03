@@ -2,6 +2,18 @@
 
 ### 0.5.0
 
+- __BREAKING__: commas will no longer be parsed into `:whitespace` nodes but
+  `:comma`. (see #44 - thanks @arrdem!)
+- __BREAKING__: `position` will throw exception if not used on rewrite-clj
+  custom zipper. (see #45)
+- fix insertion of nodes in the presense of existing whitespace. (see #33, #34 -
+  thanks @eraserhd!)
+- `edn` and `edn*` now take a `:track-position?` option that activates a custom
+  zipper implementation allowing `position` to be called on. (see #41, #45 -
+  thanks @eraserhd!)
+- fix parsing of whitespace, e.g. `<U+2028>`. (see #43)
+- generative tests. (see #41 - thanks @eraserhd!)
+
 ### 0.4.13
 
 _Development has branched off, using the `0.4.x` branch_
