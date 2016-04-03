@@ -1,6 +1,6 @@
 (ns rewrite-clj.zip.find-test
   (:require [midje.sweet :refer :all]
-            [rewrite-clj.zip.zip :as z]
+            [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.zip
              [base :as base]
              [find :as f]]))

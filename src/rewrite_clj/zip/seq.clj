@@ -6,7 +6,7 @@
              [find :as f]
              [insert :as i]
              [move :as m]]
-            [rewrite-clj.zip.zip :as z]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 ;; ## Predicates
 

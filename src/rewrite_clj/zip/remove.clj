@@ -2,9 +2,10 @@
   (:refer-clojure :exclude [remove])
   (:require [rewrite-clj.zip
              [move :as m]
-             [utils :as u]
              [whitespace :as ws]]
-            [rewrite-clj.zip.zip :as z]))
+            [rewrite-clj.custom-zipper
+             [core :as z]
+             [utils :as u]]))
 
 (defn- remove-trailing-space
   "Remove all whitespace following a given node."

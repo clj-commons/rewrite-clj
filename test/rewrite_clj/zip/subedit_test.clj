@@ -4,7 +4,7 @@
              [base :as base]
              [move :as m]
              [subedit :refer :all]]
-            [rewrite-clj.zip.zip :as z]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 (let [root (base/of-string "[1 #{2 [3 4] 5} 6]")]
   (fact "about modifying subtrees."

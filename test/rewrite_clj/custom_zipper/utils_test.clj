@@ -1,9 +1,9 @@
-(ns rewrite-clj.zip.utils-test
+(ns rewrite-clj.custom-zipper.utils-test
   (:require [midje.sweet :refer :all]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.zip :as z]
-            [rewrite-clj.zip.utils :refer :all]))
+            [rewrite-clj.custom-zipper.core :as z]
+            [rewrite-clj.custom-zipper.utils :refer :all]))
 
 (let [a (node/token-node 'a)
       b (node/token-node 'b)
@@ -29,7 +29,7 @@
 
 (tabular
   (fact "`remove-and-move-left` tracks current position correctly"
-    (let [root (base/of-string "[a bb ccc]")
+    (let [root (base/of-string "[a bb ccc]" {:track-position? true})
           zloc (nth (iterate z/next root) ?n)]
       (z/position (remove-and-move-left zloc)) => ?pos))
   ?n ?pos
@@ -39,7 +39,7 @@
 
 (tabular
   (fact "`remove-and-move-right` does not affect position"
-    (let [root (base/of-string "[a bb ccc]")
+    (let [root (base/of-string "[a bb ccc]" {:track-position? true})
           zloc (nth (iterate z/next root) ?n)]
       (z/position (remove-and-move-right zloc)) => ?pos))
   ?n ?pos
@@ -49,7 +49,7 @@
 
 (tabular
   (fact "`remove-left` tracks current position correctly"
-    (let [root (base/of-string "[a bb ccc]")
+    (let [root (base/of-string "[a bb ccc]" {:track-position? true})
           zloc (nth (iterate z/next root) ?n)]
       (z/position (remove-left zloc)) => ?pos))
   ?n ?pos

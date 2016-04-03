@@ -4,7 +4,7 @@
              [base :as base]
              [move :as m]
              [insert :refer :all]]
-            [rewrite-clj.zip.zip :as z]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 (tabular
   (fact "about whitespace-aware insertion."

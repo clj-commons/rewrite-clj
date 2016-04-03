@@ -3,7 +3,7 @@
              [base :as base]
              [whitespace :as ws]]
             [rewrite-clj.node :as node]
-            [rewrite-clj.zip.zip :as z]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 (def ^:private space
   (node/spaces 1))
