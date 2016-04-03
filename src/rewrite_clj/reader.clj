@@ -44,8 +44,9 @@
 
 (defn space?
   [^java.lang.Character c]
-  (and (whitespace? c)
-       (not (linebreak? c))))
+  (and c
+       (Character/isWhitespace c)
+       (not (contains? #{\newline \return \,} c))))
 
 (defn whitespace-or-boundary?
   [c]

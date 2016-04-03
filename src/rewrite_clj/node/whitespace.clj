@@ -67,26 +67,29 @@
 
 ;; ## Constructors
 
+(defn- string-of?
+  [^String s pred]
+  (and s
+       (string? s)
+       (pos? (.length s))
+       (every? pred s)))
+
 (defn whitespace-node
   "Create whitespace node."
   [s]
-  {:pre [(string? s)
-         (re-matches #"\s+" s)
-         (not (re-matches #".*[\n\r].*" s))]}
+  {:pre [(string-of? s r/space?)]}
   (->WhitespaceNode s))
 
 (defn comma-node
   "Create comma node."
   [s]
-  {:pre [(string? s)
-         (re-matches #",+" s)]}
+  {:pre [(string-of? s r/comma?)]}
   (->CommaNode s))
 
 (defn newline-node
   "Create newline node."
   [s]
-  {:pre [(string? s)
-         (re-matches #"[\n\r]+" s)]}
+  {:pre [(string-of? s r/linebreak?)]}
   (->NewlineNode s))
 
 (defn- classify-whitespace
@@ -98,8 +101,7 @@
 (defn whitespace-nodes
   "Convert a string of whitespace to whitespace/newline nodes."
   [s]
-  {:pre [(string? s)
-         (re-matches #"(\s|,)+" s)]}
+  {:pre [(string-of? s r/whitespace?)]}
   (->> (partition-by classify-whitespace s)
        (map
          (fn [char-seq]
