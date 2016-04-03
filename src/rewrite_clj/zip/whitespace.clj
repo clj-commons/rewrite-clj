@@ -40,32 +40,68 @@
 
 ;; ## Insertion
 
-(defn prepend-space
-  "Prepend a whitespace node representing the given number of spaces (default: 1)."
-  ([zloc] (prepend-space zloc 1))
+(defn ^{:added "0.5.0"} insert-space-left
+  "Insert a whitespace node before the given one, representing the given
+   number of spaces (default: 1)."
+  ([zloc] (insert-space-left zloc 1))
   ([zloc n]
    {:pre [(>= n 0)]}
    (if (pos? n)
      (z/insert-left zloc (node/spaces n))
      zloc)))
 
-(defn append-space
-  "Append a whitespace node representing the given number of spaces (default: 1)."
-  ([zloc] (append-space zloc 1))
+(defn ^{:added "0.5.0"} insert-space-right
+  "Insert a whitespace node after the given one, representing the given number
+   of spaces (default: 1)."
+  ([zloc] (insert-space-right zloc 1))
   ([zloc n]
    {:pre [(>= n 0)]}
    (if (pos? n)
      (z/insert-right zloc (node/spaces n))
      zloc)))
 
-(defn prepend-newline
-  "Prepend a whitespace node representing the given number of spaces (default: 1)."
-  ([zloc] (prepend-newline zloc 1))
+(defn ^{:added "0.5.0"} insert-newline-left
+  "Insert a newline node before the given one, representing the given number of
+   spaces (default: 1)."
+  ([zloc] (insert-newline-left zloc 1))
   ([zloc n]
    (z/insert-left zloc (node/newlines n))))
 
-(defn append-newline
-  "Append a whitespace node representing the given number of spaces (default: 1)."
-  ([zloc] (append-newline zloc 1))
+(defn ^{:added "0.5.0"} insert-newline-right
+  "Insert a newline node after the given one, representing the given number of
+   linebreaks (default: 1)."
+  ([zloc] (insert-newline-right zloc 1))
   ([zloc n]
    (z/insert-right zloc (node/newlines n))))
+
+;; ## Deprecated Functions
+
+(defn ^{:deprecated "0.5.0"} prepend-space
+  "Prepend a whitespace node representing the given number of spaces (default: 1).
+
+   DEPRECATED: use 'insert-space-left' instead."
+  [zloc & [n]]
+  (insert-space-left zloc (or n 1)))
+
+(defn ^{:deprecated "0.5.0"} append-space
+  "Append a whitespace node representing the given number of spaces (default: 1).
+
+   DEPRECATED: use 'insert-space-right' instead."
+  [zloc & [n]]
+  (insert-space-right zloc (or n 1)))
+
+(defn ^{:deprecated "0.5.0"} prepend-newline
+  "Prepend a newline node representing the given number of linebreaks (default:
+   1).
+
+   DEPRECATED: use 'insert-newline-left' instead."
+  [zloc & [n]]
+  (insert-newline-left zloc (or n 1)))
+
+(defn ^{:deprecated "0.5.0"} append-newline
+  "Append a newline node representing the given number of linebreaks (default:
+   1).
+
+   DEPRECATED: use 'insert-newline-right' instead."
+  [zloc & [n]]
+  (insert-newline-right zloc (or n 1)))

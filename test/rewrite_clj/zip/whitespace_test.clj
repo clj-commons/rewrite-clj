@@ -27,13 +27,21 @@
         (let [n (->> loc z/down (skip-whitespace z/next) z/node)]
           (node/tag n) => :token
           (node/sexpr n) => 0))
-  (fact "about prepending/appending spaces."
-        (let [n (-> loc z/down z/rightmost (prepend-space 3))]
-          (base/root-string n) => " \n0 1   ;comment")
-        (let [n (-> loc z/down z/rightmost (append-space 3))]
-          (base/root-string n) => " \n0 1;comment   "))
-  (fact "about prepending/appending linebreaks."
-        (let [n (-> loc z/down z/rightmost (prepend-newline 3))]
-          (base/root-string n) => " \n0 1\n\n\n;comment")
-        (let [n (-> loc z/down z/rightmost (append-newline 3))]
-          (base/root-string n) => " \n0 1;comment\n\n\n")))
+  (tabular
+    (fact "about prepending/appending spaces."
+          (let [n (-> loc z/down z/rightmost (?left-fn 3))]
+            (base/root-string n) => " \n0 1   ;comment")
+          (let [n (-> loc z/down z/rightmost (?right-fn 3))]
+            (base/root-string n) => " \n0 1;comment   "))
+    ?left-fn          ?right-fn
+    prepend-space     append-space
+    insert-space-left insert-space-right)
+  (tabular
+    (fact "about prepending/appending linebreaks."
+          (let [n (-> loc z/down z/rightmost (prepend-newline 3))]
+            (base/root-string n) => " \n0 1\n\n\n;comment")
+          (let [n (-> loc z/down z/rightmost (append-newline 3))]
+            (base/root-string n) => " \n0 1;comment\n\n\n"))
+    ?left-fn            ?right-fn
+    prepend-newline     append-newline
+    insert-newline-left insert-newline-right))
