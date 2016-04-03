@@ -6,6 +6,11 @@
   `:comma`. (see #44 - thanks @arrdem!)
 - __BREAKING__: `position` will throw exception if not used on rewrite-clj
   custom zipper. (see #45)
+- __DEPRECATED__:
+  - `append-space` in favour of `insert-space-right`
+  - `prepend-space` in favour of `insert-space-left`
+  - `append-newline` in favour of `insert-newline-right`
+  - `prepend-newline` in favour of `insert-newline-left`
 - fix insertion of nodes in the presense of existing whitespace. (see #33, #34 -
   thanks @eraserhd!)
 - `edn` and `edn*` now take a `:track-position?` option that activates a custom
