@@ -2,6 +2,7 @@
   ^{:added "0.4.0"}
   rewrite-clj.node.protocols
   (:require [rewrite-clj.potemkin :refer [defprotocol+]]
+            [rewrite-clj.record-base :refer [defbase]]
             [clojure.string :as string]))
 
 ;; ## Node
@@ -105,110 +106,49 @@
      [node# w#]
      (write-node w# node#)))
 
-;; ## Defrecord Inheritance
+;; ## Collections
 
-(def ^:private parse-impls
-  @#'clojure.core/parse-impls)
+(defprotocol EnclosedForm
+  (format-string [_])
+  (wrap-length   [_])
+  (enclose       [_ children-str]))
 
-(defn base-method-signature [[name args & body]]
-  [name (mapv #(if (#{'&} %) % '_)
-              args)])
+(defbase CollBase []
+  Node
+  (tag [_]
+    :to-implement)
+  (printable-only? [_]
+    false)
+  (length [this]
+    (+ (.wrap-length this)
+       (sum-lengths (.children this))))
+  (string [this]
+    (->> (concat-strings (.children this))
+         (format (.format-string this))))
+   
+  InnerNode
+  (inner? [_]
+    true)
+  (children [this]
+    (:children this))
+  (replace-children [this children']
+    (assoc this :children children'))
+  (leader-length [this]
+    (dec (.wrap-length this)))
+  
+  Object
+  (toString [this]
+    (string this))
+  
+  EnclosedForm
+  (wrap-length [this]
+    (count (.enclose this "")))
+  (enclose [this children-str]
+    (format (.format-string this)
+             children-str))
+  (format-string [_]
+    "to-implement"))
 
-(defn args-from-signature [[name args]]
-  (mapv (fn [s i]
-          (if (= s '&)
-            '&
-            (symbol (str "_" i))))
-        args
-        (rest (range))))
-
-(defn fully-qualify [sym]
-  (if-let [r (resolve sym)]
-    (if (class? r)
-      (-> r str
-          (clojure.string/replace "class " "")
-          symbol)
-      (-> r meta :ns str
-          (str "/" (.sym r))
-          symbol))
-    sym))
-
-(defn parse-base-impls [impls]
-  (-> impls
-      (->> (map (fn [[class-or-proto-or-iface method-sources]]
-                  [(fully-qualify class-or-proto-or-iface)
-                   (->> method-sources
-                        (map (juxt base-method-signature
-                                   (fn [x] `(~x))))
-                        (into {}))]))
-           (into {}))))
-
-(defn proxy-method [[name args & body :as code]]
-  (let [sym (gensym (str name "-"))
-        qual (symbol (str *ns* "/" sym))
-        sign (base-method-signature code)
-        synth-args (args-from-signature sign)
-        a (remove #{'&} synth-args)
-        appl (if (= a synth-args)
-               `(~qual ~@a)
-               `(apply ~qual ~@a))]
-    {:definition         `(defn ~sym ~args
-                            ~@body)
-     :proxied            `(~name ~synth-args
-                            ~appl)}))
-
-(defmacro defbase
-  "A base is a way to represent and share implementations between records.
-   specs is whatever could be written in a defrecord statement body.
-   It will also define a tag protocol named (str name \"P\").
-   See base-record"
-  [name & specs]
-  (let [proto-name (-> (str name "P") symbol fully-qualify)
-        impls (parse-impls specs)
-        proxies (map (fn [[class-or-proto-or-iface methods]]
-                       [class-or-proto-or-iface
-                        (map proxy-method methods)])
-                     impls)
-        proxy-defs (mapcat (fn [[_ proxs]]
-                             (map :definition proxs))
-                           proxies)
-        proxied-impls (->> proxies
-                           (map (fn [[cpi proxs]]
-                                  [cpi (map :proxied proxs)]))
-                           (into {}))
-        base-def `(do (defprotocol ~proto-name) ;; tag protocol
-                      ~@proxy-defs
-                      (def ~name
-                        (quote ~(-> proxied-impls
-                                    parse-base-impls
-                                    (assoc proto-name {})))))]
-    base-def))
-
-(defn defrecord-body-from-base [base]
-  (->> base
-       (mapcat (fn [[class-or-proto-or-iface m]]
-                 (concat [class-or-proto-or-iface]
-                         (apply concat (vals m)))))))
-
-(defn merge-bases [a b]
-  (->> [a b]
-       (map (comp set keys))
-       (apply clojure.set/union)
-       (map (fn [k]
-              [k (merge (get b k {})
-                        (get a k {}))]))
-       (into {})))
-
-(defmacro defrecord-from-base
-  "Expands to a defrecord statement by merging the base represetended by
-  specs with abase."
-  [aname abase fields & specs]
-  (let [b @(resolve abase)
-        z (-> specs parse-impls parse-base-impls)
-        merged (merge-bases z @(resolve abase))
-        code `(defrecord ~aname ~fields
-                ~@(defrecord-body-from-base merged))]
-    code))
 
 ;; ## Helpers
 

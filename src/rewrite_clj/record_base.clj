@@ -1,10 +1,11 @@
 (ns rewrite-clj.record-base
   (:require [clojure.set :as set]))
 
+;; --- copied from TristeFigure/record-base
 (def ^:private parse-impls
   @#'clojure.core/parse-impls)
 
-;; U T I L S
+;; --- record-base.utils
 
 (defn fully-qualify
   ([sym]
@@ -61,7 +62,7 @@
                          more)))
 
 
-;; B A S E S
+;; --- record-base.core
 
 ;; Constructor
 

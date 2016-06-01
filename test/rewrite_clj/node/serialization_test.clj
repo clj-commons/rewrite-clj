@@ -1,5 +1,4 @@
 (ns rewrite-clj.node.serialization-test
-  (:use clojure.pprint)
   (:require [midje.sweet :refer :all]
             [rewrite-clj.parser :as p]
             [clojure.java.io :as io]))
@@ -8,10 +7,14 @@
   (io/file (System/getProperty "user.dir")))
 
 (defn extension [f]
-  (second (re-matches #".*?\.([^.]+)$"
+  (second (re-matches #".*\.([^.]+)$"
                       (.getName f))))
 
-(defn relative-path [from to]
+(defn relative-path
+  "not really a realtive path.
+  Doesn't handle special characters : '.', '..' and ~.
+   --> pthfrom must be a parent of pthto."
+  [from to]
   (let [pthfrom (.getAbsolutePath (io/file from))
         pthto    (.getAbsolutePath (io/file to))]
     (when (not (.startsWith pthto pthfrom))
@@ -20,7 +23,7 @@
                        pthfrom \newline
                        " and " \newline
                        pthto \newline
-                       "do not the have the prefix"))))
+                       "do not share the same prefix"))))
     (let [urifrom (new java.net.URI pthfrom)
           urito (new java.net.URI pthto)]
       (.toString (.relativize urifrom urito)))))

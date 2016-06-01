@@ -13,7 +13,7 @@
              quote
              reader-macro
              regex
-             seq
+             vector list set map
              string
              token
              uneval
@@ -67,11 +67,10 @@
    reader-macro-node
    var-node]
 
-  [rewrite-clj.node.seq
-   list-node
-   map-node
-   set-node
-   vector-node]
+  [rewrite-clj.node.vector vector-node]
+  [rewrite-clj.node.list list-node]
+  [rewrite-clj.node.set set-node]
+  [rewrite-clj.node.map map-node]
 
   [rewrite-clj.node.string
    string-node]
