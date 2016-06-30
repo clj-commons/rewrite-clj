@@ -86,7 +86,7 @@
   "#=sym"                :eval             []              '(eval 'sym)
   "#=  sym"              :eval             [:whitespace]   '(eval 'sym)
   "#'sym"                :var              []              '(var sym)
-  "#'\nsym"              :var              [:newline])     '(var sym)
+  "#'\nsym"              :var              [:newline])
 
 (fact "about eval."
       (let [n (p/parse-string "#=(+ 1 2)")]
@@ -189,6 +189,9 @@
   "#=(+ 1 2)"                :eval            [:list]
   "#macro 1"                 :reader-macro    [:token :whitespace :token]
   "#macro (* 2 3)"           :reader-macro    [:token :whitespace :list]
+  "#?(:clj bar)"             :reader-macro    [:token :list]
+  "#?@(:clj bar)"            :reader-macro    [:token :list]
+  "#?foo baz"                :reader-macro    [:token :whitespace :token]
   "#_abc"                    :uneval          [:token]
   "#_(+ 1 2)"                :uneval          [:list]
   "#(+ % 1)"                 :fn              [:token :whitespace

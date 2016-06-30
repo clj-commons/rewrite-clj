@@ -119,6 +119,24 @@
     \' (node/var-node (parse-printables reader :var 1 true))
     \= (node/eval-node (parse-printables reader :eval 1 true))
     \_ (node/uneval-node (parse-printables reader :uneval 1 true))
+    \? (do
+         ;; we need to examine the next character, so consume one (known \?)
+         (reader/next reader)
+         ;; we will always have a reader-macro-node as the result
+         (node/reader-macro-node
+          (let [read1 (fn [] (parse-printables reader :reader-macro 1))]
+            (cons (case (reader/peek reader)
+                    ;; the easy case, just emit a token
+                    \( (node/token-node (symbol "?"))
+
+                    ;; the harder case, match \@, consume it and emit the token
+                    \@ (do (reader/next reader)
+                           (node/token-node (symbol "?@")))
+
+                    ;; otherwise no idea what we're reading but its \? prefixed
+                    (do (reader/unread reader \?)
+                        (first (read1))))
+                  (read1)))))
     (node/reader-macro-node (parse-printables reader :reader-macro 2))))
 
 (defmethod parse-next* :deref
