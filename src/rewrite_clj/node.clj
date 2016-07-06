@@ -12,6 +12,7 @@
              protocols
              quote
              reader-macro
+             regex
              seq
              string
              token
@@ -56,6 +57,9 @@
   [rewrite-clj.node.meta
    meta-node
    raw-meta-node]
+
+  [rewrite-clj.node.regex
+   regex-node]
 
   [rewrite-clj.node.reader-macro
    deref-node
