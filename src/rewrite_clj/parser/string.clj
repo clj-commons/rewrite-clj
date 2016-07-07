@@ -4,7 +4,8 @@
             [rewrite-clj.node :as node]
             [clojure.tools.reader
              [edn :as edn]
-             [reader-types :as r]]))
+             [reader-types :as r]]
+            [clojure.string :as string]))
 
 (defn- flush-into
   "Flush buffer and add string to the given vector."
@@ -38,5 +39,5 @@
 
 (defn parse-regex
   [reader]
-  (let [[h & _] (read-string-data reader)]
-    (node/token-node (re-pattern h))))
+  (let [h (read-string-data reader)]
+    (node/token-node (re-pattern (string/join "\n" h)))))

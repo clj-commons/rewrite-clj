@@ -118,7 +118,9 @@
   ?s                 ?p
   "#\"regex\""       "regex"
   "#\"regex\\.\""    "regex\\."
-  "#\"[reg|k].x\""   "[reg|k].x")
+  "#\"[reg|k].x\""   "[reg|k].x"
+  "#\"a\\nb\""       "a\\nb"
+  "#\"a\nb\""        "a\nb")
 
 (tabular
   (fact "about parsing strings"
