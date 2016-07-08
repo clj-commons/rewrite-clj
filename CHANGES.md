@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.5.1
+
+- fixes parsing of multi-line regular expressions. (see #51)
+
 ### 0.5.0
 
 - __BREAKING__: commas will no longer be parsed into `:whitespace` nodes but
