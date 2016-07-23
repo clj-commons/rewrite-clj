@@ -1,50 +1,85 @@
 (ns rewrite-clj.node.colls
-  (:require [rewrite-clj.node.protocols :as node]
-            [rewrite-clj.record-base :refer [defrecord-from-base]]))
+  (:require [rewrite-clj.node.protocols :as node]))
 
 
-(def nodes
-  [{:symbol        'VectorNode
-    :tag           :list
-    :format-string "[]"
+(def ^:private nodes
+  [{:tag           :vector
+    :format-string "[%s]"
     :sexpr-expr    '(vec (node/sexprs children))}
    
-   {:symbol        'ListNode
-    :tag           :list
-    :format-string "()"
+   {:tag           :list
+    :format-string "(%s)"
     :sexpr-expr    '(apply list (node/sexprs children))}
    
-   {:symbol        'SetNode
-    :tag           :set
-    :format-string "#{}"
+   {:tag           :set
+    :format-string "#{%s}"
     :sexpr-expr    '(set (node/sexprs children))}
    
-   {:symbol        'MapNode
-    :tag           :map
-    :format-string "{}"
+   {:tag           :map
+    :format-string "{%s}"
     :sexpr-expr    '(apply hash-map (node/sexprs children))}])
+
+(defn- record-sym [n]
+  (-> n :tag name clojure.string/capitalize
+      (str "Node")
+      symbol))
+
+(defn- constructor-sym [n]
+  (-> n :tag name
+      (str "-node")
+      symbol))
 
 (defmacro ^:private def-all-nodes []
   `(do ~@(for [n nodes]
            `(do
-              (defrecord-from-base ~(:symbol n) node/CollBase [children]
+              (defrecord ~(record-sym n) [~'children]
                 node/Node
-                (tag [_]
-                     (:tag n))
-                (sexpr [_]
-                       (vec (node/sexprs children)))
+                (~'tag [~'_]
+                  ~(:tag n))
+                (~'printable-only? [~'_]
+                  false)
+                (~'length [~'this]
+                  (+ (.wrap-length ~'this)
+                     (node/sum-lengths ~'children)))
+                (~'string [~'this]
+                  (->> (node/concat-strings ~'children)
+                       (format (.format-string ~'this))))
+                (~'sexpr [~'this]
+                  ~(:sexpr-expr n))
+                
+                node/InnerNode
+                (~'inner? [~'_]
+                  true)
+                (~'children [~'this]
+                  (:children ~'this))
+                (~'replace-children [~'this ~'children]
+                  (assoc ~'this :children ~'children))
+                (~'leader-length [~'this]
+                  (dec (.wrap-length ~'this)))
                 
                 node/EnclosedForm
-                (format-string [this]
-                               "[%s]"))
+                (~'wrap-length [~'this]
+                  (count (.enclose ~'this "")))
+                (~'enclose [~'this ~'children-str]
+                  (format (.format-string ~'this)
+                           ~'children-str))
+                (~'format-string [~'_]
+                  ~(:format-string n))
+                
+                Object
+                (~'toString [~'this]
+                  (.string ~'this)))
               
-              (node/make-printable! VectorNode)
+              (node/make-printable! ~(record-sym n))
               
               ;; ## Constructor
               
-              (defn vector-node
+              (defn ~(constructor-sym n)
                 "Create a node representing an EDN vector."
-                [children]
-                (->VectorNode children))))))
+                [children#]
+                (~(symbol (str "->" (record-sym n))) children#))))))
+
+; (clojure.pprint/pprint
+;   (macroexpand-1 '(def-all-nodes)))
 
 (def-all-nodes)

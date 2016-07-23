@@ -11,9 +11,6 @@
                       (.getName f))))
 
 (defn relative-path
-  "not really a realtive path.
-  Doesn't handle special characters : '.', '..' and ~.
-   --> pthfrom must be a parent of pthto."
   [from to]
   (let [pthfrom (.getAbsolutePath (io/file from))
         pthto    (.getAbsolutePath (io/file to))]

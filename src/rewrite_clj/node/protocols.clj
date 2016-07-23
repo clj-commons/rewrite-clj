@@ -2,7 +2,6 @@
   ^{:added "0.4.0"}
   rewrite-clj.node.protocols
   (:require [rewrite-clj.potemkin :refer [defprotocol+]]
-            [rewrite-clj.record-base :refer [defbase]]
             [clojure.string :as string]))
 
 ;; ## Node
@@ -112,43 +111,6 @@
   (format-string [_])
   (wrap-length   [_])
   (enclose       [_ children-str]))
-
-(defbase CollBase []
-  Node
-  (tag [_]
-    :to-implement)
-  (printable-only? [_]
-    false)
-  (length [this]
-    (+ (.wrap-length this)
-       (sum-lengths (.children this))))
-  (string [this]
-    (->> (concat-strings (.children this))
-         (format (.format-string this))))
-   
-  InnerNode
-  (inner? [_]
-    true)
-  (children [this]
-    (:children this))
-  (replace-children [this children']
-    (assoc this :children children'))
-  (leader-length [this]
-    (dec (.wrap-length this)))
-  
-  Object
-  (toString [this]
-    (string this))
-  
-  EnclosedForm
-  (wrap-length [this]
-    (count (.enclose this "")))
-  (enclose [this children-str]
-    (format (.format-string this)
-             children-str))
-  (format-string [_]
-    "to-implement"))
-
 
 ;; ## Helpers
 

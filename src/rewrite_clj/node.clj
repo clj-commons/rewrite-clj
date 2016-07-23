@@ -13,7 +13,7 @@
              quote
              reader-macro
              regex
-             vector list set map
+             colls
              string
              token
              uneval
@@ -66,11 +66,16 @@
    eval-node
    reader-macro-node
    var-node]
+<<<<<<< b20062b2d35539f767e682f043408def8ed47c82
 
   [rewrite-clj.node.vector vector-node]
   [rewrite-clj.node.list list-node]
   [rewrite-clj.node.set set-node]
   [rewrite-clj.node.map map-node]
+=======
+
+  [rewrite-clj.node.colls vector-node list-node set-node map-node]
+>>>>>>> Everything in node/coll.clj, no more traits
 
   [rewrite-clj.node.string
    string-node]
