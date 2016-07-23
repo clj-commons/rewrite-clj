@@ -107,10 +107,10 @@
 
 ;; ## Collections
 
-(defprotocol EnclosedForm
+(defprotocol SeqNode
   (format-string [_])
   (wrap-length   [_])
-  (enclose       [_ children-str]))
+  (wrap          [_ children-str]))
 
 ;; ## Helpers
 

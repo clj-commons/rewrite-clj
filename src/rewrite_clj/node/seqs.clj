@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.colls
+(ns rewrite-clj.node.seqs
   (:require [rewrite-clj.node.protocols :as node]))
 
 
@@ -57,10 +57,10 @@
                 (~'leader-length [~'this]
                   (dec (.wrap-length ~'this)))
                 
-                node/EnclosedForm
+                node/SeqNode
                 (~'wrap-length [~'this]
-                  (count (.enclose ~'this "")))
-                (~'enclose [~'this ~'children-str]
+                  (count (.wrap ~'this "")))
+                (~'wrap [~'this ~'children-str]
                   (format (.format-string ~'this)
                            ~'children-str))
                 (~'format-string [~'_]
@@ -75,11 +75,9 @@
               ;; ## Constructor
               
               (defn ~(constructor-sym n)
-                "Create a node representing an EDN vector."
+                ~(format "Create a node representing an EDN %s."
+                         (-> n :tag name))
                 [children#]
                 (~(symbol (str "->" (record-sym n))) children#))))))
-
-; (clojure.pprint/pprint
-;   (macroexpand-1 '(def-all-nodes)))
 
 (def-all-nodes)

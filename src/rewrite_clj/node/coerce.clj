@@ -9,7 +9,7 @@
                       coerce]]
              [reader-macro
               :refer [reader-macro-node var-node]]
-             [colls :refer [vector-node list-node set-node map-node]]
+             [seqs :refer [vector-node list-node set-node map-node]]
              [token :refer [token-node]]
              [whitespace :as ws]])
   (:import [rewrite_clj.node.comment CommentNode]
@@ -20,7 +20,7 @@
            [rewrite_clj.node.quote QuoteNode]
            [rewrite_clj.node.reader_macro
             ReaderNode ReaderMacroNode DerefNode]
-           [rewrite_clj.node.colls VectorNode ListNode SetNode MapNode]
+           [rewrite_clj.node.seqs VectorNode ListNode SetNode MapNode]
            [rewrite_clj.node.string StringNode]
            [rewrite_clj.node.token TokenNode]
            [rewrite_clj.node.uneval UnevalNode]

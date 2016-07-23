@@ -1,6 +1,7 @@
 (ns
   ^{:added "0.4.0"}
   rewrite-clj.node
+  (:refer-clojure :exclude [seq? list? vector? set? map? keyword? string?])
   (:require [rewrite-clj.node
              coerce
              comment
@@ -9,11 +10,12 @@
              integer
              keyword
              meta
+             predicates
              protocols
              quote
              reader-macro
              regex
-             colls
+             seqs
              string
              token
              uneval
@@ -66,6 +68,7 @@
    eval-node
    reader-macro-node
    var-node]
+<<<<<<< 7bc97765ac781d925c41c0ca6d87c09b07ef866f
 <<<<<<< b20062b2d35539f767e682f043408def8ed47c82
 
   [rewrite-clj.node.vector vector-node]
@@ -76,6 +79,14 @@
 
   [rewrite-clj.node.colls vector-node list-node set-node map-node]
 >>>>>>> Everything in node/coll.clj, no more traits
+=======
+
+  [rewrite-clj.node.seqs
+   vector-node
+   list-node
+   set-node
+   map-node]
+>>>>>>> Adds a bunch of predicates
 
   [rewrite-clj.node.string
    string-node]
@@ -95,23 +106,30 @@
   [rewrite-clj.node.whitespace
    comma-separated
    line-separated
-   linebreak?
    newlines
    newline-node
    spaces
    whitespace-node
-   whitespace?
    comma-node
+   whitespace-nodes]
+
+  [rewrite-clj.node.predicates
+   node?
+   seq?
+   list?
+   vector?
+   set?
+   map?
+   quote?
+   uneval?
+   token?
+   keyword?
+   string?
+   comment?
+   whitespace?
+   linebreak?
    comma?
-   whitespace-nodes])
-
-;; ## Predicates
-
-(defn whitespace-or-comment?
-  "Check whether the given node represents whitespace or comment."
-  [node]
-  (or (whitespace? node)
-      (comment? node)))
+   whitespace-or-comment?])
 
 ;; ## Value
 
