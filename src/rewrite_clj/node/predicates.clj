@@ -106,3 +106,10 @@
   [node]
   (or (whitespace? node)
       (comment? node)))
+
+(defn form?
+  "Check whether the given node represents a form"
+  [node]
+  (not (contains?
+         #{:whitespace :newline :comma :comment :uneval}
+         (node/tag node))))

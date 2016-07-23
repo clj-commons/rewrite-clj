@@ -129,7 +129,8 @@
    whitespace?
    linebreak?
    comma?
-   whitespace-or-comment?])
+   whitespace-or-comment?
+   form?])
 
 ;; ## Value
 
