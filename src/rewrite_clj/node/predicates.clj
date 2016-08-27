@@ -1,6 +1,8 @@
 (ns rewrite-clj.node.predicates
-  (:refer-clojure :exclude [seq? list? vector? set? map? keyword? string?])
-  (:require [rewrite-clj.node.protocols :as node]))
+  (:refer-clojure :exclude [seq? list? vector? set? map? keyword? string?
+                            integer? fn?])
+  (:require [rewrite-clj.node.protocols :as node])
+  (:import [rewrite_clj.node.reader_macro ReaderNode]))
 
 (def node-tags
   #{:list
@@ -9,21 +11,30 @@
     :map
     :quote
     :uneval
-    :newline
     :token
+    :integer
     :keyword
     :string
     :comment
+    :whitespace
+    :newline
     :comma
-    :whitespace})
+    :meta
+    :deref
+    :forms
+    :reader-macro})
+
+(declare reader?)
 
 (defn node?
-  "Check whether the given node represents a node"
-  [node]
-  (contains? node-tags (node/tag node)))
+  "Checks whether the given object is a rewrite-clj node."
+  [object]
+  (or (contains? node-tags (node/tag object))
+      (reader? object)))
+
 
 (defn seq?
-  "Check whether the given node represents a seq"
+  "Checks whether the given node represents a seq"
   [node]
   (contains?
     #{:list
@@ -33,52 +44,57 @@
     (node/tag node)))
 
 (defn list?
-  "Check whether the given node represents a list"
+  "Checks whether the given node represents a list"
   [node]
   (= (node/tag node) :list))
 
 (defn vector?
-  "Check whether the given node represents a vector"
+  "Checks whether the given node represents a vector"
   [node]
   (= (node/tag node) :vector))
 
 (defn set?
-  "Check whether the given node represents a set"
+  "Checks whether the given node represents a set"
   [node]
   (= (node/tag node) :set))
 
 (defn map?
-  "Check whether the given node represents a map"
+  "Checks whether the given node represents a map"
   [node]
   (= (node/tag node) :map))
 
 (defn quote?
-  "Check whether the given node represents a quote"
+  "Checks whether the given node represents a quote"
   [node]
   (= (node/tag node) :quote))
 
 (defn uneval?
-  "Check whether the given node represents an unevaled form"
+  "Checks whether the given node represents an unevaled form"
   [node]
   (= (node/tag node) :uneval))
 
 (defn token?
-  "Check whether the given node represents a token"
+  "Checks whether the given node represents a token"
   [node]
   (= (node/tag node) :token))
 
+(defn integer?
+  "Checks whether the given node represents an integer"
+  [node]
+  (= (node/tag node) :integer))
+
 (defn keyword?
-  "Check whether the given node represents a keyword"
+  "Checks whether the given node represents a keyword"
   [node]
   (= (node/tag node) :keyword))
 
 (defn string?
-  "Check whether the given node represents a string"
+  "Checks whether the given node represents a string"
   [node]
   (= (node/tag node) :string))
 
 (defn comment?
-  "Check whether the given node represents a comment"
+  "Checks whether the given node represents a comment"
   [node]
   (= (node/tag node) :comment))
 
@@ -86,30 +102,61 @@
   "Check whether a node represents whitespace."
   [node]
   (contains?
-   #{:whitespace
-     :newline
-     :comma}
-   (node/tag node)))
+    #{:whitespace
+      :newline
+      :comma}
+    (node/tag node)))
 
 (defn linebreak?
-  "Check whether a node represents linebreaks."
+  "Checks whether a node represents linebreaks."
   [node]
   (= (node/tag node) :newline))
+(def newline? linebreak?)
 
 (defn comma?
-  "Check whether a node represents a comma."
+  "Checks whether a node represents a comma."
   [node]
   (= (node/tag node) :comma))
 
 (defn whitespace-or-comment?
-  "Check whether the given node represents a whitespace or a comment."
+  "Checks whether the given node represents a whitespace or a comment."
   [node]
   (or (whitespace? node)
       (comment? node)))
 
+(defn fn?
+  "Checks whether the given node represents anonymous function."
+  [node]
+  (= (node/tag node) :fn))
+
+(defn meta?
+  "Checks whether the given node represents a metadata reader macro."
+  [node]
+  (= (node/tag node) :meta))
+
+(defn deref?
+  "Checks whether the given node represents the deref reader macro."
+  [node]
+  (= (node/tag node) :deref))
+
+(defn forms?
+  "Checks whether the given node represents forms."
+  [node]
+  (= (node/tag node) :forms))
+
 (defn form?
-  "Check whether the given node represents a form"
+  "Checks whether the given node represents a form"
   [node]
   (not (contains?
          #{:whitespace :newline :comma :comment :uneval}
          (node/tag node))))
+
+(defn reader-macro?
+  "Checks whether the given node represents a reader-macro."
+  [node]
+  (= (node/tag node) :reader-macro))
+
+(defn reader?
+  "Checks whether the given node represents a named reader-macro."
+  [node]
+  (isa? node ReaderNode))

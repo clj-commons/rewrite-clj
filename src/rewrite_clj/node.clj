@@ -1,7 +1,8 @@
 (ns
   ^{:added "0.4.0"}
   rewrite-clj.node
-  (:refer-clojure :exclude [seq? list? vector? set? map? keyword? string?])
+  (:refer-clojure :exclude [seq? list? vector? set? map? keyword? string?
+                            integer? fn?])
   (:require [rewrite-clj.node
              coerce
              comment
@@ -68,25 +69,12 @@
    eval-node
    reader-macro-node
    var-node]
-<<<<<<< 7bc97765ac781d925c41c0ca6d87c09b07ef866f
-<<<<<<< b20062b2d35539f767e682f043408def8ed47c82
-
-  [rewrite-clj.node.vector vector-node]
-  [rewrite-clj.node.list list-node]
-  [rewrite-clj.node.set set-node]
-  [rewrite-clj.node.map map-node]
-=======
-
-  [rewrite-clj.node.colls vector-node list-node set-node map-node]
->>>>>>> Everything in node/coll.clj, no more traits
-=======
 
   [rewrite-clj.node.seqs
    vector-node
    list-node
    set-node
    map-node]
->>>>>>> Adds a bunch of predicates
 
   [rewrite-clj.node.string
    string-node]
@@ -123,14 +111,21 @@
    quote?
    uneval?
    token?
+   integer?
    keyword?
    string?
    comment?
    whitespace?
-   linebreak?
+   linebreak? newline?
    comma?
    whitespace-or-comment?
-   form?])
+   fn?
+   meta?
+   deref?
+   forms?
+   form?
+   reader-macro?
+   reader?])
 
 ;; ## Value
 
