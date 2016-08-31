@@ -1,5 +1,13 @@
 ## Changelog
 
+### 0.5.3
+
+- nothing so far.
+
+### 0.5.2
+
+- fixes parsing of splicing reader conditionals `#?@...`. (see #48)
+
 ### 0.5.1
 
 - fixes parsing of multi-line regular expressions. (see #51)
