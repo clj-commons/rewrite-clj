@@ -86,7 +86,7 @@
   "#=sym"                :eval             []              '(eval 'sym)
   "#=  sym"              :eval             [:whitespace]   '(eval 'sym)
   "#'sym"                :var              []              '(var sym)
-  "#'\nsym"              :var              [:newline])
+  "#'\nsym"              :var              [:newline]      '(var sym))
 
 (fact "about eval."
       (let [n (p/parse-string "#=(+ 1 2)")]
