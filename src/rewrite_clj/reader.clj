@@ -109,6 +109,11 @@
   [reader]
   (r/read-char reader))
 
+(defn unread
+  "Unreads a char. Puts the char back on the reader."
+  [reader ch]
+  (r/unread reader ch))
+
 (defn peek
   "Peek next char."
   [reader]
