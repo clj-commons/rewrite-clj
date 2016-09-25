@@ -142,24 +142,3 @@
     "Interleave the given seq of nodes with `\" \"` nodes."
     [nodes]
     (butlast (interleave nodes (repeat space)))))
-
-;; ## Predicates
-
-(defn whitespace?
-  "Check whether a node represents whitespace."
-  [node]
-  (contains?
-   #{:whitespace
-     :newline
-     :comma}
-   (node/tag node)))
-
-(defn linebreak?
-  "Check whether a ndoe represents linebreaks."
-  [node]
-  (= (node/tag node) :newline))
-
-(defn comma?
-  "Check whether a node represents a comma."
-  [node]
-  (= (node/tag node) :comma))
