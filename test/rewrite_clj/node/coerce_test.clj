@@ -2,7 +2,8 @@
   (:require [midje.sweet :refer :all]
             [rewrite-clj.node.protocols
              :as node :refer [coerce]]
-            [rewrite-clj.node.coerce :refer :all]))
+            [rewrite-clj.node.coerce :refer :all]
+            [rewrite-clj.parser :as p]))
 
 (tabular
   (fact "about sexpr -> node -> sexpr roundtrip."
@@ -55,7 +56,8 @@
 (fact "about nil."
       (let [n (coerce nil)]
         n => #(satisfies? node/Node %)
-        (node/sexpr n) => nil))
+        (node/sexpr n) => nil
+        (p/parse-string "nil") => n))
 
 (defrecord Foo-Bar [a])
 
