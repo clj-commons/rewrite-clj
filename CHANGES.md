@@ -1,8 +1,10 @@
 ## Changelog
 
-### 0.5.3
+### 0.6.0
 
-- nothing so far.
+- __BREAKING__: uses a dedicated node type for regular expressions. (see #49 –
+  thanks @ChrisBlom!)
+- implement `NodeCoercable` for `nil`. (set #53 – thanks @jespera!)
 
 ### 0.5.2
 
