@@ -56,7 +56,6 @@
      (token-node nil)
      nil)))
 
-
 ;; ## Seqs
 
 (defn- seq-node
