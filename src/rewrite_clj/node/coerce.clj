@@ -52,9 +52,7 @@
 (extend-protocol NodeCoerceable
   nil
   (coerce [v]
-    (node-with-meta
-     (token-node nil)
-     nil)))
+    (token-node nil)))
 
 ;; ## Seqs
 
