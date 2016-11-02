@@ -40,4 +40,4 @@
 (defn parse-regex
   [reader]
   (let [h (read-string-data reader)]
-    (node/token-node (re-pattern (string/join "\n" h)))))
+    (string/join "\n" h)))

@@ -112,15 +112,15 @@
 (tabular
   (fact "about parsing regular expressions"
     (let [n (p/parse-string ?s)]
-      (node/tag n) => :token
-      (class (node/sexpr n)) => java.util.regex.Pattern
-      (str (node/sexpr n)) => ?p))
+      (node/tag n) => :regex
+      (node/sexpr n) => ?p))
   ?s                 ?p
-  "#\"regex\""       "regex"
-  "#\"regex\\.\""    "regex\\."
-  "#\"[reg|k].x\""   "[reg|k].x"
-  "#\"a\\nb\""       "a\\nb"
-  "#\"a\nb\""        "a\nb")
+
+  "#\"regex\""       '(re-pattern "regex")
+  "#\"regex\\.\""    '(re-pattern "regex\\.")
+  "#\"[reg|k].x\""   '(re-pattern "[reg|k].x")
+  "#\"a\\nb\""       '(re-pattern "a\\nb")
+  "#\"a\nb\""        '(re-pattern "a\nb"))
 
 (tabular
   (fact "about parsing strings"
