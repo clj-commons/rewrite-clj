@@ -49,6 +49,11 @@
       (token-node v)
       v)))
 
+(extend-protocol NodeCoerceable
+  nil
+  (coerce [v]
+    (token-node nil)))
+
 ;; ## Seqs
 
 (defn- seq-node
