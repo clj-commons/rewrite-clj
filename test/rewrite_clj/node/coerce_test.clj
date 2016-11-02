@@ -52,6 +52,11 @@
         n => #(satisfies? node/Node %)
         (node/sexpr n) => '(var clojure.core/identity)))
 
+(fact "about nil."
+      (let [n (coerce nil)]
+        n => #(satisfies? node/Node %)
+        (node/sexpr n) => nil))
+
 (defrecord Foo-Bar [a])
 
 (fact "about records."
