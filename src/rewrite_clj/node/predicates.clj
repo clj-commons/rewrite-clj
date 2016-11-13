@@ -134,6 +134,11 @@
   [node]
   (= (node/tag node) :meta))
 
+(defn regex?
+  "Checks whether the given node represents a regex."
+  [node]
+  (= (node/tag node) :regex))
+
 (defn deref?
   "Checks whether the given node represents the deref reader macro."
   [node]

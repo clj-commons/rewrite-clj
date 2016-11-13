@@ -121,6 +121,7 @@
    whitespace-or-comment?
    fn?
    meta?
+   regex?
    deref?
    forms?
    form?
