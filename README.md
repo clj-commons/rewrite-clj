@@ -27,7 +27,7 @@ handling simple tokens and generates a custom node type representing EDN forms:
 ```clojure
 (require '[rewrite-clj.parser :as p])
 
-(p/parse-string "(defn my-function [a]\n  (* a 3))"
+(def form (p/parse-string "(defn my-function [a]\n  (* a 3))"))
 ;; => <list:
 ;;      (defn my-function [a]
 ;;        (* a 3))
