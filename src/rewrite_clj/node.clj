@@ -70,6 +70,7 @@
   [rewrite-clj.node.seq
    list-node
    map-node
+   namespaced-map-node
    set-node
    vector-node]
 
