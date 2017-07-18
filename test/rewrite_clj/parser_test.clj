@@ -231,6 +231,16 @@
     ";\n"
     ";;\n"))
 
+(deftest t-parsing-namespaced-maps
+  (are [?s]
+       (let [n (p/parse-string ?s)]
+         (is (= :namespaced-map (node/tag n)))
+         (is (= (count ?s) (node/length n)))
+         (is (= ?s (node/string n)))
+         (is (= {:abc/x 1, :abc/y 1} (node/sexpr n))))
+     "#:abc{:x 1, :y 1}"
+     "#:abc   {:x 1, :y 1}"))
+
 (deftest t-parsing-exceptions
   (are [?s ?p]
        (is (thrown? Exception ?p (p/parse-string ?s)))
