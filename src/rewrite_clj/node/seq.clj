@@ -41,8 +41,6 @@
             "can only contain 2 non-whitespace forms.")
     (assert (keyword? (first exs))
             "first form in namespaced map needs to be keyword.")
-    (assert (not (namespace (first exs)))
-            "keyword for namespaced map may not be already namespaced.")
     (assert (map? (second exs))
             "second form in namespaced map needs to be map.")))
 
@@ -52,12 +50,20 @@
     :namespaced-map)
   (printable-only? [_] false)
   (sexpr [this]
-    (let [[ns m] (node/sexprs children)
-          ns     (name ns)]
+    (let [[nspace' m] (node/sexprs children)
+          nspace (if (namespace nspace')
+                   (-> (ns-aliases *ns*)
+                       (get (symbol (name nspace')))
+                       (ns-name)
+                       (name))
+                   (name nspace'))]
+      (assert nspace
+              (str "could not resolve namespace alias for namespaced map: "
+                   (namespace nspace')))
       (->> (for [[k v] m
                  :let [k' (cond (not (keyword? k)) k
                                 (namespace k)      k
-                                :else (keyword ns (name k)))]]
+                                :else (keyword nspace (name k)))]]
              [k' v])
            (into {}))))
   (length [_]
