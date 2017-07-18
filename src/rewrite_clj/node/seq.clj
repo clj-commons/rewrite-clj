@@ -34,41 +34,45 @@
   (toString [this]
     (node/string this)))
 
-(defrecord NamespacedMapNode [wrap-length children]
+(defn- assert-namespaced-map-children
+  [children]
+  (let [exs (node/sexprs children)]
+    (assert (= (count exs) 2)
+            "can only contain 2 non-whitespace forms.")
+    (assert (keyword? (first exs))
+            "first form in namespaced map needs to be keyword.")
+    (assert (not (namespace (first exs)))
+            "keyword for namespaced map may not be already namespaced.")
+    (assert (map? (second exs))
+            "second form in namespaced map needs to be map.")))
+
+(defrecord NamespacedMapNode [children]
   node/Node
   (tag [this]
     :namespaced-map)
   (printable-only? [_] false)
   (sexpr [this]
-    (let [n (node/sexpr (first children))]
-      (reduce-kv
-       (fn [m k v]
-         (if (keyword? k)
-           (cond (namespace k)
-                 (assoc m k v)
-                 (namespace n)
-                 (assoc m (keyword
-                           (str (namespace n) "/" (name n))
-                           (name k)) v)
-                 :else
-                 (assoc m (keyword (name n) (name k)) v))
-           (assoc m k v)))
-       {} (apply hash-map (node/sexprs (-> children second :children))))))
+    (let [[ns m] (node/sexprs children)
+          ns     (name ns)]
+      (->> (for [[k v] m
+                 :let [k' (cond (not (keyword? k)) k
+                                (namespace k)      k
+                                :else (keyword ns (name k)))]]
+             [k' v])
+           (into {}))))
   (length [_]
-    (+ wrap-length (node/sum-lengths children)))
+    (+ 1 (node/sum-lengths children)))
   (string [this]
-    (format "#%s{%s}"
-            (node/string (first children))
-            (node/concat-strings (-> children second :children))))
+    (str "#" (node/concat-strings children)))
 
   node/InnerNode
   (inner? [_] true)
   (children [_] children)
   (replace-children [this children']
-    (node/assert-sexpr-count children' 2)
+    (assert-namespaced-map-children children')
     (assoc this :children children'))
   (leader-length [_]
-    (dec wrap-length))
+    1)
 
   Object
   (toString [this]
@@ -102,5 +106,5 @@
 (defn namespaced-map-node
   "Create a node representing an EDN map namespace."
   [children]
-  (node/assert-sexpr-count children 2)
-  (->NamespacedMapNode 2 children))
+  (assert-namespaced-map-children children)
+  (->NamespacedMapNode children))
