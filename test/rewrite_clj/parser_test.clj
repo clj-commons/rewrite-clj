@@ -241,6 +241,16 @@
      "#:abc{:x 1, :y 1}"
      "#:abc   {:x 1, :y 1}"))
 
+(deftest t-parsing-namespaced-maps-with-namespace-alias
+  (are [?s]
+       (let [n (p/parse-string ?s)]
+         (is (= :namespaced-map (node/tag n)))
+         (is (= (count ?s) (node/length n)))
+         (is (= ?s (node/string n)))
+         (is (= {::node/x 1, ::node/y 1} (node/sexpr n))))
+    "#::node{:x 1, :y 1}"
+    "#::node   {:x 1, :y 1}"))
+
 (deftest t-parsing-exceptions
   (are [?s ?p]
        (is (thrown? Exception ?p (p/parse-string ?s)))
