@@ -181,6 +181,31 @@
   "#^{:private true}"  :meta* :map)
 
 (tabular
+  (fact "about parsing multiple metadata forms"
+        (let [s (str ?s " s")
+              n (p/parse-string s)
+              [mta ws n'] (node/children n)
+              [mta2 ws2 sym] (node/children n')]
+          ;; outer meta
+          (node/tag n)          => ?t
+          (node/string n)       => s
+          (node/sexpr n)        => 's
+          (meta (node/sexpr n)) => {:private true :awe true}
+          (node/tag mta)        => ?mt
+          (node/tag ws)         => :whitespace
+
+          ;; inner meta
+          (node/tag n')          => ?t
+          (meta (node/sexpr n')) => {:awe true}
+          (node/tag mta2)        => ?mt
+          (node/tag ws2)         => :whitespace))
+  ?s                                ?t     ?mt
+  "^:private ^:awe"                 :meta  :token
+  "^{:private true} ^{:awe true}"   :meta  :map
+  "#^:private #^:awe"               :meta* :token
+  "#^{:private true} #^{:awe true}" :meta* :map)
+
+(tabular
   (fact "about parsing reader macros"
     (let [n (p/parse-string ?s)]
       (node/tag n) => ?t
