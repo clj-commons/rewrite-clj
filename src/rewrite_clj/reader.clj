@@ -178,4 +178,4 @@
   (-> (io/file f)
       (io/reader)
       (PushbackReader. 2)
-      (r/indexing-push-back-reader)))
+      (r/indexing-push-back-reader 2)))
