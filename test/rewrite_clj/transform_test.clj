@@ -1,5 +1,5 @@
 (ns rewrite-clj.transform-test
-  (:require [midje.sweet :refer :all]
+  (:require [clojure.test :refer :all]
             [rewrite-clj.zip :as z]
             [clojure.string :as string]))
 
@@ -14,48 +14,48 @@
 
 (def data (z/of-string data-string))
 
-(fact "about a simple transformation"
-      (-> data
-        (z/find-value z/next 'defproject)
-        z/right z/right
-        (z/edit #(str % "-1"))
-        z/->root-string)
-      => (string/replace data-string "SNAPSHOT" "SNAPSHOT-1"))
+(deftest t-a-simple-transformation
+  (is (= (string/replace data-string "SNAPSHOT" "SNAPSHOT-1")
+         (-> data
+             (z/find-value z/next 'defproject)
+             z/right z/right
+             (z/edit #(str % "-1"))
+             z/->root-string))))
 
-(fact "about a seq transformation (prefix)"
-      (-> data
-        (z/find-value z/next 'defproject)
-        (z/find-value :dependencies) z/right
-        (->>
-          (z/map
-            (fn [loc]
-              (-> loc z/down
-                  (z/prefix "prefix-")
-                  z/up))))
-        z/->root-string)
-      => (-> data-string
-           (string/replace "[a " "[prefix-a ")
-           (string/replace "[b " "[prefix-b ")))
+(deftest t-a-seq-transformation-prefix
+  (is (= (-> data-string
+             (string/replace "[a " "[prefix-a ")
+             (string/replace "[b " "[prefix-b "))
+         (-> data
+             (z/find-value z/next 'defproject)
+             (z/find-value :dependencies) z/right
+             (->>
+              (z/map
+               (fn [loc]
+                 (-> loc z/down
+                     (z/prefix "prefix-")
+                     z/up))))
+             z/->root-string))))
 
-(fact "about a seq transformation (suffix)"
-      (-> data
-        (z/find-value z/next 'defproject)
-        (z/find-value :dependencies) z/right
-        (->>
-          (z/map
-            (fn [loc]
-              (-> loc z/down
-                  (z/suffix "-suffix")
-                  z/up))))
-        z/->root-string)
-      => (-> data-string
-           (string/replace "[a " "[a-suffix ")
-           (string/replace "[b " "[b-suffix ")))
+(deftest t-a-seq-transformation-suffix
+  (is (= (-> data-string
+             (string/replace "[a " "[a-suffix ")
+             (string/replace "[b " "[b-suffix "))
+         (-> data
+             (z/find-value z/next 'defproject)
+             (z/find-value :dependencies) z/right
+             (->>
+              (z/map
+               (fn [loc]
+                 (-> loc z/down
+                     (z/suffix "-suffix")
+                     z/up))))
+             z/->root-string))))
 
-(fact "about whitespace-handling in removal"
-      (-> data
-        (z/find-value z/next 'defproject)
-        (z/find-value :dependencies)
-        z/right z/down z/remove
-        z/->root-string)
-      => (string/replace data-string #"\[a [^\s]+\]\s+" ""))
+(deftest t-whitespace-handling-in-removal
+  (is (= (string/replace data-string #"\[a [^\s]+\]\s+" "")
+         (-> data
+             (z/find-value z/next 'defproject)
+             (z/find-value :dependencies)
+             z/right z/down z/remove
+             z/->root-string))))

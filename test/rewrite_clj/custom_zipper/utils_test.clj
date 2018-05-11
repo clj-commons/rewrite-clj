@@ -1,5 +1,5 @@
 (ns rewrite-clj.custom-zipper.utils-test
-  (:require [midje.sweet :refer :all]
+  (:require [clojure.test :refer :all]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.custom-zipper.core :as z]
@@ -10,48 +10,45 @@
       c (node/token-node 'c)
       d (node/token-node 'd)
       loc (z/down (base/edn* (node/forms-node [a b c d])))]
-  (fact "about 'remove-right'."
-        (let [loc' (remove-right loc)]
-          (base/sexpr loc') => 'a
-          (base/root-string loc') => "acd"))
-  (fact "about 'remove-left'."
-        (let [loc' (-> loc z/right z/right remove-left)]
-          (base/sexpr loc') => 'c
-          (base/root-string loc') => "acd"))
-  (fact "about 'remove-and-move-right'."
-        (let [loc' (remove-and-move-right (z/right loc))]
-          (base/sexpr loc') => 'c
-          (base/root-string loc') => "acd"))
-  (fact "about 'remove-and-move-left'."
-        (let [loc' (-> loc z/right remove-and-move-left)]
-          (base/sexpr loc') => 'a
-          (base/root-string loc') => "acd")))
+  (deftest t-remove-right
+    (let [loc' (remove-right loc)]
+      (is (= 'a (base/sexpr loc')))
+      (is (= "acd" (base/root-string loc')))))
+  (deftest t-remove-left
+    (let [loc' (-> loc z/right z/right remove-left)]
+      (is (= 'c (base/sexpr loc')))
+      (is (= "acd" (base/root-string loc')))))
+  (deftest t-remove-and-move-right
+    (let [loc' (remove-and-move-right (z/right loc))]
+      (is (= 'c (base/sexpr loc')))
+      (is (= "acd" (base/root-string loc')))))
+  (deftest t-remove-and-move-left
+    (let [loc' (-> loc z/right remove-and-move-left)]
+      (is (= 'a (base/sexpr loc')))
+      (is (= "acd" (base/root-string loc'))))))
 
-(tabular
-  (fact "`remove-and-move-left` tracks current position correctly"
-    (let [root (base/of-string "[a bb ccc]" {:track-position? true})
-          zloc (nth (iterate z/next root) ?n)]
-      (z/position (remove-and-move-left zloc)) => ?pos))
-  ?n ?pos
-  3  [1 3]
-  5  [1 6]
-  2  [1 2])
+(deftest t-remove-and-move-left-tracks-current-position-correctly
+  (are [?n ?pos]
+       (let [root (base/of-string "[a bb ccc]" {:track-position? true})
+             zloc (nth (iterate z/next root) ?n)]
+         (is (= ?pos (z/position (remove-and-move-left zloc)))))
+    3  [1 3]
+    5  [1 6]
+    2  [1 2]))
 
-(tabular
-  (fact "`remove-and-move-right` does not affect position"
-    (let [root (base/of-string "[a bb ccc]" {:track-position? true})
-          zloc (nth (iterate z/next root) ?n)]
-      (z/position (remove-and-move-right zloc)) => ?pos))
-  ?n ?pos
-  3  [1 4]
-  1  [1 2]
-  2  [1 3])
+(deftest t-remove-and-move-right-does-not-affect-position
+  (are [?n ?pos]
+       (let [root (base/of-string "[a bb ccc]" {:track-position? true})
+             zloc (nth (iterate z/next root) ?n)]
+         (is (= ?pos (z/position (remove-and-move-right zloc)))))
+    3  [1 4]
+    1  [1 2]
+    2  [1 3]))
 
-(tabular
-  (fact "`remove-left` tracks current position correctly"
-    (let [root (base/of-string "[a bb ccc]" {:track-position? true})
-          zloc (nth (iterate z/next root) ?n)]
-      (z/position (remove-left zloc)) => ?pos))
-  ?n ?pos
-  3  [1 3]
-  5  [1 6])
+(deftest t-remove-left-tracks-current-position-correctly
+  (are [?n ?pos]
+       (let [root (base/of-string "[a bb ccc]" {:track-position? true})
+             zloc (nth (iterate z/next root) ?n)]
+         (is (= ?pos (z/position (remove-left zloc)))))
+    3  [1 3]
+    5  [1 6]))
