@@ -32,10 +32,11 @@
 
 (tabular
   (fact "about parsing simple data"
-        (let [n (p/parse-string ?s)]
-          (node/tag n)    => :token
-          (node/string n) => ?s
-          (node/sexpr n)  => ?r))
+        (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
+          (let [n (p/parse-string ?s)]
+            (node/tag n)    => :token
+            (node/string n) => ?s
+            (node/sexpr n)  => ?r)))
   ?s                           ?r
   "0"                          0
   "0.1"                        0.1

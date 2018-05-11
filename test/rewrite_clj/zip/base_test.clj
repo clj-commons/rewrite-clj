@@ -23,37 +23,36 @@
 
 (let [f (java.io.File/createTempFile "rewrite" ".clj")
       s "   [[1 2] 3]"]
-  (with-state-changes [(before :facts (spit f s))
-                       (after :facts (.delete f))]
-    (tabular
-      (fact "about zipper creation (with movement to first non-ws node)."
-            (let [loc ?loc
-                  [_ a b c d] (iterate z/next loc)]
-              (base/tag loc) => :vector
-              (base/sexpr loc) => [[1 2] 3]
-              (base/tag a) => :vector
-              (base/tag b) => :token
-              (base/tag c) => :whitespace
-              (base/tag d) => :token
-              (base/string loc) => "[[1 2] 3]"
-              (base/string a) => "[1 2]"
-              (map base/root-string [loc a b c d]) => (has every? #{s})
-              (with-out-str (base/print loc)) => "[[1 2] 3]"
-              (with-out-str (base/print-root loc)) => "   [[1 2] 3]"
-              (with-open [w (java.io.StringWriter.)]
-                (base/print loc w)
-                (str w)) => "[[1 2] 3]"
-              (with-open [w (java.io.StringWriter.)]
-                (base/print-root loc w)
-                (str w)) => "   [[1 2] 3]"))
-      ?loc
-      (base/edn
-        (node/forms-node
-          [(node/spaces 3)
-           (node/coerce [[1 2] 3])]))
-      (base/of-string s)
-      (base/of-file f)
-      (base/of-file (.getPath f)))))
+  (spit f s)
+  (tabular
+    (fact "about zipper creation (with movement to first non-ws node)."
+          (let [loc ?loc
+                [_ a b c d] (iterate z/next loc)]
+            (base/tag loc) => :vector
+            (base/sexpr loc) => [[1 2] 3]
+            (base/tag a) => :vector
+            (base/tag b) => :token
+            (base/tag c) => :whitespace
+            (base/tag d) => :token
+            (base/string loc) => "[[1 2] 3]"
+            (base/string a) => "[1 2]"
+            (map base/root-string [loc a b c d]) => (has every? #{s})
+            (with-out-str (base/print loc)) => "[[1 2] 3]"
+            (with-out-str (base/print-root loc)) => "   [[1 2] 3]"
+            (with-open [w (java.io.StringWriter.)]
+              (base/print loc w)
+              (str w)) => "[[1 2] 3]"
+            (with-open [w (java.io.StringWriter.)]
+              (base/print-root loc w)
+              (str w)) => "   [[1 2] 3]"))
+    ?loc
+    (base/edn
+      (node/forms-node
+        [(node/spaces 3)
+         (node/coerce [[1 2] 3])]))
+    (base/of-string s)
+    (base/of-file f)
+    (base/of-file (.getPath f))))
 
 (tabular
   (fact "about zipper creation for whitespace-only nodes."

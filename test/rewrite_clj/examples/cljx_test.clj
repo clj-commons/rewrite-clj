@@ -19,8 +19,8 @@
 (tabular
   (fact "about cljx macro detection."
         (let [loc (z/of-string ?data)]
-          (cljx-macro? loc) => ?result))
-  ?data                 ?result
+          (cljx-macro? loc) => ?pred))
+  ?data                 ?pred
   "#+clj 123"           truthy
   "#-clj 123"           truthy
   "#clj  123"           falsey
