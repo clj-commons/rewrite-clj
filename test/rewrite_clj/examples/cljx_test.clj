@@ -20,8 +20,8 @@
   (are [?data ?pred]
        (let [loc (z/of-string ?data)]
          (is (?pred (cljx-macro? loc))))
-    "#+clj 123"           some?
-    "#-clj 123"           some?
+    "#+clj 123"           identity
+    "#-clj 123"           identity
     "#clj  123"           not
     "123"                 not))
 
