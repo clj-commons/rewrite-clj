@@ -1,5 +1,5 @@
 (ns rewrite-clj.examples.cljx-test
-  (:require [midje.sweet :refer :all]
+  (:require [clojure.test :refer :all]
             [rewrite-clj.zip :as z]))
 
 ;; ## Reader Macro Detection
@@ -16,15 +16,14 @@
               (or (.startsWith nm "+")
                   (.startsWith nm "-")))))))))
 
-(tabular
-  (fact "about cljx macro detection."
-        (let [loc (z/of-string ?data)]
-          (cljx-macro? loc) => ?result))
-  ?data                 ?result
-  "#+clj 123"           truthy
-  "#-clj 123"           truthy
-  "#clj  123"           falsey
-  "123"                 falsey)
+(deftest t-cljx-macro-detection
+  (are [?data ?pred]
+       (let [loc (z/of-string ?data)]
+         (is (?pred (cljx-macro? loc))))
+    "#+clj 123"           identity
+    "#-clj 123"           identity
+    "#clj  123"           not
+    "123"                 not))
 
 ;; ## Replace Form w/ Spaces
 
@@ -38,11 +37,11 @@
         z/remove*                  ;; remove original (without removing an extra space)
         z/next)))                  ;; go to following node
 
-(fact "about replacing a form with spaces."
-      (let [loc (z/of-string "(hello [\"world\" \"you\"] 2)")
-            rloc (-> loc z/next z/next z/next replace-with-spaces)]
-        (z/sexpr rloc)       => "you"
-        (z/root-string rloc) => "(hello [        \"you\"] 2)"))
+(deftest t-replacing-a-form-with-spaces
+  (let [loc (z/of-string "(hello [\"world\" \"you\"] 2)")
+        rloc (-> loc z/next z/next z/next replace-with-spaces)]
+    (is (= "you" (z/sexpr rloc)))
+    (is (= "(hello [        \"you\"] 2)" (z/root-string rloc)))))
 
 ;; ## Remove Reader Macro
 
@@ -54,11 +53,11 @@
       replace-with-spaces        ;; replace the '+...'/'-...' part with spaces
       z/prepend-space))          ;; insert a space to make up for the missing '#'
 
-(fact "about removing the symbol part of a reader macro."
-      (let [loc (z/of-string "(+ 0 #+clj 123 4)")
-            rloc (-> loc z/next z/next z/next remove-reader-macro-symbol)]
-        (z/sexpr rloc) => 123
-        (z/root-string rloc) => "(+ 0       123 4)"))
+(deftest t-removing-the-symbol-part-of-a-reader-macro
+  (let [loc (z/of-string "(+ 0 #+clj 123 4)")
+        rloc (-> loc z/next z/next z/next remove-reader-macro-symbol)]
+    (is (= 123 (z/sexpr rloc)))
+    (is (= "(+ 0       123 4)" (z/root-string rloc)))))
 
 ;; ## cljx step
 
@@ -74,16 +73,15 @@
       (replace-with-spaces zloc)
       (remove-reader-macro-symbol zloc))))
 
-(tabular
-  (fact "about reader macro handling."
-        (let [loc (z/of-string ?data)
-              rloc (handle-reader-macro #{"clj"} loc)]
-          (z/root-string rloc) => ?result))
-  ?data              ?result
-  "#+clj 123"        "      123"
-  "#-clj 123"        "         "
-  "#+clx 123"        "         "
-  "#-clx 123"        "      123")
+(deftest t-reader-macro-handling
+  (are [?data ?result]
+       (let [loc (z/of-string ?data)
+             rloc (handle-reader-macro #{"clj"} loc)]
+         (is (= ?result (z/root-string rloc))))
+    "#+clj 123"        "      123"
+    "#-clj 123"        "         "
+    "#+clx 123"        "         "
+    "#-clx 123"        "      123"))
 
 ;; ## cljx
 
@@ -91,9 +89,9 @@
   "Replace all occurences of profile reader macros."
   [root active-profiles]
   (z/prewalk
-    root
-    cljx-macro?
-    #(handle-reader-macro active-profiles %)))
+   root
+   cljx-macro?
+   #(handle-reader-macro active-profiles %)))
 
 (defn cljx-string
   "Run cljx on the given string."
@@ -101,30 +99,29 @@
   (let [active-profiles (set (map name profiles))
         zloc (z/of-string data)]
     (z/root-string
-      (cljx-walk zloc active-profiles))))
+     (cljx-walk zloc active-profiles))))
 
-      (let [data (str "(defn debug-inc\n"
-                      "  [x]\n"
-                      "  #+debug (println #-compact :debug 'inc x)\n"
-                      "  (inc x))")]
-        (tabular
-          (fact "about cljx."
-                (cljx-string data ?profiles) => ?result)
-          ?profiles, ?result
-          #{}
-          (str "(defn debug-inc\n"
-               "  [x]\n"
-               "                                           \n"
-               "  (inc x))")
+(let [data (str "(defn debug-inc\n"
+                "  [x]\n"
+                "  #+debug (println #-compact :debug 'inc x)\n"
+                "  (inc x))")]
+  (deftest t-cljx
+    (are [?profiles ?result]
+         (is (= ?result (cljx-string data ?profiles)))
+      #{}
+      (str "(defn debug-inc\n"
+           "  [x]\n"
+           "                                           \n"
+           "  (inc x))")
 
-          #{:debug}
-          (str "(defn debug-inc\n"
-               "  [x]\n"
-               "          (println           :debug 'inc x)\n"
-               "  (inc x))")
+      #{:debug}
+      (str "(defn debug-inc\n"
+           "  [x]\n"
+           "          (println           :debug 'inc x)\n"
+           "  (inc x))")
 
-          #{:debug :compact}
-          (str "(defn debug-inc\n"
-               "  [x]\n"
-               "          (println                  'inc x)\n"
-               "  (inc x))")))
+      #{:debug :compact}
+      (str "(defn debug-inc\n"
+           "  [x]\n"
+           "          (println                  'inc x)\n"
+           "  (inc x))"))))

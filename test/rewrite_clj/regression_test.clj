@@ -1,5 +1,5 @@
 (ns rewrite-clj.regression-test
-  (:require [midje.sweet :refer :all]
+  (:require [clojure.test :refer :all]
             [rewrite-clj
              [node :as node]
              [zip :as z]]
@@ -27,10 +27,10 @@
 (defn- node->vec
   [n]
   (vector
-    (node/tag n)
-    (if (node/printable-only? n)
-      (node/string n)
-      (node/sexpr n))))
+   (node/tag n)
+   (if (node/printable-only? n)
+     (node/string n)
+     (node/sexpr n))))
 
 (defn- node->tree
   [n]
@@ -41,234 +41,235 @@
 (def ->vec (comp node->vec z/node))
 (def ->tree (comp node->tree z/node))
 
-(fact "about top-level zipper structure and initial position"
-      (node/tag (z/node root)) => :list
-      (node/tag (z/root root)) => :forms)
+(deftest t-top-level-zipper-structure-and-initial-position
+  (is (= :list (node/tag (z/node root))))
+  (is (= :forms (node/tag (z/root root)))))
 
-(fact "about whitespace-aware zipper movement"
-      (z/sexpr root) => list?
+(deftest t-whitespace-aware-zipper-movement
+  (is (list? (z/sexpr root)))
 
-      (-> root fz/down fz/right ->vec) => [:whitespace " "]
-      (-> root z/down z/right ->vec) => [:token 'my-project]
+  (is (= [:whitespace " "] (-> root fz/down fz/right ->vec)))
+  (is (= [:token 'my-project] (-> root z/down z/right ->vec)))
 
-      (-> root fz/down fz/rightmost z/tag) => :map
-      (-> root z/down z/rightmost z/tag) => :map
+  (is (= :map (-> root fz/down fz/rightmost z/tag)))
+  (is (= :map (-> root z/down z/rightmost z/tag)))
 
-      (-> root fz/down fz/rightmost fz/left ->vec) => [:whitespace " "]
-      (-> root z/down z/rightmost z/left ->vec) => [:token :repositories]
+  (is (= [:whitespace " "] (-> root fz/down fz/rightmost fz/left ->vec)))
+  (is (= [:token :repositories] (-> root z/down z/rightmost z/left ->vec)))
 
-      (-> root fz/down fz/rightmost fz/next ->vec) => [:whitespace " "]
-      (-> root z/down z/rightmost z/next ->vec) => [:token "private"]
+  (is (= [:whitespace " "] (-> root fz/down fz/rightmost fz/next ->vec)))
+  (is (= [:token "private"] (-> root z/down z/rightmost z/next ->vec)))
 
-      (-> root z/down z/leftmost ->vec) => [:token 'defproject]
-      (-> root z/down z/right z/leftmost ->vec) => [:token 'defproject])
+  (is (= [:token 'defproject] (-> root z/down z/leftmost ->vec)))
+  (is (= [:token 'defproject] (-> root z/down z/right z/leftmost ->vec))))
 
-(fact "about depth-first traversal"
-      (let [loc (z/of-string "(defn func [] (println 1))")
-            dfs (->> (iterate z/next loc)
-                     (take-while (complement z/end?)))]
+(deftest t-depth-first-traversal
+  (let [loc (z/of-string "(defn func [] (println 1))")
+        dfs (->> (iterate z/next loc)
+                 (take-while (complement z/end?)))]
         ;;dfs => (has every? truthy)
         ;;(nth dfs 6) => (nth dfs 7)
         ;;(z/end? (nth dfs 6)) => falsey
         ;;(z/end? (nth dfs 7)) => truthy
-        #_(map z/sexpr dfs) #_=> #_'[(defn func [] (println 1))
-                                     defn func [] (println 1)
-                                     println 1 1]))
+    #_(map z/sexpr dfs) #_=> #_'[(defn func [] (println 1))
+                                 defn func [] (println 1)
+                                 println 1 1]))
 
 (let [tk (node/token-node :go)]
-  (fact "about whitespace-aware insert/append"
-        (let [loc (-> root (fz/insert-child tk) fz/down)]
-          (->vec loc) => [:token :go]
-          (-> loc fz/right ->vec) => [:token 'defproject])
-        (let [loc (-> root (z/insert-child :go) z/down)]
-          (->vec loc) => [:token :go]
-          (-> loc fz/right ->vec) => [:whitespace " "]
-          (-> loc z/right ->vec) => [:token 'defproject])
+  (deftest t-whitespace-aware-insertappend
+    (let [loc (-> root (fz/insert-child tk) fz/down)]
+      (is (= [:token :go] (->vec loc)))
+      (is (= [:token 'defproject] (-> loc fz/right ->vec))))
+    (let [loc (-> root (z/insert-child :go) z/down)]
+      (is (= [:token :go] (->vec loc)))
+      (is (= [:whitespace " "] (-> loc fz/right ->vec)))
+      (is (= [:token 'defproject] (-> loc z/right ->vec))))
 
-        (let [loc (-> root (fz/append-child tk) fz/down fz/rightmost)]
-          (->vec loc) => [:token :go]
-          (-> loc fz/left ->vec first) => :map)
-        (let [loc (-> root (z/append-child :go) z/down z/rightmost)]
-          (->vec loc) => [:token :go]
-          (-> loc fz/left ->vec) => [:whitespace " "]
-          (-> loc z/left ->vec first) => :map)
+    (let [loc (-> root (fz/append-child tk) fz/down fz/rightmost)]
+      (is (= [:token :go] (->vec loc)))
+      (is (= :map (-> loc fz/left ->vec first))))
+    (let [loc (-> root (z/append-child :go) z/down z/rightmost)]
+      (is (= [:token :go] (->vec loc)))
+      (is (= [:whitespace " "] (-> loc fz/left ->vec)))
+      (is (= :map (-> loc z/left ->vec first))))
 
-        (let [loc (-> root fz/down (fz/insert-right tk) fz/right)]
-          (->vec loc) => [:token :go]
-          (-> loc fz/left ->vec) => [:token 'defproject])
-        (let [loc (-> root z/down (z/insert-right :go) z/right)]
-          (->vec loc) => [:token :go]
-          (-> loc fz/left ->vec) => [:whitespace " "]
-          (-> loc z/left ->vec) => [:token 'defproject])
+    (let [loc (-> root fz/down (fz/insert-right tk) fz/right)]
+      (is (= [:token :go] (->vec loc)))
+      (is (= [:token 'defproject] (-> loc fz/left ->vec))))
+    (let [loc (-> root z/down (z/insert-right :go) z/right)]
+      (is (= [:token :go] (->vec loc)))
+      (is (= [:whitespace " "] (-> loc fz/left ->vec)))
+      (is (= [:token 'defproject] (-> loc z/left ->vec))))
 
-        (let [loc (-> root fz/down (fz/insert-left tk) fz/left)]
-          (->vec loc) => [:token :go]
-          (-> loc fz/right ->vec) => [:token 'defproject])
-        (let [loc (-> root z/down (z/insert-left :go) z/left)]
-          (->vec loc) => [:token :go]
-          (-> loc fz/right ->vec) => [:whitespace " "]
-          (-> loc z/right ->vec) => [:token 'defproject])))
+    (let [loc (-> root fz/down (fz/insert-left tk) fz/left)]
+      (is (= [:token :go] (->vec loc)))
+      (is (= [:token 'defproject] (-> loc fz/right ->vec))))
+    (let [loc (-> root z/down (z/insert-left :go) z/left)]
+      (is (= [:token :go] (->vec loc)))
+      (is (= [:whitespace " "] (-> loc fz/right ->vec)))
+      (is (= [:token 'defproject] (-> loc z/right ->vec))))))
 
-(fact "about zipper modification"
-      (let [root (z/of-string "[1\n 2\n 3]")]
-        (->tree root)
-        => [:vector
+(deftest t-zipper-modification
+  (let [root (z/of-string "[1\n 2\n 3]")]
+    (is (= [:vector
             [:token 1]
             [:newline "\n"] [:whitespace " "] [:token 2]
             [:newline "\n"] [:whitespace " "] [:token 3]]
-        (node->tree (z/root root))
-        => [:forms
+           (->tree root)))
+    (is (= [:forms
             [:vector
              [:token 1]
              [:newline "\n"] [:whitespace " "] [:token 2]
              [:newline "\n"] [:whitespace " "] [:token 3]]]
-        (-> root z/down z/remove z/root node->tree)
-        => [:forms
+           (node->tree (z/root root))))
+    (is (= [:forms
             [:vector
              [:token 2]
              [:newline "\n"] [:whitespace " "] [:token 3]]]
-        (-> root z/down z/right (z/replace 5) z/root node->tree)
-        => [:forms
+           (-> root z/down z/remove z/root node->tree)))
+    (is (= [:forms
             [:vector
              [:token 1]
              [:newline "\n"] [:whitespace " "] [:token 5]
              [:newline "\n"] [:whitespace " "] [:token 3]]]
-        (-> root z/down z/right z/right (z/edit + 5) z/root node->tree)
-        => [:forms
+           (-> root z/down z/right (z/replace 5) z/root node->tree)))
+    (is (= [:forms
             [:vector
              [:token 1]
              [:newline "\n"] [:whitespace " "] [:token 2]
-             [:newline "\n"] [:whitespace " "] [:token 8]]]))
+             [:newline "\n"] [:whitespace " "] [:token 8]]]
+           (-> root z/down z/right z/right (z/edit + 5) z/root node->tree)))))
 
-(fact "about node removal (including trailing/preceding whitespace if necessary)"
-      (let [root (z/of-string "[1\n2]")]
-        (z/sexpr root) => [1 2]
-        (let [r0 (-> root z/down z/remove)]
-          (z/sexpr r0) => [2]
-          (z/->root-string r0) => "[2]"))
-      (let [root (z/of-string "[1 ;;comment\n 2]")]
-        (z/sexpr root) => [1 2]
-        (let [r0 (-> root z/down z/remove)]
-          (z/sexpr r0) => [2]
-          (z/->root-string r0) => "[;;comment\n 2]")
-        (let [r0 (-> root z/down z/right z/remove)]
-          (z/sexpr (z/up r0)) => [1]
-          (z/->root-string r0) => "[1 ;;comment\n]"))
-      (let [root (z/of-string "[1 [2 3] 4]")]
-        (z/sexpr root) => [1 [2 3] 4]
-        (let [r0 (-> root z/down z/remove*)]
-          (z/sexpr r0) => [[2 3] 4]
-          (z/->root-string r0) => "[ [2 3] 4]")
-        (let [r0 (-> root z/down z/remove)]
-          (z/sexpr r0) => [[2 3] 4]
-          (z/->root-string r0) => "[[2 3] 4]")
-        (let [r0 (-> root z/down z/right z/right z/remove*)]
-          (z/->root-string r0) => "[1 [2 3] ]")
-        (let [r0 (-> root z/down z/right z/right z/remove)]
-          (z/sexpr r0) => 3
-          (z/->root-string r0) => "[1 [2 3]]")))
+(deftest t-node-removal-including-trailingpreceding-whitespace-if-necessary
+  (let [root (z/of-string "[1\n2]")]
+    (is (= [1 2] (z/sexpr root)))
+    (let [r0 (-> root z/down z/remove)]
+      (is (= [2] (z/sexpr r0)))
+      (is (= "[2]" (z/->root-string r0)))))
+  (let [root (z/of-string "[1 ;;comment\n 2]")]
+    (is (= [1 2] (z/sexpr root)))
+    (let [r0 (-> root z/down z/remove)]
+      (is (= [2] (z/sexpr r0)))
+      (is (= "[;;comment\n 2]" (z/->root-string r0))))
+    (let [r0 (-> root z/down z/right z/remove)]
+      (is (= [1] (z/sexpr (z/up r0))))
+      (is (= "[1 ;;comment\n]" (z/->root-string r0)))))
+  (let [root (z/of-string "[1 [2 3] 4]")]
+    (is (= [1 [2 3] 4] (z/sexpr root)))
+    (let [r0 (-> root z/down z/remove*)]
+      (is (= [[2 3] 4] (z/sexpr r0)))
+      (is (= "[ [2 3] 4]" (z/->root-string r0))))
+    (let [r0 (-> root z/down z/remove)]
+      (is (= [[2 3] 4] (z/sexpr r0)))
+      (is (= "[[2 3] 4]" (z/->root-string r0))))
+    (let [r0 (-> root z/down z/right z/right z/remove*)]
+      (is (= "[1 [2 3] ]" (z/->root-string r0))))
+    (let [r0 (-> root z/down z/right z/right z/remove)]
+      (is (= 3 (z/sexpr r0)))
+      (is (= "[1 [2 3]]" (z/->root-string r0))))))
 
-(fact "about zipper search/find traversal"
-      (-> root z/down (z/find-value :description) z/right ->vec) => [:token "A project."]
-      (-> root (z/find-value z/next :description) z/right ->vec) => [:token "A project."]
-      (-> root (z/find-value z/next "private") z/right ->vec) => [:token "http://private.com/repo"]
+(deftest t-zipper-searchfind-traversal
+  (is (= [:token "A project."] (-> root z/down (z/find-value :description) z/right ->vec)))
+  (is (= [:token "A project."] (-> root (z/find-value z/next :description) z/right ->vec)))
+  (is (= [:token "http://private.com/repo"]
+         (-> root (z/find-value z/next "private") z/right ->vec)))
 
-      (-> root (z/find-tag z/next :map) z/down ->vec) => [:token "private"]
-      (->> root z/down (iterate #(z/find-next-tag % :token)) (take-while identity) (map ->vec) (map second))
-      => ['defproject 'my-project "0.1.0-SNAPSHOT" :description "A project." :dependencies :repositories]
-      (->> root z/down z/rightmost (iterate #(z/find-next-tag % z/left :token)) (rest) (take-while identity) (map ->vec) (map second))
-      => [:repositories :dependencies "A project." :description "0.1.0-SNAPSHOT" 'my-project 'defproject])
+  (is (= [:token "private"] (-> root (z/find-tag z/next :map) z/down ->vec)))
+  (is (= ['defproject 'my-project "0.1.0-SNAPSHOT" :description "A project." :dependencies :repositories]
+         (->> root z/down (iterate #(z/find-next-tag % :token)) (take-while identity) (map ->vec) (map second))))
+  (is (= [:repositories :dependencies "A project." :description "0.1.0-SNAPSHOT" 'my-project 'defproject]
+         (->> root z/down z/rightmost (iterate #(z/find-next-tag % z/left :token)) (rest) (take-while identity) (map ->vec) (map second)))))
 
-(fact "about zipper seq operations"
-      (let [root (z/of-string "[1 2 3]")]
-        root => z/seq?
-        root => z/vector?
-        (z/sexpr root) => [1 2 3]
-        (-> root (z/get 0) ->vec) => [:token 1]
-        (-> root (z/get 1) ->vec) => [:token 2]
-        (-> root (z/get 2) ->vec) => [:token 3]
-        (-> root (z/assoc 2 5) z/sexpr) => [1 2 5]
-        (-> root (z/assoc 5 8) z/sexpr) => (throws IndexOutOfBoundsException)
-        (->> root (z/map #(z/edit % inc)) z/sexpr) => [2 3 4])
-      (let [root (z/of-string "(1 2 3)")]
-        root => z/seq?
-        root => z/list?
-        (z/sexpr root) => '(1 2 3)
-        (-> root (z/get 0) ->vec) => [:token 1]
-        (-> root (z/get 1) ->vec) => [:token 2]
-        (-> root (z/get 2) ->vec) => [:token 3]
-        (-> root (z/assoc 2 5) z/sexpr) => '(1 2 5)
-        (-> root (z/assoc 5 8) z/sexpr) => (throws IndexOutOfBoundsException)
-        (->> root (z/map #(z/edit % inc)) z/sexpr) => '(2 3 4))
-      (let [root (z/of-string "#{1 2 3}")]
-        root => z/seq?
-        root => z/set?
-        (z/sexpr root) => #{1 2 3}
-        (-> root (z/get 0) ->vec) => [:token 1]
-        (-> root (z/get 1) ->vec) => [:token 2]
-        (-> root (z/get 2) ->vec) => [:token 3]
-        (-> root (z/assoc 2 5) z/sexpr) => #{1 2 5}
-        (-> root (z/assoc 5 8) z/sexpr) => (throws IndexOutOfBoundsException)
-        (->> root (z/map #(z/edit % inc)) z/sexpr) => #{2 3 4})
-      (let [root (z/of-string "{:a 1 :b 2}")]
-        root => z/seq?
-        root => z/map?
-        (z/sexpr root) => {:a 1 :b 2}
-        (-> root (z/get :a) ->vec) => [:token 1]
-        (-> root (z/get :b) ->vec) => [:token 2]
-        (-> root (z/assoc :a 5) z/sexpr) => {:a 5 :b 2}
-        (-> root (z/assoc :c 7) z/sexpr) => {:a 1 :b 2 :c 7}
-        (->> root (z/map #(z/edit % inc)) z/sexpr) => {:a 2 :b 3}
-        (->> root (z/map-keys #(z/edit % name)) z/sexpr) => {"a" 1 "b" 2}))
+(deftest t-zipper-seq-operations
+  (let [root (z/of-string "[1 2 3]")]
+    (is (z/seq? root))
+    (is (z/vector? root))
+    (is (= [1 2 3] (z/sexpr root)))
+    (is (= [:token 1] (-> root (z/get 0) ->vec)))
+    (is (= [:token 2] (-> root (z/get 1) ->vec)))
+    (is (= [:token 3] (-> root (z/get 2) ->vec)))
+    (is (= [1 2 5] (-> root (z/assoc 2 5) z/sexpr)))
+    (is (thrown? IndexOutOfBoundsException (-> root (z/assoc 5 8) z/sexpr)))
+    (is (= [2 3 4] (->> root (z/map #(z/edit % inc)) z/sexpr))))
+  (let [root (z/of-string "(1 2 3)")]
+    (is (z/seq? root))
+    (is (z/list? root))
+    (is (= '(1 2 3) (z/sexpr root)))
+    (is (= [:token 1] (-> root (z/get 0) ->vec)))
+    (is (= [:token 2] (-> root (z/get 1) ->vec)))
+    (is (= [:token 3] (-> root (z/get 2) ->vec)))
+    (is (= '(1 2 5) (-> root (z/assoc 2 5) z/sexpr)))
+    (is (thrown? IndexOutOfBoundsException (-> root (z/assoc 5 8) z/sexpr)))
+    (is (= '(2 3 4) (->> root (z/map #(z/edit % inc)) z/sexpr))))
+  (let [root (z/of-string "#{1 2 3}")]
+    (is (z/seq? root))
+    (is (z/set? root))
+    (is (= #{1 2 3} (z/sexpr root)))
+    (is (= [:token 1] (-> root (z/get 0) ->vec)))
+    (is (= [:token 2] (-> root (z/get 1) ->vec)))
+    (is (= [:token 3] (-> root (z/get 2) ->vec)))
+    (is (= #{1 2 5} (-> root (z/assoc 2 5) z/sexpr)))
+    (is (thrown? IndexOutOfBoundsException (-> root (z/assoc 5 8) z/sexpr)))
+    (is (= #{2 3 4} (->> root (z/map #(z/edit % inc)) z/sexpr))))
+  (let [root (z/of-string "{:a 1 :b 2}")]
+    (is (z/seq? root))
+    (is (z/map? root))
+    (is (= {:a 1 :b 2} (z/sexpr root)))
+    (is (= [:token 1] (-> root (z/get :a) ->vec)))
+    (is (= [:token 2] (-> root (z/get :b) ->vec)))
+    (is (= {:a 5 :b 2} (-> root (z/assoc :a 5) z/sexpr)))
+    (is (= {:a 1 :b 2 :c 7} (-> root (z/assoc :c 7) z/sexpr)))
+    (is (= {:a 2 :b 3} (->> root (z/map #(z/edit % inc)) z/sexpr)))
+    (is (= {"a" 1 "b" 2} (->> root (z/map-keys #(z/edit % name)) z/sexpr)))))
 
-(fact "about quoted forms"
-      (let [root (z/of-string "'a")]
-        (->tree root) => [:quote [:token 'a]]
-        (z/sexpr root) => '(quote a)
-        (-> root z/next ->vec) => [:token 'a]
-        (-> root z/next (z/replace 'b) z/up z/sexpr) => '(quote b)
-        (-> root z/next (z/replace 'b) z/->root-string) => "'b"))
+(deftest t-quoted-forms
+  (let [root (z/of-string "'a")]
+    (is (= [:quote [:token 'a]] (->tree root)))
+    (is (= '(quote a) (z/sexpr root)))
+    (is (= [:token 'a] (-> root z/next ->vec)))
+    (is (= '(quote b) (-> root z/next (z/replace 'b) z/up z/sexpr)))
+    (is (= "'b" (-> root z/next (z/replace 'b) z/->root-string)))))
 
-(fact "about edit scope limitation/location memoization"
-      (let [root (z/of-string "[0 [1 2 3] 4]")]
-        (fact "about subedit->"
-              (let [r0 (-> root z/down z/right z/down z/right (z/replace 5))
-                    r1 (z/subedit-> root z/down z/right z/down z/right (z/replace 5))]
-                (z/->root-string r0) => (z/->root-string r1)
-                (z/->string r0) => "5"
-                (z/->string r1) => "[0 [1 5 3] 4]"
-                (z/tag r0) => :token
-                (z/tag r1) => :vector))
-        (fact "about subedit->>"
-              (let [r0 (->> root z/down z/right (z/map #(z/edit % inc)) z/down)
-                    r1 (z/subedit->> root z/down z/right (z/map #(z/edit % + 1)) z/down)]
-                (z/->root-string r0) => (z/->root-string r1)
-                (z/->string r0) => "2"
-                (z/->string r1) => "[0 [2 3 4] 4]"
-                (z/tag r0) => :token
-                (z/tag r1) => :vector))
-        (fact "about edit->"
-              (let [v (-> root z/down z/right z/down)
-                    r0 (-> v z/up z/right z/remove)
-                    r1 (z/edit-> v z/up z/right z/remove)]
-                (z/->root-string r0) => (z/->root-string r1)
-                (z/->string v) => "1"
-                (z/->string r0) => "3"
-                (z/->string r1) => "1"))
-        (fact "about edit->>"
-              (let [v (-> root z/down)
-                    r0 (->> v z/right (z/map #(z/edit % inc)) z/right)
-                    r1 (z/edit->> v z/right (z/map #(z/edit % inc)) z/right)]
-                (z/->root-string r0) => (z/->root-string r1)
-                (z/->string v) => "0"
-                (z/->string r0) => "4"
-                (z/->string r1) => "0"))))
+(deftest t-edit-scope-limitationlocation-memoization
+  (let [root (z/of-string "[0 [1 2 3] 4]")]
+    (deftest t-subedit->
+      (let [r0 (-> root z/down z/right z/down z/right (z/replace 5))
+            r1 (z/subedit-> root z/down z/right z/down z/right (z/replace 5))]
+        (is (= (z/->root-string r1) (z/->root-string r0)))
+        (is (= "5" (z/->string r0)))
+        (is (= "[0 [1 5 3] 4]" (z/->string r1)))
+        (is (= :token (z/tag r0)))
+        (is (= :vector (z/tag r1)))))
+    (deftest t-subedit->>
+      (let [r0 (->> root z/down z/right (z/map #(z/edit % inc)) z/down)
+            r1 (z/subedit->> root z/down z/right (z/map #(z/edit % + 1)) z/down)]
+        (is (= (z/->root-string r1) (z/->root-string r0)))
+        (is (= "2" (z/->string r0)))
+        (is (= "[0 [2 3 4] 4]" (z/->string r1)))
+        (is (= :token (z/tag r0)))
+        (is (= :vector (z/tag r1)))))
+    (deftest t-edit->
+      (let [v (-> root z/down z/right z/down)
+            r0 (-> v z/up z/right z/remove)
+            r1 (z/edit-> v z/up z/right z/remove)]
+        (is (= (z/->root-string r1) (z/->root-string r0)))
+        (is (= "1" (z/->string v)))
+        (is (= "3" (z/->string r0)))
+        (is (= "1" (z/->string r1)))))
+    (deftest t-edit->>
+      (let [v (-> root z/down)
+            r0 (->> v z/right (z/map #(z/edit % inc)) z/right)
+            r1 (z/edit->> v z/right (z/map #(z/edit % inc)) z/right)]
+        (is (= (z/->root-string r1) (z/->root-string r0)))
+        (is (= "0" (z/->string v)))
+        (is (= "4" (z/->string r0)))
+        (is (= "0" (z/->string r1)))))))
 
-(fact "about creating zippers from files."
-      (let [f (doto (java.io.File/createTempFile "rewrite.test" "")
-                (.deleteOnExit))]
-        (spit f data-string) => anything
-        (slurp f) => data-string
-        (let [loc (z/of-file f)]
-          (first (->vec root)) => :list
-          (node/tag (z/root root)) => :forms)))
+(deftest t-creating-zippers-from-files
+  (let [f (doto (java.io.File/createTempFile "rewrite.test" "")
+            (.deleteOnExit))]
+    (spit f data-string)
+    (is (= data-string (slurp f)))
+    (let [loc (z/of-file f)]
+      (is (= :list (first (->vec root))))
+      (is (= :forms (node/tag (z/root root)))))))

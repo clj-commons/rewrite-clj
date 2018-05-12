@@ -1,5 +1,5 @@
 (ns rewrite-clj.zip.find-test
-  (:require [midje.sweet :refer :all]
+  (:require [clojure.test :refer :all]
             [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.zip
              [base :as base]
@@ -9,131 +9,131 @@
 
 (def root
   (base/of-string
-    "(defn f\n  [x]\n  [(+ x 1)])"))
+   "(defn f\n  [x]\n  [(+ x 1)])"))
 
 ;; ## Tests
 
 (let [is? (fn [sexpr]
             #(and (= (base/tag %) :token)
                   (= (base/sexpr %) sexpr)))]
-  (fact "about 'find'."
-        (let [loc (-> root z/down (f/find (is? 'y)))]
-          loc => nil?)
-        (let [loc (-> root z/down (f/find (is? 'defn)))]
-          (base/tag loc) => :token
-          (base/sexpr loc) => 'defn)
-        (let [loc (-> root z/down (f/find (is? 'f)))]
-          (base/tag loc) => :token
-          (base/sexpr loc) => 'f)
-        (let [loc (-> root z/down z/rightmost
-                      (f/find z/left (is? 'f)))]
-          (base/tag loc) => :token
-          (base/sexpr loc) => 'f))
-  (fact "about 'find-next'."
-        (let [loc (-> root z/down (f/find-next (is? 'f)))]
-          (base/tag loc) => :token
-          (base/sexpr loc) => 'f)
-        (let [loc (-> root z/down z/right z/right
-                      (f/find-next (is? 'f)))]
-          loc => nil?)
-        (let [tks (->> (iterate
-                         (fn [node]
-                           (f/find-next
-                             node
-                             z/next
-                             #(= (base/tag %) :token)))
-                         root)
-                       (take-while identity)
-                       (rest))]
-          (count tks) => 6
-          (map base/sexpr tks) => '[defn f x + x 1]))
-  (fact "about 'find-depth-first'."
-        (let [loc (-> root (f/find-depth-first (is? 'f)))]
-          (base/tag loc) => :token
-          (base/sexpr loc) => 'f)
-        (let [loc (-> root (f/find-depth-first (is? 'x)))]
-          (base/tag loc) => :token
-          (base/sexpr loc) => 'x))
-  (fact "about 'find-next-depth-first'."
-        (let [loc (-> root (f/find-next-depth-first (is? 'f)))]
-          (base/tag loc) => :token
-          (base/sexpr loc) => 'f)
-        (let [tks (->> (iterate
-                         (fn [node]
-                           (f/find-next-depth-first
-                             node
-                             #(= (base/tag %) :token)))
-                         root)
-                       (take-while identity)
-                       (rest))]
-          (count tks) => 6
-          (map base/sexpr tks) => '[defn f x + x 1])))
+  (deftest t-find
+    (let [loc (-> root z/down (f/find (is? 'y)))]
+      (is (nil? loc)))
+    (let [loc (-> root z/down (f/find (is? 'defn)))]
+      (is (= :token (base/tag loc)))
+      (is (= 'defn (base/sexpr loc))))
+    (let [loc (-> root z/down (f/find (is? 'f)))]
+      (is (= :token (base/tag loc)))
+      (is (= 'f (base/sexpr loc))))
+    (let [loc (-> root z/down z/rightmost
+                  (f/find z/left (is? 'f)))]
+      (is (= :token (base/tag loc)))
+      (is (= 'f (base/sexpr loc)))))
+  (deftest t-find-next
+    (let [loc (-> root z/down (f/find-next (is? 'f)))]
+      (is (= :token (base/tag loc)))
+      (is (= 'f (base/sexpr loc))))
+    (let [loc (-> root z/down z/right z/right
+                  (f/find-next (is? 'f)))]
+      (is (nil? loc)))
+    (let [tks (->> (iterate
+                    (fn [node]
+                      (f/find-next
+                       node
+                       z/next
+                       #(= (base/tag %) :token)))
+                    root)
+                   (take-while identity)
+                   (rest))]
+      (is (= 6 (count tks)))
+      (is (= '[defn f x + x 1] (map base/sexpr tks)))))
+  (deftest t-find-depth-first
+    (let [loc (-> root (f/find-depth-first (is? 'f)))]
+      (is (= :token (base/tag loc)))
+      (is (= 'f (base/sexpr loc))))
+    (let [loc (-> root (f/find-depth-first (is? 'x)))]
+      (is (= :token (base/tag loc)))
+      (is (= 'x (base/sexpr loc)))))
+  (deftest t-find-next-depth-first
+    (let [loc (-> root (f/find-next-depth-first (is? 'f)))]
+      (is (= :token (base/tag loc)))
+      (is (= 'f (base/sexpr loc))))
+    (let [tks (->> (iterate
+                    (fn [node]
+                      (f/find-next-depth-first
+                       node
+                       #(= (base/tag %) :token)))
+                    root)
+                   (take-while identity)
+                   (rest))]
+      (is (= 6 (count tks)))
+      (is (= '[defn f x + x 1] (map base/sexpr tks))))))
 
-(fact "about 'find-tag'."
-      (let [loc (-> root z/down (f/find-tag :vector))]
-        (base/tag loc) => :vector
-        (base/sexpr loc) => '[x])
-      (let [loc (-> root z/down (f/find-tag :set))]
-        loc => nil?))
+(deftest t-find-tag
+  (let [loc (-> root z/down (f/find-tag :vector))]
+    (is (= :vector (base/tag loc)))
+    (is (= '[x] (base/sexpr loc))))
+  (let [loc (-> root z/down (f/find-tag :set))]
+    (is (nil? loc))))
 
-(fact "about 'find-next-tag'."
-      (let [loc (-> root z/down (f/find-next-tag :vector))]
-        (base/tag loc) => :vector
-        (base/sexpr loc) => '[x]
-        (-> loc
-            (f/find-next-tag :vector)
-            base/sexpr) => '[(+ x 1)])
-      (let [loc (-> root z/down (f/find-next-tag :set))]
-        loc => nil?))
+(deftest t-find-next-tag
+  (let [loc (-> root z/down (f/find-next-tag :vector))]
+    (is (= :vector (base/tag loc)))
+    (is (= '[x] (base/sexpr loc)))
+    (is (= '[(+ x 1)] (-> loc
+                          (f/find-next-tag :vector)
+                          base/sexpr))))
+  (let [loc (-> root z/down (f/find-next-tag :set))]
+    (is (nil? loc))))
 
-(fact "about 'find-token'."
-      (let [loc (-> root z/down
-                    (f/find-token
-                      (comp #{'f 'defn} base/sexpr)))]
-        (base/tag loc) => :token
-        (base/sexpr loc) => 'defn))
+(deftest t-find-token
+  (let [loc (-> root z/down
+                (f/find-token
+                 (comp #{'f 'defn} base/sexpr)))]
+    (is (= :token (base/tag loc)))
+    (is (= 'defn (base/sexpr loc)))))
 
-(fact "about 'find-next-token'."
-      (let [loc (-> root z/down
-                    (f/find-next-token
-                      (comp #{'f 'defn} base/sexpr)))]
-        (base/tag loc) => :token
-        (base/sexpr loc) => 'f)
-      (let [locs (->> (iterate
-                        (fn [node]
-                          (f/find-next-token
-                            node
-                            z/next
-                            (comp #{'x 'defn} base/sexpr)))
-                        root)
-                      (take-while identity)
-                      (rest))]
-        (map base/sexpr locs) => '[defn x x]))
+(deftest t-find-next-token
+  (let [loc (-> root z/down
+                (f/find-next-token
+                 (comp #{'f 'defn} base/sexpr)))]
+    (is (= :token (base/tag loc)))
+    (is (= 'f (base/sexpr loc))))
+  (let [locs (->> (iterate
+                   (fn [node]
+                     (f/find-next-token
+                      node
+                      z/next
+                      (comp #{'x 'defn} base/sexpr)))
+                   root)
+                  (take-while identity)
+                  (rest))]
+    (is (= '[defn x x] (map base/sexpr locs)))))
 
-(fact "about 'find-value'."
-      (let [loc (-> root z/down (f/find-value 'f))]
-        (base/tag loc) => :token
-        (base/sexpr loc) => 'f)
-      (let [loc (-> root z/down (f/find-value 'y))]
-        loc => nil?)
-      (let [loc (-> root z/down (f/find-value #{'f 'defn}))]
-        (base/tag loc) => :token
-        (base/sexpr loc) => 'defn))
+(deftest t-find-value
+  (let [loc (-> root z/down (f/find-value 'f))]
+    (is (= :token (base/tag loc)))
+    (is (= 'f (base/sexpr loc))))
+  (let [loc (-> root z/down (f/find-value 'y))]
+    (is (nil? loc)))
+  (let [loc (-> root z/down (f/find-value #{'f 'defn}))]
+    (is (= :token (base/tag loc)))
+    (is (= 'defn (base/sexpr loc)))))
 
-(fact "about 'find-next-value'."
-      (let [loc (-> root z/down (f/find-next-value 'f))]
-        (base/tag loc) => :token
-        (base/sexpr loc) => 'f)
-      (let [loc (-> root z/down (f/find-next-value 'y))]
-        loc => nil?)
-      (let [loc (-> root z/down
-                    (f/find-next-value #{'f 'defn}))]
-        (base/tag loc) => :token
-        (base/sexpr loc) => 'f)
-      (let [locs (->> (iterate
-                        #(f/find-next-value
-                           % z/next #{'x 'defn})
-                        root)
-                      (take-while identity)
-                      (rest))]
-        (map base/sexpr locs) => '[defn x x]))
+(deftest t-find-next-value
+  (let [loc (-> root z/down (f/find-next-value 'f))]
+    (is (= :token (base/tag loc)))
+    (is (= 'f (base/sexpr loc))))
+  (let [loc (-> root z/down (f/find-next-value 'y))]
+    (is (nil? loc)))
+  (let [loc (-> root z/down
+                (f/find-next-value #{'f 'defn}))]
+    (is (= :token (base/tag loc)))
+    (is (= 'f (base/sexpr loc))))
+  (let [locs (->> (iterate
+                   #(f/find-next-value
+                     % z/next #{'x 'defn})
+                   root)
+                  (take-while identity)
+                  (rest))]
+    (is (= '[defn x x] (map base/sexpr locs)))))

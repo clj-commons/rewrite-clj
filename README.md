@@ -171,7 +171,7 @@ See the [auto-generated documentation](http://xsc.github.io/rewrite-clj/) for mo
 ```
 MIT License
 
-Copyright (c) 2013-2016 Yannick Scherer
+Copyright (c) 2013-2018 Yannick Scherer
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
