@@ -1,6 +1,8 @@
 (ns
   ^{:added "0.4.0"}
   rewrite-clj.node
+  (:refer-clojure :exclude [seq? list? vector? set? map? keyword? string?
+                            integer? fn?])
   (:require [rewrite-clj.node
              coerce
              comment
@@ -9,11 +11,12 @@
              integer
              keyword
              meta
+             predicates
              protocols
              quote
              reader-macro
              regex
-             seq
+             seqs
              string
              token
              uneval
@@ -67,11 +70,11 @@
    reader-macro-node
    var-node]
 
-  [rewrite-clj.node.seq
+  [rewrite-clj.node.seqs
+   vector-node
    list-node
-   map-node
    set-node
-   vector-node]
+   map-node]
 
   [rewrite-clj.node.string
    string-node]
@@ -91,23 +94,39 @@
   [rewrite-clj.node.whitespace
    comma-separated
    line-separated
-   linebreak?
    newlines
    newline-node
    spaces
    whitespace-node
-   whitespace?
    comma-node
+   whitespace-nodes]
+
+  [rewrite-clj.node.predicates
+   node?
+   seq?
+   list?
+   vector?
+   set?
+   map?
+   quote?
+   uneval?
+   token?
+   integer?
+   keyword?
+   string?
+   comment?
+   whitespace?
+   linebreak? newline?
    comma?
-   whitespace-nodes])
-
-;; ## Predicates
-
-(defn whitespace-or-comment?
-  "Check whether the given node represents whitespace or comment."
-  [node]
-  (or (whitespace? node)
-      (comment? node)))
+   whitespace-or-comment?
+   fn?
+   meta?
+   regex?
+   deref?
+   forms?
+   form?
+   reader-macro?
+   reader?])
 
 ;; ## Value
 

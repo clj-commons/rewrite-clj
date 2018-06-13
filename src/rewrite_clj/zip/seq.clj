@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-clj.zip.seq
   (:refer-clojure :exclude [map get assoc seq? vector? list? map? set?])
-  (:require [rewrite-clj.zip
-             [base :as base]
+  (:require [rewrite-clj.node.predicates :as pred]
+            [rewrite-clj.zip
              [edit :as e]
              [find :as f]
              [insert :as i]
@@ -12,25 +12,23 @@
 
 (defn seq?
   [zloc]
-  (contains?
-    #{:forms :list :vector :set :map}
-    (base/tag zloc)))
+  (pred/seq? (z/node zloc)))
 
 (defn list?
   [zloc]
-  (= (base/tag zloc) :list))
+  (pred/list? (z/node zloc)))
 
 (defn vector?
   [zloc]
-  (= (base/tag zloc) :vector))
+  (pred/vector? (z/node zloc)))
 
 (defn set?
   [zloc]
-  (= (base/tag zloc) :set))
+  (pred/set? (z/node zloc)))
 
 (defn map?
   [zloc]
-  (= (base/tag zloc) :map))
+  (pred/map? (z/node zloc)))
 
 ;; ## Map Operations
 

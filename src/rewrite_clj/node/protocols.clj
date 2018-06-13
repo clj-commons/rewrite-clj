@@ -105,6 +105,13 @@
      [node# w#]
      (write-node w# node#)))
 
+;; ## Collections
+
+(defprotocol SeqNode
+  (format-string [_])
+  (wrap-length   [_])
+  (wrap          [_ children-str]))
+
 ;; ## Helpers
 
 (defn ^:no-doc assert-sexpr-count

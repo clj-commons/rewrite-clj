@@ -9,10 +9,7 @@
                       coerce]]
              [reader-macro
               :refer [reader-macro-node var-node]]
-             [seq :refer [vector-node
-                          list-node
-                          set-node
-                          map-node]]
+             [seqs :refer [vector-node list-node set-node map-node]]
              [token :refer [token-node]]
              [whitespace :as ws]])
   (:import [rewrite_clj.node.comment CommentNode]
@@ -23,7 +20,7 @@
            [rewrite_clj.node.quote QuoteNode]
            [rewrite_clj.node.reader_macro
             ReaderNode ReaderMacroNode DerefNode]
-           [rewrite_clj.node.seq SeqNode]
+           [rewrite_clj.node.seqs VectorNode ListNode SetNode MapNode]
            [rewrite_clj.node.string StringNode]
            [rewrite_clj.node.token TokenNode]
            [rewrite_clj.node.uneval UnevalNode]
@@ -135,6 +132,9 @@
   StringNode      (coerce [v] v)
   UnevalNode      (coerce [v] v)
   NewlineNode     (coerce [v] v)
-  SeqNode         (coerce [v] v)
+  VectorNode      (coerce [v] v)
+  ListNode        (coerce [v] v)
+  SetNode         (coerce [v] v)
+  MapNode         (coerce [v] v)
   TokenNode       (coerce [v] v)
   WhitespaceNode  (coerce [v] v))
