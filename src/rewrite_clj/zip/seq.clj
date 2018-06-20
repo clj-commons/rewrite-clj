@@ -7,8 +7,7 @@
              [insert :as i]
              [move :as m]]
             [rewrite-clj.node :as n]
-            [rewrite-clj.custom-zipper.core :as z]
-            [clojure.zip :as zip]))
+            [rewrite-clj.custom-zipper.core :as z]))
 
 ;; ## Predicates
 
