@@ -6,7 +6,9 @@
              [find :as f]
              [insert :as i]
              [move :as m]]
-            [rewrite-clj.custom-zipper.core :as z]))
+            [rewrite-clj.node :as n]
+            [rewrite-clj.custom-zipper.core :as z]
+            [clojure.zip :as zip]))
 
 ;; ## Predicates
 
@@ -109,3 +111,17 @@
       (throw
         (IndexOutOfBoundsException.
           (format "index out of bounds: %d" k))))))
+
+(defn assoc-in
+  "Set (nested) map element to the given value."
+  [zloc [k & ks] v]
+  (if ks
+    (if-let [vloc (get zloc k)]
+      (let [val (assoc-in (->> vloc
+                               (remove n/printable-only?)
+                               first
+                               n/string
+                               base/of-string) ks v)]
+        (assoc zloc k (z/root val)))
+      (assoc zloc k (clojure.core/assoc-in {} ks v)))
+    (assoc zloc k v)))

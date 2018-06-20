@@ -7,6 +7,7 @@
 
 (let [v (base/of-string "[1 2 3]")
       m (base/of-string "{:a 0, :b 1}")
+      nm (base/of-string "{:a {:b 1}}")
       e (base/of-string "{}")]
   (deftest t-iteration
     (is (= "[2 3 4]" (base/string (sq/map #(e/edit % inc) v)))))
@@ -30,4 +31,14 @@
       (is (= "{:x 0}" (base/string m'))))
     (let [v' (sq/assoc v 2 4)]
       (is (= [1 2 4] (base/sexpr v')))
-      (is (= "[1 2 4]" (base/string v'))))))
+      (is (= "[1 2 4]" (base/string v')))))
+  (deftest t-assoc-in
+    (let [nm' (sq/assoc-in nm [:a :b] 2)]
+      (is (= {:a {:b 2}} (base/sexpr nm')))
+      (is (= "{:a {:b 2}}" (base/string nm'))))
+    (let [nm' (sq/assoc-in nm [:a :c] 2)]
+      (is (= {:a {:b 1 :c 2}} (base/sexpr nm')))
+      (is (= "{:a {:b 1 :c 2}}" (base/string nm'))))
+    (let [nm' (sq/assoc-in e [:x :y :z] 0)]
+      (is (= {:x {:y {:z 0}}} (base/sexpr nm')))
+      (is (= "{:x {:y {:z 0}}}" (base/string nm'))))))
