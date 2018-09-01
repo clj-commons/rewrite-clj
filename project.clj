@@ -1,4 +1,4 @@
-(defproject rewrite-clj "0.6.1-SNAPSHOT"
+(defproject rewrite-clj "0.6.1"
   :description "Comment-/Whitespace-preserving rewriting of EDN documents."
   :url "https://github.com/xsc/rewrite-clj"
   :license {:name "MIT License"
