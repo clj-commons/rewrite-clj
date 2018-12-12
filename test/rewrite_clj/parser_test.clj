@@ -231,30 +231,71 @@
     ";\n"
     ";;\n"))
 
-(deftest t-parsing-namespaced-maps
-  (are [?s]
+(deftest t-parsing-prefix-namespaced-maps
+  (are [?s ?children ?sexpr]
        (let [n (p/parse-string ?s)]
          (is (= :namespaced-map (node/tag n)))
          (is (= (count ?s) (node/length n)))
          (is (= ?s (node/string n)))
-         (is (= {:abc/x 1, :abc/y 1} (node/sexpr n))))
-     "#:abc{:x 1, :y 1}"
-     "#:abc   {:x 1, :y 1}"))
+         (is (= ?children (str (node/children n))))
+         (is (= ?sexpr (node/sexpr n))))
+    "#:abc{:x 1, :y 1}"
+    "[<token: :abc> <map: {:x 1, :y 1}>]"
+    {:abc/x 1, :abc/y 1}
 
-(deftest t-parsing-namespaced-maps-with-namespace-alias
-  (are [?s]
+    "#:abc   {:x 1, :y 1}"
+    "[<token: :abc> <whitespace: \"   \"> <map: {:x 1, :y 1}>]"
+    {:abc/x 1, :abc/y 1}
+
+    "#:foo{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
+    "[<token: :foo> <map: {:kw 1, :n/kw 2, :_/bare 3, 0 4}>]"
+    {:foo/kw 1, :n/kw 2, :bare 3, 0 4}))
+
+(deftest t-parsing-auto-resolve-namespaced-maps
+  (are [?s ?children ?sexpr]
+      (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
+        (let [n (p/parse-string ?s)]
+          (is (= :namespaced-map (node/tag n)))
+          (is (= (count ?s) (node/length n)))
+          (is (= ?s (node/string n)))
+          (is (= ?children (str (node/children n))))
+          (is (= ?sexpr (node/sexpr n)))))
+    "#::{:x 1, :y 1}"
+    "[<token: ::> <map: {:x 1, :y 1}>]"
+    {:rewrite-clj.parser-test/x 1, :rewrite-clj.parser-test/y 1}
+
+    "#::   {:x 1, :y 1}"
+    "[<token: ::> <whitespace: \"   \"> <map: {:x 1, :y 1}>]"
+    {:rewrite-clj.parser-test/x 1, :rewrite-clj.parser-test/y 1}
+
+    "#::{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
+    "[<token: ::> <map: {:kw 1, :n/kw 2, :_/bare 3, 0 4}>]"
+    {:rewrite-clj.parser-test/kw 1, :n/kw 2, :bare 3, 0 4}))
+
+(deftest t-parsing-auto-resolve-alias-namespaced-maps
+  (are [?s ?children ?sexpr]
        (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
          (let [n (p/parse-string ?s)]
            (is (= :namespaced-map (node/tag n)))
            (is (= (count ?s) (node/length n)))
            (is (= ?s (node/string n)))
-           (is (= {::node/x 1, ::node/y 1} (node/sexpr n)))))
+           (is (= ?children (str (node/children n))))
+           (is (= ?sexpr (node/sexpr n)))))
     "#::node{:x 1, :y 1}"
-    "#::node   {:x 1, :y 1}"))
+    "[<token: ::node> <map: {:x 1, :y 1}>]"
+    {:rewrite-clj.node/x 1, ::node/y 1}
+
+    "#::node   {:x 1, :y 1}"
+    "[<token: ::node> <whitespace: \"   \"> <map: {:x 1, :y 1}>]"
+    {:rewrite-clj.node/x 1, ::node/y 1}
+
+    "#::node{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
+    "[<token: ::node> <map: {:kw 1, :n/kw 2, :_/bare 3, 0 4}>]"
+    {:rewrite-clj.node/kw 1, :n/kw 2, :bare 3, 0 4}))
 
 (deftest t-parsing-exceptions
   (are [?s ?p]
-       (is (thrown? Exception ?p (p/parse-string ?s)))
+       (is (thrown-with-msg? Exception ?p (p/parse-string ?s)))
     "#"                     #".*Unexpected EOF.*"
     "#("                    #".*Unexpected EOF.*"
     "(def"                  #".*Unexpected EOF.*"
@@ -270,7 +311,16 @@
     "#^:private"            #".*:meta node expects 2 values.*"
     "#_"                    #".*:uneval node expects 1 value.*"
     "#'"                    #".*:var node expects 1 value.*"
-    "#macro"                #".*:reader-macro node expects 2 values.*"))
+    "#macro"                #".*:reader-macro node expects 2 values.*"
+    "#:"                    #".*Unexpected EOF.*"
+    "#::"                   #".*Unexpected EOF.*"
+    "#::nsarg"              #".*Unexpected EOF.*"
+    "#:{:a 1}"              #".*:namespaced-map expected namespace prefix*"
+    "#::[a]"                #".*:namespaced-map expected namespace alias or map.*"
+    "#:[a]"                 #".*:namespaced-map expected namespace prefix.*"
+    "#:: token"             #".*:namespaced-map expects a map.*"
+    "#::alias [a]"          #".*:namespaced-map expects a map.*"
+    "#:prefix [a]"          #".*:namespaced-map expects a map.*"))
 
 (deftest t-parsing-multiple-forms
   (let [s "1 2 3"

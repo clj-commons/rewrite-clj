@@ -6,6 +6,7 @@
              [keyword :refer [parse-keyword]]
              [string :refer [parse-string parse-regex]]
              [token :refer [parse-token]]
+             [namespaced-map :refer [parse-namespaced-map]]
              [whitespace :refer [parse-whitespace]]]
             [clojure.tools.reader.reader-types :as r]))
 
@@ -120,7 +121,7 @@
     \' (node/var-node (parse-printables reader :var 1 true))
     \= (node/eval-node (parse-printables reader :eval 1 true))
     \_ (node/uneval-node (parse-printables reader :uneval 1 true))
-    \: (node/namespaced-map-node (parse-printables reader :keyword 2))
+    \: (parse-namespaced-map reader parse-next)
     \? (do
          ;; we need to examine the next character, so consume one (known \?)
          (reader/next reader)

@@ -9,6 +9,7 @@
              integer
              keyword
              meta
+             namespaced-map
              protocols
              quote
              reader-macro
@@ -58,6 +59,9 @@
    meta-node
    raw-meta-node]
 
+  [rewrite-clj.node.namespaced-map
+   namespaced-map-node]
+
   [rewrite-clj.node.regex
    regex-node]
 
@@ -70,7 +74,6 @@
   [rewrite-clj.node.seq
    list-node
    map-node
-   namespaced-map-node
    set-node
    vector-node]
 
