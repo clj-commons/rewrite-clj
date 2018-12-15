@@ -1,6 +1,5 @@
 (ns ^:no-doc rewrite-clj.node.namespaced-map
   (:require
-   [clojure.string :as str]
    [rewrite-clj.node.protocols :as node]))
 
 ;; ## Node
