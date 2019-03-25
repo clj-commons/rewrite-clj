@@ -10,7 +10,7 @@
     (assert (= (count exs) 2)
             "must contain 2 non-whitespace forms.")
     (assert (keyword? (first exs))
-            "first form in namespaced must be a keyword.")
+            "first form in namespaced map must be a keyword.")
     (assert (map? (second exs))
             "second form in namespaced map must be a map.")))
 
