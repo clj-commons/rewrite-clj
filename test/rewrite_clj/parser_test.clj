@@ -249,7 +249,15 @@
 
     "#:foo{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
     "[<token: :foo> <map: {:kw 1, :n/kw 2, :_/bare 3, 0 4}>]"
-    {:foo/kw 1, :n/kw 2, :bare 3, 0 4}))
+    {:foo/kw 1, :n/kw 2, :bare 3, 0 4}
+
+    "#:abc{:a {:b 1}}"
+    "[<token: :abc> <map: {:a {:b 1}}>]"
+    {:abc/a {:b 1}}
+
+    "#:abc{:a #:def{:b 1}}"
+    "[<token: :abc> <map: {:a #:def{:b 1}}>]"
+    {:abc/a {:def/b 1}}))
 
 (deftest t-parsing-auto-resolve-namespaced-maps
   (are [?s ?children ?sexpr]
@@ -270,7 +278,15 @@
 
     "#::{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
     "[<token: ::> <map: {:kw 1, :n/kw 2, :_/bare 3, 0 4}>]"
-    {:rewrite-clj.parser-test/kw 1, :n/kw 2, :bare 3, 0 4}))
+    {:rewrite-clj.parser-test/kw 1, :n/kw 2, :bare 3, 0 4}
+
+    "#::{:a {:b 1}}"
+    "[<token: ::> <map: {:a {:b 1}}>]"
+    {:rewrite-clj.parser-test/a {:b 1}}
+
+    "#::{:a #::{:b 1}}"
+    "[<token: ::> <map: {:a #::{:b 1}}>]"
+    {:rewrite-clj.parser-test/a {:rewrite-clj.parser-test/b 1}}))
 
 (deftest t-parsing-auto-resolve-alias-namespaced-maps
   (are [?s ?children ?sexpr]
@@ -291,7 +307,15 @@
 
     "#::node{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
     "[<token: ::node> <map: {:kw 1, :n/kw 2, :_/bare 3, 0 4}>]"
-    {:rewrite-clj.node/kw 1, :n/kw 2, :bare 3, 0 4}))
+    {:rewrite-clj.node/kw 1, :n/kw 2, :bare 3, 0 4}
+
+    "#::node{:a {:b 1}}"
+    "[<token: ::node> <map: {:a {:b 1}}>]"
+    {:rewrite-clj.node/a {:b 1}}
+
+    "#::node{:a #::node{:b 1}}"
+    "[<token: ::node> <map: {:a #::node{:b 1}}>]"
+    {:rewrite-clj.node/a {:rewrite-clj.node/b 1}}))
 
 (deftest t-parsing-exceptions
   (are [?s ?p]
