@@ -76,7 +76,8 @@
    skip skip-whitespace
    skip-whitespace-left
    prepend-space append-space
-   prepend-newline append-newline])
+   prepend-newline append-newline
+   insert-newline-left insert-newline-right])
 
 ;; ## Base Operations
 
