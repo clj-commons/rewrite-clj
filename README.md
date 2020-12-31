@@ -1,10 +1,11 @@
+[![Clojars Project](https://img.shields.io/clojars/v/xsc/rewrite-clj.svg)](https://clojars.org/xsc/rewrite-clj)
+[![cljdoc badge](https://cljdoc.org/badge/xsc/rewrite-clj)](https://cljdoc.org/d/xsc/rewrite-clj)
+[![CircleCI](https://circleci.com/gh/clj-commons/rewrite-clj.svg?style=svg)](https://circleci.com/gh/clj-commons/rewrite-clj)
 # rewrite-clj
 
 __rewrite-clj__ is a library offering mechanisms to easily rewrite Clojure/EDN documents in a whitespace- and comment-preserving
 way. It includes an EDN parser (based on [clojure.tools.reader](https://github.com/clojure/tools.reader)), a corresponding
 printer, as well as an EDN-aware zipper implementation (based on [clojure.zip](https://clojure.github.io/clojure/clojure.zip-api.html)).
-
-[![Build Status](https://travis-ci.org/xsc/rewrite-clj.svg?branch=master)](https://travis-ci.org/xsc/rewrite-clj)
 
 This project is similar to Christophe Grand's [sjacket](https://github.com/cgrand/sjacket). In fact, I found it hard to _use_
 sjacket, partly because of the underlying data structure (a [parsely](https://github.com/cgrand/parsley)-generated tree including
