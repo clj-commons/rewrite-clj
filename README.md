@@ -1,4 +1,4 @@
-[![Clojars Project](https://img.shields.io/clojars/vrewrite-clj.svg)](https://clojars.org/rewrite-clj)
+[![Clojars Project](https://img.shields.io/clojars/v/rewrite-clj.svg)](https://clojars.org/rewrite-clj)
 [![cljdoc badge](https://cljdoc.org/badge/rewrite-clj)](https://cljdoc.org/d/rewrite-clj)
 [![CircleCI](https://circleci.com/gh/clj-commons/rewrite-clj.svg?style=svg)](https://circleci.com/gh/clj-commons/rewrite-clj)
 # rewrite-clj
