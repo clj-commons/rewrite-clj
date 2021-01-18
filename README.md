@@ -3,6 +3,17 @@
 [![CircleCI](https://circleci.com/gh/clj-commons/rewrite-clj.svg?style=svg)](https://circleci.com/gh/clj-commons/rewrite-clj)
 # rewrite-clj
 
+## Exciting News :tada:
+Since @xsc has graciously transfered rewrite-clj to clj-commons, I can now work to merge in [rewrite-cljc-playground](https://github.com/lread/rewrite-cljc-playground) into rewrite-clj proper.
+
+Rewrite-cljc is dead. Long live rewrite-clj!
+
+I'll start my work in a `v1` branch here wherein I'll trickle rewrite-cljc work as, at least somewhat, meaningful commits. 
+This won't be a useable branch for a little while. 
+Once it is ready, I'll merge v1 into master where it will become our first rewrite-clj v1 alpha.
+
+## Intro
+
 __rewrite-clj__ is a library offering mechanisms to easily rewrite Clojure/EDN documents in a whitespace- and comment-preserving
 way. It includes an EDN parser (based on [clojure.tools.reader](https://github.com/clojure/tools.reader)), a corresponding
 printer, as well as an EDN-aware zipper implementation (based on [clojure.zip](https://clojure.github.io/clojure/clojure.zip-api.html)).
