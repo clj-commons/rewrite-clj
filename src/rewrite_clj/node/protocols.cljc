@@ -1,8 +1,8 @@
 (ns
   ^{:added "0.4.0"}
   rewrite-clj.node.protocols
-  (:require [rewrite-clj.potemkin :refer [defprotocol+]]
-            [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [rewrite-clj.potemkin :refer [defprotocol+]]))
 
 ;; ## Node
 
@@ -152,4 +152,3 @@
   [[row col] [row-extent col-extent]]
   [(+ row row-extent)
    (cond-> col-extent (zero? row-extent) (+ col))])
-

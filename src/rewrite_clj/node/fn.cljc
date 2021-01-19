@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-clj.node.fn
-  (:require [rewrite-clj.node.protocols :as node]
-            [clojure.walk :as w]))
+  (:require [clojure.walk :as w]
+            [rewrite-clj.node.protocols :as node]))
 
 ;; ## Conversion
 

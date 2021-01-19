@@ -1,9 +1,9 @@
 (ns ^:no-doc rewrite-clj.zip.base
   (:refer-clojure :exclude [print])
-  (:require [rewrite-clj.node :as node]
+  (:require [rewrite-clj.custom-zipper.core :as z]
+            [rewrite-clj.node :as node]
             [rewrite-clj.parser :as p]
-            [rewrite-clj.zip.whitespace :as ws]
-            [rewrite-clj.custom-zipper.core :as z]))
+            [rewrite-clj.zip.whitespace :as ws]))
 
 ;; ## Zipper
 

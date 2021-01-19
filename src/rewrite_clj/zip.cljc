@@ -2,20 +2,18 @@
   (:refer-clojure :exclude [next find replace remove
                             seq? map? vector? list? set?
                             print map get assoc])
-  (:require [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.edit :as edit]
-            [rewrite-clj.zip.find :as find]
-            [rewrite-clj.zip.insert :as insert]
-            [rewrite-clj.zip.move :as move]
-            [rewrite-clj.zip.remove :as remove]
-            [rewrite-clj.zip.seq :as seq]
-            [rewrite-clj.zip.subedit :as subedit]
-            [rewrite-clj.zip.walk :as walk]
-            [rewrite-clj.zip.whitespace :as ws]
+  (:require [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.potemkin :refer [import-vars]]
-            [rewrite-clj.parser :as p]
-            [rewrite-clj.node :as node]
-            [rewrite-clj.custom-zipper.core :as z]))
+            [rewrite-clj.zip.base]
+            [rewrite-clj.zip.edit]
+            [rewrite-clj.zip.find]
+            [rewrite-clj.zip.insert]
+            [rewrite-clj.zip.move]
+            [rewrite-clj.zip.remove]
+            [rewrite-clj.zip.seq]
+            [rewrite-clj.zip.subedit]
+            [rewrite-clj.zip.walk]
+            [rewrite-clj.zip.whitespace]))
 
 ;; ## API Facade
 

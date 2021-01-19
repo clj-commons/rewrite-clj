@@ -14,8 +14,8 @@
        :author "Rich Hickey"}
   rewrite-clj.custom-zipper.core
   (:refer-clojure :exclude (replace remove next))
-  (:require [rewrite-clj.node.protocols :as node]
-            [clojure.zip :as clj-zip]))
+  (:require [clojure.zip :as clj-zip]
+            [rewrite-clj.node.protocols :as node]))
 
 ;; ## Switch
 ;;

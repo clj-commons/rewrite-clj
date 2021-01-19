@@ -1,8 +1,8 @@
 (ns rewrite-clj.regression-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is]]
+            [rewrite-clj.custom-zipper.core :as fz]
             [rewrite-clj.node :as node]
-            [rewrite-clj.zip :as z]
-            [rewrite-clj.custom-zipper.core :as fz]))
+            [rewrite-clj.zip :as z]))
 
 ;; ## Regression Tests for 0.3.x -> 0.4.x
 

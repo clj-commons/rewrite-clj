@@ -1,7 +1,7 @@
 (ns ^{:doc "Tests for EDN parser."
       :author "Yannick Scherer"}
  rewrite-clj.parser-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is are]]
             [rewrite-clj.node :as node]
             [rewrite-clj.parser :as p]))
 

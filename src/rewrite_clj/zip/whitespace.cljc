@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-clj.zip.whitespace
-  (:require [rewrite-clj.node :as node]
-            [rewrite-clj.custom-zipper.core :as z]))
+  (:require [rewrite-clj.custom-zipper.core :as z]
+            [rewrite-clj.node :as node]))
 
 ;; ## Predicates
 

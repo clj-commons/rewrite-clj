@@ -1,9 +1,9 @@
 (ns rewrite-clj.zip.edit-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is are]]
+            [rewrite-clj.node :as node]
             [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.move :as m]
             [rewrite-clj.zip.edit :as e]
-            [rewrite-clj.node :as node]))
+            [rewrite-clj.zip.move :as m]))
 
 (let [root (base/of-string "[1 \"2\" :3]")
       elements (iterate m/next root)]

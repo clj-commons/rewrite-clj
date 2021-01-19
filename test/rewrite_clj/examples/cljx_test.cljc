@@ -1,5 +1,5 @@
 (ns rewrite-clj.examples.cljx-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is are]]
             [rewrite-clj.zip :as z]))
 
 ;; ## Reader Macro Detection

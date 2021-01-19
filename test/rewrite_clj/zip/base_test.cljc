@@ -1,8 +1,8 @@
 (ns rewrite-clj.zip.base-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is are]]
+            [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.node :as node]
-            [rewrite-clj.zip.base :as base]
-            [rewrite-clj.custom-zipper.core :as z]))
+            [rewrite-clj.zip.base :as base]))
 
 (let [n (node/forms-node
          [(node/spaces 3)

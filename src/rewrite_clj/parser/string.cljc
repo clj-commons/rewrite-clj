@@ -1,9 +1,8 @@
 (ns ^:no-doc rewrite-clj.parser.string
-  (:require [rewrite-clj.parser.utils :as u]
-            [rewrite-clj.node :as node]
-            [clojure.tools.reader.edn :as edn]
+  (:require [clojure.string :as string]
             [clojure.tools.reader.reader-types :as r]
-            [clojure.string :as string]))
+            [rewrite-clj.node :as node]
+            [rewrite-clj.parser.utils :as u]))
 
 (defn- flush-into
   "Flush buffer and add string to the given vector."

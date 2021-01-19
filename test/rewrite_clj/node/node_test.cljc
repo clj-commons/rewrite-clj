@@ -1,9 +1,8 @@
 (ns rewrite-clj.node.node-test
-  (:require [clojure.test.check.properties :as prop]
-            [clojure.test :refer :all]
+  (:require [clojure.test.check.clojure-test :refer [defspec]]
+            [clojure.test.check.properties :as prop]
             [rewrite-clj.node :as node]
-            [rewrite-clj.node.generators :as g]
-            [clojure.test.check.clojure-test :refer :all]))
+            [rewrite-clj.node.generators :as g]))
 
 (defspec t-nodes-with-children-report-accurate-leader-lengths
   (prop/for-all [node (g/node g/container-node-types)]

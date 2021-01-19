@@ -1,8 +1,8 @@
 (ns ^:no-doc rewrite-clj.parser.keyword
-  (:require [rewrite-clj.node :as node]
-            [rewrite-clj.parser.utils :as u]
-            [clojure.tools.reader.edn :as edn]
-            [clojure.tools.reader.reader-types :as r]))
+  (:require [clojure.tools.reader.edn :as edn]
+            [clojure.tools.reader.reader-types :as r]
+            [rewrite-clj.node :as node]
+            [rewrite-clj.parser.utils :as u]))
 
 (defn parse-keyword
   [reader]

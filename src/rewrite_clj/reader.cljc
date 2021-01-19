@@ -1,8 +1,8 @@
 (ns ^:no-doc rewrite-clj.reader
   (:refer-clojure :exclude [peek next])
-  (:require [clojure.tools.reader.edn :as edn]
-            [clojure.tools.reader.reader-types :as r]
-            [clojure.java.io :as io])
+  (:require [clojure.java.io :as io]
+            [clojure.tools.reader.edn :as edn]
+            [clojure.tools.reader.reader-types :as r])
   (:import [java.io PushbackReader]))
 
 ;; ## Exception
@@ -20,8 +20,8 @@
 ;; ## Decisions
 
 (defn boundary?
-  [c]
   "Check whether a given char is a token boundary."
+  [c]
   (contains?
     #{\" \: \; \' \@ \^ \` \~
       \( \) \[ \] \{ \} \\ nil}

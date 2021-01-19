@@ -1,12 +1,11 @@
 (ns ^:no-doc rewrite-clj.zip.edit
   (:refer-clojure :exclude [replace])
-  (:require [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.move :as m]
-            [rewrite-clj.zip.remove :as r]
-            [rewrite-clj.zip.whitespace :as ws]
+  (:require [rewrite-clj.custom-zipper.core :as z]
+            [rewrite-clj.custom-zipper.utils :as u]
             [rewrite-clj.node :as node]
-            [rewrite-clj.custom-zipper.core :as z]
-            [rewrite-clj.custom-zipper.utils :as u]))
+            [rewrite-clj.zip.base :as base]
+            [rewrite-clj.zip.remove :as r]
+            [rewrite-clj.zip.whitespace :as ws]))
 
 ;; ## In-Place Modification
 

@@ -1,5 +1,5 @@
 (ns rewrite-clj.zip.move-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is are]]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]))
 

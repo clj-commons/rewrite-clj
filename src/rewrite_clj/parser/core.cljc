@@ -1,11 +1,10 @@
 (ns ^:no-doc rewrite-clj.parser.core
   (:require [rewrite-clj.node :as node]
-            [rewrite-clj.reader :as reader]
             [rewrite-clj.parser.keyword :refer [parse-keyword]]
             [rewrite-clj.parser.string :refer [parse-string parse-regex]]
             [rewrite-clj.parser.token :refer [parse-token]]
             [rewrite-clj.parser.whitespace :refer [parse-whitespace]]
-            [clojure.tools.reader.reader-types :as r]))
+            [rewrite-clj.reader :as reader]))
 
 ;; ## Base Parser
 

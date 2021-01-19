@@ -1,9 +1,9 @@
 (ns rewrite-clj.zip.insert-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is are]]
+            [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.move :as m]
-            [rewrite-clj.zip.insert :refer :all]
-            [rewrite-clj.custom-zipper.core :as z]))
+            [rewrite-clj.zip.insert :refer [insert-right insert-left insert-child append-child]]
+            [rewrite-clj.zip.move :as m]))
 
 (deftest t-whitespace-aware-insertion
   (are [?fmt ?m ?n ?f ?s]

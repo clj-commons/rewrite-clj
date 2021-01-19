@@ -1,5 +1,5 @@
 (ns rewrite-clj.zip.find-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is]]
             [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.find :as f]))

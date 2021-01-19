@@ -1,8 +1,7 @@
 (ns ^:no-doc rewrite-clj.zip.insert
-  (:require [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.whitespace :as ws]
+  (:require [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.node :as node]
-            [rewrite-clj.custom-zipper.core :as z]))
+            [rewrite-clj.zip.whitespace :as ws]))
 
 (def ^:private space
   (node/spaces 1))
@@ -18,7 +17,7 @@
              [space])
            [item-node]
            (if (not (ws/whitespace? zloc))
-             prefix)) 
+             prefix))
          (reduce insert-fn zloc))))
 
 (defn insert-right

@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-clj.node.string
-  (:require [rewrite-clj.node.protocols :as node]
+  (:require [clojure.string :as string]
             [clojure.tools.reader.edn :as edn]
-            [clojure.string :as string]))
+            [rewrite-clj.node.protocols :as node] ))
 
 ;; ## Node
 
