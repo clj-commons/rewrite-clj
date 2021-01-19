@@ -1,5 +1,5 @@
 (ns rewrite-clj.regression-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [clojure.test :refer [deftest is testing]]
             [rewrite-clj.custom-zipper.core :as fz]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip :as z]))
@@ -62,7 +62,8 @@
   (is (= [:token 'defproject] (-> root z/down z/leftmost ->vec)))
   (is (= [:token 'defproject] (-> root z/down z/right z/leftmost ->vec))))
 
-(deftest t-depth-first-traversal
+;; TODO: test was commented out in rewrite-clj v0 - need to fix?
+#_ (deftest t-depth-first-traversal
   (let [loc (z/of-string "(defn func [] (println 1))")
         dfs (->> (iterate z/next loc)
                  (take-while (complement z/end?)))]
@@ -231,7 +232,7 @@
 
 (deftest t-edit-scope-limitationlocation-memoization
   (let [root (z/of-string "[0 [1 2 3] 4]")]
-    (deftest t-subedit->
+    (testing "t-subedit->"
       (let [r0 (-> root z/down z/right z/down z/right (z/replace 5))
             r1 (z/subedit-> root z/down z/right z/down z/right (z/replace 5))]
         (is (= (z/->root-string r1) (z/->root-string r0)))
@@ -239,7 +240,7 @@
         (is (= "[0 [1 5 3] 4]" (z/->string r1)))
         (is (= :token (z/tag r0)))
         (is (= :vector (z/tag r1)))))
-    (deftest t-subedit->>
+    (testing "t-subedit->>"
       (let [r0 (->> root z/down z/right (z/map #(z/edit % inc)) z/down)
             r1 (z/subedit->> root z/down z/right (z/map #(z/edit % + 1)) z/down)]
         (is (= (z/->root-string r1) (z/->root-string r0)))
@@ -247,7 +248,7 @@
         (is (= "[0 [2 3 4] 4]" (z/->string r1)))
         (is (= :token (z/tag r0)))
         (is (= :vector (z/tag r1)))))
-    (deftest t-edit->
+    (testing "t-edit->"
       (let [v (-> root z/down z/right z/down)
             r0 (-> v z/up z/right z/remove)
             r1 (z/edit-> v z/up z/right z/remove)]
@@ -255,7 +256,7 @@
         (is (= "1" (z/->string v)))
         (is (= "3" (z/->string r0)))
         (is (= "1" (z/->string r1)))))
-    (deftest t-edit->>
+    (testing "t-edit->>"
       (let [v (-> root z/down)
             r0 (->> v z/right (z/map #(z/edit % inc)) z/right)
             r1 (z/edit->> v z/right (z/map #(z/edit % inc)) z/right)]
