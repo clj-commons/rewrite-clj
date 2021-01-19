@@ -105,6 +105,4 @@
       (-> zloc
           (i/append-child k)
           (i/append-child v))
-      (throw
-        (IndexOutOfBoundsException.
-          (format "index out of bounds: %d" k))))))
+      (throw (ex-info (str "index out of bounds: " k) {})))))

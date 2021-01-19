@@ -8,7 +8,7 @@
   (tag [_] :uneval)
   (printable-only? [_] true)
   (sexpr [_]
-    (throw (UnsupportedOperationException.)))
+    (throw (ex-info "unsupported operation" {})))
   (length [_]
     (+ 2 (node/sum-lengths children)))
   (string [_]

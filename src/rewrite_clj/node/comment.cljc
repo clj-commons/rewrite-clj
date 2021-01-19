@@ -8,7 +8,7 @@
   (tag [_] :comment)
   (printable-only? [_] true)
   (sexpr [_]
-    (throw (UnsupportedOperationException.)))
+    (throw (ex-info "unsupported operation" {})))
   (length [_]
     (+ 1 (count s)))
   (string [_]

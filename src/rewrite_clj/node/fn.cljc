@@ -23,7 +23,7 @@
   (cond (= n "&") 0
         (= n "") 1
         (re-matches #"\d+" n) (Long/parseLong n)
-        :else (throw (Exception. "arg literal must be %, %& or %integer."))))
+        :else (throw (ex-info "arg literal must be %, %& or %integer." {}))))
 
 (defn- symbol->gensym
   "If symbol starting with `%`, convert to respective gensym."

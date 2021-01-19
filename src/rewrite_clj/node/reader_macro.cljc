@@ -14,7 +14,7 @@
   (sexpr [_]
     (if sexpr-fn
       (sexpr-fn (node/sexprs children))
-      (throw (UnsupportedOperationException.))))
+      (throw (ex-info "unsupported operation" {}))))
   (length [_]
     (-> (node/sum-lengths children)
         (+ 1 (count prefix) (count suffix))))

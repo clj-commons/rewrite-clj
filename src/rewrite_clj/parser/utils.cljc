@@ -26,9 +26,8 @@
   [reader & msg]
   (let [c (r/get-column-number reader)
         l (r/get-line-number reader)]
-    (throw
-      (Exception.
-        (str (apply str msg) " [at line " l ", column " c "]")))))
+    (throw (ex-info
+            (str (apply str msg) " [at line " l ", column " c "]") {}))))
 
 (defn read-eol
   [reader]

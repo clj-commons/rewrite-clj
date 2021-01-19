@@ -28,11 +28,14 @@
 
 ;; ## Nodes
 
+(defn- sexpr-unsupported []
+  (throw (ex-info "unsupported operation" {})) )
+
 (defrecord WhitespaceNode [whitespace]
   node/Node
   (tag [_] :whitespace)
   (printable-only? [_] true)
-  (sexpr [_] (throw (UnsupportedOperationException.)))
+  (sexpr [_] (sexpr-unsupported))
   (length [_] (count whitespace))
   (string [_] whitespace)
 
@@ -44,7 +47,7 @@
   node/Node
   (tag [_] :comma)
   (printable-only? [_] true)
-  (sexpr [_] (throw (UnsupportedOperationException.)))
+  (sexpr [_] (sexpr-unsupported))
   (length [_] (count commas))
   (string [_] commas)
 
@@ -56,7 +59,7 @@
   node/Node
   (tag [_] :newline)
   (printable-only? [_] true)
-  (sexpr [_] (throw (UnsupportedOperationException.)))
+  (sexpr [_] (sexpr-unsupported))
   (length [_] (*count-fn* newlines))
   (string [_] (*newline-fn* newlines))
 

@@ -3,7 +3,8 @@
  rewrite-clj.parser-test
   (:require [clojure.test :refer [deftest is are]]
             [rewrite-clj.node :as node]
-            [rewrite-clj.parser :as p]))
+            [rewrite-clj.parser :as p])
+  #?(:clj (:import clojure.lang.ExceptionInfo)))
 
 (deftest t-parsing-the-first-few-whitespaces
   (are [?ws ?parsed]
@@ -103,7 +104,7 @@
     (is (= :uneval (node/tag uneval)))
     (is (= "#_    (+ 1 2)" (node/string uneval)))
     (is (node/printable-only? uneval))
-    (is (thrown? UnsupportedOperationException (node/sexpr uneval)))))
+    (is (thrown-with-msg? ExceptionInfo #"unsupported operation" (node/sexpr uneval)) )))
 
 (deftest t-parsing-regular-expressions
   (are [?s ?p]
@@ -253,7 +254,7 @@
 
 (deftest t-parsing-exceptions
   (are [?s ?p]
-       (is (thrown? Exception ?p (p/parse-string ?s)))
+      (is (thrown-with-msg? ExceptionInfo ?p (p/parse-string ?s)))
     "#"                     #".*Unexpected EOF.*"
     "#("                    #".*Unexpected EOF.*"
     "(def"                  #".*Unexpected EOF.*"

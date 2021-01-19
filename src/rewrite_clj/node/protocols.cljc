@@ -64,11 +64,11 @@
   Object
   (inner? [_] false)
   (children [_]
-    (throw (UnsupportedOperationException.)))
+    (throw (ex-info "unsupported operation" {})))
   (replace-children [_ _]
-    (throw (UnsupportedOperationException.)))
+    (throw (ex-info "unsupported operation" {})))
   (leader-length [_]
-    (throw (UnsupportedOperationException.))))
+    (throw (ex-info "unsupported operation" {}))))
 
 (defn child-sexprs
   "Get all child s-expressions for the given node."

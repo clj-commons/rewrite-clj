@@ -2,7 +2,8 @@
   (:refer-clojure :exclude [peek next])
   (:require [clojure.java.io :as io]
             [clojure.tools.reader.edn :as edn]
-            [clojure.tools.reader.reader-types :as r])
+            [clojure.tools.reader.reader-types :as r]
+            [rewrite-clj.interop :as interop])
   (:import [java.io PushbackReader]))
 
 ;; ## Exception
@@ -13,9 +14,9 @@
   (let [c (r/get-column-number reader)
         l (r/get-line-number reader)]
     (throw
-      (Exception.
-        (str (apply format fmt data)
-             " [at line " l ", column " c "]")))))
+     (ex-info
+      (str (apply interop/simple-format fmt data)
+           " [at line " l ", column " c "]") {}))))
 
 ;; ## Decisions
 
