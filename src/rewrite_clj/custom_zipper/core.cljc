@@ -15,7 +15,9 @@
   rewrite-clj.custom-zipper.core
   (:refer-clojure :exclude (replace remove next))
   (:require [clojure.zip :as clj-zip]
-            [rewrite-clj.node.protocols :as node]))
+            [rewrite-clj.custom-zipper.switchable :refer [defn-switchable]]
+            [rewrite-clj.node.protocols :as node])
+  #?(:cljs (:require-macros [rewrite-clj.custom-zipper.switchable :refer [defn-switchable]])) )
 
 ;; ## Switch
 ;;
@@ -42,17 +44,6 @@
 (defn ^:no-doc custom-zipper?
   [value]
   (::custom? value))
-
-(defmacro ^:private defn-switchable
-  [sym docstring params & body]
-  (let [placeholders (repeatedly (count params) gensym)]
-    `(defn ~sym
-       ~docstring
-       [~@placeholders]
-       (if (custom-zipper? ~(first placeholders))
-         (let [~@(interleave params placeholders)]
-           ~@body)
-         (~(symbol "clojure.zip" (name sym)) ~@placeholders)))))
 
 ;; ## Implementation
 

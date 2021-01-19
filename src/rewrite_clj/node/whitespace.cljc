@@ -1,6 +1,7 @@
 (ns ^:no-doc rewrite-clj.node.whitespace
   (:require [rewrite-clj.node.protocols :as node]
-            [rewrite-clj.reader :as r]))
+            [rewrite-clj.reader :as r])
+  #?(:cljs (:require-macros rewrite-clj.node.whitespace)))
 
 ;; ## Newline Modifiers
 
@@ -13,15 +14,17 @@
    the eventual character count."
   count)
 
-(defmacro with-newline-fn
-  [f & body]
-  `(binding [*newline-fn* (comp *newline-fn* ~f)]
-     ~@body))
+#?(:clj
+   (defmacro with-newline-fn
+     [f & body]
+     `(binding [*newline-fn* (comp *newline-fn* ~f)]
+        ~@body)))
 
-(defmacro with-count-fn
-  [f & body]
-  `(binding [*count-fn* (comp *count-fn* ~f)]
-     ~@body))
+#?(:clj
+   (defmacro with-count-fn
+     [f & body]
+     `(binding [*count-fn* (comp *count-fn* ~f)]
+        ~@body)))
 
 ;; ## Nodes
 

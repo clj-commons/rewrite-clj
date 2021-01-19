@@ -11,7 +11,7 @@
             [rewrite-clj.zip.move]
             [rewrite-clj.zip.removez]
             [rewrite-clj.zip.seqz]
-            [rewrite-clj.zip.subedit]
+            [rewrite-clj.zip.subedit #?@(:cljs [:include-macros true])]
             [rewrite-clj.zip.walk]
             [rewrite-clj.zip.whitespace])
   #?(:cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [import-vars import-vars-with-mods]])))

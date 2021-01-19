@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-clj.node.indent
   (:require [clojure.string :as string]
             [rewrite-clj.node.protocols :as node]
-            [rewrite-clj.node.whitespace :as ws]))
+            [rewrite-clj.node.whitespace :as ws #?@(:cljs [:include-macros true])]))
 
 ;; ## Helpers
 
