@@ -1,4 +1,4 @@
-(ns ^:no-doc rewrite-clj.zip.remove
+(ns ^:no-doc rewrite-clj.zip.removez
   (:refer-clojure :exclude [remove])
   (:require [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.custom-zipper.utils :as u]

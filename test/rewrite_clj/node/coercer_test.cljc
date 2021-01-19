@@ -1,4 +1,4 @@
-(ns rewrite-clj.node.coerce-test
+(ns rewrite-clj.node.coercer-test
   (:require [clojure.test :refer [deftest is are]]
             [rewrite-clj.node.protocols :as node :refer [coerce]]
             [rewrite-clj.parser :as p]))

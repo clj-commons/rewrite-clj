@@ -1,4 +1,4 @@
-(ns ^:no-doc rewrite-clj.node.string
+(ns ^:no-doc rewrite-clj.node.stringz
   (:require [clojure.string :as string]
             [clojure.tools.reader.edn :as edn]
             [rewrite-clj.node.protocols :as node] ))

@@ -1,4 +1,4 @@
-(ns ^:no-doc rewrite-clj.node.coerce
+(ns ^:no-doc rewrite-clj.node.coercer
   (:require [rewrite-clj.node.comment]
             [rewrite-clj.node.forms]
             [rewrite-clj.node.integer]
@@ -8,7 +8,7 @@
             [rewrite-clj.node.quote]
             [rewrite-clj.node.reader-macro :refer [reader-macro-node var-node]]
             [rewrite-clj.node.seq :refer [vector-node list-node set-node map-node]]
-            [rewrite-clj.node.string]
+            [rewrite-clj.node.stringz]
             [rewrite-clj.node.token :refer [token-node]]
             [rewrite-clj.node.uneval]
             [rewrite-clj.node.whitespace :as ws])
@@ -20,7 +20,7 @@
            [rewrite_clj.node.quote QuoteNode]
            [rewrite_clj.node.reader_macro ReaderNode ReaderMacroNode DerefNode]
            [rewrite_clj.node.seq SeqNode]
-           [rewrite_clj.node.string StringNode]
+           [rewrite_clj.node.stringz StringNode]
            [rewrite_clj.node.token TokenNode]
            [rewrite_clj.node.uneval UnevalNode]
            [rewrite_clj.node.whitespace WhitespaceNode NewlineNode]))

@@ -1,8 +1,8 @@
-(ns rewrite-clj.zip.find-test
+(ns rewrite-clj.zip.findz-test
   (:require [clojure.test :refer [deftest is]]
             [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.find :as f]))
+            [rewrite-clj.zip.findz :as f]))
 
 ;; ## Fixture
 

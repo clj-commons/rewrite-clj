@@ -1,9 +1,9 @@
-(ns ^:no-doc rewrite-clj.zip.seq
+(ns ^:no-doc rewrite-clj.zip.seqz
   (:refer-clojure :exclude [map get assoc seq? vector? list? map? set?])
   (:require [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.edit :as e]
-            [rewrite-clj.zip.find :as f]
+            [rewrite-clj.zip.editz :as e]
+            [rewrite-clj.zip.findz :as f]
             [rewrite-clj.zip.insert :as i]
             [rewrite-clj.zip.move :as m]))
 

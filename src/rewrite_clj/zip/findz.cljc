@@ -1,4 +1,4 @@
-(ns ^:no-doc rewrite-clj.zip.find
+(ns ^:no-doc rewrite-clj.zip.findz
   (:refer-clojure :exclude [find])
   (:require [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]))

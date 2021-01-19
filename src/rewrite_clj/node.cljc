@@ -1,7 +1,7 @@
 (ns
   ^{:added "0.4.0"}
   rewrite-clj.node
-  (:require [rewrite-clj.node.coerce]
+  (:require [rewrite-clj.node.coercer]
             [rewrite-clj.node.comment]
             [rewrite-clj.node.fn]
             [rewrite-clj.node.forms]
@@ -13,7 +13,7 @@
             [rewrite-clj.node.reader-macro]
             [rewrite-clj.node.regex]
             [rewrite-clj.node.seq]
-            [rewrite-clj.node.string]
+            [rewrite-clj.node.stringz]
             [rewrite-clj.node.token]
             [rewrite-clj.node.uneval]
             [rewrite-clj.node.whitespace]
@@ -73,7 +73,7 @@
    set-node
    vector-node]
 
-  [rewrite-clj.node.string
+  [rewrite-clj.node.stringz
    string-node]
 
   [rewrite-clj.node.quote

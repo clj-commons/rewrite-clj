@@ -5,12 +5,12 @@
   (:require [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.potemkin :refer [import-vars]]
             [rewrite-clj.zip.base]
-            [rewrite-clj.zip.edit]
-            [rewrite-clj.zip.find]
+            [rewrite-clj.zip.editz]
+            [rewrite-clj.zip.findz]
             [rewrite-clj.zip.insert]
             [rewrite-clj.zip.move]
-            [rewrite-clj.zip.remove]
-            [rewrite-clj.zip.seq]
+            [rewrite-clj.zip.removez]
+            [rewrite-clj.zip.seqz]
             [rewrite-clj.zip.subedit]
             [rewrite-clj.zip.walk]
             [rewrite-clj.zip.whitespace]))
@@ -29,11 +29,11 @@
    string root-string
    print print-root]
 
-  [rewrite-clj.zip.edit
+  [rewrite-clj.zip.editz
    replace edit splice
    prefix suffix]
 
-  [rewrite-clj.zip.find
+  [rewrite-clj.zip.findz
    find find-next
    find-depth-first
    find-next-depth-first
@@ -50,10 +50,10 @@
    leftmost rightmost
    leftmost? rightmost? end?]
 
-  [rewrite-clj.zip.remove
+  [rewrite-clj.zip.removez
    remove]
 
-  [rewrite-clj.zip.seq
+  [rewrite-clj.zip.seqz
    seq? list? vector? set? map?
    map map-keys map-vals
    get assoc]

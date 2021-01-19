@@ -1,8 +1,8 @@
 (ns rewrite-clj.zip.walk-test
   (:require [clojure.test :refer [deftest is]]
             [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.edit :as e]
-            [rewrite-clj.zip.seq :as sq]
+            [rewrite-clj.zip.editz :as e]
+            [rewrite-clj.zip.seqz :as sq]
             [rewrite-clj.zip.walk :as w]))
 
 (deftest t-zipper-tree-prewalk
