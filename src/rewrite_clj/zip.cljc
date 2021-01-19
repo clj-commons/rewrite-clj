@@ -2,8 +2,8 @@
   (:refer-clojure :exclude [next find replace remove
                             seq? map? vector? list? set?
                             print map get assoc])
-  (:require [rewrite-clj.custom-zipper.core :as z]
-            [rewrite-clj.potemkin :refer [import-vars]]
+  (:require [rewrite-clj.custom-zipper.core]
+            #?(:clj [rewrite-clj.potemkin.clojure :refer [import-vars import-vars-with-mods]])
             [rewrite-clj.zip.base]
             [rewrite-clj.zip.editz]
             [rewrite-clj.zip.findz]
@@ -13,7 +13,8 @@
             [rewrite-clj.zip.seqz]
             [rewrite-clj.zip.subedit]
             [rewrite-clj.zip.walk]
-            [rewrite-clj.zip.whitespace]))
+            [rewrite-clj.zip.whitespace])
+  #?(:cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [import-vars import-vars-with-mods]])))
 
 ;; ## API Facade
 
@@ -74,33 +75,15 @@
    prepend-space append-space
    prepend-newline append-newline])
 
-;; ## Base Operations
-
-(defmacro ^:private defbase
-  [sym base]
-  (let [{:keys [arglists]} (meta
-                             (ns-resolve
-                               (symbol (namespace base))
-                               (symbol (name base))))
-        sym (with-meta
-              sym
-              {:doc (format "Directly call '%s' on the given arguments." base)
-               :arglists `(quote ~arglists)})]
-    `(def ~sym ~base)))
-
-(defbase right* rewrite-clj.custom-zipper.core/right)
-(defbase left* rewrite-clj.custom-zipper.core/left)
-(defbase up* rewrite-clj.custom-zipper.core/up)
-(defbase down* rewrite-clj.custom-zipper.core/down)
-(defbase next* rewrite-clj.custom-zipper.core/next)
-(defbase prev* rewrite-clj.custom-zipper.core/prev)
-(defbase rightmost* rewrite-clj.custom-zipper.core/rightmost)
-(defbase leftmost* rewrite-clj.custom-zipper.core/leftmost)
-(defbase replace* rewrite-clj.custom-zipper.core/replace)
-(defbase edit* rewrite-clj.custom-zipper.core/edit)
-(defbase remove* rewrite-clj.custom-zipper.core/remove)
-(defbase insert-left* rewrite-clj.custom-zipper.core/insert-left)
-(defbase insert-right* rewrite-clj.custom-zipper.core/insert-right)
+(import-vars-with-mods
+ {:sym-to-pattern "@@orig-name@@*"
+  :doc-to-pattern "Raw version of [[@@orig-name@@]].\n\n@@orig-doc@@\n\nNOTE: This function does not skip, nor provide any special handling for whitespace/comment nodes."}
+ [rewrite-clj.custom-zipper.core
+  right left up down
+  next prev
+  rightmost leftmost
+  replace edit remove
+  insert-left insert-right])
 
 ;; ## DEPRECATED
 

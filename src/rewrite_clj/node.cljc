@@ -17,7 +17,8 @@
             [rewrite-clj.node.token]
             [rewrite-clj.node.uneval]
             [rewrite-clj.node.whitespace]
-            [rewrite-clj.potemkin :refer [import-vars]]))
+            #?(:clj [rewrite-clj.potemkin.clojure :refer [import-vars]]))
+  #?(:cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [import-vars]])))
 
 ;; ## API Facade
 
