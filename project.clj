@@ -13,9 +13,6 @@
                    :exclusions [org.clojure/clojure]
                    :codox {:project {:name "rewrite-clj"}
                            :defaults {:doc/format :markdown}}}
-             :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
-             :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
-             :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
-             :1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}}
-  :aliases {"all" ["with-profile" "dev,1.5:dev,1.6:dev,1.7:dev,1.8:dev"]}
+             :1.9 {:dependencies [[org.clojure/clojure "1.8.0"]]}}
+  :aliases {"all" ["with-profile" "dev,1.9:dev"]}
   :pedantic? :abort)
