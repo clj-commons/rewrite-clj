@@ -1,7 +1,6 @@
 (ns ^:no-doc rewrite-clj.parser.token
-  (:require [rewrite-clj
-             [node :as node]
-             [reader :as r]]))
+  (:require [rewrite-clj.node :as node]
+            [rewrite-clj.reader :as r]))
 
 (defn- read-to-boundary
   [reader & [allowed]]

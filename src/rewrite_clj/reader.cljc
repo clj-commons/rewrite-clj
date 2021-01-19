@@ -1,8 +1,7 @@
 (ns ^:no-doc rewrite-clj.reader
   (:refer-clojure :exclude [peek next])
-  (:require [clojure.tools.reader
-             [edn :as edn]
-             [reader-types :as r]]
+  (:require [clojure.tools.reader.edn :as edn]
+            [clojure.tools.reader.reader-types :as r]
             [clojure.java.io :as io])
   (:import [java.io PushbackReader]))
 

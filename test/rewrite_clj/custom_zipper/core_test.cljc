@@ -1,17 +1,14 @@
 (ns rewrite-clj.custom-zipper.core-test
-  (:require [clojure.test.check
-             [generators :as gen]
-             [properties :as prop]]
+  (:require [clojure.test.check.generators :as gen]
+            [clojure.test.check.properties :as prop]
             [clojure.test :refer :all]
             [rewrite-clj.node :as node]
             [rewrite-clj.node.generators :as g]
             [clojure.test.check.clojure-test :refer :all]
-            [rewrite-clj.zip
-             [base :as base]
-             [whitespace :as ws]]
-            [rewrite-clj.custom-zipper
-             [core :as z]
-             [utils :as u]]))
+            [rewrite-clj.zip.base :as base]
+            [rewrite-clj.zip.whitespace :as ws]
+            [rewrite-clj.custom-zipper.core :as z]
+            [rewrite-clj.custom-zipper.utils :as u]))
 
 (deftest t-zipper-starts-with-position-1-1
   (is (= [1 1] (z/position (z/custom-zipper (node/comment-node "hello"))))))

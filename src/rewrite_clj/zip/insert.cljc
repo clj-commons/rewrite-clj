@@ -1,7 +1,6 @@
 (ns ^:no-doc rewrite-clj.zip.insert
-  (:require [rewrite-clj.zip
-             [base :as base]
-             [whitespace :as ws]]
+  (:require [rewrite-clj.zip.base :as base]
+            [rewrite-clj.zip.whitespace :as ws]
             [rewrite-clj.node :as node]
             [rewrite-clj.custom-zipper.core :as z]))
 

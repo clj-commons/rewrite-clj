@@ -1,9 +1,8 @@
 (ns rewrite-clj.zip.remove-test
   (:require [clojure.test :refer :all]
-            [rewrite-clj.zip
-             [base :as base]
-             [move :as m]
-             [remove :as r]]
+            [rewrite-clj.zip.base :as base]
+            [rewrite-clj.zip.move :as m]
+            [rewrite-clj.zip.remove :as r]
             [rewrite-clj.custom-zipper.core :as z]))
 
 (deftest t-whitespace-aware-removal

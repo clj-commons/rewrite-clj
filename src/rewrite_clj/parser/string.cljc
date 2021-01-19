@@ -1,10 +1,8 @@
 (ns ^:no-doc rewrite-clj.parser.string
-  (:require [rewrite-clj.parser
-             [utils :as u]]
+  (:require [rewrite-clj.parser.utils :as u]
             [rewrite-clj.node :as node]
-            [clojure.tools.reader
-             [edn :as edn]
-             [reader-types :as r]]
+            [clojure.tools.reader.edn :as edn]
+            [clojure.tools.reader.reader-types :as r]
             [clojure.string :as string]))
 
 (defn- flush-into

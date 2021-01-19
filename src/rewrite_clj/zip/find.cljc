@@ -1,8 +1,7 @@
 (ns ^:no-doc rewrite-clj.zip.find
   (:refer-clojure :exclude [find])
-  (:require [rewrite-clj.zip
-             [base :as base]
-             [move :as m]]
+  (:require [rewrite-clj.zip.base :as base]
+            [rewrite-clj.zip.move :as m]
             [rewrite-clj.node :as node]
             [rewrite-clj.custom-zipper.core :as z]))
 

@@ -2,9 +2,8 @@
       :author "Yannick Scherer"}
  rewrite-clj.parser-test
   (:require [clojure.test :refer :all]
-            [rewrite-clj
-             [node :as node]
-             [parser :as p]]))
+            [rewrite-clj.node :as node]
+            [rewrite-clj.parser :as p]))
 
 (deftest t-parsing-the-first-few-whitespaces
   (are [?ws ?parsed]

@@ -1,7 +1,6 @@
 (ns rewrite-clj.node.coerce-test
   (:require [clojure.test :refer :all]
-            [rewrite-clj.node.protocols
-             :as node :refer [coerce]]
+            [rewrite-clj.node.protocols :as node :refer [coerce]]
             [rewrite-clj.node.coerce :refer :all]
             [rewrite-clj.parser :as p]))
 

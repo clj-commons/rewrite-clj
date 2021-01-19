@@ -1,9 +1,8 @@
 (ns rewrite-clj.zip.seq-test
   (:require [clojure.test :refer :all]
-            [rewrite-clj.zip
-             [base :as base]
-             [edit :as e]
-             [seq :as sq]]))
+            [rewrite-clj.zip.base :as base]
+            [rewrite-clj.zip.edit :as e]
+            [rewrite-clj.zip.seq :as sq]))
 
 (let [v (base/of-string "[1 2 3]")
       m (base/of-string "{:a 0, :b 1}")

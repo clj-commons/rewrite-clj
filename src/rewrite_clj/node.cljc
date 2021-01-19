@@ -1,23 +1,22 @@
 (ns
   ^{:added "0.4.0"}
   rewrite-clj.node
-  (:require [rewrite-clj.node
-             coerce
-             comment
-             fn
-             forms
-             integer
-             keyword
-             meta
-             protocols
-             quote
-             reader-macro
-             regex
-             seq
-             string
-             token
-             uneval
-             whitespace]
+  (:require [rewrite-clj.node.coerce]
+            [rewrite-clj.node.comment]
+            [rewrite-clj.node.fn]
+            [rewrite-clj.node.forms]
+            [rewrite-clj.node.integer]
+            [rewrite-clj.node.keyword]
+            [rewrite-clj.node.meta]
+            [rewrite-clj.node.protocols]
+            [rewrite-clj.node.quote]
+            [rewrite-clj.node.reader-macro]
+            [rewrite-clj.node.regex]
+            [rewrite-clj.node.seq]
+            [rewrite-clj.node.string]
+            [rewrite-clj.node.token]
+            [rewrite-clj.node.uneval]
+            [rewrite-clj.node.whitespace]
             [rewrite-clj.potemkin :refer [import-vars]]))
 
 ;; ## API Facade

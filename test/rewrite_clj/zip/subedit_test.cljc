@@ -1,9 +1,8 @@
 (ns rewrite-clj.zip.subedit-test
   (:require [clojure.test :refer :all]
-            [rewrite-clj.zip
-             [base :as base]
-             [move :as m]
-             [subedit :refer :all]]
+            [rewrite-clj.zip.base :as base]
+            [rewrite-clj.zip.move :as m]
+            [rewrite-clj.zip.subedit :refer :all]
             [rewrite-clj.custom-zipper.core :as z]))
 
 (let [root (base/of-string "[1 #{2 [3 4] 5} 6]")]

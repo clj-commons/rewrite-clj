@@ -1,8 +1,7 @@
 (ns rewrite-clj.parser
   (:require [rewrite-clj.parser.core :as p]
-            [rewrite-clj
-             [node :as node]
-             [reader :as reader]]
+            [rewrite-clj.node :as node]
+            [rewrite-clj.reader :as reader]
             [clojure.walk :as w]))
 
 ;; ## Parser Core

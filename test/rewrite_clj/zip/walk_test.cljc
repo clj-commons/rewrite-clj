@@ -1,10 +1,9 @@
 (ns rewrite-clj.zip.walk-test
   (:require [clojure.test :refer :all]
-            [rewrite-clj.zip
-             [base :as base]
-             [edit :as e]
-             [seq :as sq]
-             [walk :as w]]))
+            [rewrite-clj.zip.base :as base]
+            [rewrite-clj.zip.edit :as e]
+            [rewrite-clj.zip.seq :as sq]
+            [rewrite-clj.zip.walk :as w]))
 
 (deftest t-zipper-tree-prewalk
   (let [root (base/of-string  "[0 [1 2 3] 4]")

@@ -1,28 +1,25 @@
 (ns ^:no-doc rewrite-clj.node.coerce
   (:require [rewrite-clj.potemkin :refer [defprotocol+]]
-            [rewrite-clj.node
-             comment forms integer keyword
-             quote string uneval
-             [meta :refer [meta-node]]
-             [protocols :as node
-              :refer [NodeCoerceable
-                      coerce]]
-             [reader-macro
-              :refer [reader-macro-node var-node]]
-             [seq :refer [vector-node
-                          list-node
-                          set-node
-                          map-node]]
-             [token :refer [token-node]]
-             [whitespace :as ws]])
+            [rewrite-clj.node.comment]
+            [rewrite-clj.node.forms] 
+            [rewrite-clj.node.integer] 
+            [rewrite-clj.node.keyword]
+            [rewrite-clj.node.quote] 
+            [rewrite-clj.node.string] 
+            [rewrite-clj.node.uneval]
+            [rewrite-clj.node.meta :refer [meta-node]]
+            [rewrite-clj.node.protocols :as node :refer [NodeCoerceable coerce]]
+            [rewrite-clj.node.reader-macro :refer [reader-macro-node var-node]]
+            [rewrite-clj.node.seq :refer [vector-node list-node set-node map-node]]
+            [rewrite-clj.node.token :refer [token-node]]
+            [rewrite-clj.node.whitespace :as ws])
   (:import [rewrite_clj.node.comment CommentNode]
            [rewrite_clj.node.forms FormsNode]
            [rewrite_clj.node.integer IntNode]
            [rewrite_clj.node.keyword KeywordNode]
            [rewrite_clj.node.meta MetaNode]
            [rewrite_clj.node.quote QuoteNode]
-           [rewrite_clj.node.reader_macro
-            ReaderNode ReaderMacroNode DerefNode]
+           [rewrite_clj.node.reader_macro ReaderNode ReaderMacroNode DerefNode]
            [rewrite_clj.node.seq SeqNode]
            [rewrite_clj.node.string StringNode]
            [rewrite_clj.node.token TokenNode]
