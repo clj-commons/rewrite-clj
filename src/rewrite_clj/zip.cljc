@@ -23,7 +23,7 @@
 
 (import-vars
   [rewrite-clj.custom-zipper.core
-   node position root]
+   node position position-span root]
 
   [rewrite-clj.zip.base
    child-sexprs
@@ -46,7 +46,9 @@
    find-next-depth-first
    find-tag find-next-tag
    find-value find-next-value
-   find-token find-next-token]
+   find-token find-next-token
+   find-last-by-pos
+   find-tag-by-pos]
 
   [rewrite-clj.zip.insert
    insert-right insert-left
@@ -93,7 +95,9 @@
   next prev
   rightmost leftmost
   replace edit remove
-  insert-left insert-right])
+  insert-left insert-right
+  insert-child
+  append-child])
 
 ;; ## DEPRECATED
 

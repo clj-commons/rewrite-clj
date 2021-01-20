@@ -101,3 +101,24 @@
                          (update-in [:r] next)
                          (assoc :changed? true))]
           (meta loc))))))
+
+(defn remove-and-move-up
+  "Remove the current node and move up.
+    `[a [b |c d]] -> [a |[b d]]`
+    `[a [|b c d]] -> [a |[c d]]`"
+  [loc]
+  (if (z/custom-zipper? loc)
+    (let [{:keys [left]} loc]
+      (if (seq left)
+        (-> loc z/remove z/up)
+        (z/remove loc)))
+    (let [[_node {l :l, ppath :ppath, pnodes :pnodes, rs :r, :as path}] loc]
+      (if (nil? ppath)
+        (throw (ex-info "cannot remove at top" {}))
+        (if (pos? (count l))
+          (z/up (with-meta [(peek l)
+                            (assoc path :l (pop l) :changed? true)]
+                  (meta loc)))
+          (with-meta [(z/make-node loc (peek pnodes) rs)
+                      (and ppath (assoc ppath :changed? true))]
+            (meta loc)))))))

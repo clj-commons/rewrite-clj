@@ -1,6 +1,7 @@
 (ns ^:no-doc rewrite-clj.zip.findz
   (:refer-clojure :exclude [find])
-  (:require [rewrite-clj.zip.base :as base]
+  (:require [rewrite-clj.custom-zipper.core :as z]
+            [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -14,6 +15,16 @@
       (and (= (base/tag node) t)
            (additional node)))
     #(= (base/tag %) t)))
+
+(defn- position-in-range? [zloc pos]
+  (let [[r c] (if (map? pos) [(:row pos) (:col pos)] pos)]
+    (when (or (<= r 0) (<= c 0))
+      (throw (ex-info "zipper row and col positions are ones-based" {:pos pos})))
+    (let [[[zstart-row zstart-col][zend-row zend-col]] (z/position-span zloc)]
+      (and (>= r zstart-row)
+           (<= r zend-row)
+           (if (= r zstart-row) (>= c zstart-col) true)
+           (if (= r zend-row) (< c zend-col) true)))))
 
 ;; ## Find Operations
 
@@ -30,6 +41,21 @@
         (take-while (complement m/end?))
         (drop-while (complement p?))
         (first))))
+
+(defn find-last-by-pos
+  "Return `zloc` located to the last node spanning position `pos` that satisfies predicate `p?` else `nil`.
+   Search is depth-first from the current node.
+
+  NOTE: Does not ignore whitespace/comment nodes."
+  ([zloc pos] (find-last-by-pos zloc pos (constantly true)))
+  ([zloc pos p?]
+   (->> zloc
+        (iterate z/next)
+        (take-while identity)
+        (take-while (complement m/end?))
+        (filter #(and (p? %)
+                      (position-in-range? % pos)))
+        last)))
 
 (defn find-depth-first
   "Find node satisfying the given predicate by traversing
@@ -70,6 +96,12 @@
   ([zloc f t]
    (->> (tag-predicate t)
         (find-next zloc f))))
+
+(defn find-tag-by-pos
+  "Return `zloc` located to the last node spanning position `pos` with tag `t` else `nil`.
+  Search is depth-first from the current node."
+  ([zloc pos t]
+   (find-last-by-pos zloc pos #(= (base/tag %) t))))
 
 (defn find-token
   "Find token node matching the given predicate by applying the

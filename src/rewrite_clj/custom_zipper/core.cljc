@@ -82,6 +82,13 @@
       (str "to use position functions, please construct your zipper with "
            "':track-position?'  set to true.") {}))))
 
+(defn position-span
+  "Returns the ones-based `[[start-row start-col] [end-row end-col]]` of the current node in `zloc`."
+  [zloc]
+  (let [start-pos (position zloc)]
+    [start-pos (node/+extent start-pos (node/extent (node zloc)))]))
+
+
 (defn-switchable lefts
   "Returns a seq of the left siblings of this loc"
   [loc]

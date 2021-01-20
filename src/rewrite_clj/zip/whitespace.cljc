@@ -14,6 +14,18 @@
   [zloc]
   (some-> zloc z/node node/linebreak?))
 
+(defn comment?
+  "Returns true when the current node in `zloc` is a comment."
+  [zloc]
+  (some-> zloc z/node node/comment?))
+
+(defn whitespace-not-linebreak?
+  "Returns true when current node in `zloc` is a whitespace but not a linebreak."
+  [zloc]
+  (and
+   (whitespace? zloc)
+   (not (linebreak? zloc))))
+
 (defn whitespace-or-comment?
   [zloc]
   (some-> zloc z/node node/whitespace-or-comment?))
