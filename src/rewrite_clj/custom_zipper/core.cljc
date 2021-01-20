@@ -17,7 +17,7 @@
   (:require [clojure.zip :as clj-zip]
             [rewrite-clj.custom-zipper.switchable :refer [defn-switchable]]
             [rewrite-clj.node.protocols :as node])
-  #?(:cljs (:require-macros [rewrite-clj.custom-zipper.switchable :refer [defn-switchable]])) )
+  #?(:cljs (:require-macros [rewrite-clj.custom-zipper.switchable :refer [defn-switchable]])))
 
 ;; ## Switch
 ;;

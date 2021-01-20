@@ -9,9 +9,18 @@
            :1.9 {:override-deps {org.clojure/clojure {:mvn/version "1.9.0"}}}
            :1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.1"}}}
 
+           ;;
+           ;; Test support
+           ;;
+           ;;
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}
                          :extra-paths ["test"]}
 
-           ;; koacha for clojure testing
+           ;; koacha for Clojure testing
            :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.732"}}
-                    :main-opts ["-m" "kaocha.runner"]}}}
+                    :main-opts ["-m" "kaocha.runner"]}
+
+           ;; cljs-test-runner for Regular ClojureScript testing
+           :cljs-test {:extra-deps {olical/cljs-test-runner {:mvn/version "3.8.0"}}
+                       :extra-paths ["test"]
+                       :main-opts ["-m" "cljs-test-runner.main"]}} }

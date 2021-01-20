@@ -5,7 +5,7 @@
             [rewrite-clj.parser.utils :as u]))
 
 (defn parse-keyword
-  [reader]
+  [#?(:cljs ^not-native reader :default reader)]
   (u/ignore reader)
   (if-let [c (r/peek-char reader)]
     (if (= c \:)

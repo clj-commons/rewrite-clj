@@ -7,7 +7,7 @@
 
 (defn- wrap-string
   [s]
-  (format "\"%s\"" s))
+  (str "\"" s "\""))
 
 (defn- join-lines
   [lines]

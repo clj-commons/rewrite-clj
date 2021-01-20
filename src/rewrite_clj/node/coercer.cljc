@@ -1,49 +1,103 @@
 (ns ^:no-doc rewrite-clj.node.coercer
-  (:require [rewrite-clj.node.comment]
-            [rewrite-clj.node.forms]
-            [rewrite-clj.node.integer]
-            [rewrite-clj.node.keyword]
-            [rewrite-clj.node.meta :refer [meta-node]]
-            [rewrite-clj.node.protocols :as node :refer [NodeCoerceable coerce]]
-            [rewrite-clj.node.quote]
-            [rewrite-clj.node.reader-macro :refer [reader-macro-node var-node]]
-            [rewrite-clj.node.seq :refer [vector-node list-node set-node map-node]]
-            [rewrite-clj.node.stringz]
-            [rewrite-clj.node.token :refer [token-node]]
-            [rewrite-clj.node.uneval]
-            [rewrite-clj.node.whitespace :as ws])
-  (:import [rewrite_clj.node.comment CommentNode]
-           [rewrite_clj.node.forms FormsNode]
-           [rewrite_clj.node.integer IntNode]
-           [rewrite_clj.node.keyword KeywordNode]
-           [rewrite_clj.node.meta MetaNode]
-           [rewrite_clj.node.quote QuoteNode]
-           [rewrite_clj.node.reader_macro ReaderNode ReaderMacroNode DerefNode]
-           [rewrite_clj.node.seq SeqNode]
-           [rewrite_clj.node.stringz StringNode]
-           [rewrite_clj.node.token TokenNode]
-           [rewrite_clj.node.uneval UnevalNode]
-           [rewrite_clj.node.whitespace WhitespaceNode NewlineNode]))
+  (:require
+   #?@(:clj
+       [[rewrite-clj.node.comment]
+        [rewrite-clj.node.forms]
+        [rewrite-clj.node.integer]
+        [rewrite-clj.node.keyword]
+        [rewrite-clj.node.meta :refer [meta-node]]
+        [rewrite-clj.node.protocols :as node :refer [NodeCoerceable coerce]]
+        [rewrite-clj.node.quote]
+        [rewrite-clj.node.reader-macro :refer [reader-macro-node var-node]]
+        [rewrite-clj.node.seq :refer [vector-node list-node set-node map-node]]
+        [rewrite-clj.node.string]
+        [rewrite-clj.node.token :refer [token-node]]
+        [rewrite-clj.node.uneval]
+        [rewrite-clj.node.whitespace :as ws]]
+       :cljs
+       [[clojure.string :as string]
+        [rewrite-clj.node.comment :refer [CommentNode]]
+        [rewrite-clj.node.forms :refer [FormsNode]]
+        [rewrite-clj.node.integer :refer [IntNode]]
+        [rewrite-clj.node.keyword :refer [KeywordNode]]
+        [rewrite-clj.node.meta :refer [MetaNode meta-node]]
+        [rewrite-clj.node.protocols :as node :refer [NodeCoerceable coerce]]
+        [rewrite-clj.node.quote :refer [QuoteNode]]
+        [rewrite-clj.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
+        [rewrite-clj.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
+        [rewrite-clj.node.stringz :refer [StringNode]]
+        [rewrite-clj.node.token :refer [TokenNode token-node]]
+        [rewrite-clj.node.uneval :refer [UnevalNode]]
+        [rewrite-clj.node.whitespace :refer [WhitespaceNode NewlineNode] :as ws]]))
+  #?(:clj
+     (:import [rewrite_clj.node.comment CommentNode]
+              [rewrite_clj.node.forms FormsNode]
+              [rewrite_clj.node.integer IntNode]
+              [rewrite_clj.node.keyword KeywordNode]
+              [rewrite_clj.node.meta MetaNode]
+              [rewrite_clj.node.quote QuoteNode]
+              [rewrite_clj.node.reader_macro ReaderNode ReaderMacroNode DerefNode]
+              [rewrite_clj.node.seq SeqNode]
+              [rewrite_clj.node.stringz StringNode]
+              [rewrite_clj.node.token TokenNode]
+              [rewrite_clj.node.uneval UnevalNode]
+              [rewrite_clj.node.whitespace WhitespaceNode NewlineNode])))
 
 ;; ## Helpers
 
-(defn- node-with-meta
-  [node value]
-  (if (instance? clojure.lang.IMeta value)
+(defn node-with-meta
+  [n value]
+  (if #?(:clj (instance? clojure.lang.IMeta value)
+         :cljs (satisfies? IWithMeta value))
     (let [mta (meta value)]
       (if (empty? mta)
-        node
-        (meta-node (coerce mta) node)))
-    node))
+        n
+        (meta-node (coerce mta) n)))
+    n))
+
+(let [comma (ws/whitespace-nodes ", ")
+      space (ws/whitespace-node " ")]
+  (defn- map->children
+    [m]
+    (->> (mapcat
+          (fn [[k v]]
+            (list* (coerce k) space (coerce v) comma))
+          m)
+         (drop-last (count comma))
+         (vec))))
+
+(defn- record-node
+  [m]
+  (reader-macro-node
+   [(token-node #?(:clj (symbol (.getName ^Class (class m)))
+                   :cljs ;; this is a bit hacky, but is one way of preserving original name
+                   ;; under advanced cljs optimizations
+                   (let [s (pr-str m)]
+                     (symbol (subs s 1 (string/index-of s "{"))))))
+    (map-node (map->children m))]))
+
 
 ;; ## Tokens
 
-(extend-protocol NodeCoerceable
-  Object
-  (coerce [v]
-    (node-with-meta
-      (token-node v)
-      v)))
+#?(:clj
+   ;; TODO: why do I have nested reader conditionals?
+   (extend-protocol NodeCoerceable
+     #?(:clj Object :cljs default)
+     (coerce [v]
+       (node-with-meta
+        (token-node v)
+        v)))
+   :cljs
+   (extend-protocol NodeCoerceable
+     #?(:clj Object :cljs default)
+     (coerce [v]
+       (node-with-meta
+        ;; in cljs, this is where we check for a record, in clj it happens under map handling
+        ;; TODO: Check if this can't be done by coercing an IRecord instead
+        (if (record? v)
+          (record-node v)
+          (token-node v))
+        v))))
 
 (extend-protocol NodeCoerceable
   nil
@@ -62,52 +116,44 @@
     sq))
 
 (extend-protocol NodeCoerceable
-  clojure.lang.IPersistentVector
+  #?(:clj clojure.lang.IPersistentVector :cljs PersistentVector)
   (coerce [sq]
     (seq-node vector-node sq))
-  clojure.lang.IPersistentList
+  #?(:clj clojure.lang.IPersistentList :cljs List)
   (coerce [sq]
     (seq-node list-node sq))
-  clojure.lang.IPersistentSet
+  #?(:clj clojure.lang.IPersistentSet :cljs PersistentHashSet)
   (coerce [sq]
     (seq-node set-node sq)))
 
 ;; ## Maps
 
-(let [comma (ws/whitespace-nodes ", ")
-      space (ws/whitespace-node " ")]
-  (defn- map->children
-    [m]
-    (->> (mapcat
-          (fn [[k v]]
-            (list* (coerce k) space (coerce v) comma))
-          m)
-         (drop-last (count comma))
-         (vec))))
-
-(defn- record-node
-  [m]
-  (reader-macro-node
-    [(token-node (symbol (.getName ^Class (class m))))
-     (map-node (map->children m))]))
-
-(defn- is-record?
-  [v]
-  (instance? clojure.lang.IRecord v))
-
-(extend-protocol NodeCoerceable
-  clojure.lang.IPersistentMap
-  (coerce [m]
-    (node-with-meta
-      (if (is-record? m)
-        (record-node m)
-        (map-node (map->children m)))
-      m)))
+#?(:clj
+   (extend-protocol NodeCoerceable
+     clojure.lang.IPersistentMap
+     (coerce [m]
+       (node-with-meta
+        ;; in clj a record is a persistent map
+        (if (record? m)
+          (record-node m)
+          (map-node (map->children m)))
+        m)))
+   :cljs
+   (let [create-map-node (fn [m]
+                           (node-with-meta
+                            (map-node (map->children m))
+                            m))]
+     (extend-protocol NodeCoerceable
+       PersistentHashMap
+       (coerce [m] (create-map-node m)))
+     (extend-protocol NodeCoerceable
+       PersistentArrayMap
+       (coerce [m] (create-map-node m)))))
 
 ;; ## Vars
 
 (extend-protocol NodeCoerceable
-  clojure.lang.Var
+  #?(:clj clojure.lang.Var :cljs Var)
   (coerce [v]
     (-> (str v)
         (subs 2)

@@ -5,7 +5,7 @@
 (defn parse-whitespace
   "Parse as much whitespace as possible. The created node can either contain
    only linebreaks or only space/tabs."
-  [reader]
+  [#?(:cljs ^not-native reader :default reader)]
   (let [c (reader/peek reader)]
     (cond (reader/linebreak? c)
           (node/newline-node

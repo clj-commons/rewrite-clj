@@ -9,14 +9,15 @@
          (is (satisfies? node/Node n))
          (is (string? (node/string n)))
          (is (= ?sexpr (node/sexpr n)))
-         (is (= (class ?sexpr) (class (node/sexpr n)))))
+         (is (= (type ?sexpr) (type (node/sexpr n)))))
 ;; numbers
     3
     3N
     3.14
     3.14M
     3e14
-    3/4
+    ;; ratios are not valid in cljs
+    #?@(:clj [3/4])
 
   ;; symbol/keyword/string/...
     'symbol
@@ -50,12 +51,12 @@
     (is (satisfies? node/Node n))
     (is (string? (node/string n)))
     (is (= (str sexpr) (str (node/sexpr n))))
-    (is (= (class sexpr) (class (node/sexpr n))))))
+    (is (= (type sexpr) (type (node/sexpr n))))))
 
 (deftest t-vars
   (let [n (coerce #'identity)]
     (is (satisfies? node/Node n))
-    (is (= '(var clojure.core/identity) (node/sexpr n)))))
+    (is (= '(var #?(:clj clojure.core/identity :cljs cljs.core/identity)) (node/sexpr n)))))
 
 (deftest t-nil
   (let [n (coerce nil)]

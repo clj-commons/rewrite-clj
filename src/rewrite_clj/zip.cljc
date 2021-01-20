@@ -14,7 +14,8 @@
             [rewrite-clj.zip.subedit #?@(:cljs [:include-macros true])]
             [rewrite-clj.zip.walk]
             [rewrite-clj.zip.whitespace])
-  #?(:cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [import-vars import-vars-with-mods]])))
+  #?(:cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [import-vars import-vars-with-mods]]
+                            [rewrite-clj.zip])))
 
 ;; ## API Facade
 
@@ -24,9 +25,12 @@
 
   [rewrite-clj.zip.base
    child-sexprs
-   edn* edn tag sexpr
-   length value
-   of-file of-string
+   edn* edn
+   tag sexpr
+   length
+   value
+   #?(:clj of-file)
+   of-string
    string root-string
    print print-root]
 
@@ -60,8 +64,10 @@
    get assoc]
 
   [rewrite-clj.zip.subedit
-   edit-node edit-> edit->>
-   subedit-node subedit-> subedit->>]
+   edit-node
+   subedit-node
+   edit-> edit->>
+   subedit-> subedit->>]
 
   [rewrite-clj.zip.walk
    prewalk

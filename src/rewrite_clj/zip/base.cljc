@@ -71,11 +71,12 @@
   ([s options]
    (some-> s p/parse-string-all (edn options))))
 
-(defn of-file
-  "Create zipper from File."
-  ([f] (of-file f {}))
-  ([f options]
-   (some-> f p/parse-file-all (edn options))))
+#?(:clj
+   (defn of-file
+     "Create zipper from File."
+     ([f] (of-file f {}))
+     ([f options]
+      (some-> f p/parse-file-all (edn options)))))
 
 ;; ## Write
 
@@ -89,21 +90,28 @@
   [zloc]
   (some-> zloc z/root node/string))
 
-(defn- print!
-  [^String s writer]
-  (if writer
-    (.write ^java.io.Writer writer s)
-    (recur s *out*)))
+#?(:clj
+   (defn- print! [^String s writer]
+     (if writer
+       (.write ^java.io.Writer writer s)
+       (recur s *out*)))
+   :cljs
+   (defn- print! [s _writer]
+     (string-print s)))
 
 (defn print
-  "Print current zipper location."
+  "Print current zipper location.
+
+   NOTE: Optional `writer` is currently ignored for ClojureScript."
   [zloc & [writer]]
   (some-> zloc
           string
           (print! writer)))
 
 (defn print-root
-  "Zip up and print root node."
+  "Zip up and print root node.
+
+   NOTE: Optional `writer` is currently ignored for ClojureScript."
   [zloc & [writer]]
   (some-> zloc
           root-string

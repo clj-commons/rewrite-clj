@@ -1,5 +1,7 @@
 (ns ^:no-doc rewrite-clj.node.fn
-  (:require [clojure.walk :as w]
+  (:require [clojure.string :as string]
+            [clojure.walk :as w]
+            [rewrite-clj.interop :as interop]
             [rewrite-clj.node.protocols :as node]))
 
 ;; ## Conversion
@@ -22,18 +24,18 @@
   [^String n]
   (cond (= n "&") 0
         (= n "") 1
-        (re-matches #"\d+" n) (Long/parseLong n)
+        (re-matches #"\d+" n) (interop/str->int n)
         :else (throw (ex-info "arg literal must be %, %& or %integer." {}))))
 
 (defn- symbol->gensym
   "If symbol starting with `%`, convert to respective gensym."
   [sym-seq vararg? max-n sym]
-  (if (symbol? sym)
+  (when (symbol? sym)
     (let [nm (name sym)]
-      (if (.startsWith nm "%")
+      (when (string/starts-with? nm "%")
         (let [i (sym-index (subs nm 1))]
-          (if (and (= i 0) (not (realized? vararg?)))
-            (deliver vararg? true))
+          (when (and (= i 0) (not @vararg?))
+            (reset! vararg? true))
           (swap! max-n max i)
           (nth sym-seq i))))))
 
@@ -46,16 +48,17 @@
                                 (str "p" i "__"))
                          s (name (gensym base))]]
                (symbol (str s "#")))
-        vararg? (promise)
+        vararg? (atom false)
+        ;; TODO: an atom was the first interop solution I came up with when transcribing to cljs, review for something simpler?
         max-n (atom 0)
         body (w/prewalk
-               #(or (symbol->gensym syms vararg? max-n %) %)
-               form)]
+              #(or (symbol->gensym syms vararg? max-n %) %)
+              form)]
     (construct-fn
-      (take @max-n (rest syms))
-      (if (deref vararg? 0 nil)
-        (first syms))
-      body)))
+     (take @max-n (rest syms))
+     (when @vararg?
+       (first syms))
+     body)))
 
 ;; ## Node
 

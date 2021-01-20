@@ -7,12 +7,12 @@
 
 (defn parse
   "Parse next form from the given reader."
-  [reader]
+  [#?(:cljs ^not-native reader :default reader)]
   (p/parse-next reader))
 
 (defn parse-all
   "Parse all forms from the given reader."
-  [reader]
+  [#?(:cljs ^not-native reader :default reader)]
   (let [nodes (->> (repeatedly #(parse reader))
                    (take-while identity)
                    (doall))]
@@ -32,16 +32,18 @@
   [s]
   (parse-all (reader/string-reader s)))
 
-(defn parse-file
-  "Parse first form from the given file."
-  [f]
-  (let [r (reader/file-reader f)]
-    (with-open [_ ^java.io.Closeable (.-rdr r)]
-      (parse r))))
+#?(:clj
+   (defn parse-file
+     "Parse first form from the given file."
+     [f]
+     (let [r (reader/file-reader f)]
+       (with-open [_ ^java.io.Closeable (.-rdr r)]
+         (parse r)))))
 
-(defn parse-file-all
-  "Parse all forms from the given file."
-  [f]
-  (let [r (reader/file-reader f)]
-    (with-open [_ ^java.io.Closeable (.-rdr r)]
-      (parse-all r))))
+#?(:clj
+   (defn parse-file-all
+     "Parse all forms from the given file."
+     [f]
+     (let [r (reader/file-reader f)]
+       (with-open [_ ^java.io.Closeable (.-rdr r)]
+         (parse-all r)))))

@@ -5,12 +5,6 @@
 
 ;; ## Helpers
 
-(comment
-  (defn- unindent-string
-    [s n]
-    (let [p (re-pattern (format "(^|[\\n\\r]) {0,%d}" n))]
-      (string/replace s p (fn [[_ x]] x)))))
-
 (defn- add-to-lines
   [all? s lines]
   (if all?

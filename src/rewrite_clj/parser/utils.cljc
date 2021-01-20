@@ -1,36 +1,37 @@
 (ns ^:no-doc rewrite-clj.parser.utils
-  (:require [clojure.tools.reader.reader-types :as r]))
+  (:require [clojure.tools.reader.reader-types :as r]
+            [rewrite-clj.interop :as interop]))
 
 (defn whitespace?
   "Check if a given character is a whitespace."
-  [^java.lang.Character c]
-  (and c (or (= c \,) (Character/isWhitespace c))))
+  [#?(:clj ^java.lang.Character c :default c)]
+  (interop/clojure-whitespace? c))
 
 (defn linebreak?
   "Check if a given character is a linebreak."
-  [^java.lang.Character c]
+  [#?(:clj ^java.lang.Character c :default c)]
   (and c (or (= c \newline) (= c \return))))
 
 (defn space?
   "Check if a given character is a non-linebreak whitespace."
-  [^java.lang.Character c]
+  [#?(:clj ^java.lang.Character c :default c)]
   (and (not (linebreak? c)) (whitespace? c)))
 
 (defn ignore
   "Ignore next character of Reader."
-  [reader]
+  [#?(:cljs ^not-native reader :default reader)]
   (r/read-char reader)
   nil)
 
 (defn throw-reader
-  [reader & msg]
+  [#?(:cljs ^not-native reader :default reader) & msg]
   (let [c (r/get-column-number reader)
         l (r/get-line-number reader)]
     (throw (ex-info
             (str (apply str msg) " [at line " l ", column " c "]") {}))))
 
 (defn read-eol
-  [reader]
+  [#?(:cljs ^not-native reader :default reader)]
   (loop [char-seq []]
     (if-let [c (r/read-char reader)]
       (if (linebreak? c)

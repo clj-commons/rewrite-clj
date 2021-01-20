@@ -2,6 +2,7 @@
   ^{:added "0.4.0"}
   rewrite-clj.node.protocols
   (:require [clojure.string :as string]
+            [rewrite-clj.interop :as interop]
             #?(:clj [rewrite-clj.potemkin.clojure :refer [defprotocol+]]))
   #?(:cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [defprotocol+]])))
 
@@ -22,7 +23,7 @@
     "Convert node to printable string."))
 
 (extend-protocol Node
-  Object
+  #?(:clj Object :cljs default)
   (tag [_] :unknown)
   (printable-only? [_] false)
   (sexpr [this] this)
@@ -61,7 +62,7 @@
     "How many characters appear before children?"))
 
 (extend-protocol InnerNode
-  Object
+  #?(:clj Object :cljs default)
   (inner? [_] false)
   (children [_]
     (throw (ex-info "unsupported operation" {})))
@@ -92,28 +93,45 @@
                  (string node)))
         n' (if (re-find #"\n" n)
              (->> (string/replace n #"\r?\n" "\n  ")
-                  (format "%n  %s%n"))
+                  (interop/simple-format "\n  %s\n"))
              (str " " n))]
-    (format "<%s:%s>" (name (tag node)) n')))
+    (interop/simple-format "<%s:%s>" (name (tag node)) n')))
 
-(defn ^:no-doc write-node
-  [^java.io.Writer writer node]
-  (.write writer (node->string node)))
+#?(:clj
+   (defn ^:no-doc write-node
+     [^java.io.Writer writer node]
+     (.write writer (node->string node))))
 
-(defmacro ^:no-doc make-printable!
-  [class]
-  `(defmethod print-method ~class
-     [node# w#]
-     (write-node w# node#)))
+#?(:clj
+   (defmacro ^:no-doc make-printable-clj!
+     [class]
+     `(defmethod print-method ~class
+        [node# w#]
+        (write-node w# node#)))
+   :cljs
+   (defn ^:no-doc make-printable-cljs!
+     [obj]
+     (extend-protocol IPrintWithWriter
+       obj
+       (-pr-writer [o writer _opts]
+         (-write writer (node->string o))))))
+
+(defn make-printable! [obj]
+  #?(:clj (make-printable-clj! obj)
+     :cljs (make-printable-cljs! obj)))
 
 ;; ## Helpers
 
-(defn ^:no-doc assert-sexpr-count
+(defn ^:no-doc without-whitespace
+  [nodes]
+  (remove printable-only? nodes))
+
+(defn  ^:no-doc assert-sexpr-count
   [nodes c]
   (assert
-    (= (count (remove printable-only? nodes)) c)
-    (format "can only contain %d non-whitespace form%s."
-            c (if (= c 1) "" "s"))))
+   (= (count (without-whitespace nodes)) c)
+   (interop/simple-format "can only contain %d non-whitespace form%s."
+                          c (if (= c 1) "" "s"))))
 
 (defn ^:no-doc assert-single-sexpr
   [nodes]

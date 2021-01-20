@@ -3,7 +3,7 @@
             [rewrite-clj.reader :as r]))
 
 (defn- read-to-boundary
-  [reader & [allowed]]
+  [#?(:cljs ^not-native reader :default reader) & [allowed]]
   (let [allowed? (set allowed)]
     (r/read-until
       reader
@@ -11,7 +11,7 @@
             (r/whitespace-or-boundary? %)))))
 
 (defn- read-to-char-boundary
-  [reader]
+  [#?(:cljs ^not-native reader :default reader)]
   (let [c (r/next reader)]
     (str c
          (if (not= c \\)
@@ -21,7 +21,7 @@
 (defn- symbol-node
   "Symbols allow for certain boundary characters that have
    to be handled explicitly."
-  [reader value value-string]
+  [#?(:cljs ^not-native reader :default reader) value value-string]
   (let [suffix (read-to-boundary
                  reader
                  [\' \:])]
@@ -34,7 +34,7 @@
 
 (defn parse-token
   "Parse a single token."
-  [reader]
+  [#?(:cljs ^not-native reader :default reader)]
   (let [first-char (r/next reader)
         s (->> (if (= first-char \\)
                  (read-to-char-boundary reader)

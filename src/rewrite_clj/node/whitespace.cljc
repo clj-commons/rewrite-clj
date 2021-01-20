@@ -74,10 +74,10 @@
 ;; ## Constructors
 
 (defn- string-of?
-  [^String s pred]
+  [#?(:clj ^String s :default s) pred]
   (and s
        (string? s)
-       (pos? (.length s))
+       (pos? (count s))
        (every? pred s)))
 
 (defn whitespace-node

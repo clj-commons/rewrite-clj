@@ -1,7 +1,9 @@
 (ns ^{:doc "Tests for EDN parser."
       :author "Yannick Scherer"}
  rewrite-clj.parser-test
+  (:refer-clojure :exclude [read-string])
   (:require [clojure.test :refer [deftest is are]]
+            [clojure.tools.reader.edn :refer [read-string]]
             [rewrite-clj.node :as node]
             [rewrite-clj.parser :as p])
   #?(:clj (:import clojure.lang.ExceptionInfo)))
@@ -23,7 +25,7 @@
     "   \n   "     [[:whitespace "   "]
                     [:newline "\n"]
                     [:whitespace "   "]]
-    "\u2028"       [[:whitespace "\u2028"]]
+    #?@(:clj ["\u2028"       [[:whitespace "\u2028"]]])
     " \t \r\n \t " [[:whitespace " \t "]
                     [:newline "\n"]
                     [:whitespace " \t "]]))
@@ -104,7 +106,7 @@
     (is (= :uneval (node/tag uneval)))
     (is (= "#_    (+ 1 2)" (node/string uneval)))
     (is (node/printable-only? uneval))
-    (is (thrown-with-msg? ExceptionInfo #"unsupported operation" (node/sexpr uneval)) )))
+    (is (thrown-with-msg? ExceptionInfo #"unsupported operation" (node/sexpr uneval)))))
 
 (deftest t-parsing-regular-expressions
   (are [?s ?p]
@@ -241,16 +243,17 @@
      "#:abc{:x 1, :y 1}"
      "#:abc   {:x 1, :y 1}"))
 
-(deftest t-parsing-namespaced-maps-with-namespace-alias
-  (are [?s]
-       (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
-         (let [n (p/parse-string ?s)]
-           (is (= :namespaced-map (node/tag n)))
-           (is (= (count ?s) (node/length n)))
-           (is (= ?s (node/string n)))
-           (is (= {::node/x 1, ::node/y 1} (node/sexpr n)))))
-    "#::node{:x 1, :y 1}"
-    "#::node   {:x 1, :y 1}"))
+#?(:clj ;; clj only until we add new support or namespaced elements
+   (deftest t-parsing-namespaced-maps-with-namespace-alias
+     (are [?s]
+          (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
+            (let [n (p/parse-string ?s)]
+              (is (= :namespaced-map (node/tag n)))
+              (is (= (count ?s) (node/length n)))
+              (is (= ?s (node/string n)))
+              (is (= {::node/x 1, ::node/y 1} (node/sexpr n)))))
+       "#::node{:x 1, :y 1}"
+       "#::node   {:x 1, :y 1}")))
 
 (deftest t-parsing-exceptions
   (are [?s ?p]
@@ -292,21 +295,22 @@
     (is (= [:comment :list] (map node/tag children)))
     (node/string (first children))))
 
-(deftest t-parsing-files
-  (let [f (doto (java.io.File/createTempFile "rewrite.test" "")
-            (.deleteOnExit))
-        s "âbcdé"
-        c ";; Hi"
-        o (str c "\n\n" (pr-str s))]
-    (spit f o)
-    (is (= o (slurp f)))
-    (let [n (p/parse-file-all f)
-          children (node/children n)]
-      (is (= :forms (node/tag n)))
-      (is (= o (node/string n)))
-      (is (= s (node/sexpr n)))
-      (is (= [:comment :newline :token] (map node/tag children)))
-      (is (= [";; Hi\n" "\n" (pr-str s)] (map node/string children))))))
+#?(:clj
+   (deftest t-parsing-files
+     (let [f (doto (java.io.File/createTempFile "rewrite.test" "")
+               (.deleteOnExit))
+           s "âbcdé"
+           c ";; Hi"
+           o (str c "\n\n" (pr-str s))]
+       (spit f o)
+       (is (= o (slurp f)))
+       (let [n (p/parse-file-all f)
+             children (node/children n)]
+         (is (= :forms (node/tag n)))
+         (is (= o (node/string n)))
+         (is (= s (node/sexpr n)))
+         (is (= [:comment :newline :token] (map node/tag children)))
+         (is (= [";; Hi\n" "\n" (pr-str s)] (map node/string children)))))))
 
 (defn- nodes-with-meta
   "Create map associating row/column number pairs with the node at that position."

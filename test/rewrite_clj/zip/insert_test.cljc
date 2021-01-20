@@ -1,6 +1,7 @@
 (ns rewrite-clj.zip.insert-test
   (:require [clojure.test :refer [deftest is are]]
             [rewrite-clj.custom-zipper.core :as z]
+            [rewrite-clj.interop :as interop]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.insert :refer [insert-right insert-left insert-child append-child]]
             [rewrite-clj.zip.move :as m]))
@@ -8,7 +9,7 @@
 (deftest t-whitespace-aware-insertion
   (are [?fmt ?m ?n ?f ?s]
        (let [elements (->> (base/of-string
-                            (format ?fmt "1 2 3 4"))
+                            (interop/simple-format ?fmt "1 2 3 4"))
                            (iterate ?m))
              loc (nth elements ?n)
              loc' (?f loc 'x)]

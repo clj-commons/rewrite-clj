@@ -1,5 +1,6 @@
 (ns ^:no-doc rewrite-clj.node.seq
-  (:require [rewrite-clj.node.protocols :as node]))
+  (:require [rewrite-clj.interop :as interop]
+            [rewrite-clj.node.protocols :as node]))
 
 ;; ## Nodes
 
@@ -18,7 +19,7 @@
     (+ wrap-length (node/sum-lengths children)))
   (string [this]
     (->> (node/concat-strings children)
-         (format format-string)))
+         (interop/simple-format format-string)))
 
   node/InnerNode
   (inner? [_]

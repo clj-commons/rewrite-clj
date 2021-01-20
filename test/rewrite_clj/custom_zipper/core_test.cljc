@@ -125,7 +125,8 @@
                  (let [zloc' ((operations op) zloc)]
                    (z/root zloc')
                    zloc')
-                 (catch Throwable t
+                 (catch #?(:clj Throwable
+                           :cljs :default) _t
                    nil))
                zloc)
            ops)))
