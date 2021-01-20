@@ -3,4 +3,5 @@
 /.cpcache
 /.lsp
 .nrepl-port
+/node_modules
 /target

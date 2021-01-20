@@ -1,0 +1,94 @@
+name: Unit Tests
+
+on: push
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # we'll extend the matrix to macos and windows as we move forward
+        os: [ ubuntu-latest ]
+        java: [ 8, 11 ]
+
+    name: ${{ matrix.os }},jdk ${{ matrix.java }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    #
+    # Caches
+    #
+    - name: Clojure deps cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.m2/repository
+          ~/.gitlibs
+        key: $${ runner.os }}-cljdeps-${{ hashFiles('deps.edn') }}
+        restore-keys: $${ runner.os }}-cljdeps-
+
+    - name: Node modules cache
+      uses: actions/cache@v2
+      with:
+        path: ./node_modules
+        key: $${ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+        restore-keys: $${ runner.os }}-node-
+
+    #
+    # Setup Java
+    #
+    - name: "Setup Java"
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.java }}
+
+    #
+    # Install Babashka
+    #
+    - name: Install babashka
+      run: curl -s https://raw.githubusercontent.com/borkdude/babashka/master/install | sudo bash
+
+    #
+    # Install Clojure
+    #
+    - name: Install clojure
+      run: curl -s https://download.clojure.org/install/linux-install-1.10.1.763.sh | sudo bash
+
+    - name: Bring down ClojureTools early
+      run: clojure -Sdescribe
+
+    #
+    # Summarize installs
+    #
+    - name: Tools versions
+      run: |
+        echo "bb --version"
+        bb --version
+        echo "node --version"
+        node --version
+        echo "java -version"
+        java -version
+        echo "clojure -Sdescribe"
+        clojure -Sdescribe
+
+    #
+    # Node modules
+    #
+    - name: Install karma command line
+      run: sudo npm install karma-cli -g
+
+    - name: Install node modules
+      run: npm install
+
+    #
+    # Prep Clojure
+    #
+    - name: Download clojure main dependencies
+      run: clojure -Spath
+
+    #
+    # Run tests
+    #
+    - name: Run CI tests
+      run: bb ./script/ci_tests.clj

@@ -10,9 +10,16 @@
            :1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.1"}}}
 
            ;;
+           ;; ClojureScript version we test with (and support)
+           ;;
+           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.773"}}}
+           
+           ;;
            ;; Test support
            ;;
-           ;;
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2020.12.12"}}
+                       :main-opts ["-m" "clj-kondo.main"]}
+
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}
                          :extra-paths ["test"]}
 
