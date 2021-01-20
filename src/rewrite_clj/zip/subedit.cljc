@@ -3,6 +3,8 @@
             [rewrite-clj.zip.base :as base])
   #?(:cljs (:require-macros [rewrite-clj.zip.subedit])) )
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Edit Scope
 
 (defn- path

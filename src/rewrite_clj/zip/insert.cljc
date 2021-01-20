@@ -3,6 +3,8 @@
             [rewrite-clj.node :as node]
             [rewrite-clj.zip.whitespace :as ws]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (def ^:private space
   (node/spaces 1))
 

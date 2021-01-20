@@ -3,6 +3,8 @@
   (:require [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Helpers
 
 (defn- tag-predicate

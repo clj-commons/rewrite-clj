@@ -6,6 +6,8 @@
             [rewrite-clj.parser.whitespace :refer [parse-whitespace]]
             [rewrite-clj.reader :as reader]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Base Parser
 
 (def ^:dynamic ^:private *delimiter*

@@ -1,6 +1,8 @@
 (ns ^:no-doc rewrite-clj.node.comment
   (:require [rewrite-clj.node.protocols :as node]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Node
 
 (defrecord CommentNode [s]

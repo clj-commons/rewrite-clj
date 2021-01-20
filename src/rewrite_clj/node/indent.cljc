@@ -3,6 +3,8 @@
             [rewrite-clj.node.protocols :as node]
             [rewrite-clj.node.whitespace :as ws #?@(:cljs [:include-macros true])]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Helpers
 
 (defn- add-to-lines

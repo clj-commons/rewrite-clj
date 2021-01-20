@@ -7,6 +7,8 @@
             [rewrite-clj.zip.removez :as r]
             [rewrite-clj.zip.whitespace :as ws]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## In-Place Modification
 
 (defn replace

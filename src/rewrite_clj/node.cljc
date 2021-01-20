@@ -20,6 +20,8 @@
             #?(:clj [rewrite-clj.potemkin.clojure :refer [import-vars]]))
   #?(:cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [import-vars]])))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## API Facade
 
 (import-vars

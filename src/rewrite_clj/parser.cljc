@@ -3,6 +3,8 @@
             [rewrite-clj.parser.core :as p]
             [rewrite-clj.reader :as reader]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Parser Core
 
 (defn parse

@@ -3,6 +3,8 @@
             [rewrite-clj.node.protocols :as node]
             [rewrite-clj.node.whitespace :as ws]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Node
 
 (defrecord MetaNode [tag prefix children]

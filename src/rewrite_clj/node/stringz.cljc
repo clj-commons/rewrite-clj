@@ -3,6 +3,8 @@
             [clojure.tools.reader.edn :as edn]
             [rewrite-clj.node.protocols :as node] ))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Node
 
 (defn- wrap-string

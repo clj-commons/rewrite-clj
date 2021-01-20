@@ -43,6 +43,8 @@
               [rewrite_clj.node.uneval UnevalNode]
               [rewrite_clj.node.whitespace WhitespaceNode NewlineNode])))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Helpers
 
 (defn node-with-meta

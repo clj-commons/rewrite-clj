@@ -2,6 +2,8 @@
   (:require [rewrite-clj.node :as node]
             [rewrite-clj.reader :as r]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn- read-to-boundary
   [#?(:cljs ^not-native reader :default reader) & [allowed]]
   (let [allowed? (set allowed)]

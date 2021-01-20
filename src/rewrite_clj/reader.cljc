@@ -7,6 +7,8 @@
   #?(:cljs (:import [goog.string StringBuffer])
      :clj (:import [java.io PushbackReader])))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Exception
 
 (defn throw-reader

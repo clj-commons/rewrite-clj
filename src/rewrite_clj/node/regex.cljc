@@ -1,6 +1,7 @@
 (ns ^:no-doc rewrite-clj.node.regex
   (:require [rewrite-clj.node.protocols :as node]))
 
+#?(:clj (set! *warn-on-reflection* true))
 
 ;; ## Node
 

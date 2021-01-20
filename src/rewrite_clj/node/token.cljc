@@ -1,6 +1,8 @@
 (ns ^:no-doc rewrite-clj.node.token
   (:require [rewrite-clj.node.protocols :as node]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Node
 
 (defrecord TokenNode [value string-value]

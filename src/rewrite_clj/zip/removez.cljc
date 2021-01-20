@@ -5,6 +5,8 @@
             [rewrite-clj.zip.move :as m]
             [rewrite-clj.zip.whitespace :as ws]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn- remove-trailing-space
   "Remove all whitespace following a given node."
   [zloc]

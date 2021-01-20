@@ -3,6 +3,8 @@
   (:require [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.zip.whitespace :as ws]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn right
   "Move right to next non-whitespace/non-comment location."
   [zloc]

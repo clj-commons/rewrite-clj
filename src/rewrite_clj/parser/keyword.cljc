@@ -4,6 +4,8 @@
             [rewrite-clj.node :as node]
             [rewrite-clj.parser.utils :as u]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn parse-keyword
   [#?(:cljs ^not-native reader :default reader)]
   (u/ignore reader)

@@ -17,6 +17,8 @@
   #?(:cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [import-vars import-vars-with-mods]]
                             [rewrite-clj.zip])))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## API Facade
 
 (import-vars

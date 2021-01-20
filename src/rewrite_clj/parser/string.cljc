@@ -5,6 +5,8 @@
             [rewrite-clj.parser.utils :as u])
   #?(:cljs (:import [goog.string StringBuffer])))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn- flush-into
   "Flush buffer and add string to the given vector."
   [lines ^StringBuffer buf]

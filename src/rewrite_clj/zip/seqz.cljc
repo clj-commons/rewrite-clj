@@ -7,6 +7,8 @@
             [rewrite-clj.zip.insert :as i]
             [rewrite-clj.zip.move :as m]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Predicates
 
 (defn seq?

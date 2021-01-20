@@ -6,6 +6,8 @@
             #?(:clj [rewrite-clj.potemkin.clojure :refer [defprotocol+]]))
   #?(:cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [defprotocol+]])))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Node
 
 (defprotocol+ Node

@@ -2,6 +2,8 @@
   (:require [clojure.tools.reader.reader-types :as r]
             [rewrite-clj.interop :as interop]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 (defn whitespace?
   "Check if a given character is a whitespace."
   [#?(:clj ^java.lang.Character c :default c)]

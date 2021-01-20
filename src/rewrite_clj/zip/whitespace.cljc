@@ -2,6 +2,8 @@
   (:require [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.node :as node]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Predicates
 
 (defn whitespace?

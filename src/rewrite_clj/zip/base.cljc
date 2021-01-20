@@ -5,6 +5,8 @@
             [rewrite-clj.parser :as p]
             [rewrite-clj.zip.whitespace :as ws]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Zipper
 
 (defn edn*

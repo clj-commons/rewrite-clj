@@ -19,6 +19,8 @@
             [rewrite-clj.node.protocols :as node])
   #?(:cljs (:require-macros [rewrite-clj.custom-zipper.switchable :refer [defn-switchable]])))
 
+#?(:clj (set! *warn-on-reflection* true))
+
 ;; ## Switch
 ;;
 ;; To not force users into using this custom zipper, the following flag
