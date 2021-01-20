@@ -11,7 +11,7 @@
     (if (and namespaced?
              (not (namespace k)))
       (keyword
-        (name (ns-name *ns*))
+        (name #?(:clj (ns-name *ns*) :cljs (throw (ex-info "coming soon" {}))))
         (name k))
       k))
   (length [_this]

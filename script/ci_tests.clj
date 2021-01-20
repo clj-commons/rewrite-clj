@@ -21,7 +21,7 @@
 
 (defn cljs-tests []
   (doseq [env ["node" "chrome-headless"]
-          opt ["none"]]
+          opt ["none" "advanced"]]
     (shell/command ["bb" "./script/cljs_tests.clj" "--env" env "--optimizations" opt])))
 
 (defn main[]
