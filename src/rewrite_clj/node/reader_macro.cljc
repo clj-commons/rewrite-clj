@@ -67,7 +67,7 @@
   node/Node
   (tag [_] :deref)
   (printable-only?[_] false)
-  (sexpr [this]
+  (sexpr [_this]
     (list* 'deref (node/sexprs children)))
   (length [_]
     (inc (node/sum-lengths children)))

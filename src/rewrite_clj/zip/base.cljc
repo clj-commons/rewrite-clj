@@ -28,7 +28,7 @@
    return the current row/column using `rewrite-clj.zip/position`. (Note that
    this custom zipper will be incompatible with `clojure.zip`'s functions.)"
   ([node] (edn node {}))
-  ([node {:keys [track-position?] :as options}]
+  ([node options]
    (if (= (node/tag node) :forms)
      (let [top (edn* node options)]
        (or (-> top z/down ws/skip-whitespace)

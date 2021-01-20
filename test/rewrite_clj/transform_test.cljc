@@ -20,7 +20,7 @@
              (z/find-value z/next 'defproject)
              z/right z/right
              (z/edit #(str % "-1"))
-             z/->root-string))))
+             z/root-string))))
 
 (deftest t-a-seq-transformation-prefix
   (is (= (-> data-string
@@ -35,7 +35,7 @@
                  (-> loc z/down
                      (z/prefix "prefix-")
                      z/up))))
-             z/->root-string))))
+             z/root-string))))
 
 (deftest t-a-seq-transformation-suffix
   (is (= (-> data-string
@@ -50,7 +50,7 @@
                  (-> loc z/down
                      (z/suffix "-suffix")
                      z/up))))
-             z/->root-string))))
+             z/root-string))))
 
 (deftest t-whitespace-handling-in-removal
   (is (= (string/replace data-string #"\[a [^\s]+\]\s+" "")
@@ -58,4 +58,4 @@
              (z/find-value z/next 'defproject)
              (z/find-value :dependencies)
              z/right z/down z/remove
-             z/->root-string))))
+             z/root-string))))

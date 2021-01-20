@@ -179,7 +179,8 @@
        (let [s (str ?s " s")
              n (p/parse-string s)
              [mta ws n'] (node/children n)
-             [mta2 ws2 sym] (node/children n')]
+             ;; TODO: verify sym?
+             [mta2 ws2 _sym] (node/children n')]
           ;; outer meta
          (is (= ?t (node/tag n)))
          (is (= s (node/string n)))
@@ -328,11 +329,13 @@
       positions (->> (p/parse-string-all s)
                      (nodes-with-meta))]
   (deftest t-rowcolumn-metadata
-    (are [?pos ?end ?t ?s ?sexpr]
-         (let [{:keys [node end-pos]} (positions ?pos)]
+    ;; TODO: why are we not checking `?end`?
+    (are [?pos _?end ?t ?s ?sexpr]
+         (let [{:keys [node _end-pos]} (positions ?pos)]
            (is (= ?t (node/tag node)))
            (is (= ?s (node/string node)))
            (is (= ?sexpr (node/sexpr node)))
+           ;; TODO: hmmm...
            #_(deftest t-reliable-decision-on-end-pos-not-currently-possible
                (is (= ?end end-pos))))
       [1 1]  [3 14] :list   s              '(defn f [x] (println x))

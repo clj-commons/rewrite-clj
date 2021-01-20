@@ -14,14 +14,14 @@
     (vec
       (concat
         syms
-        (if vararg
+        (when vararg
           (list '& vararg))))
     body))
 
 (defn- sym-index
   "Get index based on the substring following the parameter's `%`.
    Zero means vararg."
-  [^String n]
+  [n]
   (cond (= n "&") 0
         (= n "") 1
         (re-matches #"\d+" n) (interop/str->int n)

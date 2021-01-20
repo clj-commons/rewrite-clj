@@ -78,6 +78,8 @@
    whitespace-or-comment?
    skip skip-whitespace
    skip-whitespace-left
+   insert-space-left insert-space-right
+   insert-newline-left insert-newline-right
    prepend-space append-space
    prepend-newline append-newline])
 

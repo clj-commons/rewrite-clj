@@ -12,7 +12,7 @@
   (length [this]
     (count (node/string this)))
   (string [_]
-    (let [sign (if (< value 0)
+    (let [sign (when (< value 0)
                  "-")
           abs-value (cond-> value (< value 0) -)
           s (interop/int->str abs-value base)

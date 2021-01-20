@@ -10,14 +10,14 @@
                     seq-fn
                     children]
   node/Node
-  (tag [this]
+  (tag [_this]
     tag)
   (printable-only? [_] false)
-  (sexpr [this]
+  (sexpr [_this]
     (seq-fn (node/sexprs children)))
   (length [_]
     (+ wrap-length (node/sum-lengths children)))
-  (string [this]
+  (string [_this]
     (->> (node/concat-strings children)
          (interop/simple-format format-string)))
 
@@ -47,13 +47,13 @@
 
 (defrecord NamespacedMapNode [children]
   node/Node
-  (tag [this]
+  (tag [_this]
     :namespaced-map)
   (printable-only? [_] false)
-  (sexpr [this]
+  (sexpr [_this]
     (let [[nspace' m] (node/sexprs children)
           nspace (if (namespace nspace')
-                   (-> (ns-aliases *ns*)
+                   (-> #?(:clj (ns-aliases *ns*) :cljs (throw (ex-info "coming soon" {})))
                        (get (symbol (name nspace')))
                        (ns-name)
                        (name))
@@ -69,7 +69,7 @@
            (into {}))))
   (length [_]
     (+ 1 (node/sum-lengths children)))
-  (string [this]
+  (string [_this]
     (str "#" (node/concat-strings children)))
 
   node/InnerNode

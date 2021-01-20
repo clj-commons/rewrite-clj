@@ -33,7 +33,7 @@
   [zloc]
   (let [w (z/length zloc)]
     (-> zloc
-        (z/prepend-space w)        ;; add space
+        (z/insert-space-left w)    ;; add space
         z/remove*                  ;; remove original (without removing an extra space)
         z/next)))                  ;; go to following node
 
@@ -51,7 +51,7 @@
   (-> zloc
       z/splice                   ;; remove the macro wrapper
       replace-with-spaces        ;; replace the '+...'/'-...' part with spaces
-      z/prepend-space))          ;; insert a space to make up for the missing '#'
+      z/insert-space-left))      ;; insert a space to make up for the missing '#'
 
 (deftest t-removing-the-symbol-part-of-a-reader-macro
   (let [loc (z/of-string "(+ 0 #+clj 123 4)")

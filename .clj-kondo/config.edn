@@ -1,0 +1,45 @@
+{:config-paths ^:replace []
+ :hooks {:analyze-call {rewrite-clj.potemkin.clojure/import-vars-with-mods
+                        hooks.rewrite-clj.potemkin.import-vars-with-mods/import-vars-with-mods
+
+                        rewrite-clj.potemkin.cljs/import-vars-with-mods
+                        hooks.rewrite-clj.potemkin.import-vars-with-mods/import-vars-with-mods}}
+ :lint-as
+ {rewrite-clj.potemkin.cljs/defprotocol+ clojure.core/defprotocol
+  rewrite-clj.potemkin.clojure/defprotocol+ clojure.core/defprotocol
+  clojure.test.check.clojure-test/defspec clojure.core/def
+  clojure.test.check.properties/for-all clojure.core/let
+  rewrite-clj.zip/subedit-> clojure.core/->
+  rewrite-clj.zip.subedit/subedit-> clojure.core/->
+  rewrite-clj.zip/subedit->> clojure.core/->>
+  rewrite-clj.zip.subedit/subedit->> clojure.core/->>
+  rewrite-clj.zip/edit-> clojure.core/->
+  rewrite-clj.zip.subedit/edit-> clojure.core/->
+  rewrite-clj.zip/edit->> clojure.core/->>
+  rewrite-clj.zip.subedit/edit->> clojure.core/->>
+  rewrite-clj.custom-zipper.switchable/defn-switchable clojure.core/defn
+  rewrite-clj.potemkin.clojure/import-vars potemkin/import-vars
+  rewrite-clj.potemkin.cljs/import-varfs potemkin/import-vars}
+ :linters
+ {:unsorted-required-namespaces {:level :warning}
+  :unused-namespace
+  {:exclude [clojure.test.check]}
+  :unused-referred-var
+  {:exclude {clojure.test.check [quick-check]}}
+  :deprecated-var
+  {:exclude {rewrite-clj.zip.base/value
+             {:namespaces [rewrite-clj.zip]}
+             rewrite-clj.zip/->root-string
+             {:namespaces [rewrite-clj.regression-test]}
+             rewrite-clj.zip/->string
+             {:namespaces [rewrite-clj.regression-test]}
+             rewrite-clj.zip.whitespace/append-space
+             {:namespaces [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
+             rewrite-clj.zip.whitespace/prepend-space
+             {:namespaces [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
+             rewrite-clj.zip.whitespace/append-newline
+             {:namespaces  [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
+             rewrite-clj.zip.whitespace/prepend-newline
+             {:namespaces [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
+             rewrite-clj.node/value
+             {:defs [rewrite-clj.zip.base/value]}}}}}

@@ -13,10 +13,10 @@
   (let [item-node (node/coerce item)
         next-node (move-fn zloc)]
     (->> (concat
-           (if (and next-node (not (ws/whitespace? next-node)))
+           (when (and next-node (not (ws/whitespace? next-node)))
              [space])
            [item-node]
-           (if (not (ws/whitespace? zloc))
+           (when (not (ws/whitespace? zloc))
              prefix))
          (reduce insert-fn zloc))))
 

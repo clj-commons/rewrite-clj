@@ -10,11 +10,11 @@
   (deftest t-edit-operations
     (are [?n ?f ?s]
          (let [loc (nth elements ?n)
-               loc' (e/edit loc #(-> % ?f))]
+               loc' (e/edit loc ?f)]
            (is (= ?s (base/root-string loc'))))
-      0  (subvec 1)    "[\"2\" :3]"
-      1  (str "_x")    "[\"1_x\" \"2\" :3]"
-      2  (keyword "k") "[1 :2/k :3]"))
+      0 #(subvec % 1) "[\"2\" :3]"
+      1 #(str % "_x") "[\"1_x\" \"2\" :3]"
+      2 #(keyword % "k") "[1 :2/k :3]"))
   (deftest t-replace-operations
     (are [?n ?v ?s]
          (let [loc (nth elements ?n)

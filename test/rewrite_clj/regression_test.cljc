@@ -272,5 +272,5 @@
        (spit f data-string)
        (is (= data-string (slurp f)))
        (let [loc (z/of-file f)]
-         (is (= :list (first (->vec root))))
-         (is (= :forms (node/tag (z/root root))))))))
+         (is (= :list (first (->vec loc))))
+         (is (= :forms (node/tag (z/root loc))))))))

@@ -16,7 +16,7 @@
   "Remove right sibling of the current node (if there is one)."
   [loc]
   (if (z/custom-zipper? loc)
-    (let [{[r & rs] :right} loc]
+    (let [{[_r & rs] :right} loc]
       (assoc loc
              :right rs
              :changed? true))
@@ -64,8 +64,8 @@
    location, returns `nil`."
   [loc]
   (if (z/custom-zipper? loc)
-    (let [{:keys [position left]} loc]
-      (if (seq left)
+    (let [{:keys [_position left]} loc]
+      (when (seq left)
         (let [[lnode lpos] (peek left)]
           (assoc loc
                  :changed? true
@@ -73,7 +73,7 @@
                  :position lpos
                  :left (pop left)))))
     (let [[_ {:keys [l] :as path}] loc]
-      (if (seq l)
+      (when (seq l)
         (with-meta
           [(peek l) (-> path
                         (update-in [:l] pop)
@@ -85,15 +85,15 @@
    location, returns `nil`."
   [loc]
   (if (z/custom-zipper? loc)
-    (let [{:keys [position right]} loc]
-      (if (seq right)
+    (let [{:keys [_position right]} loc]
+      (when (seq right)
         (assoc loc
                :changed? true
                :node (first right)
                :right (next right))))
 
     (let [[_ {:keys [r] :as path}] loc]
-      (if (seq r)
+      (when (seq r)
         (with-meta
           [(first r) (-> path
                          (update-in [:r] next)

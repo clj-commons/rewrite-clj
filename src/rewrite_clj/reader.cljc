@@ -130,7 +130,7 @@
   "Use the given function to read value, then attach row/col metadata."
   [#?(:cljs ^not-native reader :default reader) read-fn]
   (let [start-position (position reader :row :col)]
-    (if-let [entry (read-fn reader)]
+    (when-let [entry (read-fn reader)]
       (->> (position reader :end-row :end-col)
            (merge start-position)
            (with-meta entry)))))

@@ -67,7 +67,7 @@
 (defn-switchable ^:no-doc make-node
   "Returns a new branch node, given an existing node and new
   children. The loc is only used to supply the constructor."
-  [loc node children]
+  [_zloc node children]
   (node/replace-children node children))
 
 (defn position
@@ -90,7 +90,7 @@
   nil if no children"
   [loc]
   (when (branch? loc)
-    (let [{:keys [node path] [row col] :position} loc
+    (let [{:keys [node _path] [row col] :position} loc
           [c & cnext :as cs] (children loc)]
       (when cs
         {::custom? true
@@ -249,7 +249,7 @@
   "Removes the node at loc, returning the loc that would have preceded
   it in a depth-first walk."
   [loc]
-  (let [{:keys [node parent left right]} loc]
+  (let [{:keys [_node parent left right]} loc]
     (if-not parent
       (throw (ex-info "cannot remove at top" {}))
       (if (seq left)

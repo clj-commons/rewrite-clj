@@ -37,9 +37,9 @@
       ws/insert-space-left ws/insert-space-right))
   (deftest t-prepending-appending-linebreaks
     (are [?left-fn ?right-fn]
-         (do (let [n (-> loc z/down z/rightmost (ws/prepend-newline 3))]
+         (do (let [n (-> loc z/down z/rightmost (?left-fn 3))]
                (is (= " \n0 1\n\n\n;comment" (base/root-string n))))
-             (let [n (-> loc z/down z/rightmost (ws/append-newline 3))]
+             (let [n (-> loc z/down z/rightmost (?right-fn 3))]
                (is (= " \n0 1;comment\n\n\n" (base/root-string n)))))
       ws/prepend-newline     ws/append-newline
       ws/insert-newline-left ws/insert-newline-right)))
