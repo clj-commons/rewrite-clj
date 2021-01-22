@@ -77,6 +77,12 @@
   (leader-length [_]
     (throw (ex-info "unsupported operation" {}))))
 
+(defn node?
+  ;; TODO: consider a marker interface instead?
+  "Returns true if `x` is a rewrite-clj created node."
+  [x]
+  (not= :unknown (tag x)))
+
 (defn child-sexprs
   "Get all child s-expressions for the given node."
   [node]
