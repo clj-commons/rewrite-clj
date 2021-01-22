@@ -74,6 +74,7 @@
   [rewrite-clj.zip.subedit
    edit-node
    subedit-node
+   subzip
    edit-> edit->>
    subedit-> subedit->>]
 
