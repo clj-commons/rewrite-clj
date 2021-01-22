@@ -59,6 +59,19 @@
     "sym:sym"                    'sym:sym
     "\"string\""                 "string"))
 
+(deftest t-parsing-garden-selectors
+  ;; https://github.com/noprompt/garden
+  (are [?s ?r]
+       (let [n (p/parse-string ?s)
+             r (node/sexpr n)]
+         (is (= ?s (node/string n)))
+         (is (= :token (node/tag n)))
+         (is (keyword? r))
+         (is (= ?r r)))
+    ":&:hover"    :&:hover
+    ;; clj clojure reader can't parse :&::before but we can create a keyword for it
+    ":&::before"  (keyword "&::before")))
+
 (deftest t-parsing-symbolic-inf-values
   (are [?s ?r]
       (let [n (p/parse-string ?s)]
