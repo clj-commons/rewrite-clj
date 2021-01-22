@@ -64,7 +64,8 @@
    leftmost? rightmost? end?]
 
   [rewrite-clj.zip.removez
-   remove]
+   remove
+   remove-preserve-newline]
 
   [rewrite-clj.zip.seqz
    seq? list? vector? set? map? namespaced-map?
