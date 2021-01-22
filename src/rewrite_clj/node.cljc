@@ -55,7 +55,8 @@
    integer-node]
 
   [rewrite-clj.node.keyword
-   keyword-node]
+   keyword-node
+   keyword-node?]
 
   [rewrite-clj.node.meta
    meta-node
@@ -87,7 +88,8 @@
    unquote-splicing-node]
 
   [rewrite-clj.node.token
-   token-node]
+   token-node
+   symbol-node?]
 
   [rewrite-clj.node.uneval
    uneval-node]

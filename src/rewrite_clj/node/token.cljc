@@ -34,6 +34,9 @@
 (node/make-printable! TokenNode)
 (node/make-printable! SymbolNode)
 
+(defn symbol-node? [n]
+  (= :symbol (node/node-type n)))
+
 ;; ## Constructor
 
 (defn token-node

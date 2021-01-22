@@ -34,6 +34,9 @@
 
 (node/make-printable! KeywordNode)
 
+(defn keyword-node? [n]
+  (= :keyword (node/node-type n)))
+
 ;; ## Constructor
 
 (defn keyword-node
