@@ -27,8 +27,8 @@
     #?@(:clj  [3/4         :token      :token])
 
     ;; symbol/keyword/string/...
-    'symbol                :token      :token
-    'namespace/symbol      :token      :token
+    'symbol                :token      :symbol
+    'namespace/symbol      :token      :symbol
     :keyword               :token      :keyword
     :1.5.1                 :token      :keyword
     ::keyword              :token      :keyword
@@ -102,7 +102,7 @@
       "#\"regex\""      :regex          :regex
       "[1 2 3]"         :vector         :seq
       "42"              :token          :token
-      "sym"             :token          :token
+      "sym"             :token          :symbol
       "#_ 99"           :uneval         :uneval
       " "               :whitespace     :whitespace
       ","               :comma          :comma

@@ -18,13 +18,29 @@
   (toString [this]
     (node/string this)))
 
+(defrecord SymbolNode [value string-value]
+  node/Node
+  (tag [_n] :token)
+  (node-type [_n] :symbol)
+  (printable-only? [_n] false)
+  (sexpr* [_node _opts] value)
+  (length [_n] (count string-value))
+  (string [_n] string-value)
+
+  Object
+  (toString [this]
+    (node/string this)))
+
 (node/make-printable! TokenNode)
+(node/make-printable! SymbolNode)
 
 ;; ## Constructor
 
 (defn token-node
-  "Create node for an unspecified EDN token."
-  [value & [string-value]]
-  (->TokenNode
-    value
-    (or string-value (pr-str value))))
+  "Create node for an unspecified token of `value`."
+  ([value]
+   (token-node value (pr-str value)))
+  ([value string-value]
+    (if (symbol? value)
+      (->SymbolNode value string-value)
+      (->TokenNode value string-value))))

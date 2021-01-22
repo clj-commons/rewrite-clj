@@ -30,7 +30,7 @@
         [rewrite-clj.node.regex :refer [RegexNode]]
         [rewrite-clj.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
         [rewrite-clj.node.stringz :refer [StringNode]]
-        [rewrite-clj.node.token :refer [TokenNode token-node]]
+        [rewrite-clj.node.token :refer [TokenNode SymbolNode token-node]]
         [rewrite-clj.node.uneval :refer [UnevalNode]]
         [rewrite-clj.node.whitespace :refer [WhitespaceNode CommaNode NewlineNode] :as ws]]))
   #?(:clj
@@ -45,7 +45,7 @@
               [rewrite_clj.node.regex RegexNode]
               [rewrite_clj.node.seq SeqNode]
               [rewrite_clj.node.stringz StringNode]
-              [rewrite_clj.node.token TokenNode]
+              [rewrite_clj.node.token TokenNode SymbolNode]
               [rewrite_clj.node.uneval UnevalNode]
               [rewrite_clj.node.whitespace WhitespaceNode CommaNode NewlineNode])))
 
@@ -70,6 +70,7 @@
   RegexNode          (coerce [v] v)
   SeqNode            (coerce [v] v)
   StringNode         (coerce [v] v)
+  SymbolNode         (coerce [v] v)
   TokenNode          (coerce [v] v)
   UnevalNode         (coerce [v] v)
   WhitespaceNode     (coerce [v] v))
