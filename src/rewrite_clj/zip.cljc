@@ -5,6 +5,7 @@
   (:require [rewrite-clj.custom-zipper.core]
             #?(:clj [rewrite-clj.potemkin.clojure :refer [import-vars import-vars-with-mods]])
             [rewrite-clj.zip.base]
+            [rewrite-clj.zip.context]
             [rewrite-clj.zip.editz]
             [rewrite-clj.zip.findz]
             [rewrite-clj.zip.insert]
@@ -39,6 +40,9 @@
   [rewrite-clj.zip.editz
    replace edit splice
    prefix suffix]
+
+  [rewrite-clj.zip.context
+   reapply-context]
 
   [rewrite-clj.zip.findz
    find find-next

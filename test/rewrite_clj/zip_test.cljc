@@ -113,4 +113,25 @@
                  (z/insert-child move-me2)
                  (z/insert-child move-me1)
                  z/up
+                 z/sexpr)))))
+  (testing "node context can be explicitly reapplied to entire zloc downward"
+    (is (= '[{:prefix/b 2 :prefix/c 3}
+             {:a 1 :z 99}]
+           (let [zloc (-> "[#:prefix {:a 1 :b 2 :c 3}{:z 99}]"
+                          z/of-string
+                          z/down
+                          z/down
+                          z/rightmost
+                          z/down)
+                 move-me1 (-> zloc z/node)  ;; notice we don't clear context here
+                 zloc (-> zloc z/remove z/down)
+                 move-me2 (-> zloc z/node)
+                 zloc (z/remove zloc)]
+             (-> zloc
+                 z/up
+                 z/right
+                 (z/insert-child move-me2)
+                 (z/insert-child move-me1)
+                 z/up
+                 z/reapply-context ;; but we do reapply context to tree before doing a sexpr
                  z/sexpr))))))
