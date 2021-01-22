@@ -8,6 +8,7 @@
 (defrecord KeywordNode [k namespaced?]
   node/Node
   (tag [_] :token)
+  (node-type [_n] :keyword)
   (printable-only? [_] false)
   (sexpr [_]
     (if (and namespaced?

@@ -8,6 +8,7 @@
 (defrecord TokenNode [value string-value]
   node/Node
   (tag [_] :token)
+  (node-type [_n] :token)
   (printable-only? [_] false)
   (sexpr [_] value)
   (length [_] (count string-value))

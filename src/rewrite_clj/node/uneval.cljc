@@ -8,6 +8,7 @@
 (defrecord UnevalNode [children]
   node/Node
   (tag [_] :uneval)
+  (node-type [_n] :uneval)
   (printable-only? [_] true)
   (sexpr [_]
     (throw (ex-info "unsupported operation" {})))

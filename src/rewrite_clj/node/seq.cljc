@@ -14,6 +14,7 @@
   node/Node
   (tag [_this]
     tag)
+  (node-type [_n] :seq)
   (printable-only? [_] false)
   (sexpr [_this]
     (seq-fn (node/sexprs children)))

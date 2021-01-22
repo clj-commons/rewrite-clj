@@ -9,6 +9,7 @@
   node/Node
   (tag [_]
     :forms)
+  (node-type [_node] :forms)
   (printable-only? [_]
     false)
   (sexpr [_]

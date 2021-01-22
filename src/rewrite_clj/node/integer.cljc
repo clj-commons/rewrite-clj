@@ -9,6 +9,7 @@
 (defrecord IntNode [value base]
   node/Node
   (tag [_] :token)
+  (node-type [_n] :int)
   (printable-only? [_] false)
   (sexpr [_] value)
   (length [this]

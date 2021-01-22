@@ -11,6 +11,7 @@
                        children]
   node/Node
   (tag [_] tag)
+  (node-type [_node] :reader)
   (printable-only? [_]
     (not sexpr-fn))
   (sexpr [_]
@@ -42,6 +43,7 @@
 (defrecord ReaderMacroNode [children]
   node/Node
   (tag [_] :reader-macro)
+  (node-type [_node] :reader-macro)
   (printable-only?[_] false)
   (sexpr [this]
     (list 'read-string (node/string this)))
@@ -68,6 +70,7 @@
 (defrecord DerefNode [children]
   node/Node
   (tag [_] :deref)
+  (node-type [_n] :deref)
   (printable-only?[_] false)
   (sexpr [_this]
     (list* 'deref (node/sexprs children)))

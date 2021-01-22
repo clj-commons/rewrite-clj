@@ -8,6 +8,7 @@
 (defrecord CommentNode [s]
   node/Node
   (tag [_] :comment)
+  (node-type [_n] :comment)
   (printable-only? [_] true)
   (sexpr [_]
     (throw (ex-info "unsupported operation" {})))

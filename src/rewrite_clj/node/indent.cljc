@@ -22,6 +22,7 @@
   node/Node
   (tag [_]
     (node/tag child))
+  (node-type [_n] :line-prefix)
   (printable-only? [_]
     (node/printable-only? child))
   (sexpr [_]

@@ -8,6 +8,7 @@
 (defrecord RegexNode [pattern]
   rewrite-clj.node.protocols/Node
   (tag [_] :regex)
+  (node-type [_node] :regex)
   (printable-only? [_] false)
   (sexpr [_] (list 're-pattern pattern))
   (length [_] 1)

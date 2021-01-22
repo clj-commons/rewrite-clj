@@ -14,6 +14,9 @@
   "Protocol for EDN/Clojure nodes."
   (tag [_]
     "Keyword representing the type of the node.")
+  (node-type [node]
+    "Returns keyword representing the node type for `node`.
+     Currently internal and used to support testing.")
   (printable-only? [_]
     "Return true if the node cannot be converted to an s-expression
      element.")
@@ -27,6 +30,7 @@
 (extend-protocol Node
   #?(:clj Object :cljs default)
   (tag [_] :unknown)
+  (node-type [_this] :unknown)
   (printable-only? [_] false)
   (sexpr [this] this)
   (length [this] (count (string this)))
