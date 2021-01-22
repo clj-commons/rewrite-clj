@@ -54,6 +54,19 @@
     ;; date
     #inst "2014-11-26T00:05:23" :token :token))
 
+(deftest
+  t-quoted-list-reader-location-metadata-elided
+  (are [?sexpr expected-meta-keys]
+       (let [n (coerce ?sexpr)]
+         (is (node/node? n))
+         (is (= expected-meta-keys (node/string n)))
+         (is (string? (node/string n)))
+         (is (= ?sexpr (node/sexpr n)))
+         (is (not (meta n)))
+         (is (= (type ?sexpr) (type (node/sexpr n)))))
+    '(1 2 3) "(1 2 3)"
+    '^:other-meta (4 5 6) "^{:other-meta true} (4 5 6)"))
+
 (deftest t-maps
   (are [?sexpr]
        (let [n (coerce ?sexpr)]

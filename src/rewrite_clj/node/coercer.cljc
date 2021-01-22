@@ -86,7 +86,7 @@
   [n value]
   (if #?(:clj (instance? clojure.lang.IMeta value)
          :cljs (satisfies? IWithMeta value))
-    (let [mta (meta value)]
+    (let [mta (node/meta-elided value)]
       (if (empty? mta)
         n
         (meta-node (coerce mta) n)))

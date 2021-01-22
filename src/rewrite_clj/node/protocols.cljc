@@ -213,3 +213,9 @@
   [[row col] [row-extent col-extent]]
   [(+ row row-extent)
    (cond-> col-extent (zero? row-extent) (+ col))])
+
+(defn meta-elided
+  "Same as `clojure.core/meta` but with positional metadata removed.
+  Use when you want to omit reader generated metadata on forms."
+  [form]
+  (apply dissoc (meta form) [:line :column :end-line :end-column]))
