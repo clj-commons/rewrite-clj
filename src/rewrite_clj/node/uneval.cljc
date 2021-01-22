@@ -10,7 +10,7 @@
   (tag [_] :uneval)
   (node-type [_n] :uneval)
   (printable-only? [_] true)
-  (sexpr [_]
+  (sexpr* [_node _opts]
     (throw (ex-info "unsupported operation" {})))
   (length [_]
     (+ 2 (node/sum-lengths children)))

@@ -10,8 +10,8 @@
   (tag [_] tag)
   (node-type [_node] :quote)
   (printable-only? [_] false)
-  (sexpr [_]
-    (list sym (first (node/sexprs children))))
+  (sexpr* [_ opts]
+    (list sym (first (node/sexprs children opts))))
   (length [_]
     (+ (count prefix) (node/sum-lengths children)))
   (string [_]

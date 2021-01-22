@@ -14,9 +14,9 @@
   (node-type [_node] :reader)
   (printable-only? [_]
     (not sexpr-fn))
-  (sexpr [_]
+  (sexpr* [_node opts]
     (if sexpr-fn
-      (sexpr-fn (node/sexprs children))
+      (sexpr-fn (node/sexprs children opts))
       (throw (ex-info "unsupported operation" {}))))
   (length [_]
     (-> (node/sum-lengths children)
@@ -45,8 +45,8 @@
   (tag [_] :reader-macro)
   (node-type [_node] :reader-macro)
   (printable-only?[_] false)
-  (sexpr [this]
-    (list 'read-string (node/string this)))
+  (sexpr* [node _opts]
+    (list 'read-string (node/string node)))
   (length [_]
     (inc (node/sum-lengths children)))
   (string [_]
@@ -72,8 +72,8 @@
   (tag [_] :deref)
   (node-type [_n] :deref)
   (printable-only?[_] false)
-  (sexpr [_this]
-    (list* 'deref (node/sexprs children)))
+  (sexpr* [_node opts]
+    (list* 'deref (node/sexprs children opts)))
   (length [_]
     (inc (node/sum-lengths children)))
   (string [_]

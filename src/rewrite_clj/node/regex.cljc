@@ -10,7 +10,7 @@
   (tag [_] :regex)
   (node-type [_node] :regex)
   (printable-only? [_] false)
-  (sexpr [_] (list 're-pattern pattern))
+  (sexpr* [_node _opts] (list 're-pattern pattern))
   (length [_] 1)
   (string [_] (str "#\"" pattern "\"")))
 

@@ -10,7 +10,7 @@
   (tag [_] :comment)
   (node-type [_n] :comment)
   (printable-only? [_] true)
-  (sexpr [_]
+  (sexpr* [_ _opts]
     (throw (ex-info "unsupported operation" {})))
   (length [_]
     (+ 1 (count s)))

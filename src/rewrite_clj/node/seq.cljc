@@ -16,8 +16,8 @@
     tag)
   (node-type [_n] :seq)
   (printable-only? [_] false)
-  (sexpr [_this]
-    (seq-fn (node/sexprs children)))
+  (sexpr* [_node opts]
+    (seq-fn (node/sexprs children opts)))
   (length [_]
     (+ wrap-length (node/sum-lengths children)))
   (string [_this]
@@ -53,8 +53,8 @@
   (tag [_this]
     :namespaced-map)
   (printable-only? [_] false)
-  (sexpr [_this]
-    (let [[nspace' m] (node/sexprs children)
+  (sexpr* [_node opts]
+    (let [[nspace' m] (node/sexprs children opts)
           nspace (if (namespace nspace')
                    (-> #?(:clj (ns-aliases *ns*) :cljs (throw (ex-info "coming soon" {})))
                        (get (symbol (name nspace')))

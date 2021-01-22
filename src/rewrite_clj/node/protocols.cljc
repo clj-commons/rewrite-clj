@@ -20,7 +20,7 @@
   (printable-only? [_]
     "Return true if the node cannot be converted to an s-expression
      element.")
-  (sexpr [_]
+  (sexpr* [_node opts]
     "Convert node to s-expression.")
   (length [_]
     "Get number of characters for the string version of this node.")
@@ -32,17 +32,23 @@
   (tag [_] :unknown)
   (node-type [_this] :unknown)
   (printable-only? [_] false)
-  (sexpr [this] this)
+  (sexpr* [this _opts] this)
   (length [this] (count (string this)))
   (string [this] (pr-str this)))
 
+(defn sexpr
+  "Return `node` converted to form."
+  ([node] (sexpr node {}))
+  ([node opts] (sexpr* node opts)))
+
 (defn sexprs
-  "Given a seq of nodes, convert those that represent s-expressions
-   to the respective forms."
-  [nodes]
-  (->> nodes
-       (remove printable-only?)
-       (map sexpr)))
+  "Return forms for `nodes`. Nodes that do not represent s-expression are skipped."
+  ([nodes]
+   (sexprs nodes {}))
+  ([nodes opts]
+   (->> nodes
+        (remove printable-only?)
+        (map #(sexpr % opts)))))
 
 (defn ^:no-doc sum-lengths
   "Sum up lengths of the given nodes."
@@ -84,10 +90,12 @@
   (not= :unknown (tag x)))
 
 (defn child-sexprs
-  "Get all child s-expressions for the given node."
-  [node]
+  "Returns children for `node` converted to Clojure forms."
+  ([node]
+   (child-sexprs node {}))
+  ([node opts]
   (when (inner? node)
-    (sexprs (children node))))
+     (sexprs (children node) opts))))
 
 ;; ## Coerceable
 

@@ -25,8 +25,8 @@
   (node-type [_n] :line-prefix)
   (printable-only? [_]
     (node/printable-only? child))
-  (sexpr [_]
-    (node/sexpr child))
+  (sexpr* [_ opts]
+    (node/sexpr child opts))
   (length [this]
     ;; FIXME: directly calculate length
     (count (node/string this)))

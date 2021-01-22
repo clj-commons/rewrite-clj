@@ -24,7 +24,7 @@
   (node-type [_n] :string)
   (printable-only? [_]
     false)
-  (sexpr [_]
+  (sexpr* [_node _opts]
     (join-lines
       (map
         (comp edn/read-string wrap-string)

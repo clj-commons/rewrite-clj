@@ -38,7 +38,7 @@
   (tag [_] :whitespace)
   (node-type [_n] :whitespace)
   (printable-only? [_] true)
-  (sexpr [_] (sexpr-unsupported))
+  (sexpr* [_node _opts] (sexpr-unsupported))
   (length [_] (count whitespace))
   (string [_] whitespace)
 
@@ -51,7 +51,7 @@
   (tag [_] :comma)
   (node-type [_n] :comma)
   (printable-only? [_] true)
-  (sexpr [_] (sexpr-unsupported))
+  (sexpr* [_node _opts] (sexpr-unsupported))
   (length [_] (count commas))
   (string [_] commas)
 
@@ -64,7 +64,7 @@
   (tag [_] :newline)
   (node-type [_n] :newline)
   (printable-only? [_] true)
-  (sexpr [_] (sexpr-unsupported))
+  (sexpr* [_node _opts] (sexpr-unsupported))
   (length [_] (*count-fn* newlines))
   (string [_] (*newline-fn* newlines))
 

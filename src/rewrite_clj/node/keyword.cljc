@@ -10,7 +10,7 @@
   (tag [_] :token)
   (node-type [_n] :keyword)
   (printable-only? [_] false)
-  (sexpr [_]
+  (sexpr* [_ opts]
     (if (and auto-resolved?
              (not (namespace k)))
       (keyword

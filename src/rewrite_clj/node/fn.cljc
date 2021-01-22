@@ -70,8 +70,8 @@
   (node-type [_n] :fn)
   (printable-only? [_]
     false)
-  (sexpr [_]
-    (fn-walk (node/sexprs children)))
+  (sexpr* [_node opts]
+    (fn-walk (node/sexprs children opts)))
   (length [_]
     (+ 3 (node/sum-lengths children)))
   (string [_]

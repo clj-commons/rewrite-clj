@@ -12,8 +12,8 @@
   (tag [_] tag)
   (node-type [_node] :meta)
   (printable-only? [_] false)
-  (sexpr [_]
-    (let [[mta data] (node/sexprs children)]
+  (sexpr* [_ opts]
+    (let [[mta data] (node/sexprs children opts)]
       (assert (interop/meta-available? data)
               (str "cannot attach metadata to: " (pr-str data)))
       (vary-meta data merge (if (map? mta) mta {mta true}))))

@@ -10,7 +10,7 @@
   (tag [_] :token)
   (node-type [_n] :token)
   (printable-only? [_] false)
-  (sexpr [_] value)
+  (sexpr* [_node _opts] value)
   (length [_] (count string-value))
   (string [_] string-value)
 

@@ -11,7 +11,7 @@
   (tag [_] :token)
   (node-type [_n] :int)
   (printable-only? [_] false)
-  (sexpr [_] value)
+  (sexpr* [_ _opts] value)
   (length [this]
     (count (node/string this)))
   (string [_]
