@@ -2,10 +2,20 @@
   (:refer-clojure :exclude [print])
   (:require [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.node :as node]
+            [rewrite-clj.node.protocols :as protocols]
             [rewrite-clj.parser :as p]
             [rewrite-clj.zip.whitespace :as ws]))
 
 #?(:clj (set! *warn-on-reflection* true))
+
+(defn get-opts [zloc]
+  (:rewrite-clj.zip/opts (meta zloc)))
+
+(defn set-opts [zloc opts]
+  (with-meta zloc
+    (merge (meta zloc)
+           {:rewrite-clj.zip/opts (merge {:auto-resolve protocols/default-auto-resolve}
+                                         opts)})))
 
 ;; ## Zipper
 
@@ -23,19 +33,22 @@
      (z/zipper node))))
 
 (defn edn
-  "Create zipper over the given Clojure/EDN node and move to the first
-   non-whitespace/non-comment child.
+  "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj.parse]]),
+  and move to the first non-whitespace/non-comment child. If node is not forms node, is wrapped in forms node
+  for a consistent root.
 
-   If `:track-position?` is set, this will create a custom zipper that will
-   return the current row/column using `rewrite-clj.zip/position`. (Note that
-   this custom zipper will be incompatible with `clojure.zip`'s functions.)"
+  Optional `opts` can specify:
+  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
   ([node] (edn node {}))
-  ([node options]
-   (if (= (node/tag node) :forms)
-     (let [top (edn* node options)]
-       (or (-> top z/down ws/skip-whitespace)
-           top))
-     (recur (node/forms-node [node]) options))))
+  ([node opts]
+   (-> (loop [node node opts opts]
+         (if (= (node/tag node) :forms)
+           (let [top (edn* node opts)]
+             (or (-> top z/down ws/skip-whitespace)
+                 top))
+           (recur (node/forms-node [node]) opts)))
+       (set-opts opts))))
 
 ;; ## Inspection
 
@@ -45,14 +58,18 @@
   (some-> zloc z/node node/tag))
 
 (defn sexpr
-  "Get sexpr represented by the given node."
-  [zloc]
-  (some-> zloc z/node node/sexpr))
+  "Return s-expression (the Clojure form) of current node in `zloc`.
+
+  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
+  ([zloc]
+   (some-> zloc z/node (node/sexpr (get-opts zloc)))))
 
 (defn ^{:added "0.4.4"} child-sexprs
-  "Get children as s-expressions."
-  [zloc]
-  (some-> zloc z/node node/child-sexprs))
+  "Return s-expression (the Clojure forms) of children of current node in `zloc`.
+
+  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
+  ([zloc]
+   (some-> zloc z/node (node/child-sexprs (get-opts zloc)))))
 
 (defn length
   "Get length of printable string for the given zipper location."

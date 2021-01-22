@@ -54,6 +54,38 @@
     ;; date
     #inst "2014-11-26T00:05:23" :token :token))
 
+(deftest t-maps
+  (are [?sexpr]
+       (let [n (coerce ?sexpr)]
+         (is (node/node? n))
+         (is (= :map (node/tag n)))
+         (is (= :seq (protocols/node-type n)))
+         (is (string? (node/string n)))
+         (is (= ?sexpr (node/sexpr n)))
+        ;; we do not restore to original map (hash-map or array-map),
+        ;; checking if we convert to any map is sufficient
+         (is (map? (node/sexpr n))))
+    {}
+    {:a 1 :b 2}
+    (hash-map)
+    (hash-map :a 0 :b 1)
+    (array-map)
+    (array-map :d 4 :e 5)))
+
+(deftest t-namespaced-maps-coerce-to-maps
+  (are [?sexpr]
+       (let [n (coerce ?sexpr)]
+         (is (node/node? n))
+         (is (= :map (node/tag n)))
+         (is (= :seq (protocols/node-type n)))
+         (is (string? (node/string n)))
+         (is (= ?sexpr (node/sexpr n)))
+         (is (map? (node/sexpr n))))
+    #:prefix {:a 1 :b 2}
+    ;; TODO: sci barfs on auto-resolve current ns maps
+    ;; #::{:c 3 :d 4}
+    #::p{:e 5 :f 6}))
+
 (deftest t-sexpr->node->sexpr-roundtrip-for-regex
   (let [sexpr #"abc"
         n (coerce sexpr)]
@@ -94,6 +126,7 @@
       "#(+ 1 %)"        :fn             :fn
       ":my-kw"          :token          :keyword
       "^:m1 [1 2 3]"    :meta           :meta
+      "#:p1{:a 1 :b 2}" :namespaced-map :namespaced-map
       "'a"              :quote          :quote
       "#'var"           :var            :reader
       "#=eval"          :eval           :reader
@@ -111,6 +144,9 @@
     (let [n (p/parse-string-all "(def a 1)")]
       (is (= n (node/coerce n)))
       (is (= :forms (node/tag n)))))
+  (testing "map qualifier node"
+    (let [n (node/map-qualifier-node false "prefix")]
+      (is (= n (node/coerce n)))))
   (testing "nodes that are not parsed, but can be created manually"
     ;; TODO: there is also indent nodes, but I think it is unused
     (let [n (node/integer-node 10)]

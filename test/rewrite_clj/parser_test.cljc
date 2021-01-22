@@ -51,10 +51,6 @@
     ":1.5.0"                     :1.5.0
     ":ns/key"                    :ns/key
     ":key:key"                   :key:key
-    ;; TODO: coming soon for cljs 
-    #?@(:clj ["::1.5.1"                    ::1.5.1
-              "::key"                      ::key
-              "::xyz/key"                  :xyz/key])
     ":x'"                        :x'
     "sym"                        'sym
     "sym#"                       'sym#
@@ -235,31 +231,104 @@
     ";\n"
     ";;\n"))
 
-(deftest t-parsing-namespaced-maps
-  (are [?s]
+(deftest t-parsing-auto-resolve-keywords
+  (are [?s ?sexpr-default ?sexpr-custom]
+       (let [n (p/parse-string ?s)]
+         (is (= :token (node/tag n)))
+         (is (= ?s (node/string n)))
+         (is (= ?sexpr-default (node/sexpr n)))
+         (is (= ?sexpr-custom (node/sexpr n {:auto-resolve #(if (= :current %)
+                                                              'my.current.ns
+                                                              (get {'xyz 'my.aliased.ns} % 'alias-unresolved))}))))
+    "::key"        :?_current-ns_?/key    :my.current.ns/key
+    "::xyz/key"    :??_xyz_??/key         :my.aliased.ns/key))
+
+(deftest t-parsing-qualified-maps
+  (are [?s ?sexpr]
        (let [n (p/parse-string ?s)]
          (is (= :namespaced-map (node/tag n)))
          (is (= (count ?s) (node/length n)))
          (is (= ?s (node/string n)))
-         (is (= {:abc/x 1, :abc/y 1} (node/sexpr n))))
-     "#:abc{:x 1, :y 1}"
-     "#:abc   {:x 1, :y 1}"))
+         (is (= ?sexpr (node/sexpr n))))
+    "#:abc{:x 1, :y 1}"
+    {:abc/x 1, :abc/y 1}
 
-#?(:clj ;; clj only until we add new support or namespaced elements
-   (deftest t-parsing-namespaced-maps-with-namespace-alias
-     (are [?s]
-          (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
-            (let [n (p/parse-string ?s)]
-              (is (= :namespaced-map (node/tag n)))
-              (is (= (count ?s) (node/length n)))
-              (is (= ?s (node/string n)))
-              (is (= {::node/x 1, ::node/y 1} (node/sexpr n)))))
-       "#::node{:x 1, :y 1}"
-       "#::node   {:x 1, :y 1}")))
+    "#:abc   {:x 1, :y 1}"
+    {:abc/x 1, :abc/y 1}
+
+    "#:foo{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
+    {:foo/kw 1, :n/kw 2, :bare 3, 0 4}
+
+    "#:abc{:a {:b 1}}"
+    {:abc/a {:b 1}}
+
+    "#:abc{:a #:def{:b 1}}"
+    {:abc/a {:def/b 1}}))
+
+(deftest t-parsing-auto-resolve-current-ns-maps
+  (are [?s ?sexpr-default ?sexpr-custom]
+       (let [n (p/parse-string ?s)]
+         (is (= :namespaced-map (node/tag n)))
+         (is (= (count ?s) (node/length n)))
+         (is (= ?s (node/string n)))
+         (is (= ?sexpr-default (node/sexpr n)))
+         (is (= ?sexpr-custom (node/sexpr n {:auto-resolve #(if (= :current %)
+                                                              'booya.fooya
+                                                              'alias-unresolved)}))))
+    "#::{:x 1, :y 1}"
+    {:?_current-ns_?/x 1, :?_current-ns_?/y 1}
+    {:booya.fooya/x 1, :booya.fooya/y 1}
+
+    "#::   {:x 1, :y 1}"
+    {:?_current-ns_?/x 1, :?_current-ns_?/y 1}
+    {:booya.fooya/x 1, :booya.fooya/y 1}
+
+    "#::{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
+    {:?_current-ns_?/kw 1, :n/kw 2, :bare 3, 0 4}
+    {:booya.fooya/kw 1, :n/kw 2, :bare 3, 0 4}
+
+    "#::{:a {:b 1}}"
+    {:?_current-ns_?/a {:b 1}}
+    {:booya.fooya/a {:b 1}}
+
+    "#::{:a #::{:b 1}}"
+    {:?_current-ns_?/a {:?_current-ns_?/b 1}}
+    {:booya.fooya/a {:booya.fooya/b 1}}))
+
+(deftest parsing-auto-resolve-ns-alias-maps []
+  (are [?s ?sexpr-default ?sexpr-custom]
+       (let [n (p/parse-string ?s)]
+         (is (= :namespaced-map (node/tag n)))
+         (is (= (count ?s) (node/length n)))
+         (is (= ?s (node/string n)))
+         (is (= ?sexpr-default (node/sexpr n)))
+         (is (= ?sexpr-custom (node/sexpr n {:auto-resolve #(if (= :current %)
+                                                              'my.current.ns
+                                                              (get {'nsalias 'bing.bang
+                                                                    'nsalias2 'woopa.doopa} % 'alias-unresolved))}))))
+    "#::nsalias{:x 1, :y 1}"
+    '{:??_nsalias_??/x 1, :??_nsalias_??/y 1}
+    '{:bing.bang/x 1, :bing.bang/y 1}
+
+    "#::nsalias   {:x 1, :y 1}"
+    '{:??_nsalias_??/x 1, :??_nsalias_??/y 1}
+    '{:bing.bang/x 1, :bing.bang/y 1}
+
+    "#::nsalias{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
+    '{:??_nsalias_??/kw 1, :n/kw 2, :bare 3, 0 4}
+    '{:bing.bang/kw 1, :n/kw 2, :bare 3, 0 4}
+
+    "#::nsalias{:a {:b 1}}"
+    '{:??_nsalias_??/a {:b 1}}
+    '{:bing.bang/a {:b 1}}
+
+    "#::nsalias{:a #::nsalias2{:b 1}}"
+    '{:??_nsalias_??/a {:??_nsalias2_??/b 1}}
+    '{:bing.bang/a {:woopa.doopa/b 1}}))
 
 (deftest t-parsing-exceptions
   (are [?s ?p]
-      (is (thrown-with-msg? ExceptionInfo ?p (p/parse-string ?s)))
+       (is (thrown-with-msg? ExceptionInfo ?p (p/parse-string ?s)))
     "#"                     #".*Unexpected EOF.*"
     "#("                    #".*Unexpected EOF.*"
     "(def"                  #".*Unexpected EOF.*"
@@ -275,7 +344,16 @@
     "#^:private"            #".*:meta node expects 2 values.*"
     "#_"                    #".*:uneval node expects 1 value.*"
     "#'"                    #".*:var node expects 1 value.*"
-    "#macro"                #".*:reader-macro node expects 2 values.*"))
+    "#macro"                #".*:reader-macro node expects 2 values.*"
+    "#:"                    #".*namespaced map expects a namespace*"
+    "#::"                   #".*namespaced map expects a map*"
+    "#::nsarg"              #".*namespaced map expects a map*"
+    "#:{:a 1}"              #".*namespaced map expects a namespace*"
+    "#::[a]"                #".*namespaced map expects a map*"
+    "#:[a]"                 #".*namespaced map expects a namespace*"
+    "#:: token"             #".*namespaced map expects a map*"
+    "#::alias [a]"          #".*namespaced map expects a map*"
+    "#:prefix [a]"          #".*namespaced map expects a map.*"))
 
 (deftest t-parsing-multiple-forms
   (let [s "1 2 3"

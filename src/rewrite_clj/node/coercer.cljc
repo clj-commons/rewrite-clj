@@ -7,6 +7,7 @@
         [rewrite-clj.node.integer]
         [rewrite-clj.node.keyword :refer [keyword-node]]
         [rewrite-clj.node.meta :refer [meta-node]]
+        [rewrite-clj.node.namespaced-map]
         [rewrite-clj.node.protocols :as node :refer [NodeCoerceable coerce]]
         [rewrite-clj.node.quote]
         [rewrite-clj.node.reader-macro :refer [reader-macro-node var-node]]
@@ -24,6 +25,7 @@
         [rewrite-clj.node.integer :refer [IntNode]]
         [rewrite-clj.node.keyword :refer [KeywordNode keyword-node]]
         [rewrite-clj.node.meta :refer [MetaNode meta-node]]
+        [rewrite-clj.node.namespaced-map :refer [NamespacedMapNode MapQualifierNode]]
         [rewrite-clj.node.protocols :as node :refer [NodeCoerceable coerce]]
         [rewrite-clj.node.quote :refer [QuoteNode]]
         [rewrite-clj.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
@@ -40,6 +42,7 @@
               [rewrite_clj.node.integer IntNode]
               [rewrite_clj.node.keyword KeywordNode]
               [rewrite_clj.node.meta MetaNode]
+              [rewrite_clj.node.namespaced_map NamespacedMapNode MapQualifierNode]
               [rewrite_clj.node.quote QuoteNode]
               [rewrite_clj.node.reader_macro ReaderNode ReaderMacroNode DerefNode]
               [rewrite_clj.node.regex RegexNode]
@@ -62,7 +65,9 @@
   FormsNode          (coerce [v] v)
   IntNode            (coerce [v] v)
   KeywordNode        (coerce [v] v)
+  MapQualifierNode   (coerce [v] v)
   MetaNode           (coerce [v] v)
+  NamespacedMapNode  (coerce [v] v)
   NewlineNode        (coerce [v] v)
   QuoteNode          (coerce [v] v)
   ReaderMacroNode    (coerce [v] v)

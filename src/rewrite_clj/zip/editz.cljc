@@ -18,20 +18,27 @@
   [zloc value]
   (z/replace zloc (node/coerce value)))
 
-(defn- edit-node
+(defn- node-editor
   "Create s-expression from node, apply the function and create
    node from the result."
-  [node f]
-  (-> (node/sexpr node)
-      (f)
-      (node/coerce)))
+  [opts]
+  (fn [node f]
+    (-> (node/sexpr node opts)
+        (f)
+        (node/coerce))))
 
 (defn edit
-  "Apply the given function to the s-expression at the given
-   location, using its result to replace the node there. (The
-   result will be coerced to a node if possible.)"
+  "Return `zloc` with the current node replaced with the result of:
+
+   (`f` (s-expression node) `args`)
+
+  `f` should return a node.
+  The result of `f` will be coerced to a node if possible.
+
+  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
   [zloc f & args]
-  (z/edit zloc edit-node #(apply f % args)))
+  (z/edit zloc (node-editor (base/get-opts zloc)) #(apply f % args)))
+
 
 ;; ## Splice
 

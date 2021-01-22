@@ -12,10 +12,11 @@
 ;; ## Predicates
 
 (defn seq?
+  "Returns true if current node in `zloc` is a sequence."
   [zloc]
   (contains?
-    #{:forms :list :vector :set :map}
-    (base/tag zloc)))
+   #{:forms :list :vector :set :map :namespaced-map}
+   (base/tag zloc)))
 
 (defn list?
   [zloc]
@@ -33,78 +34,154 @@
   [zloc]
   (= (base/tag zloc) :map))
 
+(defn namespaced-map?
+  "Returns true if the current node in `zloc` is a namespaced map."
+  [zloc]
+  (= (base/tag zloc) :namespaced-map))
+
 ;; ## Map Operations
 
 (defn- map-seq
   [f zloc]
   {:pre [(seq? zloc)]}
-  (if-let [n0 (m/down zloc)]
-    (some->> (f n0)
+  (if-let [zloc-n0 (m/down zloc)]
+    (some->> (f zloc-n0)
              (iterate
-               (fn [loc]
-                 (when-let [n (m/right loc)]
-                   (f n))))
+              (fn [loc]
+                (when-let [zloc-n (m/right loc)]
+                  (f zloc-n))))
              (take-while identity)
              (last)
              (m/up))
     zloc))
 
-(defn map-vals
-  "Apply function to all value nodes of the given map node."
-  [f zloc]
-  {:pre [(map? zloc)]}
-  (loop [loc (m/down zloc)
-         parent zloc]
+(defn- map-vals* [f map-loc]
+  (loop [loc (m/down map-loc)
+         parent map-loc]
     (if-not (and loc (z/node loc))
       parent
-      (if-let [v0 (m/right loc)]
-        (if-let [v (f v0)]
-          (recur (m/right v) (m/up v))
-          (recur (m/right v0) parent))
+      (if-let [zloc-map-value (m/right loc)]
+        (if-let [new-zloc-map-value (f zloc-map-value)]
+          (recur (m/right new-zloc-map-value) (m/up new-zloc-map-value))
+          (recur (m/right zloc-map-value) parent))
         parent))))
 
-(defn map-keys
-  "Apply function to all key nodes of the given map node."
+(defn- map-loc [zloc]
+  (if (namespaced-map? zloc)
+    (-> zloc m/down m/rightmost)
+    zloc))
+
+(defn- container-loc [zloc map-loc]
+  (if (namespaced-map? zloc)
+    (-> map-loc m/up)
+    map-loc))
+
+(defn map-vals
+  "Returns `zloc` with function `f` applied to each value node of the current node.
+   Current node must be map node.
+
+  `zloc` location is unchanged.
+
+  `f` arg is zloc positioned at value node and should return:
+  - an updated zloc with zloc positioned at value node
+  - a falsey value to leave value node unchanged
+
+  Folks typically use [[rewrite-clj.zip/edit]] for `f`."
   [f zloc]
-  {:pre [(map? zloc)]}
-  (loop [loc (m/down zloc)
-         parent zloc]
+  {:pre [(or (map? zloc) (namespaced-map? zloc))]}
+  (container-loc zloc
+                 (map-vals* f (map-loc zloc))))
+
+(defn- map-keys* [f map-loc]
+  (loop [loc (m/down map-loc)
+         parent map-loc]
     (if-not (and loc (z/node loc))
       parent
-      (if-let [v (f loc)]
-        (recur (m/right (m/right v)) (m/up v))
+      (if-let [zloc-map-key (f loc)]
+        (recur (m/right (m/right zloc-map-key)) (m/up zloc-map-key))
         (recur (m/right (m/right loc)) parent)))))
 
+(defn map-keys
+  "Returns `zloc` with function `f` applied to all key nodes of the current node.
+   Current node must be map node.
+
+  `zloc` location is unchanged.
+
+  `f` arg is zloc positioned at key node and should return:
+  - an updated zloc with zloc positioned at key node
+  - a falsey value to leave value node unchanged
+
+  Folks typically use [[rewrite-clj.zip/edit]] for `f`."
+  [f zloc]
+  {:pre [(or (map? zloc) (namespaced-map? zloc))]}
+  (container-loc zloc
+                 (map-keys* f (map-loc zloc))))
+
 (defn map
-  "Apply function to all value nodes in the given seq node. Iterates over
-   value nodes of maps but over each element of a seq."
+  "Returns `zloc` with function `f` applied to all nodes of the current node.
+  Current node must be a sequence node. Equivalent to [[rewrite-clj.zip/map-vals]] for maps.
+
+  `zloc` location is unchanged.
+
+  `f` arg is zloc positioned at
+  - value nodes for maps
+  - each element of a seq
+  and is should return:
+  - an updated zloc with zloc positioned at edited node
+  - a falsey value to leave value node unchanged
+
+  Folks typically use [[rewrite-clj.zip/edit]] for `f`."
   [f zloc]
   {:pre [(seq? zloc)]}
-  (if (map? zloc)
+  (if (or (map? zloc) (namespaced-map? zloc))
     (map-vals f zloc)
     (map-seq f zloc)))
 
 ;; ## Get/Assoc
 
 (defn get
-  "If a map is given, get element with the given key; if a seq is given, get nth element."
+  "Returns `zloc` located to map key node's sexpr value matching `k` else `nil`.
+
+  `k` should be:
+  - a key for maps
+  - a zero-based index for sequences
+
+  NOTE: `k` will be compared against resolved keywords in maps.
+  See docs for sexpr behavior on [namespaced elements](/doc/01-introduction.adoc#namespaced-elements)."
   [zloc k]
-  {:pre [(or (map? zloc) (and (seq? zloc) (integer? k)))]}
-  (if (map? zloc)
+  {:pre [(or (map? zloc) (namespaced-map? zloc) (and (seq? zloc) (integer? k)))]}
+  (cond
+    (map? zloc)
     (some-> zloc m/down (f/find-value k) m/right)
+
+    (namespaced-map? zloc)
+    (some-> zloc m/down m/rightmost m/down (f/find-value k) m/right)
+
+    :else
     (nth
-      (some->> (m/down zloc)
-               (iterate m/right)
-               (take-while identity))
-      k)))
+     (some->> (m/down zloc)
+              (iterate m/right)
+              (take-while identity))
+     k)))
 
 (defn assoc
-  "Set map/seq element to the given value."
+  "Returns `zloc` with current node's `k` set to value `v`.
+
+  `zloc` location is unchanged.
+
+  `k` should be:
+  - a key for maps
+  - a zero-based index for sequences, an exception is thrown if index is out of bounds
+
+  NOTE: `k` will be compared against resolved keywords in maps.
+  See docs for sexpr behavior on [namespaced elements](/doc/01-introduction.adoc#namespaced-elements)."
   [zloc k v]
-  (if-let [vloc (get zloc k)]
-    (-> vloc (e/replace v) m/up)
-    (if (map? zloc)
-      (-> zloc
-          (i/append-child k)
-          (i/append-child v))
-      (throw (ex-info (str "index out of bounds: " k) {})))))
+  (container-loc zloc
+                 (if-let [value-loc (get zloc k)]
+                   (-> value-loc (e/replace v) m/up)
+                   (if (or (map? zloc) (namespaced-map? zloc))
+                     (-> (map-loc zloc)
+                         (i/append-child k)
+                         (i/append-child v))
+                     (throw
+                      (ex-info (str "index out of bounds: " k) {}))))))

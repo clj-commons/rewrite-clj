@@ -37,12 +37,18 @@
   (string [this] (pr-str this)))
 
 (defn sexpr
-  "Return `node` converted to form."
+  "Return `node` converted to form.
+
+  Optional `opts` can specify:
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
   ([node] (sexpr node {}))
   ([node opts] (sexpr* node opts)))
 
 (defn sexprs
-  "Return forms for `nodes`. Nodes that do not represent s-expression are skipped."
+  "Return forms for `nodes`. Nodes that do not represent s-expression are skipped.
+
+  Optional `opts` can specify:
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
   ([nodes]
    (sexprs nodes {}))
   ([nodes opts]
@@ -83,25 +89,41 @@
   (leader-length [_]
     (throw (ex-info "unsupported operation" {}))))
 
+(defn child-sexprs
+  "Returns children for `node` converted to Clojure forms.
+
+  Optional `opts` can specify:
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
+  ([node]
+   (child-sexprs node {}))
+  ([node opts]
+   (when (inner? node)
+     (sexprs (children node) opts))))
+
 (defn node?
   ;; TODO: consider a marker interface instead?
   "Returns true if `x` is a rewrite-clj created node."
   [x]
   (not= :unknown (tag x)))
 
-(defn child-sexprs
-  "Returns children for `node` converted to Clojure forms."
-  ([node]
-   (child-sexprs node {}))
-  ([node opts]
-  (when (inner? node)
-     (sexprs (children node) opts))))
+;; TODO: is this the right ns for this? Ok for now, it is internal
+(defn default-auto-resolve [alias]
+  (if (= :current alias)
+    '?_current-ns_?
+    (symbol (str "??_" alias "_??"))))
 
 ;; ## Coerceable
 
 (defprotocol+ NodeCoerceable
   "Protocol for values that can be coerced to nodes."
   (coerce [_]))
+
+(defprotocol+ MapQualifiable
+  "Protocol for nodes that can be namespaced map qualified"
+  (map-context-apply [node map-qualifier]
+    "Applies `map-qualifier` context to `node`")
+  (map-context-clear [node]
+    "Removes map-qualifier context for `node`"))
 
 ;; ## Print Helper
 

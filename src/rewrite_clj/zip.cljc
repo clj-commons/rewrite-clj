@@ -63,7 +63,7 @@
    remove]
 
   [rewrite-clj.zip.seqz
-   seq? list? vector? set? map?
+   seq? list? vector? set? map? namespaced-map?
    map map-keys map-vals
    get assoc]
 
