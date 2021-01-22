@@ -183,6 +183,17 @@
     "{ }"              :map         1  0
     "{} "              :map         0  0))
 
+(deftest t-parsing-invalid-maps
+  ;; I don't know if this ability is intentional, but libraries
+  ;; have come to rely on the behavior of parsing invalid maps.
+  ;; Note: sexpr won't be possible on invalid Clojure
+  (are [?s ?t]
+       (let [n (p/parse-string ?s)]
+         (is (= ?t (node/tag n)))
+         (is (= ?s (node/string n))))
+    "{:a}" :map
+    "{:r 1 :u}" :map))
+
 (deftest t-parsing-metadata
   (are [?s ?t ?mt]
        (let [s (str ?s " s")
