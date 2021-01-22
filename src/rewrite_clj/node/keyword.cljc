@@ -5,13 +5,13 @@
 
 ;; ## Node
 
-(defrecord KeywordNode [k namespaced?]
+(defrecord KeywordNode [k auto-resolved?]
   node/Node
   (tag [_] :token)
   (node-type [_n] :keyword)
   (printable-only? [_] false)
   (sexpr [_]
-    (if (and namespaced?
+    (if (and auto-resolved?
              (not (namespace k)))
       (keyword
         (name #?(:clj (ns-name *ns*) :cljs (throw (ex-info "coming soon" {}))))
@@ -19,13 +19,13 @@
       k))
   (length [_this]
     (let [c (inc (count (name k)))]
-      (if namespaced?
+      (if auto-resolved?
         (inc c)
         (if-let [nspace (namespace k)]
           (+ 1 c (count nspace))
           c))))
   (string [_]
-    (str (when namespaced? ":")
+    (str (when auto-resolved? ":")
          (pr-str k)))
 
   Object
@@ -37,8 +37,8 @@
 ;; ## Constructor
 
 (defn keyword-node
-  "Create node representing a keyword. If `namespaced?` is given as `true`
+  "Create node representing a keyword. If `auto-resolved?` is given as `true`
    a keyword à la `::x` or `::ns/x` (i.e. namespaced/aliased) is generated."
-  [k & [namespaced?]]
+  [k & [auto-resolved?]]
   {:pre [(keyword? k)]}
-  (->KeywordNode k namespaced?))
+  (->KeywordNode k auto-resolved?))

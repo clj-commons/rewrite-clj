@@ -26,8 +26,8 @@
 
 (def keyword-node
   (gen/fmap
-   (fn [[kw namespaced?]]
-     (node/keyword-node kw namespaced?))
+   (fn [[kw auto-resolved?]]
+     (node/keyword-node kw auto-resolved?))
    (gen/tuple
     gen/keyword
     gen/boolean)))
