@@ -87,3 +87,21 @@
     (node/integer-node 255 16)        "[0xff 2 3]"
     (node/integer-node 255 8)         "[0377 2 3]"
     (node/integer-node 9   2)         "[2r1001 2 3]"))
+
+(deftest t-prefix
+  (are [?in ?prefix ?expected]
+       (let [zin (base/of-string ?in)
+             zmod (e/prefix zin ?prefix)
+             out (base/root-string zmod)]
+         (is (= ?expected out)))
+    "\"one\""           "123-"  "\"123-one\""
+    "\"a\nbb\ncc\ndd\"" "456-"  "\"456-a\nbb\ncc\ndd\""))
+
+(deftest t-suffix
+  (are [?in ?suffix ?expected]
+       (let [zin (base/of-string ?in)
+             zmod (e/suffix zin ?suffix)
+             out (base/root-string zmod)]
+         (is (= ?expected out)))
+    "\"one\""            "-123" "\"one-123\""
+    "\"a\nbb\ncc\ndd\""  "-456" "\"a\nbb\ncc\ndd-456\""))
