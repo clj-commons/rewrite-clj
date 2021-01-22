@@ -162,6 +162,12 @@
   (coerce [sq]
     (seq-node set-node sq)))
 
+#?(:cljs
+   (extend-protocol NodeCoerceable
+     EmptyList
+     (coerce [sq]
+       (seq-node list-node sq))))
+
 ;; ## Maps
 
 #?(:clj
