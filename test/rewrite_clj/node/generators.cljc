@@ -104,6 +104,9 @@
     :comma
     :uneval})
 
+(def top-level-types
+  #{:forms})
+
 (defn- container*
   "Helper to generate a container type.  Generates from `min` to `max` usable
   nodes and from 0 to `(inc max)` printable-only nodes, then interleaves them
@@ -125,20 +128,20 @@
 
 (defn node
   "Generate parse nodes at random.
-  
+
   `types` is a set of permissable top-level nodes.  If not specified, all
   known top-level nodes are allowed.  This does not affect non-top-level
   nodes.
-  
+
   `depth` is the maximum depth of the tree.  It's possible the tree will be
   shallower if we pick a lot of leaf-type nodes, but this is a limit.  If
   not specified, the generator will pick depths from 1 through 5 at random.
 
   Current implementation notes:
 
-   1. There's no attempt to nest things correctly.  For example, `#( ... )`
+   1. There's no serious attempt to nest things correctly.  For example, `#( ... )`
       forms may be nested, and unquote operators may appear outside
-      syntax-quote forms.
+      syntax-quote forms. We do restrict forms nodes to be to level nodes only.
 
    2. Spaces and newlines are added at random, not in a smart way that
       allows the tree to be converted to a string and reparsed.  Symbols
@@ -160,6 +163,24 @@
         (let [details (node-specs type)]
           (if (gen/generator? details)
             details
-            (let [child-generator (node (set/difference all-node-types printable-only-types) (dec depth))
+            (let [child-generator (node (set/difference all-node-types printable-only-types top-level-types) (dec depth))
                   printable-only-generator (node printable-only-types (dec depth))]
               (container* child-generator printable-only-generator details)))))))))
+
+(comment
+  ;; make sure we are generating :forms for test.check at only at top level (if at all)
+  (let [c 1000000]
+    (println "start")
+    (->> (range 1 (inc c))
+         (map
+          (fn [n]
+            (let [samp (first (gen/sample (node) 1))
+                  nodes (tree-seq :children :children samp)
+                  tags (into [] (map node/tag nodes))
+                  ndx (.lastIndexOf tags :forms)]
+              (when (= 0 (mod n 1000))
+                (println n "of" c))
+              ndx)))
+         (frequencies)
+         (println "\nmatch ndx frequencies (-1 and 0 are good)"))
+    (println "done")))
