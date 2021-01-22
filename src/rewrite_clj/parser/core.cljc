@@ -108,11 +108,16 @@
 
 ;; ### Reader Specialities
 
+(defn- read-symbolic-value [reader]
+  (reader/unread reader \#)
+  (parse-token reader))
+
 (defmethod parse-next* :sharp
   [#?(:cljs ^not-native reader :default reader)]
   (reader/ignore reader)
   (case (reader/peek reader)
     nil (reader/throw-reader reader "Unexpected EOF.")
+    \# (read-symbolic-value reader) 
     \{ (node/set-node (parse-delim reader \}))
     \( (node/fn-node (parse-delim reader \)))
     \" (node/regex-node (parse-regex reader))

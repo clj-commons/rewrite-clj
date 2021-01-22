@@ -59,6 +59,23 @@
     "sym:sym"                    'sym:sym
     "\"string\""                 "string"))
 
+(deftest t-parsing-symbolic-inf-values
+  (are [?s ?r]
+      (let [n (p/parse-string ?s)]
+        (is (= :token (node/tag n)))
+        (is (= ?s (node/string n)))
+        (is (= ?r (node/sexpr n))))
+    "##Inf" '##Inf
+    "##-Inf" '##-Inf))
+
+(deftest t-parsing-symbolic-NaN-value
+  (let [n (p/parse-string "##NaN")
+        e (node/sexpr n)]
+    (is (= :token (node/tag n)))
+    (is (= "##NaN" (node/string n)))
+    #?(:cljs (is (js/Number.isNaN e))
+       :default (is (Double/isNaN e)))))
+
 (deftest t-parsing-reader-prefixed-data
   (are [?s ?t ?ws ?sexpr]
        (let [n (p/parse-string ?s)
@@ -338,6 +355,7 @@
     "\"abc"                 #".*EOF.*"
     "#\"abc"                #".*Unexpected EOF.*"
     "(def x 0]"             #".*Unmatched delimiter.*"
+    "##wtf"                 #".*Invalid token: ##wtf"
     "#="                    #".*:eval node expects 1 value.*"
     "#^"                    #".*:meta node expects 2 values.*"
     "^:private"             #".*:meta node expects 2 values.*"
