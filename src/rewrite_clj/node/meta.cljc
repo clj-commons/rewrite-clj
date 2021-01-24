@@ -9,38 +9,38 @@
 
 (defrecord MetaNode [tag prefix children]
   node/Node
-  (tag [_] tag)
+  (tag [_node] tag)
   (node-type [_node] :meta)
-  (printable-only? [_] false)
-  (sexpr* [_ opts]
+  (printable-only? [_node] false)
+  (sexpr* [_node opts]
     (let [[mta data] (node/sexprs children opts)]
       (assert (interop/meta-available? data)
               (str "cannot attach metadata to: " (pr-str data)))
       (vary-meta data merge (if (map? mta) mta {mta true}))))
-  (length [_]
+  (length [_node]
     (+ (count prefix) (node/sum-lengths children)))
-  (string [_]
+  (string [_node]
     (str prefix (node/concat-strings children)))
 
   node/InnerNode
-  (inner? [_] true)
-  (children [_] children)
+  (inner? [_node] true)
+  (children [_node] children)
   (replace-children [this children']
     (node/assert-sexpr-count children' 2)
     (assoc this :children children'))
-  (leader-length [_]
+  (leader-length [_node]
     (count prefix))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (node/make-printable! MetaNode)
 
 ;; ## Constructor
 
 (defn meta-node
-  "Create node representing a form and its metadata."
+  "Create node representing a form `data` and its `metadata`."
   ([children]
    (node/assert-sexpr-count children 2)
    (->MetaNode :meta "^" children))
@@ -48,7 +48,7 @@
    (meta-node [metadata (ws/spaces 1) data])))
 
 (defn raw-meta-node
-  "Create node representing a form and its metadata using the
+  "Create node representing a form `data` and its `metadata` using the
    `#^` prefix."
   ([children]
    (node/assert-sexpr-count children 2)

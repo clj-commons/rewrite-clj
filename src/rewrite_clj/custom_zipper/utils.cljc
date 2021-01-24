@@ -66,7 +66,7 @@
    location, returns `nil`."
   [loc]
   (if (z/custom-zipper? loc)
-    (let [{:keys [_position left]} loc]
+    (let [{:keys [left]} loc]
       (when (seq left)
         (let [[lnode lpos] (peek left)]
           (assoc loc
@@ -87,7 +87,7 @@
    location, returns `nil`."
   [loc]
   (if (z/custom-zipper? loc)
-    (let [{:keys [_position right]} loc]
+    (let [{:keys [right]} loc]
       (when (seq right)
         (assoc loc
                :changed? true

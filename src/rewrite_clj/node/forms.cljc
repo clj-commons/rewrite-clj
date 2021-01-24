@@ -7,41 +7,36 @@
 
 (defrecord FormsNode [children]
   node/Node
-  (tag [_]
-    :forms)
+  (tag [_node] :forms)
   (node-type [_node] :forms)
-  (printable-only? [_]
-    false)
+  (printable-only? [_node] false)
   (sexpr* [_node opts]
     (let [es (node/sexprs children opts)]
       (if (next es)
         (list* 'do es)
         (first es))))
-  (length [_]
+  (length [_node]
     (node/sum-lengths children))
-  (string [_]
+  (string [_node]
     (node/concat-strings children))
 
   node/InnerNode
-  (inner? [_]
-    true)
-  (children [_]
-    children)
+  (inner? [_node] true)
+  (children [_node] children)
   (replace-children [this children']
     (assoc this :children children'))
-  (leader-length [_]
-    0)
+  (leader-length [_node] 0)
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (node/make-printable! FormsNode)
 
 ;; ## Constructor
 
 (defn forms-node
-  "Create top-level node wrapping multiple children
-   (equals an implicit `do` on the top-level)."
+  "Create top-level node wrapping multiple `children`
+   (equivalent to an implicit `do` at the top-level)."
   [children]
   (->FormsNode children))

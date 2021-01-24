@@ -9,8 +9,9 @@
 ;functional hierarchical zipper, with navigation, editing and enumeration
 ;see Huet
 
-(ns ^{:doc "Functional hierarchical zipper, with navigation, editing,
-  and enumeration.  See Huet"
+(ns ^:no-doc ^{:doc "Functional hierarchical zipper, with navigation, editing,
+  and enumeration.  See Huet.
+  Modified to optionally support row col position tracking."
        :author "Rich Hickey"}
   rewrite-clj.custom-zipper.core
   (:refer-clojure :exclude (replace remove next))
@@ -50,33 +51,33 @@
 ;; ## Implementation
 
 (defn-switchable node
-  "Returns the node at loc"
-  [{:keys [node]}]
-  node)
+  "Returns the current node in `zloc`."
+  [zloc]
+  (:node zloc))
 
 (defn-switchable branch?
-  "Returns true if the node at loc is a branch"
-  [{:keys [node]}]
-  (node/inner? node))
+  "Returns true if the current node in `zloc` is a branch."
+  [zloc]
+  (node/inner? (:node zloc)))
 
 (defn-switchable children
-  "Returns a seq of the children of node at loc, which must be a branch"
-  [{:keys [node] :as loc}]
-  (if (branch? loc)
+  "Returns a seq of the children of current node in `zloc`, which must be a branch."
+  [{:keys [node] :as zloc}]
+  (if (branch? zloc)
     (seq (node/children node))
     (throw (ex-info "called children on a leaf node" {}))))
 
 (defn-switchable ^:no-doc make-node
-  "Returns a new branch node, given an existing node and new
-  children. The loc is only used to supply the constructor."
+  "Returns a new branch node, given an existing `node` and new
+  `children`. "
   [_zloc node children]
   (node/replace-children node children))
 
 (defn position
-  "Returns the ones-based [row col] of the start of the current node"
-  [loc]
-  (if (custom-zipper? loc)
-    (:position loc)
+  "Returns the ones-based `[row col]` of the start of the current node in `zloc`."
+  [zloc]
+  (if (custom-zipper? zloc)
+    (:position zloc)
     (throw
      (ex-info
       (str "to use position functions, please construct your zipper with "
@@ -90,187 +91,187 @@
 
 
 (defn-switchable lefts
-  "Returns a seq of the left siblings of this loc"
-  [loc]
-  (map first (:left loc)))
+  "Returns a seq of the left siblings of current node in `zloc`."
+  [zloc]
+  (map first (:left zloc)))
 
 (defn-switchable down
-  "Returns the loc of the leftmost child of the node at this loc, or
-  nil if no children"
-  [loc]
-  (when (branch? loc)
-    (let [{:keys [node _path] [row col] :position} loc
-          [c & cnext :as cs] (children loc)]
+  "Returns zipper with the location at the leftmost child of current node in `zloc`, or
+  nil if no children."
+  [zloc]
+  (when (branch? zloc)
+    (let [{:keys [node] [row col] :position} zloc
+          [c & cnext :as cs] (children zloc)]
       (when cs
         {::custom? true
          :node     c
          :position [row (+ col (node/leader-length node))]
-         :parent   loc
+         :parent   zloc
          :left     []
          :right    cnext}))))
 
 (defn-switchable up
-  "Returns the loc of the parent of the node at this loc, or nil if at
-  the top"
-  [loc]
-  (let [{:keys [node parent left right changed?]} loc]
+  "Returns zipper with the location at the parent of current node in `zloc`, or nil if at
+  the top."
+  [zloc]
+  (let [{:keys [node parent left right changed?]} zloc]
     (when parent
       (if changed?
         (assoc parent
                :changed? true
-               :node (make-node loc
+               :node (make-node zloc
                                 (:node parent)
                                 (concat (map first left) (cons node right))))
         parent))))
 
 (defn-switchable root
-  "zips all the way up and returns the root node, reflecting any changes."
-  [{:keys [end?] :as loc}]
+  "Zips all the way up `zloc` and returns zipper at the root node, reflecting any changes."
+  [{:keys [end?] :as zloc}]
   (if end?
-    (node loc)
-    (let [p (up loc)]
+    (node zloc)
+    (let [p (up zloc)]
       (if p
         (recur p)
-        (node loc)))))
+        (node zloc)))))
 
 (defn-switchable right
-  "Returns the loc of the right sibling of the node at this loc, or nil"
-  [loc]
-  (let [{:keys [node parent position left] [r & rnext :as right] :right} loc]
+  "Returns zipper with location at the right sibling of the current node in `zloc`, or nil."
+  [zloc]
+  (let [{:keys [node parent position left] [r & rnext :as right] :right} zloc]
     (when (and parent right)
-      (assoc loc
+      (assoc zloc
              :node r
              :left (conj left [node position])
              :right rnext
              :position (node/+extent position (node/extent node))))))
 
 (defn-switchable rightmost
-  "Returns the loc of the rightmost sibling of the node at this loc, or self"
-  [loc]
-  (if-let [next (right loc)]
+  "Returns zipper with location at the rightmost sibling of the current node in `zloc`, or self."
+  [zloc]
+  (if-let [next (right zloc)]
     (recur next)
-    loc))
+    zloc))
 
 (defn-switchable left
-  "Returns the loc of the left sibling of the node at this loc, or nil"
-  [loc]
-  (let [{:keys [node parent left right]} loc]
+  "Returns zipper with location at the left sibling of the current node in `zloc`, or nil."
+  [zloc]
+  (let [{:keys [node parent left right]} zloc]
     (when (and parent (seq left))
       (let [[lnode lpos] (peek left)]
-        (assoc loc
+        (assoc zloc
                :node lnode
                :position lpos
                :left (pop left)
                :right (cons node right))))))
 
 (defn-switchable leftmost
-  "Returns the loc of the leftmost sibling of the node at this loc, or self"
-  [loc]
-  (let [{:keys [node parent left right]} loc]
+  "Returns zipper with location at the leftmost sibling of the current node in `zloc`, or self."
+  [zloc]
+  (let [{:keys [node parent left right]} zloc]
     (if (and parent (seq left))
       (let [[lnode lpos] (first left)]
-        (assoc loc
+        (assoc zloc
                :node lnode
                :position lpos
                :left []
                :right (concat (map first (rest left)) [node] right)))
-      loc)))
+      zloc)))
 
 (defn-switchable insert-left
-  "Inserts the item as the left sibling of the node at this loc,
- without moving"
-  [loc item]
-  (let [{:keys [parent position left]} loc]
+  "Returns zipper with `item` inserted as the left sibling of current node in `zloc`,
+ without moving location."
+  [zloc item]
+  (let [{:keys [parent position left]} zloc]
     (if-not parent
       (throw (ex-info "cannot insert left at top" {}))
-      (assoc loc
+      (assoc zloc
              :changed? true
              :left (conj left [item position])
              :position (node/+extent position (node/extent item))))))
 
 (defn-switchable insert-right
-  "Inserts the item as the right sibling of the node at this loc,
-  without moving"
-  [loc item]
-  (let [{:keys [parent right]} loc]
+  "Returns zipper with `item` inserted as the right sibling of the current node in `zloc`,
+  without moving location."
+  [zloc item]
+  (let [{:keys [parent right]} zloc]
     (if-not parent
       (throw (ex-info "cannot insert right at top" {}))
-      (assoc loc
+      (assoc zloc
              :changed? true
              :right (cons item right)))))
 
 (defn-switchable replace
-  "Replaces the node at this loc, without moving"
-  [loc node]
-  (assoc loc :changed? true :node node))
+  "Returns zipper with `node` replacing current node in `zloc`, without moving location."
+  [zloc node]
+  (assoc zloc :changed? true :node node))
 
 (defn edit
-  "Replaces the node at this loc with the value of (f node args)"
-  [loc f & args]
-  (if (custom-zipper? loc)
-    (replace loc (apply f (node loc) args))
-    (apply clj-zip/edit loc f args)))
+  "Returns zipper with value of `(f current-node args)` replacing current node in `zloc`"
+  [zloc f & args]
+  (if (custom-zipper? zloc)
+    (replace zloc (apply f (node zloc) args))
+    (apply clj-zip/edit zloc f args)))
 
 (defn-switchable insert-child
-  "Inserts the item as the leftmost child of the node at this loc,
-  without moving"
-  [loc item]
-  (replace loc (make-node loc (node loc) (cons item (children loc)))))
+  "Returns zipper with `item` inserted as the leftmost child of the current node in `zloc`,
+  without moving location."
+  [zloc item]
+  (replace zloc (make-node zloc (node zloc) (cons item (children zloc)))))
 
 (defn-switchable append-child
-  "Inserts the item as the rightmost child of the node at this loc,
-  without moving"
-  [loc item]
-  (replace loc (make-node loc (node loc) (concat (children loc) [item]))))
+  "Returns zipper with `item` inserted as the rightmost child of the current node in `zloc`,
+  without moving."
+  [zloc item]
+  (replace zloc (make-node zloc (node zloc) (concat (children zloc) [item]))))
 
 (defn-switchable next
-  "Moves to the next loc in the hierarchy, depth-first. When reaching
-  the end, returns a distinguished loc detectable via end?. If already
+  "Returns zipper with location at the next depth-first location in the hierarchy in `zloc`.
+  When reaching the end, returns a distinguished zipper detectable via [[end?]]. If already
   at the end, stays there."
-  [{:keys [end?] :as loc}]
+  [{:keys [end?] :as zloc}]
   (if end?
-    loc
+    zloc
     (or
-     (and (branch? loc) (down loc))
-     (right loc)
-     (loop [p loc]
+     (and (branch? zloc) (down zloc))
+     (right zloc)
+     (loop [p zloc]
        (if (up p)
          (or (right (up p)) (recur (up p)))
          (assoc p :end? true))))))
 
 (defn-switchable prev
-  "Moves to the previous loc in the hierarchy, depth-first. If already
-  at the root, returns nil."
-  [loc]
-  (if-let [lloc (left loc)]
-    (loop [loc lloc]
-      (if-let [child (and (branch? loc) (down loc))]
+  "Returns zipper with location at the previous depth-first location in the hierarchy in `zloc`.
+  If already at the root, returns nil."
+  [zloc]
+  (if-let [lloc (left zloc)]
+    (loop [zloc lloc]
+      (if-let [child (and (branch? zloc) (down zloc))]
         (recur (rightmost child))
-        loc))
-    (up loc)))
+        zloc))
+    (up zloc)))
 
 (defn-switchable end?
-  "Returns true if loc represents the end of a depth-first walk"
-  [loc]
-  (:end? loc))
+  "Returns true if at end of depth-first walk in `zloc`."
+  [zloc]
+  (:end? zloc))
 
 (defn-switchable remove
-  "Removes the node at loc, returning the loc that would have preceded
+  "Returns zipper with current node in `zloc` removed, with location at node that would have preceded
   it in a depth-first walk."
-  [loc]
-  (let [{:keys [_node parent left right]} loc]
+  [zloc]
+  (let [{:keys [parent left right]} zloc]
     (if-not parent
       (throw (ex-info "cannot remove at top" {}))
       (if (seq left)
-        (loop [loc (let [[lnode lpos] (peek left)]
-                     (assoc loc
+        (loop [zloc (let [[lnode lpos] (peek left)]
+                     (assoc zloc
                             :changed? true
                             :position lpos
                             :node lnode
                             :left (pop left)))]
-          (if-let [child (and (branch? loc) (down loc))]
+          (if-let [child (and (branch? zloc) (down zloc))]
             (recur (rightmost child))
-            loc))
+            zloc))
         (assoc parent
                :changed? true
-               :node (make-node loc (:node parent) right))))))
+               :node (make-node zloc (:node parent) right))))))

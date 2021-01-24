@@ -10,89 +10,81 @@
                        sexpr-fn sexpr-count
                        children]
   node/Node
-  (tag [_] tag)
+  (tag [_node] tag)
   (node-type [_node] :reader)
-  (printable-only? [_]
+  (printable-only? [_node]
     (not sexpr-fn))
   (sexpr* [_node opts]
     (if sexpr-fn
       (sexpr-fn (node/sexprs children opts))
       (throw (ex-info "unsupported operation" {}))))
-  (length [_]
+  (length [_node]
     (-> (node/sum-lengths children)
         (+ 1 (count prefix) (count suffix))))
-  (string [_]
+  (string [_node]
     (str "#" prefix (node/concat-strings children) suffix))
 
   node/InnerNode
-  (inner? [_]
-    true)
-  (children [_]
-    children)
+  (inner? [_node] true)
+  (children [_node] children)
   (replace-children [this children']
     (when sexpr-count
       (node/assert-sexpr-count children' sexpr-count))
     (assoc this :children children'))
-  (leader-length [_]
+  (leader-length [_node]
     (inc (count prefix)))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (defrecord ReaderMacroNode [children]
   node/Node
-  (tag [_] :reader-macro)
+  (tag [_node] :reader-macro)
   (node-type [_node] :reader-macro)
-  (printable-only?[_] false)
+  (printable-only?[_node] false)
   (sexpr* [node _opts]
     (list 'read-string (node/string node)))
-  (length [_]
+  (length [_node]
     (inc (node/sum-lengths children)))
-  (string [_]
+  (string [_node]
     (str "#" (node/concat-strings children)))
 
   node/InnerNode
-  (inner? [_]
-    true)
-  (children [_]
-    children)
+  (inner? [_node] true)
+  (children [_node] children)
   (replace-children [this children']
     (node/assert-sexpr-count children' 2)
     (assoc this :children children'))
-  (leader-length [_]
-    1)
+  (leader-length [_node] 1)
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (defrecord DerefNode [children]
   node/Node
-  (tag [_] :deref)
-  (node-type [_n] :deref)
-  (printable-only?[_] false)
+  (tag [_node] :deref)
+  (node-type [_node] :deref)
+  (printable-only?[_node] false)
   (sexpr* [_node opts]
     (list* 'deref (node/sexprs children opts)))
-  (length [_]
+  (length [_node]
     (inc (node/sum-lengths children)))
-  (string [_]
+  (string [_node]
     (str "@" (node/concat-strings children)))
 
   node/InnerNode
-  (inner? [_]
-    true)
-  (children [_]
-    children)
+  (inner? [_node] true)
+  (children [_node] children)
   (replace-children [this children']
     (node/assert-sexpr-count children' 1)
     (assoc this :children children'))
-  (leader-length [_]
-    1)
+  (leader-length [_node] 1)
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (node/make-printable! ReaderNode)
 (node/make-printable! ReaderMacroNode)
@@ -110,16 +102,16 @@
     children))
 
 (defn var-node
-  "Create node representing a var.
-   Takes either a seq of nodes or a single one."
+  "Create node representing a var
+   where `children` is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->node :var "'" "" #(list* 'var %) 1 children)
     (recur [children])))
 
 (defn eval-node
-  "Create node representing an inline evaluation. (`#=...`)
-   Takes either a seq of nodes or a single one."
+  "Create node representing an inline evaluation (i.e. `#=...`)
+   where `children` is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->node
@@ -129,15 +121,15 @@
     (recur [children])))
 
 (defn reader-macro-node
-  "Create node representing a reader macro. (`#... ...`)"
+  "Create node representing a reader macro (i.e. `#... ...`) with `children`. "
   ([children]
    (->ReaderMacroNode children))
   ([macro-node form-node]
    (->ReaderMacroNode [macro-node (ws/spaces 1) form-node])))
 
 (defn deref-node
-  "Create node representing the dereferencing of a form. (`@...`)
-   Takes either a seq of nodes or a single one."
+  "Create node representing the dereferencing of a form (i.e. `@...`)
+   where `children` is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->DerefNode children)

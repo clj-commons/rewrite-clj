@@ -20,11 +20,11 @@
 ;; ## Zipper
 
 (defn edn*
-  "Create zipper over the given Clojure/EDN node.
+  "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj.parse]]).
 
-   If `:track-position?` is set, this will create a custom zipper that will
-   return the current row/column using `rewrite-clj.zip/position`. (Note that
-   this custom zipper will be incompatible with `clojure.zip`'s functions.)"
+  Optional `opts` can specify:
+  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
   ([node]
    (edn* node {}))
   ([node {:keys [track-position?]}]
@@ -53,7 +53,7 @@
 ;; ## Inspection
 
 (defn tag
-  "Get tag of node at the current zipper location."
+  "Return tag of current node in `zloc`."
   [zloc]
   (some-> zloc z/node node/tag))
 
@@ -72,7 +72,7 @@
    (some-> zloc z/node (node/child-sexprs (get-opts zloc)))))
 
 (defn length
-  "Get length of printable string for the given zipper location."
+  "Return length of printable string of current node in `zloc`."
   [zloc]
   (or (some-> zloc z/node node/length) 0))
 
@@ -83,29 +83,36 @@
   (some-> zloc z/node node/value))
 
 ;; ## Read
-
 (defn of-string
-  "Create zipper from String."
+  "Create and return zipper from all forms in Clojure/ClojureScript/EDN string `s`.
+
+  Optional `opts` can specify:
+  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
   ([s] (of-string s {}))
-  ([s options]
-   (some-> s p/parse-string-all (edn options))))
+  ([s opts]
+   (some-> s p/parse-string-all (edn opts))))
 
 #?(:clj
    (defn of-file
-     "Create zipper from File."
+     "Create and return zipper from all forms in Clojure/ClojureScript/EDN File `f`.
+
+     Optional `opts` can specify:
+     - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
+     - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
      ([f] (of-file f {}))
-     ([f options]
-      (some-> f p/parse-file-all (edn options)))))
+     ([f opts]
+      (some-> f p/parse-file-all (edn opts)))))
 
 ;; ## Write
 
 (defn ^{:added "0.4.0"} string
-  "Create string representing the current zipper location."
+  "Return string representing the current node in `zloc`."
   [zloc]
   (some-> zloc z/node node/string))
 
 (defn ^{:added "0.4.0"} root-string
-  "Create string representing the zipped-up zipper."
+  "Return string representing the zipped-up `zloc` zipper."
   [zloc]
   (some-> zloc z/root node/string))
 
@@ -119,7 +126,7 @@
      (string-print s)))
 
 (defn print
-  "Print current zipper location.
+  "Print current node in `zloc`.
 
    NOTE: Optional `writer` is currently ignored for ClojureScript."
   [zloc & [writer]]
@@ -128,7 +135,7 @@
           (print! writer)))
 
 (defn print-root
-  "Zip up and print root node.
+  "Zip up and print `zloc` from root node.
 
    NOTE: Optional `writer` is currently ignored for ClojureScript."
   [zloc & [writer]]

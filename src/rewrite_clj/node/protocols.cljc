@@ -1,6 +1,4 @@
-(ns
-  ^{:added "0.4.0"}
-  rewrite-clj.node.protocols
+(ns ^{:added "0.4.0"} rewrite-clj.node.protocols
   (:require [clojure.string :as string]
             [rewrite-clj.interop :as interop]
             #?(:clj [rewrite-clj.potemkin.clojure :refer [defprotocol+]]))
@@ -11,27 +9,26 @@
 ;; ## Node
 
 (defprotocol+ Node
-  "Protocol for EDN/Clojure nodes."
-  (tag [_]
-    "Keyword representing the type of the node.")
+  "Protocol for EDN/Clojure/ClojureScript nodes."
+  (tag [node]
+    "Returns keyword representing type of `node`.")
   (node-type [node]
     "Returns keyword representing the node type for `node`.
      Currently internal and used to support testing.")
-  (printable-only? [_]
-    "Return true if the node cannot be converted to an s-expression
-     element.")
-  (sexpr* [_node opts]
-    "Convert node to s-expression.")
-  (length [_]
-    "Get number of characters for the string version of this node.")
-  (string [_]
-    "Convert node to printable string."))
+  (printable-only? [node]
+    "Return true if `node` cannot be converted to an s-expression element.")
+  (sexpr* [node opts]
+    "Return `node` converted to form applying `opts`. Internal, use `sexpr` instead.")
+  (length [node]
+    "Return number of characters for the string version of `node`.")
+  (string [node]
+    "Return the string version of `node`."))
 
 (extend-protocol Node
   #?(:clj Object :cljs default)
-  (tag [_] :unknown)
+  (tag [_this] :unknown)
   (node-type [_this] :unknown)
-  (printable-only? [_] false)
+  (printable-only? [_this] false)
   (sexpr* [this _opts] this)
   (length [this] (count (string this)))
   (string [this] (pr-str this)))
@@ -57,36 +54,36 @@
         (map #(sexpr % opts)))))
 
 (defn ^:no-doc sum-lengths
-  "Sum up lengths of the given nodes."
+  "Return total string length for `nodes`."
   [nodes]
   (reduce + (map length nodes)))
 
 (defn ^:no-doc concat-strings
-  "Convert nodes to strings and concatenate them."
+  "Return string version of `nodes`."
   [nodes]
   (reduce str (map string nodes)))
 
 ;; ## Inner Node
 
 (defprotocol+ InnerNode
-  "Protocol for non-leaf EDN/Clojure nodes."
-  (inner? [_]
-    "Check whether the node can contain children.")
-  (children [_]
-    "Get child nodes.")
-  (replace-children [_ children]
-    "Replace the node's children.")
-  (leader-length [_]
-    "How many characters appear before children?"))
+  "Protocol for non-leaf EDN/Clojure/ClojureScript nodes."
+  (inner? [node]
+    "Returns true if `node` can have children.")
+  (children [node]
+    "Returns child nodes for `node`.")
+  (replace-children [node children]
+    "Returns `node` replacing current children with `children`.")
+  (leader-length [node]
+    "Returns number of characters before children for `node`."))
 
 (extend-protocol InnerNode
   #?(:clj Object :cljs default)
-  (inner? [_] false)
-  (children [_]
+  (inner? [_this] false)
+  (children [_this]
     (throw (ex-info "unsupported operation" {})))
-  (replace-children [_ _]
+  (replace-children [_this _children]
     (throw (ex-info "unsupported operation" {})))
-  (leader-length [_]
+  (leader-length [_this]
     (throw (ex-info "unsupported operation" {}))))
 
 (defn child-sexprs
@@ -99,6 +96,7 @@
   ([node opts]
    (when (inner? node)
      (sexprs (children node) opts))))
+
 
 (defn node?
   ;; TODO: consider a marker interface instead?
@@ -116,7 +114,7 @@
 
 (defprotocol+ NodeCoerceable
   "Protocol for values that can be coerced to nodes."
-  (coerce [_]))
+  (coerce [form] "Coerce `form` to node."))
 
 (defprotocol+ MapQualifiable
   "Protocol for nodes that can be namespaced map qualified"
@@ -128,8 +126,8 @@
 ;; ## Print Helper
 
 (defn- ^:no-doc node->string
-  ^String
-  [node]
+  #?(:clj ^String [node]
+     :cljs ^string [node])
   (let [n (str (if (printable-only? node)
                  (pr-str (string node))
                  (string node)))

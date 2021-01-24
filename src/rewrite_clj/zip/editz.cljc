@@ -12,9 +12,8 @@
 ;; ## In-Place Modification
 
 (defn replace
-  "Replace the node at the given location with one representing
-   the given value. (The value will be coerced to a node if
-   possible.)"
+  "Return `zloc` with the current node replaced by `value`.
+  If `value` is not already a node, an attempt will be made to coerce it to one."
   [zloc value]
   (z/replace zloc (node/coerce value)))
 
@@ -39,19 +38,18 @@
   [zloc f & args]
   (z/edit zloc (node-editor (base/get-opts zloc)) #(apply f % args)))
 
-
 ;; ## Splice
 
 (defn splice
-  "Splice the given node, i.e. merge its children into the current one
+  "Return zipper with the children of the current node in `zloc` merged into itself.
    (akin to Clojure's `unquote-splicing` macro: `~@...`).
-
    - if the node is not one that can have children, no modification will
      be performed.
    - if the node has no or only whitespace children, it will be removed.
    - otherwise, splicing will be performed, moving the zipper to the first
-     non-whitespace child afterwards.
-   "
+     non-whitespace spliced child node.
+
+  For example, given `[[1 2 3] 4 5 6]`, if zloc is located at vector `[1 2 3]`, a splice will result in raising the vector's children up `[1 2 3 4 5 6]` and locating the zipper at node `1`."
   [zloc]
   (if (z/branch? zloc)
     (if-let [children (->> (z/children zloc)

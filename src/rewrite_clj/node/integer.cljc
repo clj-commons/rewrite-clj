@@ -8,13 +8,13 @@
 
 (defrecord IntNode [value base]
   node/Node
-  (tag [_] :token)
-  (node-type [_n] :int)
-  (printable-only? [_] false)
-  (sexpr* [_ _opts] value)
-  (length [this]
-    (count (node/string this)))
-  (string [_]
+  (tag [_node] :token)
+  (node-type [_node] :int)
+  (printable-only? [_node] false)
+  (sexpr* [_node _opts] value)
+  (length [node]
+    (count (node/string node)))
+  (string [_node]
     (let [sign (when (< value 0)
                  "-")
           abs-value (cond-> value (< value 0) -)
@@ -27,15 +27,19 @@
       (str sign prefix s)))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (node/make-printable! IntNode)
 
 ;; ## Constructor
 
 (defn integer-node
-  "Create node for an EDN integer with the given base."
+  "Create node representing an integer `value` in `base`.
+
+  `base` defaults to 10.
+
+  Note: the parser does not currently parse to integer-nodes, but the write can handle them just fine."
   ([value]
    (integer-node value 10))
   ([value base]

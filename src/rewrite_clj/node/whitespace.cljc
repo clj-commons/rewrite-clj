@@ -35,42 +35,49 @@
 
 (defrecord WhitespaceNode [whitespace]
   node/Node
-  (tag [_] :whitespace)
-  (node-type [_n] :whitespace)
-  (printable-only? [_] true)
-  (sexpr* [_node _opts] (sexpr-unsupported))
-  (length [_] (count whitespace))
-  (string [_] whitespace)
+  (tag [_node] :whitespace)
+  (node-type [_node] :whitespace)
+  (printable-only? [_node] true)
+  (sexpr* [_node _opts] 
+    (sexpr-unsupported))
+  (length [_node] 
+    (count whitespace))
+  (string [_node] whitespace)
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (defrecord CommaNode [commas]
   node/Node
-  (tag [_] :comma)
-  (node-type [_n] :comma)
-  (printable-only? [_] true)
-  (sexpr* [_node _opts] (sexpr-unsupported))
-  (length [_] (count commas))
-  (string [_] commas)
+  (tag [_node] :comma)
+  (node-type [_node] :comma)
+  (printable-only? [_node] true)
+  (sexpr* [_node _opts] 
+    (sexpr-unsupported))
+  (length [_node] 
+    (count commas))
+  (string [_node] commas)
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (defrecord NewlineNode [newlines]
   node/Node
-  (tag [_] :newline)
-  (node-type [_n] :newline)
-  (printable-only? [_] true)
-  (sexpr* [_node _opts] (sexpr-unsupported))
-  (length [_] (*count-fn* newlines))
-  (string [_] (*newline-fn* newlines))
+  (tag [_node] :newline)
+  (node-type [_node] :newline)
+  (printable-only? [_node] true)
+  (sexpr* [_node _opts] 
+    (sexpr-unsupported))
+  (length [_node] 
+    (*count-fn* newlines))
+  (string [_node] 
+    (*newline-fn* newlines))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (node/make-printable! WhitespaceNode)
 (node/make-printable! CommaNode)
@@ -86,19 +93,19 @@
        (every? pred s)))
 
 (defn whitespace-node
-  "Create whitespace node."
+  "Create whitespace node of string `s`, where `s` is one or more space characters."
   [s]
   {:pre [(string-of? s r/space?)]}
   (->WhitespaceNode s))
 
 (defn comma-node
-  "Create comma node."
+  "Create comma node of string `s`, where `s` is one or more comma characters."
   [s]
   {:pre [(string-of? s r/comma?)]}
   (->CommaNode s))
 
 (defn newline-node
-  "Create newline node."
+  "Create newline node of string `s`, where `s` is one or more linebreak characters."
   [s]
   {:pre [(string-of? s r/linebreak?)]}
   (->NewlineNode s))
@@ -110,7 +117,7 @@
         :else :whitespace))
 
 (defn whitespace-nodes
-  "Convert a string of whitespace to whitespace/newline nodes."
+  "Convert string `s` of whitespace to whitespace/newline nodes."
   [s]
   {:pre [(string-of? s r/whitespace?)]}
   (->> (partition-by classify-whitespace s)
@@ -125,18 +132,18 @@
 ;; ## Utilities
 
 (defn spaces
-  "Create node representing the given number of spaces."
+  "Create node representing `n` spaces."
   [n]
   (whitespace-node (apply str (repeat n \space))))
 
 (defn newlines
-  "Create node representing the given number of newline characters."
+  "Create node representing `n` newline characters."
   [n]
   (newline-node (apply str (repeat n \newline))))
 
 (let [comma (whitespace-nodes ", ")]
   (defn comma-separated
-    "Interleave the given seq of nodes with `\", \"` nodes."
+    "Interleave `nodes` with `\", \"` nodes."
     [nodes]
     (->> nodes
          (mapcat #(cons % comma))
@@ -144,20 +151,20 @@
 
 (let [nl (newline-node "\n")]
   (defn line-separated
-    "Interleave the given seq of nodes with newline nodes."
+    "Interleave `nodes` with newline nodes."
     [nodes]
     (butlast (interleave nodes (repeat nl)))))
 
 (let [space (whitespace-node " ")]
   (defn space-separated
-    "Interleave the given seq of nodes with `\" \"` nodes."
+    "Interleave `nodes` with `\" \"` nodes."
     [nodes]
     (butlast (interleave nodes (repeat space)))))
 
 ;; ## Predicates
 
 (defn whitespace?
-  "Check whether a node represents whitespace."
+  "Returns true if `node` represents Clojure whitespace."
   [node]
   (contains?
    #{:whitespace
@@ -166,11 +173,11 @@
    (node/tag node)))
 
 (defn linebreak?
-  "Check whether a ndoe represents linebreaks."
+  "Returns true if `node` represents one or more linebreaks."
   [node]
   (= (node/tag node) :newline))
 
 (defn comma?
-  "Check whether a node represents a comma."
+  "Returns true if `node` represents one or more commas."
   [node]
   (= (node/tag node) :comma))

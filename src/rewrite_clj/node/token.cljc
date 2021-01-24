@@ -26,16 +26,17 @@
 
 (defrecord TokenNode [value string-value]
   node/Node
-  (tag [_] :token)
-  (node-type [_n] :token)
-  (printable-only? [_] false)
+  (tag [_ndoe] :token)
+  (node-type [_node] :token)
+  (printable-only? [_node] false)
   (sexpr* [_node _opts] value)
-  (length [_] (count string-value))
-  (string [_] string-value)
+  (length [_node] 
+    (count string-value))
+  (string [_node] string-value)
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (defrecord SymbolNode [value string-value map-qualifier]
   node/Node

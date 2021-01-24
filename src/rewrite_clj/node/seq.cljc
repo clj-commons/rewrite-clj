@@ -12,52 +12,49 @@
                     seq-fn
                     children]
   node/Node
-  (tag [_this]
-    tag)
-  (node-type [_n] :seq)
-  (printable-only? [_] false)
+  (tag [_node] tag)
+  (node-type [_node] :seq)
+  (printable-only? [_node] false)
   (sexpr* [_node opts]
     (seq-fn (node/sexprs children opts)))
-  (length [_]
+  (length [_node]
     (+ wrap-length (node/sum-lengths children)))
-  (string [_this]
+  (string [_node]
     (->> (node/concat-strings children)
          (interop/simple-format format-string)))
 
   node/InnerNode
-  (inner? [_]
-    true)
-  (children [_]
-    children)
-  (replace-children [this children']
-    (assoc this :children children'))
-  (leader-length [_]
+  (inner? [_node] true)
+  (children [_node] children)
+  (replace-children [node children']
+    (assoc node :children children'))
+  (leader-length [_node]
     (dec wrap-length))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (node/make-printable! SeqNode)
 
 ;; ## Constructors
 
 (defn list-node
-  "Create a node representing an EDN list."
+  "Create a node representing a list with `children`."
   [children]
   (->SeqNode :list "(%s)" 2 #(apply list %) children))
 
 (defn vector-node
-  "Create a node representing an EDN vector."
+  "Create a node representing a vector with `children`."
   [children]
   (->SeqNode :vector "[%s]" 2 vec children))
 
 (defn set-node
-  "Create a node representing an EDN set."
+  "Create a node representing a set with `children`."
   [children]
   (->SeqNode :set "#{%s}" 3 set children))
 
 (defn map-node
-  "Create a node representing an EDN map."
+  "Create a node representing an map with `children`."
   [children]
   (->SeqNode :map "{%s}" 2 #(apply hash-map %) children))

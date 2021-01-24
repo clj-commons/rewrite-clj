@@ -7,31 +7,31 @@
 
 (defrecord CommentNode [s]
   node/Node
-  (tag [_] :comment)
-  (node-type [_n] :comment)
-  (printable-only? [_] true)
-  (sexpr* [_ _opts]
+  (tag [_node] :comment)
+  (node-type [_node] :comment)
+  (printable-only? [_node] true)
+  (sexpr* [_node _opts]
     (throw (ex-info "unsupported operation" {})))
-  (length [_]
+  (length [_node]
     (+ 1 (count s)))
-  (string [_]
+  (string [_node]
     (str ";" s))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (node/make-printable! CommentNode)
 
 ;; ## Constructor
 
 (defn comment-node
-  "Create node representing an EDN comment."
+  "Create node representing a comment with text `s`."
   [s]
   {:pre [(re-matches #"[^\r\n]*[\r\n]?" s)]}
   (->CommentNode s))
 
 (defn comment?
-  "Check whether a node represents a comment."
+  "Returns true if `node` is a comment."
   [node]
   (= (node/tag node) :comment))

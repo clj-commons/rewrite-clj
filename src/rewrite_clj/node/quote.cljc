@@ -7,28 +7,28 @@
 
 (defrecord QuoteNode [tag prefix sym children]
   node/Node
-  (tag [_] tag)
+  (tag [_node] tag)
   (node-type [_node] :quote)
-  (printable-only? [_] false)
-  (sexpr* [_ opts]
+  (printable-only? [_node] false)
+  (sexpr* [_node opts]
     (list sym (first (node/sexprs children opts))))
-  (length [_]
+  (length [_node]
     (+ (count prefix) (node/sum-lengths children)))
-  (string [_]
+  (string [_node]
     (str prefix (node/concat-strings children)))
 
   node/InnerNode
-  (inner? [_] true)
-  (children [_] children)
-  (replace-children [this children']
+  (inner? [_node] true)
+  (children [_node] children)
+  (replace-children [node children']
     (node/assert-single-sexpr children')
-    (assoc this :children children'))
-  (leader-length [_]
+    (assoc node :children children'))
+  (leader-length [_node]
     (count prefix))
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (node/make-printable! QuoteNode)
 
@@ -40,8 +40,8 @@
   (->QuoteNode t prefix sym children))
 
 (defn quote-node
-  "Create node representing a quoted form.
-   Takes either a seq of nodes or a single one."
+  "Create node representing a quoted form where `children`
+   is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->node
@@ -50,8 +50,8 @@
     (recur [children])))
 
 (defn syntax-quote-node
-  "Create node representing a syntax-quoted form.
-   Takes either a seq of nodes or a single one."
+  "Create node representing a syntax-quoted form where `children`
+   is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->node
@@ -60,8 +60,8 @@
     (recur [children])))
 
 (defn unquote-node
-  "Create node representing an unquoted form. (`~...`)
-   Takes either a seq of nodes or a single one."
+  "Create node representing an unquoted form (i.e. `~...`) where `children`.
+   is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->node
@@ -70,8 +70,8 @@
     (recur [children])))
 
 (defn unquote-splicing-node
-  "Create node representing an unquote-spliced form. (`~@...`)
-   Takes either a seq of nodes or a single one."
+  "Create node representing an unquote-spliced form (i.e. `~@...`) where `children`.
+   is either a sequence of nodes or a single node."
   [children]
   (if (sequential? children)
     (->node

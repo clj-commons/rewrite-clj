@@ -7,18 +7,23 @@
 
 (defrecord RegexNode [pattern]
   rewrite-clj.node.protocols/Node
-  (tag [_] :regex)
+  (tag [_node] :regex)
   (node-type [_node] :regex)
-  (printable-only? [_] false)
-  (sexpr* [_node _opts] (list 're-pattern pattern))
-  (length [_] 1)
-  (string [_] (str "#\"" pattern "\"")))
+  (printable-only? [_node] false)
+  (sexpr* [_node _opts]
+    (list 're-pattern pattern))
+  (length [_node] 1)
+  (string [_node] 
+    (str "#\"" pattern "\""))
+
+  ;; TODO: interesting, no toString like other nodes 
+  )
 
 (node/make-printable! RegexNode)
 
 ;; ## Constructor
 
 (defn regex-node
-  "Create node representing a regex"
+  "Create node representing a regex with `pattern-string`"
   [pattern-string]
   (->RegexNode pattern-string))

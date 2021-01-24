@@ -12,7 +12,7 @@
 ;; ## Exception
 
 (defn throw-reader
-  "Throw reader exception, including line/column."
+  "Throw reader exception, including line line/column."
   [#?(:cljs ^:not-native reader :default reader) fmt & data]
   (let [c (r/get-column-number reader)
         l (r/get-line-number reader)]
@@ -36,15 +36,18 @@
   (identical? \, c))
 
 (defn whitespace?
+  "Checks whether a given character is whitespace"
   #?(:clj ^Boolean [^java.lang.Character c]
      :default [c])
   (interop/clojure-whitespace? c))
 
 (defn linebreak?
+  "Checks whether the character is a newline"
   [#?(:clj ^java.lang.Character c :default c)]
   (contains? #{\newline \return} c))
 
 (defn space?
+  "Checks whether the character is a space"
   [#?(:clj ^java.lang.Character c :default c)]
   (and c
        (whitespace? c)

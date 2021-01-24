@@ -1,6 +1,9 @@
-(ns
+(ns rewrite-clj.node
+  "Create and evaluate nodes.
+
+  All nodes represent Clojure/ClojureScript/EDN."
   ^{:added "0.4.0"}
-  rewrite-clj.node
+  (:refer-clojure :exclude [string coerce])
   (:require [rewrite-clj.node.coercer]
             [rewrite-clj.node.comment]
             [rewrite-clj.node.fn]

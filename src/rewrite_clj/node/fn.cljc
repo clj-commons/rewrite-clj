@@ -51,7 +51,7 @@
                          s (name (gensym base))]]
                (symbol (str s "#")))
         vararg? (atom false)
-        ;; TODO: an atom was the first interop solution I came up with when transcribing to cljs, review for something simpler?
+        ;; TODO: an atom was the first interop solution I came up with when transcribing to cljc, review for something simpler?
         max-n (atom 0)
         body (w/prewalk
               #(or (symbol->gensym syms vararg? max-n %) %)
@@ -66,36 +66,32 @@
 
 (defrecord FnNode [children]
   node/Node
-  (tag [_] :fn)
-  (node-type [_n] :fn)
-  (printable-only? [_]
-    false)
+  (tag [_node] :fn)
+  (node-type [_node] :fn)
+  (printable-only? [_node] false)
   (sexpr* [_node opts]
     (fn-walk (node/sexprs children opts)))
-  (length [_]
+  (length [_node]
     (+ 3 (node/sum-lengths children)))
-  (string [_]
+  (string [_node]
     (str "#(" (node/concat-strings children) ")"))
 
   node/InnerNode
-  (inner? [_]
-    true)
-  (children [_]
-    children)
-  (replace-children [this children']
-    (assoc this :children children'))
-  (leader-length [_]
-    2)
+  (inner? [_node] true)
+  (children [_node] children)
+  (replace-children [node children']
+    (assoc node :children children'))
+  (leader-length [_node] 2)
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (node/make-printable! FnNode)
 
 ;; ## Constructor
 
 (defn fn-node
-  "Create node representing an anonymous function."
+  "Create node representing an anonymous function with `children`."
   [children]
   (->FnNode children))

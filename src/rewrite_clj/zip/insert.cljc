@@ -23,7 +23,8 @@
          (reduce insert-fn zloc))))
 
 (defn insert-right
-  "Insert item to the right of the current location. Will insert a space if necessary."
+  "Return zipper with `item` inserted to the right of the current node in `zloc`.
+  Will insert a space if necessary."
   [zloc item]
   (insert
     z/right
@@ -32,7 +33,8 @@
     zloc item))
 
 (defn insert-left
-  "Insert item to the right of the left location. Will insert a space if necessary."
+  "Return zipper with `item` inserted to the left of the current node in `zloc`.
+  Will insert a space if necessary."
   [zloc item]
   (insert
     z/left
@@ -41,7 +43,7 @@
     zloc item))
 
 (defn insert-child
-  "Insert item as first child of the current node. Will insert a space if necessary."
+  "Return zipper with `item` inserted as the first child of the current node in `zloc`."
   [zloc item]
   (insert
     z/down
@@ -50,7 +52,8 @@
     zloc item))
 
 (defn append-child
-  "Insert item as last child of the current node. Will insert a space if necessary."
+  "Return zipper with `item` appended as last child of the current node in `zloc`.
+  Will insert a space if necessary."
   [zloc item]
   (insert
     #(some-> % z/down z/rightmost)

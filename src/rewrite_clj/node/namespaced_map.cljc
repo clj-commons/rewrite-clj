@@ -7,22 +7,23 @@
 (defrecord MapQualifierNode [auto-resolved? prefix]
   node/Node
   ;; TODO: tag is :token? that's probably not right!
-  (tag [_n] :token)
-  (node-type [_n] :map-qualifier)
-  (printable-only? [_n] true)
-  (sexpr* [_n _opts]
+  (tag [_node] :token)
+  (node-type [_node] :map-qualifier)
+  (printable-only? [_node] true)
+  (sexpr* [_node _opts]
     (throw (ex-info "unsupported operation" {})))
-  (length [_n]
+  (length [_node]
     (+ 2 ;; for #:
        (if auto-resolved? 1 0) ;; for extra :
        (count prefix)))
-  (string [_n]
+  (string [_node]
     (str "#:"
          (when auto-resolved? ":")
          prefix))
+
   Object
-  (toString [n]
-    (node/string n)))
+  (toString [node]
+    (node/string node)))
 
 (defn- edit-map-children
   "A map node's children are a list of nodes that can contain non-sexpr-able elements (ex. whitespace).
@@ -104,10 +105,8 @@
     (node/concat-strings children))
 
   node/InnerNode
-  (inner? [_node]
-    true)
-  (children [_node]
-    children)
+  (inner? [_node] true)
+  (children [_node] children)
   (replace-children [node children']
     (assoc node :children (apply-context children')))
   (leader-length [_node]

@@ -19,18 +19,22 @@
    (base/tag zloc)))
 
 (defn list?
+  "Returns true if current node in `zloc` is a list."
   [zloc]
   (= (base/tag zloc) :list))
 
 (defn vector?
+  "Returns true if current node in `zloc` is a vector."
   [zloc]
   (= (base/tag zloc) :vector))
 
 (defn set?
+  "Returns true if current node in `zloc` is a set."
   [zloc]
   (= (base/tag zloc) :set))
 
 (defn map?
+  "Returns true if current node in `zloc` is a map."
   [zloc]
   (= (base/tag zloc) :map))
 

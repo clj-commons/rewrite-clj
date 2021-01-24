@@ -7,35 +7,34 @@
 
 (defrecord UnevalNode [children]
   node/Node
-  (tag [_] :uneval)
-  (node-type [_n] :uneval)
-  (printable-only? [_] true)
+  (tag [_node] :uneval)
+  (node-type [_node] :uneval)
+  (printable-only? [_node] true)
   (sexpr* [_node _opts]
     (throw (ex-info "unsupported operation" {})))
-  (length [_]
+  (length [_node]
     (+ 2 (node/sum-lengths children)))
-  (string [_]
+  (string [_node]
     (str "#_" (node/concat-strings children)))
 
   node/InnerNode
-  (inner? [_] true)
-  (children [_] children)
-  (replace-children [this children']
+  (inner? [_node] true)
+  (children [_node] children)
+  (replace-children [node children']
     (node/assert-single-sexpr children')
-    (assoc this :children children'))
-  (leader-length [_]
-    2)
+    (assoc node :children children'))
+  (leader-length [_node] 2)
 
   Object
-  (toString [this]
-    (node/string this)))
+  (toString [node]
+    (node/string node)))
 
 (node/make-printable! UnevalNode)
 
 ;; ## Constructor
 
 (defn uneval-node
-  "Create node representing an EDN uneval `#_` form."
+  "Create node representing an uneval `#_` form with `children`."
   [children]
   (if (sequential? children)
     (do
