@@ -25,18 +25,25 @@
     "   \n   "     [[:whitespace "   "]
                     [:newline "\n"]
                     [:whitespace "   "]]
-    #?@(:clj ["\u2028"       [[:whitespace "\u2028"]]])
     " \t \r\n \t " [[:whitespace " \t "]
                     [:newline "\n"]
                     [:whitespace " \t "]]))
 
+#?(:clj
+   (deftest t-parsing-unicode-whitespace-strings
+     (are [?ws ?children]
+         (let [n (p/parse-string-all ?ws)]
+           (is (= :forms (node/tag n)))
+           (is (= (.replace ?ws "\r\n" "\n") (node/string n)))
+           (is (= ?children (map (juxt node/tag node/string) (node/children n)))))
+       "\u2028"       [[:whitespace "\u2028"]])))
+
 (deftest t-parsing-simple-data
   (are [?s ?r]
-       (binding [*ns* (find-ns 'rewrite-clj.parser-test)]
-         (let [n (p/parse-string ?s)]
-           (is (= :token (node/tag n)))
-           (is (= ?s (node/string n)))
-           (is (= ?r (node/sexpr n)))))
+      (let [n (p/parse-string ?s)]
+        (is (= :token (node/tag n)))
+        (is (= ?s (node/string n)))
+        (is (= ?r (node/sexpr n))))
     "0"                          0
     "0.1"                        0.1
     "12e10"                      1.2e11
@@ -71,6 +78,24 @@
     ":&:hover"    :&:hover
     ;; clj clojure reader can't parse :&::before but we can create a keyword for it
     ":&::before"  (keyword "&::before")))
+
+(deftest t-ratios
+  (are [?s ?r]
+       (let [n (p/parse-string ?s)]
+         (is (= :token (node/tag n)))
+         (is (= ?s (node/string n)))
+         (is (= ?r (node/sexpr n))))
+    "3/4" #?(:clj 3/4
+             ;; no ratios in cljs; they are evaluated on sexpr
+             :cljs 0.75)))
+
+(deftest t-big-integers
+  (are [?s ?r]
+      (let [n (p/parse-string ?s)]
+        (is (= :token (node/tag n)))
+        (is (= ?s (node/string n)))
+        (is (= ?r (node/sexpr n))))
+    "1234567890123456789012345678901234567890" 1234567890123456789012345678901234567890N))
 
 (deftest t-parsing-symbolic-inf-values
   (are [?s ?r]
@@ -243,19 +268,36 @@
          (is (= ?t (node/tag n)))
          (is (= ?s (node/string n)))
          (is (= ?children (map node/tag (node/children n)))))
-    "#'a"                      :var             [:token]
-    "#=(+ 1 2)"                :eval            [:list]
-    "#macro 1"                 :reader-macro    [:token :whitespace :token]
-    "#macro (* 2 3)"           :reader-macro    [:token :whitespace :list]
-    "#?(:clj bar)"             :reader-macro    [:token :list]
-    "#? (:clj bar)"            :reader-macro    [:token :whitespace :list]
-    "#?@ (:clj bar)"           :reader-macro    [:token :whitespace :list]
-    "#?foo baz"                :reader-macro    [:token :whitespace :token]
-    "#_abc"                    :uneval          [:token]
-    "#_(+ 1 2)"                :uneval          [:list]
-    "#(+ % 1)"                 :fn              [:token :whitespace
-                                                 :token :whitespace
-                                                 :token]))
+    "#'a"             :var             [:token]
+    "#=(+ 1 2)"       :eval            [:list]
+    "#macro 1"        :reader-macro    [:token :whitespace :token]
+    "#macro (* 2 3)"  :reader-macro    [:token :whitespace :list]
+    "#?(:clj bar)"    :reader-macro    [:token :list]
+    "#? (:clj bar)"   :reader-macro    [:token :whitespace :list]
+    "#?@ (:clj bar)"  :reader-macro    [:token :whitespace :list]
+    "#?foo baz"       :reader-macro    [:token :whitespace :token]
+    "#_abc"           :uneval          [:token]
+    "#_(+ 1 2)"       :uneval          [:list]))
+
+(deftest t-parsing-anonymous-fn
+  (are [?s ?t ?sexpr-match ?children]
+      (let [n (p/parse-string ?s)]
+        (is (= ?t (node/tag n)))
+        (is (= ?s (node/string n)))
+        (is (re-matches ?sexpr-match (str (node/sexpr n))))
+        (is (= ?children (map node/tag (node/children n)))))
+    "#(+ % 1)"
+    :fn  #"\(fn\* \[p1_.*#\] \(\+ p1_.*# 1\)\)"
+    [:token :whitespace
+     :token :whitespace
+     :token]
+
+    "#(+ %& %2 %1)"
+    :fn  #"\(fn\* \[p1_.*# p2_.*# & rest_.*#\] \(\+ rest_.*# p2_.*# p1_.*#\)\)"
+    [:token :whitespace
+     :token :whitespace
+     :token :whitespace
+     :token]))
 
 (deftest t-parsing-comments
   (are [?s]
@@ -336,7 +378,7 @@
     {:?_current-ns_?/a {:?_current-ns_?/b 1}}
     {:booya.fooya/a {:booya.fooya/b 1}}))
 
-(deftest parsing-auto-resolve-ns-alias-maps []
+(deftest parsing-auto-resolve-ns-alias-maps 
   (are [?s ?sexpr-default ?sexpr-custom]
        (let [n (p/parse-string ?s)]
          (is (= :namespaced-map (node/tag n)))
@@ -396,6 +438,14 @@
     "#:: token"             #".*namespaced map expects a map*"
     "#::alias [a]"          #".*namespaced map expects a map*"
     "#:prefix [a]"          #".*namespaced map expects a map.*"))
+
+(deftest t-sexpr-exceptions
+  (are [?s]
+      (is (thrown-with-msg? ExceptionInfo #"unsupported operation.*" (node/sexpr (p/parse-string ?s))))
+    "#_42"                 ;; reader ignore/discard
+    ";; can't sexpr me!"   ;; comment
+    " "                    ;; whitespace
+    ))
 
 (deftest t-parsing-multiple-forms
   (let [s "1 2 3"

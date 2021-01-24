@@ -99,10 +99,13 @@
     ;; #::{:c 3 :d 4}
     #::p{:e 5 :f 6}))
 
+;; TODO: we have a regex node, do we use it?
 (deftest t-sexpr->node->sexpr-roundtrip-for-regex
   (let [sexpr #"abc"
         n (coerce sexpr)]
     (is (node/node? n))
+    (is (= :token (node/tag n)))
+    (is (= :token (protocols/node-type n)))
     (is (string? (node/string n)))
     (is (= (str sexpr) (str (node/sexpr n))))
     (is (= (type sexpr) (type (node/sexpr n))))))
@@ -110,11 +113,15 @@
 (deftest t-vars
   (let [n (coerce #'identity)]
     (is (node/node? n))
+    (is (= :var (node/tag n)))
+    (is (= :reader (protocols/node-type n)))
     (is (= '(var #?(:clj clojure.core/identity :cljs cljs.core/identity)) (node/sexpr n)))))
 
 (deftest t-nil
   (let [n (coerce nil)]
     (is (node/node? n))
+    (is (= :token (node/tag n)))
+    (is (= :token (protocols/node-type n)))
     (is (= nil (node/sexpr n)))
     (is (= n (p/parse-string "nil")))))
 
@@ -124,8 +131,10 @@
   (let [v (Foo-Bar. 0)
         n (coerce v)]
     (is (node/node? n))
+    ;; TODO: why is a record tagged as a :reader-macro?
     (is (= :reader-macro (node/tag n)))
     (is (= (pr-str v) (node/string n)))))
+
 
 (deftest t-nodes-coerce-to-themselves
   (testing "parsed nodes"

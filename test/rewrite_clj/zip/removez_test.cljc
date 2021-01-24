@@ -1,6 +1,5 @@
 (ns rewrite-clj.zip.removez-test
   (:require [clojure.test :refer [deftest is are]]
-            [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]
             [rewrite-clj.zip.removez :as r]))
@@ -36,11 +35,8 @@
                 "  :keyword 0")
            (-> root m/next m/down r/remove base/root-string)))))
 
-
-(comment
-  ;; future-fact
-  (deftest t-removing-after-comment
-    (let [loc (-> (base/of-string "; comment\nx")
-                  (z/rightmost)
-                  (r/remove))]
-      (is (= "; comment" (base/root-string loc))))))
+(deftest t-removing-after-comment
+  (let [loc (-> (base/of-string "; comment\nx")
+                (m/rightmost)
+                (r/remove))]
+    (is (= "; comment\n" (base/root-string loc)))))

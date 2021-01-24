@@ -1,8 +1,9 @@
 (ns rewrite-clj.zip.findz-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest testing is are]]
             [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.findz :as f]))
+            [rewrite-clj.zip.findz :as f])
+  #?(:clj (:import clojure.lang.ExceptionInfo)))
 
 ;; ## Fixture
 
@@ -161,3 +162,53 @@
         (is (= :token (base/tag loc)))
         (is (= :my.current.ns/a (base/sexpr loc)))))))
 
+(deftest t-find-last-by-pos
+  (are [?for-position ?expected]
+      ;; row        1            2      3
+      ;; col        12345678901  12345  1234567890
+      (let [sample "(defn hi-fn\n  [x]\n  (+ x 1))"
+            actual (-> sample
+                       (base/of-string {:track-position? true})
+                       (f/find-last-by-pos ?for-position)
+                       base/string)]
+        (is (= ?expected actual)))
+    [1 1] "(defn hi-fn\n  [x]\n  (+ x 1))"
+    [3 10] "(defn hi-fn\n  [x]\n  (+ x 1))"
+    [1 6] " "
+    [1 7] "hi-fn"
+    [1 10] "hi-fn"
+    [1 11] "hi-fn"
+    [2 4] "x"
+    [2 5] "[x]"
+    {:row 2 :col 5} "[x]" ;; original cljs syntax still works
+    [3 8] "1"
+    [3 9] "(+ x 1)"
+    ;; at and end of row
+    [1 12] "\n"
+    ;; past and end of row TODO: was this behaviour intentional or accidental?
+    [1 200] "\n"
+    ;; past end of sample
+    [3 11] nil
+    [400 400] nil))
+
+(deftest t-find-last-by-pos-invalid
+  (are [?for-position]
+      (let [sample (base/of-string "(def b 42)" {:track-position? true})]
+        (is (thrown-with-msg? ExceptionInfo #"zipper row and col positions are ones-based"
+                              (f/find-last-by-pos sample ?for-position))))
+    [0 0]
+    [3 0]
+    [0 10]
+    [-100 -200]))
+
+(deftest find-tag-by-pos
+  (is (= "[4 5 6]" (-> "[1 2 3 [4 5 6]]"
+                       (base/of-string {:track-position? true})
+                       (f/find-tag-by-pos {:row 1 :col 8} :vector)
+                       base/string))))
+
+(deftest find-tag-by-pos-set
+  (is (= "#{4 5 6}" (-> "[1 2 3 #{4 5 6}]"
+                        (base/of-string {:track-position? true})
+                        (f/find-tag-by-pos {:row 1 :col 10} :set)
+                        base/string))))

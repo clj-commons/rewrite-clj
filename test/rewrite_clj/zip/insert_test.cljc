@@ -50,6 +50,7 @@
     "#_(1 2)"         1                "#_(1 x 2 y)"
     "@(f 2)"          1                "@(f x 2 y)"))
 
+;; TODO: why is this test in a comment?
 (comment
   ;; future-fact
   (deftest t-inserting-after-comment

@@ -19,6 +19,8 @@
       (is (= :token (base/tag d)))
       (is (= s (base/string loc)))
       (is (= "[1 2]" (base/string c)))
+      (is (= s (with-out-str (base/print loc))))
+      (is (= s (with-out-str (base/print-root loc))))
       (is (every? #{s} (map base/root-string [loc a b c d]))))))
 
 #?(:clj

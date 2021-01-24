@@ -1,32 +1,33 @@
 (ns rewrite-clj.custom-zipper.utils-test
-  (:require [clojure.test :refer [deftest is are]]
+  (:require [clojure.test :refer [deftest testing is are]]
             [rewrite-clj.custom-zipper.core :as z]
             [rewrite-clj.custom-zipper.utils :as u]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip.base :as base])
   #?(:clj (:import clojure.lang.ExceptionInfo)))
 
-(let [a (node/token-node 'a)
-      b (node/token-node 'b)
-      c (node/token-node 'c)
-      d (node/token-node 'd)
-      loc (z/down (base/edn* (node/forms-node [a b c d])))]
-  (deftest t-remove-right
-    (let [loc' (u/remove-right loc)]
-      (is (= 'a (base/sexpr loc')))
-      (is (= "acd" (base/root-string loc')))))
-  (deftest t-remove-left
-    (let [loc' (-> loc z/right z/right u/remove-left)]
-      (is (= 'c (base/sexpr loc')))
-      (is (= "acd" (base/root-string loc')))))
-  (deftest t-remove-and-move-right
-    (let [loc' (u/remove-and-move-right (z/right loc))]
-      (is (= 'c (base/sexpr loc')))
-      (is (= "acd" (base/root-string loc')))))
-  (deftest t-remove-and-move-left
-    (let [loc' (-> loc z/right u/remove-and-move-left)]
-      (is (= 'a (base/sexpr loc')))
-      (is (= "acd" (base/root-string loc'))))))
+(deftest t-remove-sibling
+  (let [a (node/token-node 'a)
+        b (node/token-node 'b)
+        c (node/token-node 'c)
+        d (node/token-node 'd)
+        loc (z/down (base/edn* (node/forms-node [a b c d])))]
+    (testing "remove-right"
+      (let [loc' (u/remove-right loc)]
+        (is (= 'a (base/sexpr loc')))
+        (is (= "acd" (base/root-string loc')))))
+    (testing "remove-left"
+      (let [loc' (-> loc z/right z/right u/remove-left)]
+        (is (= 'c (base/sexpr loc')))
+        (is (= "acd" (base/root-string loc')))))
+    (testing "remove-and-move-right"
+      (let [loc' (u/remove-and-move-right (z/right loc))]
+        (is (= 'c (base/sexpr loc')))
+        (is (= "acd" (base/root-string loc')))))
+    (testing "remove-and-move-left"
+      (let [loc' (-> loc z/right u/remove-and-move-left)]
+        (is (= 'a (base/sexpr loc')))
+        (is (= "acd" (base/root-string loc')))))))
 
 (deftest t-remove-and-move-up
   (let [root (base/of-string "[a [b c d]]")]
