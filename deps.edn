@@ -17,17 +17,38 @@
            ;;
            ;; Test support
            ;;
+
+           ;; linting
            :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2020.12.12"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}
                          :extra-paths ["test"]}
 
-           ;; koacha for Clojure testing
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.732"}}
+           ;; document block testing
+           :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:git/url "https://github.com/lread/test-doc-blocks.git"
+                                                                   :sha "a462679f1ecada6160a3c23489477cbddde88e3c"}}
+                             :ns-default lread.test-doc-blocks
+                             :exec-args {:docs ["doc/01-introduction.adoc"
+                                                "doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc"
+                                                "doc/design/namespaced-elements.adoc"]}}
+
+           :test-docs {:extra-paths ["target/test-doc-blocks/test"]}
+
+           ;; koacha for clojure testing
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.732"}
+                                 lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
+                                 lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}
 
            ;; cljs-test-runner for Regular ClojureScript testing
            :cljs-test {:extra-deps {olical/cljs-test-runner {:mvn/version "3.8.0"}}
                        :extra-paths ["test"]
-                       :main-opts ["-m" "cljs-test-runner.main"]}} }
+                       :main-opts ["-m" "cljs-test-runner.main"]}
+           ;;
+           ;; Document rewrite-clj* differences
+           ;;
+           :diff-apis {:extra-paths ["script/resources"]
+                       :extra-deps {lread/diff-apis {:git/url "https://github.com/lread/diff-apis"
+                                                     :sha "cd8096e0b5e0c0ea4850cb9eafe2d085d8912442"}}
+                       :main-opts ["-m" "diff-apis.main" "projects"]}}}

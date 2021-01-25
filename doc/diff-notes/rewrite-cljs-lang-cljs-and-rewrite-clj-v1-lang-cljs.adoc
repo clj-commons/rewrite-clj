@@ -1,0 +1,10 @@
+You'll notice that the API of the last released version of rewrite-cljs as compared to the cljs api of rewrite-clj v1 has many differences.
+
+Rewrite-cljs lagged far behind rewrite-clj v0. 
+The cljs side of rewrite-clj v1 adds in, where possible, rewrite-clj features.
+
+TODO: Review
+
+-coercer/seq-node
+-seq/wrap*
+-findz/in-range?

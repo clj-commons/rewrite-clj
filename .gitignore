@@ -1,7 +1,9 @@
 /.calva
 /.clj-kondo/.cache
 /.cpcache
+/.diff-apis
 /.lsp
 .nrepl-port
+/log
 /node_modules
 /target

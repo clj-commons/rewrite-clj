@@ -1,0 +1,46 @@
+;; inputs for contributors section of README.adoc
+{:contributors
+ [{:github-id "sogaiu"
+   :contributions [:code-rewrite-clj-v1 :encouragement :education]}
+  {:github-id "borkdude"
+   :contributions [:code-rewrite-clj-v1 :encouragement :education]}
+  {:github-id "slipset"
+   :contributions [:code-rewrite-cljs :encouragement :infrastructure ]}
+  {:github-id "danielcompton"
+   :contributions [:code-rewrite-cljs :encouragement]}
+  {:github-id "martinklepsch"
+   :contributions [:encouragement]}
+  {:github-id "swannodette"
+   :contributions [:education]}
+  {:github-id "PEZ"
+   :contributions [:code-rewrite-cljs :encouragement]}
+  {:github-id "eraserhd"
+   :contributions [:code-rewrite-clj-v0]}
+  {:github-id "arrdem"
+   :contributions [:code-rewrite-clj-v0]}
+  {:github-id "stathissideris"
+   :contributions [:code-rewrite-clj-v0]}
+  {:github-id "plexus"
+   :contributions [:code-rewrite-clj-v0]}
+  {:github-id "jespera"
+   :contributions [:code-rewrite-clj-v0]}
+  {:github-id "brian-dawn"
+   :contributions [:code-rewrite-clj-v0]}
+  {:github-id "bbatsov"
+   :contributions [:code-rewrite-clj-v0]}
+  {:github-id "AndreaCrotti"
+   :contributions [:code-rewrite-clj-v0]}
+  {:github-id "mhuebert"
+   :contributions [:code-rewrite-cljs]}
+  {:github-id "kkinnear"
+   :contributions [:code-rewrite-cljs]}
+  {:github-id "anmonteiro"
+   :contributions [:code-rewrite-cljs]}]
+ :founders
+ [{:github-id "xsc"
+   :contributions [:original-author :code-rewrite-clj-v0]}
+  {:github-id "rundis"
+   :contributions [:original-author :code-rewrite-cljs]}]
+ :maintainers
+ [{:github-id "lread"
+   :contributions [:code-rewrite-clj-v1]}]}

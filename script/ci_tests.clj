@@ -9,11 +9,14 @@
          '[helper.shell :as shell])
 
 (defn clean []
-  (doseq [dir [".cpcache"]]
+  (doseq [dir ["target" ".cpcache"]]
     (fs/delete-file-recursively dir true)))
 
 (defn lint[]
   (shell/command ["bb" "./script/lint.clj"]))
+
+(defn doc-tests[]
+  (shell/command ["bb" "./script/doc_tests.clj"]))
 
 (defn clojure-tests []
   (doseq [version ["1.9" "1.10"]]
@@ -28,6 +31,7 @@
   (env/assert-min-versions)
   (clean)
   (lint)
+  (doc-tests)
   (clojure-tests)
   (cljs-tests)
   nil)

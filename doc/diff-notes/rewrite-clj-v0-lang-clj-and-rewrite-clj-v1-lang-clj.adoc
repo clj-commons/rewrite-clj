@@ -1,0 +1,12 @@
+The api of the last released version of rewrite-clj v0 was used as a reference for rewrite-clj v1. 
+As such, you'll notice the apis are almost the same.
+
+I assume that `rewrite-clj.custom-zipper.core` is internal and marked it as such with `:no-doc`.
+
+There were some features unique to rewrite-cljs (such as paredit and some positional searching) which were brought over to rewrite-clj v1.
+
+The internal rewrite-cljs namespaces that were
+link:../../design/01-merging-rewrite-clj-and-rewrite-cljs.adoc#_clojurescript_namespace_clashes[renamed
+to avoid cljs namespace collisions] also occur in the clj side of rewrite-clj v1.
+
+All other differences are considered internal refactorings.

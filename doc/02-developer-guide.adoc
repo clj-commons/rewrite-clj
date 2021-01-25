@@ -1,0 +1,257 @@
+= Developer Guide
+:toclevels: 6
+:toc:
+
+== Supported Environments
+Rewrite-clj is verified on each push on macOS, Ubuntu and Windows via GitHub Actions.
+
+All scripts are written in Clojure and most invoked via https://github.com/borkdude/babashka[babashka]. This gives us a cross platform
+scripting language that is familiar, fun and consistent. These docs will show babashka scripts invoked explicitly via babashka's `bb`; on
+macOS and linux feel free to leave out `bb`.
+
+We make use of planck for cljs bootstrap (aka cljs self-hosted) testing. Planck is currently not available for Windows.
+
+We test that rewrite-clj operates as expected when natively compile via GraalVM. Automated testing is setup using GraalVMN v20.1.0 for
+both jdk8 and jdk11. On Windows we only test against jdk11 as tool setup for jdk8 on Windows seemed overly arduous.
+
+== Prerequisites
+* Java JDK 1.8 or above
+* NodeJs v12 or above
+* Clojure v1.10.1.697 or above for `clojure` command
+** Note that rewrite-clj v1 itself supports Clojure v1.9 and above
+* Babashka v0.2.3 or above
+* GraalVM v20.3.0 (if you want to run GraalVM native image tests)
+
+=== Windows Notes
+
+==== Babashka
+The Clojure story on Windows is still in the early chapters. https://scoop.sh/[Scoop] offers an easy way to install tools.
+@littleli is doing a great job  w/maintaining https://github.com/littleli/scoop-clojure[scoop apps for Clojure, Babashka and other tools] and
+this is how I installed Babashka.
+
+==== Clojure
+We all choose our own paths, but for me, using https://github.com/borkdude/deps.clj[deps.clj] instead of
+https://github.com/clojure/tools.deps.alpha/wiki/clj-on-Windows[Clojure's PowerShell Module] offered me no
+fuss no muss Clojure on Windows and GitHub Actions on Windows. I decided to install deps.clj not through scoop but through
+https://github.com/borkdude/deps.clj#windows[the deps.clj `install.ps1` script].
+This makes it simple to treat `deps.exe` as if it were the official `clojure` via a simple rename:
+
+----
+Rename-Item $HOME\deps.clj\deps.exe clojure.exe
+----
+
+==== GraalVM
+You'll have your own preference, but I find it convenient to install GraalVM on Windows via scoop.
+Both `graalvm11` and `graalvm8` are available.
+
+You'll need to load the appropriate Visual C++ environment variables for GraalVM's native-image to do its work.
+I found it oddly cumbersome to load them from PowerShell, so I work from a cmd shell instead.
+Here's what works on my Windows dev environment:
+
+[source,shell]
+----
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+----
+
+And finally, I never did figure out how to get the Windows prerequisites setup for the jdk8 version of GraalVM, so I only test on the jdk11 version.
+
+== Setup
+After checking out this project from github,
+
+1. Install JavaScript libraries and tools required by https://github.com/bensu/doo[doo] and https://github.com/thheller/shadow-cljs[shadow-cljs]:
++
+----
+sudo npm install karma-cli -g
+npm install
+----
+2. If you are on macOS or linux, https://github.com/planck-repl/planck#installing[install planck].
+
+3. Initialize cache for clj-kondo so it can lint against your dependencies
++
+----
+bb ./script/lint.clj
+----
+
+== Testing During Development
+Your personal preference will likely be different, but during maintenance and refactoring, I found running tests continuously for Clojure and ClojureScript helpful.
+
+=== Clojure
+For Clojure, I open a shell terminal window and run:
+
+----
+bb ./script/clj_watch.clj
+----
+
+This launches https://github.com/lambdaisland/kaocha[kaocha] in watch mode.
+
+
+=== ClojureScript
+For Clojurescript, I open a shell terminal window and run:
+
+----
+bb ./script/cljs_watch.clj
+----
+
+This launches https://figwheel.org/[fighweel main]. After initialization, your default web browser will automatically be opened with the figwheel auto-testing page.
+
+== Testing Doc Code Blocks
+We use https://github.com/lread/test-doc-blocks[test-doc-blocks] to verify that code blocks in our documentation are in good working order.
+
+----
+bb ./script/doc_tests.clj
+----
+
+This generates tests for doc code blocks and then runs them under Clojure and ClojureScript.
+
+== Testing Before a Push
+Before pushing, you likely want to mimic what is run on each push via GitHub Actions.
+
+Unit tests are run via:
+----
+bb ./script/ci_tests.clj
+----
+We also verify that rewrite-clj functions as expected when compiled via Graal's `native-image`.
+
+1. Tests and library natively compiled:
++
+----
+bb ./script/pure_native_test.clj
+----
+2. Library natively compiled and tests interpreted via sci
++
+----
+bb ./script/sci_native_test.clj
+----
+
+== Checking for Outdated Dependencies
+
+To see what new dependencies are available, run:
+----
+bb ./script/outdated.clj
+----
+
+We use https://github.com/liquidz/antq[antq] which also checks `pom.xml`.
+If you see an outdated dependency reported for `pom.xml` after updating `deps.edn`, run the following:
+
+----
+clojure -Spom
+----
+
+This script also checks for outdated Node.js dependencies.
+Note that checks are only done against installed `./node_modules`, so you may want to run `npm install` first.
+
+== Linting
+We use https://github.com/borkdude/clj-kondo[clj-kondo] for linting rewrite-clj source code.
+
+We fail the build on any lint violations. The ci server runs:
+----
+bb ./script/lint.clj
+----
+and you can too.
+
+https://github.com/borkdude/clj-kondo/blob/master/doc/editor-integration.md[Integrate clj-kondo into your editor] to catch mistakes as they happen.
+
+== API diffs
+Rewrite-clj v1's primary goals include remaining compatible with rewrite-clj v0 and rewrite-cljs and avoiding breaking changes.
+
+To generate reports on differences between rewrite-clj v0, rewrite-cljs and
+rewrite-clj v1 APIs, run:
+
+----
+bb ./script/gen_api_diffs.clj
+----
+
+Run this script manually on an as-needed basis, and certainly before any official release.
+Generated reports are to be checked in to version control.
+
+Reports are generated to `doc/generated/api-diffs/` and include manually written
+notes from `doc/diff-notes/`.
+
+These reports are referenced from other docs, so if you rename files, be sure to
+search for links.
+
+Makes use of https://github.com/lread/diff-apis[diff-apis]. Delete
+`.diff-apis/.cache` if you need a clean run.
+
+
+== Cljdoc Preview
+Before a release, it can be comforting to preview what docs will look like on https://cljdoc.org/[cljdoc].
+
+Limitations
+
+* This script should be considered experimental, I have only tested running on macOS, but am fairly confident it will work on Linux.
+Not sure about Windows at this time.
+* You have to push your changes to GitHub to preview them.
+This allows for a full preview that includes any links (source, images, etc) to GitHub.
+This works fine from branches and forks - in case you don't want to affect your main development branch for a preview.
+
+**Start Local Services**
+
+To start the local cljdoc docker container:
+----
+bb ./script/cljdoc_preview.clj start
+----
+
+The local cljdoc server allows your ingested docs to be viewed in your web browser.
+
+The start command also automatically checks docker hub for any updates so that our cljdoc preview matches the
+current production version of cljdoc.
+
+**Ingest Docs**
+
+To ingest rewrite-clj API and docs into the local cljdoc database:
+----
+bb ./script/cljdoc_preview.clj ingest
+----
+
+The ingest command automatically publishes rewrite-clj to your local maven repository
+(cljdoc only works with published jars), but you'll have to remember to git commit and git push
+your changes before ingesting.
+
+Repeat these steps any time you want to preview changes.
+
+**Preview Docs**
+
+To open a view to the ingested docs in your default web browser:
+----
+bb ./script/cljdoc_preview.clj view
+----
+
+If you have just run the start command, be a bit patient, the cljdoc server can take a few moments to start up.
+
+**Stop Local Services**
+
+When you are done, you'll want to stop your docker container:
+----
+bb ./script/cljdoc_preview.clj stop
+----
+
+This will also delete temporary files created to support your preview session, most notably the local
+cljdoc database.
+
+Note that NO cleanup is done for any rewrite-clj artifacts published to your local maven repository.
+
+**Container Status**
+
+If you forget where you are at with your docker containers, run:
+----
+bb ./script/cljdoc_preview.clj status
+----
+
+== Code Coverage
+
+We use https://github.com/cloverage/cloverage[cloverage] via https://github.com/lambdaisland/kaocha[kaocha] to generate code coverage reports.
+Our CI service is setup to automatically generate then upload reports to https://codecov.io[CodeCov].
+
+We have no specific goals for code coverage, but new code is generally expected to have tests.
+
+So why measure coverage? It simply offers us some idea of what code our test suite hits.
+
+== Contributors
+We honor current and past contributors to rewrite-clj in our README file.
+
+To update contributors, update `doc/contributors.edn` then run:
+
+----
+clojure -M:update-readme
+----
