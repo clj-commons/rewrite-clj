@@ -44,6 +44,15 @@ jobs:
         java-version: ${{ matrix.java }}
 
     #
+    # Install Planck
+    #
+    - name: Install planck
+      run: |
+        sudo add-apt-repository -y ppa:mfikes/planck
+        sudo apt-get update
+        sudo apt-get install -y planck
+
+    #
     # Install Babashka
     #
     - name: Install babashka
@@ -71,6 +80,8 @@ jobs:
         java -version
         echo "clojure -Sdescribe"
         clojure -Sdescribe
+        echo "planck --version"
+        planck --version
 
     #
     # Node modules

@@ -6,10 +6,11 @@
 (cp/add-classpath "./script")
 (require '[helper.env :as env]
          '[helper.fs :as fs]
-         '[helper.shell :as shell])
+         '[helper.shell :as shell]
+         '[helper.status :as status])
 
 (defn clean []
-  (doseq [dir ["target" ".cpcache"]]
+  (doseq [dir ["target" ".cpcache .shadow-cljs"]]
     (fs/delete-file-recursively dir true)))
 
 (defn lint[]
@@ -27,6 +28,14 @@
           opt ["none" "advanced"]]
     (shell/command ["bb" "./script/cljs_tests.clj" "--env" env "--optimizations" opt])))
 
+(defn shadow-cljs-tests []
+  (shell/command ["bb" "./script/shadow_cljs_test.clj"]))
+
+(defn cljs-bootstrap-tests []
+  (if (some #{(env/get-os)} '(:mac :unix))
+    (shell/command ["bb" "./script/cljs_tests.clj" "--env" "planck" "--optimizations" "none"])
+    (status/line :warn "skipping planck tests, they can only be run on linux and macOS")) )
+
 (defn main[]
   (env/assert-min-versions)
   (clean)
@@ -34,6 +43,8 @@
   (doc-tests)
   (clojure-tests)
   (cljs-tests)
+  (shadow-cljs-tests)
+  (cljs-bootstrap-tests)
   nil)
 
 (main)

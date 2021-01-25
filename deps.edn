@@ -13,7 +13,7 @@
            ;; ClojureScript version we test with (and support)
            ;;
            :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.773"}}}
-           
+
            ;;
            ;; Test support
            ;;
@@ -45,8 +45,12 @@
            :cljs-test {:extra-deps {olical/cljs-test-runner {:mvn/version "3.8.0"}}
                        :extra-paths ["test"]
                        :main-opts ["-m" "cljs-test-runner.main"]}
+
+           ;; planck for Self-Hosted ClojureScript
+           :planck-test {:extra-paths ["target/cljsbuild/test/planck-none/gen"]}
+
            ;;
-           ;; Document rewrite-clj* differences
+           ;; Document rewrite-clj* API differences
            ;;
            :diff-apis {:extra-paths ["script/resources"]
                        :extra-deps {lread/diff-apis {:git/url "https://github.com/lread/diff-apis"

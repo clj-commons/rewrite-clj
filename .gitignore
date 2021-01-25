@@ -4,6 +4,7 @@
 /.diff-apis
 /.lsp
 .nrepl-port
+/.shadow-cljs
 /log
 /node_modules
 /target
