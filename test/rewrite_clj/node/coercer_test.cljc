@@ -110,7 +110,9 @@
     (is (= (str sexpr) (str (node/sexpr n))))
     (is (= (type sexpr) (type (node/sexpr n))))))
 
-(deftest t-vars
+(deftest
+  ^:skip-for-sci ;; sci, by design has its own var type, so skip this one for sci
+  t-vars
   (let [n (coerce #'identity)]
     (is (node/node? n))
     (is (= :var (node/tag n)))
@@ -127,14 +129,15 @@
 
 (defrecord Foo-Bar [a])
 
-(deftest t-records
+(deftest
+  ^:skip-for-sci ;; records have special metadata in sci, so skip this one for sci
+  t-records
   (let [v (Foo-Bar. 0)
         n (coerce v)]
     (is (node/node? n))
     ;; TODO: why is a record tagged as a :reader-macro?
     (is (= :reader-macro (node/tag n)))
     (is (= (pr-str v) (node/string n)))))
-
 
 (deftest t-nodes-coerce-to-themselves
   (testing "parsed nodes"

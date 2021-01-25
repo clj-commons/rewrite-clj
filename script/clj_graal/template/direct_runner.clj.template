@@ -1,0 +1,16 @@
+;; template for graal test runner
+
+;; clojure.test builds up what tests to run at runtime, this causes native-image to use  more
+;; memory than is available on CircleCI, so here we pre-find our test vars to run and
+;; explicitly list them
+
+(ns clj-graal.test-runner
+  (:gen-class)
+  (:require #_@TEST_NSES_HERE))
+
+(defn -main [& _args]
+  (println "clojure version" (clojure-version))
+  (println "java version" (System/getProperty "java.version"))
+  (println "running native?" (= "executable" (System/getProperty "org.graalvm.nativeimage.kind")))
+  (println "running tests without clojure.test to see impact on graalvm mem usage")
+  #_@TEST_FNS_HERE)

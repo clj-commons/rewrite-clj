@@ -5,6 +5,7 @@
 /.lsp
 .nrepl-port
 /.shadow-cljs
+/classes
 /log
 /node_modules
 /target

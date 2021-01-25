@@ -1,0 +1,120 @@
+name: Native Image Tests
+
+on: push
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        graal: [ 20.3.0.java8, 20.3.0.java11 ]
+        test: [ pure, sci ]
+        exclude:
+          - os: windows-latest
+            graal: 20.3.0.java8
+
+    name: ${{ matrix.os }},${{ matrix.graal }},${{ matrix.test }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    #
+    # Caches
+    #
+    - name: Clojure deps cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.m2/repository
+          ~/.gitlibs
+        key: $${ runner.os }}-cljdeps-${{ hashFiles('deps.edn') }}
+        restore-keys: $${ runner.os }}-cljdeps-
+
+    #
+    # Time command
+    #
+    - name: Install time command (linux)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y time
+      if: matrix.os == 'ubuntu-latest'
+
+    #
+    # Install GraalVM
+    #
+    - name: Install GraalVM
+      uses: DeLaGuardo/setup-graalvm@master
+      with:
+        graalvm-version: ${{ matrix.graal }}
+
+    #
+    # Install Babashka
+    #
+    - name: Install babashka (windows)
+      run: |
+       iwr -useb get.scoop.sh | iex
+       scoop bucket add scoop-clojure https://github.com/littleli/scoop-clojure
+       scoop bucket add extras
+       scoop install babashka --independent
+       echo "$HOME\scoop\shims" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      if: matrix.os == 'windows-latest'
+    - name: Install babashka (macOS)
+      run: brew install borkdude/brew/babashka
+      if: matrix.os == 'macos-latest'
+    - name: Install babashka (linux)
+      run: curl -s https://raw.githubusercontent.com/borkdude/babashka/master/install | sudo bash
+      if: matrix.os == 'ubuntu-latest'
+
+    #
+    # Install Clojure
+    #
+    - name: Install clojure (windows)
+      # On windows, deps.clj's deps.exe is used in place of clojure to avoid complexities of official clojure install
+      run: |
+       PowerShell -Command "iwr -useb https://raw.githubusercontent.com/borkdude/deps.clj/master/install.ps1 | iex"
+       Rename-Item $HOME\deps.clj\deps.exe clojure.exe
+       echo "$HOME\deps.clj" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      if: matrix.os == 'windows-latest'
+    - name: Install clojure (macos)
+      run: brew install clojure/tools/clojure
+      if: matrix.os == 'macos-latest'
+    - name: Install clojure (linux)
+      run: curl -s https://download.clojure.org/install/linux-install-1.10.1.763.sh | sudo bash
+      if: matrix.os == 'ubuntu-latest'
+
+    - name: Bring down ClojureTools early
+      run: clojure -Sdescribe
+
+    #
+    # Summarize installs
+    #
+    - name: Tools versions
+      run: |
+        echo "bb --version"
+        bb --version
+        echo "java -version"
+        java -version
+        echo "clojure -Sdescribe"
+        clojure -Sdescribe
+
+    #
+    # Prep Clojure
+    #
+    - name: Download clojure dependencies
+      run: clojure -Spath
+
+    #
+    # SCI native image tests
+    #
+    - name: Execute ${{ matrix.test }} native test (windows)
+      run: |
+        # it is overly awkward to get vcvars64.bat loaded into powershell, so we use cmd shell instead
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        bb script\${{ matrix.test }}_native_test.clj
+      shell: cmd
+      if: matrix.os == 'windows-latest'
+    - name: Execute ${{ matrix.test }} native test (macos, linux)
+      run: bb script/${{ matrix.test }}_native_test.clj
+      if: matrix.os != 'windows-latest'
+
