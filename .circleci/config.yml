@@ -49,4 +49,4 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - never
