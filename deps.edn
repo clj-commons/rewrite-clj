@@ -19,7 +19,7 @@
            ;;
 
            ;; linting
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2020.12.12"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.01.20"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}
@@ -95,4 +95,14 @@
            :diff-apis {:extra-paths ["script/resources"]
                        :extra-deps {lread/diff-apis {:git/url "https://github.com/lread/diff-apis"
                                                      :sha "cd8096e0b5e0c0ea4850cb9eafe2d085d8912442"}}
-                       :main-opts ["-m" "diff-apis.main" "projects"]}}}
+                       :main-opts ["-m" "diff-apis.main" "projects"]}
+
+           ;;
+           ;; Maintenance support
+           ;;
+           :outdated {:extra-deps {antq/antq {:mvn/version "0.10.2"}
+                                   org.slf4j/slf4j-simple {:mvn/version "1.7.30"} ;; to rid ourselves of logger warnings
+                                   }
+                      :main-opts ["-m" "antq.core"
+                                  "--exclude=borkdude/sci.impl.reflector" ;; does not follow normal versioning conventions at this time
+                                  ]}}}
