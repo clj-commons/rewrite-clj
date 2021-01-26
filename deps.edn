@@ -41,7 +41,11 @@
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}
 
-           ;; cljs-test-runner for Regular ClojureScript testing
+           ;; figwheel for clojurescript testing during dev
+           :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.12"}}
+                      :extra-paths ["target" "test"]
+                      :main-opts ["-m" "figwheel.main" "-b" "fig" "-r"]}
+
            :cljs-test {:extra-deps {olical/cljs-test-runner {:mvn/version "3.8.0"}}
                        :extra-paths ["test"]
                        :main-opts ["-m" "cljs-test-runner.main"]}
