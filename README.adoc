@@ -5,8 +5,8 @@
 image:rewrite-clj-logo.png[rewrite-clj,270,60]
 
 https://cljdoc.org/d/rewrite-clj/rewrite-clj/CURRENT[image:https://cljdoc.org/badge/rewrite-clj/rewrite-clj[cljdoc]]
-// TODO: Remember to update when merging from v1 branch to main branch
-https://github.com/clj-commons/rewrite-clj/actions?query=branch%3Av1+workflow%3A%22Unit+Tests%22[image:https://github.com/clj-commons/rewrite-clj/workflows/Unit%20Tests/badge.svg?branch=v1[Unit Tests]]
+https://github.com/clj-commons/rewrite-clj/actions?query=workflow%3A%22Unit+Tests%22[image:https://github.com/clj-commons/rewrite-clj/workflows/Unit%20Tests/badge.svg[Unit Tests]]
+https://github.com/clj-commons/rewrite-clj/actions?query=workflow%3A%22Native+Image+Tests%22[https://github.com/clj-commons/rewrite-clj/workflows/Native%20Image%20Tests/badge.svg[Native Image Tests]]
 https://clojurians.slack.com/messages/CHB5Q2XUJ[image:https://img.shields.io/badge/slack-join_chat-brightgreen.svg[Join chat]]
 https://clojars.org/rewrite-clj[image:https://img.shields.io/clojars/v/rewrite-clj.svg[Clojars
 project]]
