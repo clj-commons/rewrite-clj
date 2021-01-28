@@ -47,11 +47,16 @@
     (status/line :error msg))
   (System/exit code))
 
-(defn run-tests[{:keys [:clojure-version]}]
+(defn run-tests[{:keys [:clojure-version :coverage]}]
   (let [cmd ["clojure"
              (str "-M:test-common:kaocha:" clojure-version)
-             "--reporter" "documentation"]]
-    (status/line :info (str "testing clojure source against clojure v" clojure-version))
+             "--reporter" "documentation"]
+        cmd (if coverage
+              (concat cmd ["--plugin" "cloverage" "--codecov" "--cov-ns-exclude-regex" "rewrite-clj.potemkin.cljs"])
+              cmd)]
+    (if coverage
+      (status/line :info (str "generating test coverage report against clojure v" clojure-version))
+      (status/line :info (str "testing clojure source against clojure v" clojure-version)))
     (shell/command cmd)))
 
 (defn main [args]
