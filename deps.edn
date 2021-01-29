@@ -81,10 +81,6 @@
                             :override-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
                                                             :sha "b171c848715ac30648f11abd3078271029fa1958"}}}
 
-           ;; add ins if running on jdk11
-           :jdk11-reflect {:extra-deps {borkdude/clj-reflector-graal-java11-fix {:mvn/version "0.0.1-graalvm-20.3.0"
-                                                                                 :exclusions [org.graalvm.nativeimage/svm]}}}
-
            :jdk11-reflect-sci {:override-deps {borkdude/sci.impl.reflector {:mvn/version "0.0.1-java11"}}}
 
            ;;

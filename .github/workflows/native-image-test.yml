@@ -8,11 +8,11 @@ jobs:
     strategy:
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
-        graal: [ 20.3.0.java8, 20.3.0.java11 ]
+        graal: [ 21.0.0.java8, 21.0.0.java11 ]
         test: [ pure, sci ]
         exclude:
           - os: windows-latest
-            graal: 20.3.0.java8
+            graal: 21.0.0.java8
 
     name: ${{ matrix.os }},${{ matrix.graal }},${{ matrix.test }}
 
@@ -117,4 +117,3 @@ jobs:
     - name: Execute ${{ matrix.test }} native test (macos, linux)
       run: bb script/${{ matrix.test }}_native_test.clj
       if: matrix.os != 'windows-latest'
-

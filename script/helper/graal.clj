@@ -18,6 +18,18 @@
 (defn find-gu-prog []
   (find-graal-prog (if (= :win (env/get-os)) "gu.cmd" "gu")))
 
+(defn- assert-min-native-image-version [native-image-exe]
+  (let [min-major 21
+        version-out (->> (shell/command [native-image-exe "--version"] {:out :string})
+                         :out)
+        actual-major (->> version-out
+                          (re-find #"(?i)version (\d+)\.")
+                          last
+                          Long/parseLong)]
+    (when (< actual-major min-major)
+      (status/fatal (format "Need a minimum major version of %d for Graal\nnative-image returned: %s"
+                            min-major version-out)))))
+
 (defn find-graal-native-image []
   (status/line :info "Locate GraalVM native-image")
   (if-let [gu (find-gu-prog)]
@@ -26,8 +38,10 @@
         (let [native-image (or (find-native-image-prog)
                                (status/fatal "failed to install GraalVM native-image, check your GraalVM installation" 1))]
           (status/line :detail (str "found: " native-image))
+          (assert-min-native-image-version native-image)
           native-image))
     (status/fatal "GraalVM native image not found nor its installer, check your GraalVM installation" 1)))
+
 
 (defn clean []
   (status/line :info "Clean")
@@ -46,13 +60,14 @@
                   "clojure.main"
                   "-e" (str "(compile '" ns ")")]))
 
-(defn compute-classpath [alias jdk11-alias]
+(defn compute-classpath [{:keys [base-alias jdk11-plus-alias]}]
   (status/line :info "Compute classpath")
   (let [jdk-major-version (jdk/get-jdk-major-version)
-        reflection-fix? (>= jdk-major-version 11)]
-    (status/line :detail (str "JDK major version seems to be " jdk-major-version "; "
-                              (if reflection-fix? "including" "excluding") " reflection fixes." ))
-    (let [alias-opt (str "-A:" alias (when reflection-fix? (str ":" jdk11-alias)))
+        reflection-fix? (and jdk11-plus-alias (>= jdk-major-version 11))]
+    (when reflection-fix?
+      (status/line :detail (format "JDK major version seems to be %d; including specified aliases: %s"
+                                   jdk-major-version jdk11-plus-alias)))
+    (let [alias-opt (str "-A:" base-alias (when reflection-fix? (str ":" jdk11-plus-alias)))
           classpath (-> (shell/command ["clojure" alias-opt "-Spath"] {:out :string})
                         :out
                         string/trim)]
