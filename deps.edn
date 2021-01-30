@@ -69,17 +69,12 @@
 
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                   :sha "b171c848715ac30648f11abd3078271029fa1958"
-                                                   ;; TODO: awkward we only need cheshire to generate reflection json
-                                                   :exclusions [cheshire/cheshire]}}}
+                                                   :sha "48755b8851bac3a30ac071d870b7d46b396be5e1"}}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 
            ;; usage -A:sci-test:gen-reflection
-           :gen-reflection {:main-opts ["-m" "sci-test.generate-reflection-file"]
-                            ;; TODO: awkward we only need cheshire to generate reflection json
-                            :override-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                            :sha "b171c848715ac30648f11abd3078271029fa1958"}}}
+           :gen-reflection {:main-opts ["-m" "sci-test.generate-reflection-file"]}
 
            :jdk11-reflect-sci {:override-deps {borkdude/sci.impl.reflector {:mvn/version "0.0.1-java11"}}}
 
