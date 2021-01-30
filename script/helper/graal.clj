@@ -60,22 +60,17 @@
                   "clojure.main"
                   "-e" (str "(compile '" ns ")")]))
 
-(defn compute-classpath [{:keys [base-alias jdk11-plus-alias]}]
+(defn compute-classpath [base-alias]
   (status/line :info "Compute classpath")
-  (let [jdk-major-version (jdk/get-jdk-major-version)
-        reflection-fix? (and jdk11-plus-alias (>= jdk-major-version 11))]
-    (when reflection-fix?
-      (status/line :detail (format "JDK major version seems to be %d; including specified aliases: %s"
-                                   jdk-major-version jdk11-plus-alias)))
-    (let [alias-opt (str "-A:" base-alias (when reflection-fix? (str ":" jdk11-plus-alias)))
-          classpath (-> (shell/command ["clojure" alias-opt "-Spath"] {:out :string})
-                        :out
-                        string/trim)]
-      (println "\nClasspath:")
-      (println (str "- " (string/join "\n- " (fs/split-path-list classpath))))
-      (println "\nDeps tree:")
-      (shell/command ["clojure" alias-opt "-Stree"])
-      classpath)))
+  (let [alias-opt (str "-A:" base-alias)
+        classpath (-> (shell/command ["clojure" alias-opt "-Spath"] {:out :string})
+                      :out
+                      string/trim)]
+    (println "\nClasspath:")
+    (println (str "- " (string/join "\n- " (fs/split-path-list classpath))))
+    (println "\nDeps tree:")
+    (shell/command ["clojure" alias-opt "-Stree"])
+    classpath))
 
 (defn run-native-image [{:keys [:graal-native-image :graal-reflection-fname
                                 :target-exe :classpath :native-image-xmx
