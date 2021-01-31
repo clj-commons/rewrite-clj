@@ -7,28 +7,55 @@
 
 #?(:clj (set! *warn-on-reflection* true))
 
-(defn- remove-trailing-while
-  "Remove all whitespace following a given node."
-  [zloc p?]
-  (u/remove-right-while zloc p?))
+(defn- node-depth 
+  "Return current node location depth in `zloc`, top is 0."
+  [zloc]
+  (->> (iterate z/up zloc)
+       (take-while identity)
+       count
+       dec))
 
-(defn- remove-preceding-while
-  "Remove all whitespace preceding a given node."
-  [zloc p?]
-  (u/remove-left-while zloc p?))
+(defn- has-trailing-linebreak-at-eoi?
+  "Returns true when current node is last node in zipper and trailing whitespace contains
+  at least 1 newline."
+  [zloc]
+  (and (= 1 (node-depth zloc))
+       (not (m/right zloc))
+       (->> (iterate z/right zloc)
+            (take-while identity)
+            (some ws/linebreak?))))
 
-(defn- remove-p
-  [zloc p?]
-  (->> (-> (if (or (m/rightmost? zloc)
-                   (m/leftmost? zloc))
-             (remove-preceding-while zloc p?)
-             zloc)
-           (remove-trailing-while p?)
-           z/remove)
+(defn- left-ws-trim
+  ([zloc]
+   (left-ws-trim zloc ws/whitespace?))
+  ([zloc p?]
+   (if (or (m/rightmost? zloc)
+           (m/leftmost? zloc))
+     (u/remove-left-while zloc p?)
+     zloc)))
+
+(defn- right-ws-trim
+  ([zloc]
+   (right-ws-trim zloc ws/whitespace?))
+  ([zloc p?]
+   (u/remove-right-while zloc p?)))
+
+(defn- right-ws-trim-keep-trailing-linebreak [zloc]
+  (let [right-trimmed (right-ws-trim zloc)]
+    (if (has-trailing-linebreak-at-eoi? zloc)
+      (ws/insert-newline-right right-trimmed)
+      right-trimmed)))
+
+(defn- remove-with-trim
+  [zloc left-ws-trim-fn right-ws-trim-fn]
+  (->> zloc
+       left-ws-trim-fn
+       right-ws-trim-fn
+       z/remove
        (ws/skip-whitespace z/prev)))
 
 (defn remove
-  "Return zipper with current node in `zloc` removed. Returned zipper location
+  "Return `zloc` with current node removed. Returned zipper location
    is moved to the first non-whitespace node preceding removed node in a depth-first walk.
    Removes whitespace appropriately.
 
@@ -40,19 +67,31 @@
   - `[1 [2 3] |4] => [1 [2 |3]]`
   - `[|1 [2 3] 4] => |[[2 3] 4]`
 
-   If the removed node is at the rightmost location, both preceding and trailing spaces are removed,
-   otherwise only trailing spaces are removed. This means that a following element
-   (no matter whether on the same line or not) will end up in the same position
-   (line/column) as the removed one, _unless_ a comment lies between the original
-   node and the neighbour."
+   If the removed node is a rightmost sibling, both leading and trailing whitespace
+   is removed, otherwise only trailing whitespace is removed.
+
+   The result is that a following element (no matter whether it is on the same line
+   or not) will end up at same positon (line/column) as the removed one.
+   If a comment lies betwen the original node and the neighbour this will not hold true.
+   
+   If the removed node is at end of input and is trailed by 1 or more newlines, 
+   a single trailing newline will be preserved."
   [zloc]
   {:pre [zloc]
    :post [%]}
-  (remove-p zloc ws/whitespace?))
+  (remove-with-trim zloc
+                    left-ws-trim
+                    right-ws-trim-keep-trailing-linebreak))
 
 (defn remove-preserve-newline
-  "Same as [[remove]] but preserves newlines."
+  "Same as [[remove]] but preserves newlines.
+   Specifically: will trim all whitespace - or whitespace up to first linebreak if present."
   [zloc]
   {:pre [zloc]
    :post [%]}
-  (remove-p zloc #(and (ws/whitespace? %) (not (ws/linebreak? %)))))
+  (let [ws-pred-fn #(and (ws/whitespace? %) (not (ws/linebreak? %)))]
+    (remove-with-trim zloc
+                      #(left-ws-trim % ws-pred-fn)
+                      #(right-ws-trim % ws-pred-fn))))
+
+
