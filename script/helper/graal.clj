@@ -3,7 +3,6 @@
             [clojure.string :as string]
             [helper.env :as env]
             [helper.fs :as fs]
-            [helper.jdk :as jdk]
             [helper.shell :as shell]
             [helper.status :as status]))
 
