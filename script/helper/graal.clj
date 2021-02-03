@@ -85,6 +85,7 @@
                                  (str "-H:ReflectionConfigurationFiles=" graal-reflection-fname))
                                "--initialize-at-build-time"
                                "-H:Log=registerResource:"
+                               "-H:EnableURLProtocols=http,https,jar"
                                "--enable-all-security-services"
                                "--verbose"
                                "-H:ServiceLoaderFeatureExcludeServices=javax.sound.sampled.spi.AudioFileReader"

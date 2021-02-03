@@ -46,6 +46,8 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 * Many updates to docs and docstrings
 
 ==== Fixes
+* postwalk on larger source file no longer throws StackOverflow https://github.com/clj-commons/rewrite-clj/issues/69[#69]
+* postwalk now walks in post order https://github.com/clj-commons/rewrite-clj/issues/123[#123]
 * we now preserve newline at end of file https://github.com/clj-commons/rewrite-clj/issues/121[#121]
 * support for garden style selectors https://github.com/clj-commons/rewrite-clj/issues/92[#92]
 * correct and document prefix and suffix functions https://github.com/clj-commons/rewrite-clj/issues/91[#91]
