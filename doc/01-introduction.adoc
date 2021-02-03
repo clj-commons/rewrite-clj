@@ -574,6 +574,100 @@ Some examples of what you might run into when using `sexpr` are:
 Note that these differences affect `sexpr` only.
 Rewrite-clj should be able to parse and rewrite all valid Clojure/ClojureScript code.
 
+=== Reader Macro Chars
+
+Rewrite-clj can parse and write all reader macro chars.
+Be aware though, that it does have limitations when calling `sexpr` on rewrite-clj nodes representing some of these constructs.
+
+Let's take a look, using https://clojure.org/reference/reader#macrochars[Clojure's reader docs on macro characters] as our reference.
+
+(headers are *description* followed by rewrite-clj parsed node `tag`)
+
+// TODO: would be nice to auto-generate this table maybe
+[cols="25,75"]
+|===
+| Parsed input | Node sexpr
+
+2+a|*Quote* `:quote`
+a|`'form`
+a|`(quote form)`
+
+2+a|*Character* `:token`
+a|`\newline`
+a|`\newline`
+a|`\space`
+a|`\space`
+a|`\tab`
+a|`\tab`
+
+2+a|*Comment* `:comment`
+a|`; comment`
+|<unsupported operation>
+
+2+a|*Deref* `:deref`
+a|`@form`
+a|`(deref form)`
+
+2+a|*Metadata* `:meta`
+a|`^{:a 1 :b 2} [1 2 3]`
+a|`^{:b 2, :a 1} [1 2 3]`
+a|`^String x`
+a|`^{String true} x`
+a|`^:dynamic x`
+a|`^{:dynamic true} x`
+
+2+a|*Set* `:set`
+a|`#{1 2 3}`
+a|`#{1 3 2}`
+
+2+a|*Regex* `:regex`
+a|`#"reg.*ex"`
+a|`(re-pattern "reg.*ex")`
+
+2+a|*Var-quote* `:var`
+a|`#'x`
+a|`(var x)`
+
+2+a|*Anonymous function literal* `:fn`
+a|`#(println %)`
+a|`(fn* [p1__10466#] (println p1__10466#))`
+
+2+a|*Ignore next form* `:uneval`
+a|`#_ :ignore-me`
+|<unsupported operation>
+
+2+a|*Syntax quote* `:syntax-quote`
+a|``symbol`
+a|`(quote symbol)`
+
+2+a|*Syntax unquote* `:unquote`
+a|`~symbol`
+a|`(unquote symbol)`
+
+2+a|*Tagged literal* `:reader-macro`
+a|`#foo/bar [1 2 3]`
+a|`(read-string "#foo/bar [1 2 3]")`
+a|`#inst "2018-03-28T10:48:00.000"`
+a|`(read-string "#inst \"2018-03-28T10:48:00.000\"")`
+a|`#uuid "3b8a31ed-fd89-4f1b-a00f-42e3d60cf5ce"`
+a|`(read-string "#uuid \"3b8a31ed-fd89-4f1b-a00f-42e3d60cf5ce\"")`
+
+2+a|*Reader conditional* `:reader-macro`
+a|`#?(:clj x :cljs y)`
+a|`(read-string "#?(:clj x :cljs y)")`
+a|`#@?(:clj [x] :cljs [y])`
+a|`(read-string "#@?(:clj [x] :cljs [y])")`
+
+|===
+
+Observations:
+
+1. I think it was a design decision of rewrite-clj v0 to return `(read-string ...)` for reader macros it did not want to deal with (or deal with yet).
+Rewrite-clj v1 will carry on.
+** It seems the idea might have been that the caller could eval the sexpr result if they wanted to?
+** Note for ClojureScript users, `read-string` is not available under `cljs.core`, but a version is available under `cljs.tools.reader`.
+2. Tag metadata is returned as boolean metadata. A user could infer the intent through inspection though.
+
 // NOTE: target of some docstrings
 [#namespaced-elements]
 === Namespaced Elements
