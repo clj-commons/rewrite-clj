@@ -23,8 +23,8 @@
   "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj.parse]]).
 
   Optional `opts` can specify:
-  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
+  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
   ([node]
    (edn* node {}))
   ([node {:keys [track-position?]}]
@@ -38,8 +38,8 @@
   for a consistent root.
 
   Optional `opts` can specify:
-  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
+  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
   ([node] (edn node {}))
   ([node opts]
    (-> (loop [node node opts opts]
@@ -60,14 +60,14 @@
 (defn sexpr
   "Return s-expression (the Clojure form) of current node in `zloc`.
 
-  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([zloc]
    (some-> zloc z/node (node/sexpr (get-opts zloc)))))
 
 (defn ^{:added "0.4.4"} child-sexprs
   "Return s-expression (the Clojure forms) of children of current node in `zloc`.
 
-  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([zloc]
    (some-> zloc z/node (node/child-sexprs (get-opts zloc)))))
 
@@ -87,8 +87,8 @@
   "Create and return zipper from all forms in Clojure/ClojureScript/EDN string `s`.
 
   Optional `opts` can specify:
-  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
+  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
   ([s] (of-string s {}))
   ([s opts]
    (some-> s p/parse-string-all (edn opts))))
@@ -98,8 +98,8 @@
      "Create and return zipper from all forms in Clojure/ClojureScript/EDN File `f`.
 
      Optional `opts` can specify:
-     - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-introduction.adoc#position-tracking).
-     - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
+     - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
+     - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
      ([f] (of-file f {}))
      ([f opts]
       (some-> f p/parse-file-all (edn opts)))))

@@ -1,4 +1,4 @@
-= Introduction
+= User Guide
 // TODO update these to real values
 :cljdoc-host: https://cljdoc.org
 :cljdoc-api-url: {cljdoc-host}/d/rewrite-clj/rewrite-clj/CURRENT/api

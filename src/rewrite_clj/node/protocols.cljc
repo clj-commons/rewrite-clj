@@ -37,7 +37,7 @@
   "Return `node` converted to form.
 
   Optional `opts` can specify:
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
   ([node] (sexpr node {}))
   ([node opts] (sexpr* node opts)))
 
@@ -45,7 +45,7 @@
   "Return forms for `nodes`. Nodes that do not represent s-expression are skipped.
 
   Optional `opts` can specify:
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
   ([nodes]
    (sexprs nodes {}))
   ([nodes opts]
@@ -90,7 +90,7 @@
   "Returns children for `node` converted to Clojure forms.
 
   Optional `opts` can specify:
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-introduction.adoc#namespaced-elements)"
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
   ([node]
    (child-sexprs node {}))
   ([node opts]

@@ -136,7 +136,7 @@
 
    `f` defaults to [[rewrite-clj.zip/right]] in short form call.
 
-  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([zloc v]
    (find-value zloc m/right v))
   ([zloc f v]
@@ -153,7 +153,7 @@
 
    `f` defaults to [[rewrite-clj.zip/right]] in short form call.
 
-  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([zloc v]
    (find-next-value zloc m/right v))
   ([zloc f v]

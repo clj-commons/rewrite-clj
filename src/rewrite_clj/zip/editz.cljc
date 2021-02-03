@@ -34,7 +34,7 @@
   `f` should return a node.
   The result of `f` will be coerced to a node if possible.
 
-  See docs for [sexpr nuances](/doc/01-introduction.adoc#sexpr-nuances)."
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   [zloc f & args]
   (z/edit zloc (node-editor (base/get-opts zloc)) #(apply f % args)))
 

@@ -22,7 +22,7 @@ See: https://github.com/clj-commons/rewrite-clj/projects/1[GitHub project page f
 
 == Docs
 
-* link:doc/01-introduction.adoc[Introduction]
+* link:doc/01-user-guide.adoc[User Guide]
 * link:doc/02-developer-guide.adoc[Developer Guide]
 * Design
 ** link:doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs]

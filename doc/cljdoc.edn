@@ -1,7 +1,7 @@
 {:cljdoc.doc/tree
  [["Readme" {:file "README.adoc"}]
   ["Changelog" {:file "CHANGELOG.adoc"}]
-  ["Introduction" {:file "doc/01-introduction.adoc"}]
+  ["User Guide" {:file "doc/01-user-guide.adoc"}]
   ["Developer Guide" {:file "doc/02-developer-guide.adoc"}]
   ["Design" {}
    ["Merging rewrite-clj and rewrite-cljs" {:file "doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc"}

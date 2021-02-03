@@ -29,7 +29,7 @@
            :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:git/url "https://github.com/lread/test-doc-blocks.git"
                                                                    :sha "a462679f1ecada6160a3c23489477cbddde88e3c"}}
                              :ns-default lread.test-doc-blocks
-                             :exec-args {:docs ["doc/01-introduction.adoc"
+                             :exec-args {:docs ["doc/01-user-guide.adoc"
                                                 "doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc"
                                                 "doc/design/namespaced-elements.adoc"]}}
 

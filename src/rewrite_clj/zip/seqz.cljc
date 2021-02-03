@@ -151,7 +151,7 @@
   - a zero-based index for sequences
 
   NOTE: `k` will be compared against resolved keywords in maps.
-  See docs for sexpr behavior on [namespaced elements](/doc/01-introduction.adoc#namespaced-elements)."
+  See docs for sexpr behavior on [namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)."
   [zloc k]
   {:pre [(or (map? zloc) (namespaced-map? zloc) (and (seq? zloc) (integer? k)))]}
   (cond
@@ -178,7 +178,7 @@
   - a zero-based index for sequences, an exception is thrown if index is out of bounds
 
   NOTE: `k` will be compared against resolved keywords in maps.
-  See docs for sexpr behavior on [namespaced elements](/doc/01-introduction.adoc#namespaced-elements)."
+  See docs for sexpr behavior on [namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)."
   [zloc k v]
   (container-loc zloc
                  (if-let [value-loc (get zloc k)]
