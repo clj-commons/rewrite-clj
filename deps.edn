@@ -1,7 +1,7 @@
 {:paths ["src"]
 
  :deps {org.clojure/clojure {:mvn/version "1.10.2"}
-        org.clojure/tools.reader {:mvn/version "1.3.4"}}
+        org.clojure/tools.reader {:mvn/version "1.3.5"}}
 
  :aliases {;;
            ;; Clojure versions we support
@@ -26,8 +26,11 @@
                          :extra-paths ["test"]}
 
            ;; document block testing
-           :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:git/url "https://github.com/lread/test-doc-blocks.git"
-                                                                   :sha "a462679f1ecada6160a3c23489477cbddde88e3c"}}
+           :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:mvn/version "1.0.76-alpha"}
+                                            ;; TODO: once we promote rewrite-clj to v1 in test-doc-blocks this weirdness will not be necessary
+                                            rewrite-clj/rewrite-clj {:git/url "https://github.com/clj-commons/rewrite-clj.git"
+                                                                     :sha "f44662cb78e10bcbcb6ae345e89cafd51bfef255"}}
+                             :replace-paths []
                              :ns-default lread.test-doc-blocks
                              :exec-args {:docs ["doc/01-user-guide.adoc"
                                                 "doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc"
@@ -87,7 +90,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {antq/antq {:mvn/version "0.10.2"}
+           :outdated {:extra-deps {antq/antq {:mvn/version "0.10.3"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.30"} ;; to rid ourselves of logger warnings
                                    }
                       :main-opts ["-m" "antq.core"

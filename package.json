@@ -1,10 +1,10 @@
 {
   "devDependencies": {
-    "karma": "^5.2.3",
+    "karma": "^6.1.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-cljs-test": "^0.1.0",
     "karma-junit-reporter": "^2.0.0",
     "karma-spec-reporter": "^0.0.32",
-    "shadow-cljs": "^2.11.15"
+    "shadow-cljs": "^2.11.17"
   }
 }
