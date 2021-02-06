@@ -34,7 +34,7 @@ Rewrite-clj versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 
 * `major` increments when the API has been broken - something, as a rule, we'd like to avoid.
 * `minor` increments to convey significant new features have been added.
-* `patch` indicates bug fixes - it is the number of commits since `major`.`minor`.
+* `patch` indicates bug fixes - it is the total number of commits in the repo.
 * `test-qualifier` is absent for stable releases. Can be `alpha`, `beta`, `rc1`, etc.
 
 == People

@@ -237,28 +237,24 @@ Rewrite-clj v1 is not a new project. I feel the version should reflect at least 
 
 As of this writing the current version of rewrite-clj is `0.6.1`. I am guessing that the 0 is an unused version element, and we have a `0.major.minor` scheme.
 
-Rewrite-clj is going to switch to a ClojureScript-ish scheme. +
-It will use a `major.minor.<commit count since major.minor>-<qualifier>` scheme. +
-Our first version will be `1.0.42-alpha` where `42` is just a wild guess right now.
+Rewrite-clj v1 is going to switch to a `major.minor.<commit count>-<qualifier>` scheme. +
+Our first version will be `1.0.451-alpha` where `451` is just a wild guess right now.
 
 An small awkwardness with this scheme is the change log.
 The change log should be part of the release but it does reference a git commit count.
-This, I suppose will be addressed locally with amended commits?
+This will be addressed by automatically updating the change log doc with the release version as part of the release process.
 
-=== * Release Strategy - [red]*in progress*
-
-TODO: think about the following...
+=== Release Strategy
 
 We'll opt not to make SNAPSHOT releases and assume the community is good with testing pre-releases via
-github coordinates. That said, I suppose opting out of SNAPSHOT releases means option out of testing
-our release flow on successful pushes.
+github coordinates. We can adapt if there is a real need for SNAPSHOT releases. 
 
 We'll keep a CHANGELOG.md carried on from rewrite-clj v0's CHANGES.md.
 
-Not sure about release cadence yet. I expect to cut a release when I feel a pre-release has been tested enough.
+Release cadence will be as needed. 
+I don't want us to feel precious about releases.
+If there is a benefit to cutting a new release with a small change or fix, even just to docs, we'll go ahead and do it.
 
-TODO: Consider some sort of canary testing for a set of projects that make use of rewrite-clj. Examples that
-come to mind: cljfmt, zprint, carve.
 
 === Source directory layout
 When I first started to experiment with a cljc version of rewrite-clj, my directory layout looked like:
