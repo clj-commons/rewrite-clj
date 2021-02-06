@@ -1,3 +1,4 @@
+// NOTE: release workflow automatically updates rewrite-clj versions in this file
 = User Guide
 // TODO update these to real values
 :cljdoc-host: https://cljdoc.org
@@ -115,6 +116,26 @@ You can link:#parser-api[parse] and work with link:#node-api[nodes] directly or 
 Rewrite-clj offers easy conversion from rewrite-clj nodes to Clojure forms and back.
 This is convenient but does come with some caveats.
 As you get more experienced with rewrite-clj, you will want to review link:#sexpr-nuances[sexpr nuances].
+
+== Project Setup
+
+=== Tools Deps
+Include the following dependency in your `deps.edn` file:
+//:test-doc-blocks/skip
+// NOTE: the version in this snippit is automaticaly updated by our release workflow
+[source,clojure]
+----
+rewrite-clj/rewrite-clj {:mvn/version "0.6.1"}
+----
+
+=== Leiningen
+Include the following dependency in your `project.clj` file:
+//:test-doc-blocks/skip
+// NOTE: the version in this snippit is automatically update by our release workflow
+[source,clojure]
+----
+[rewrite-clj/rewrite-clj "0.6.1"]
+----
 
 == Rewrite-clj APIs
 There are 4 public API namespaces:

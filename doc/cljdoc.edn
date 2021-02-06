@@ -14,4 +14,5 @@
     ["rwt-clj v1 clj vs cljs public" {:file "doc/generated/api-diffs/rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj-documented-only.adoc"}]]]
   ["Frequently Asked Questions" {:file "doc/03-faq.adoc"}]
   ["Contributing" {:file "CONTRIBUTING.md"}]
-  ["Code of Conduct" {:file "CODE_OF_CONDUCT.md"}]]}
+  ["Code of Conduct" {:file "CODE_OF_CONDUCT.md"}]
+  ["Maintainer Guide" {:file "doc/04-maintainer-guide.adoc"}]]}

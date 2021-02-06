@@ -1,3 +1,4 @@
+// NOTE: release workflow automatically updates "unreleased" headers in this file
 = Changelog
 :toc:
 :toclevels: 1
@@ -5,6 +6,13 @@
 == rewrite-clj v1
 
 For a list of breaking changes see link:#v1-breaking[breaking changes].
+
+// Release workflow will:
+// - Fail when:
+//   - there is no "== Unreleased" section header
+//   - or the section contains no descriptive text
+// - Replace the Unreleased section header with actual release version
+// - Prepend a new Unreleased section header
 
 === Unreleased
 
@@ -84,7 +92,13 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 [#v1-breaking]
 === v1 Breaking Changes
 
-==== Unreleased
+// Release workflow will:
+// - If an "=== Unreleased Breaking Changes" section header exists here:
+//   - Fail when the section contains no descriptive text
+//   - Else replace the Unreleased Breaking Changes section header with actual release version
+// If you have no breaking changes, don't include an Unreleased Breaking Changes header
+
+==== Unreleased Breaking Changes
 
 * minimum Clojure version bumped from v1.5.1 to v1.9
 * minimum ClojureScript version (from whatever is was for rewrite-cljs) bumped to v1.10

@@ -1,0 +1,65 @@
+name: Release
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    # I do not know of a way to restrict to the main branch so try to skip the whole job if
+    # user selected some other branch from GitHub Actions GUI
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Setup Git User so that we can later commit
+      uses: fregante/setup-git-user@v1
+
+    - name: Clojure deps cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.m2/repository
+          ~/.gitlibs
+        key: $${ runner.os }}-cljdeps-release-${{ hashFiles('deps.edn') }}
+        restore-keys: $${ runner.os }}-cljdeps-release-
+
+    - name: Setup Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+
+    - name: Install Babashka
+      run: curl -s https://raw.githubusercontent.com/borkdude/babashka/master/install | sudo bash
+
+    - name: Install Clojure
+      run: curl -s https://download.clojure.org/install/linux-install-1.10.1.763.sh | sudo bash
+
+    - name: Tools Versions
+      run: |
+        echo "bb --version"
+        bb --version
+        echo "node --version"
+        node --version
+        echo "java -version"
+        java -version
+        echo "clojure -Sdescribe"
+        clojure -Sdescribe
+
+    - name: Download Clojure Dependencies
+      run: clojure -Spath
+
+    - name: Release Prep (step 1 of 3)
+      run: bb ./script/release.clj prep
+
+    - name: Release Deploy (step 2 of 3)
+      env:
+        CLOJARS_USERNAME: ${{ secrets.CLOJARS_USERNAME }}
+        CLOJARS_PASSWORD: ${{ secrets.CLOJARS_PASSWORD }}
+      run: bb ./script/release.clj deploy-remote
+
+    - name: Release Commit (step 3 of 3)
+      run: bb ./script/release.clj commit

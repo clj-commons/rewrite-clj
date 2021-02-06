@@ -88,6 +88,25 @@
                        :main-opts ["-m" "diff-apis.main" "projects"]}
 
            ;;
+           ;; Deployment
+           ;; 
+           :jar {:replace-deps {seancorfield/depstar {:mvn/version "2.0.171"}}
+                 :exec-fn hf.depstar/jar
+                 :exec-args {:jar "target/test-doc-blocks.jar"
+                             :jar-type :thin}}
+
+           :deploy {:replace-deps {slipset/deps-deploy {:mvn/version "0.1.5"}}
+                    :exec-fn deps-deploy.deps-deploy/deploy}
+
+           ;; usage: :deploy:remote - for Clojars
+           :remote {:exec-args {:installer :remote
+                                :artifact "target/test-doc-blocks.jar"}}
+
+           ;; usage: :deploy:local - for local maven repo
+           :local {:exec-args {:installer :local
+                               :artifact "target/test-doc-blocks.jar"}}
+
+           ;;
            ;; Maintenance support
            ;;
            :outdated {:extra-deps {antq/antq {:mvn/version "0.10.3"}
