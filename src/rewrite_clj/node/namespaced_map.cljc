@@ -6,8 +6,7 @@
 ;; a map qualifier is not sexpressable on its own
 (defrecord MapQualifierNode [auto-resolved? prefix]
   node/Node
-  ;; TODO: tag is :token? that's probably not right!
-  (tag [_node] :token)
+  (tag [_node] :map-qualifier)
   (node-type [_node] :map-qualifier)
   (printable-only? [_node] true)
   (sexpr* [_node _opts]
