@@ -68,7 +68,7 @@ The most notable breaking changes from rewrite-clj v0 relate to handling of name
 * An `sexpr` on a namespaced key or symbol should now work even when navigating down to the key node
 * An `sexpr` that involves auto resolve never consults `\*ns*` you can plugin your own auto-resolve behavior, see link:#namespaced-elements[namespaced elements]
 
-Need to know more? link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc#_changes[Details of changes].
+Need to know more? link:../CHANGELOG.adoc[See the change log].
 
 === Conventions
 As is a common convention, example code shows results of expression evaluation like so:
