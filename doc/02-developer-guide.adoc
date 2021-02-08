@@ -217,7 +217,7 @@ To open a view to the ingested docs in your default web browser:
 bb ./script/cljdoc_preview.clj view
 ----
 
-If you have just run the start command, be a bit patient, the cljdoc server can take a few moments to start up.
+If you have just run the start command, be a bit patient, the cljdoc server can take a few moments to start up - especially on macOS due to poor file sharing performance.
 
 **Stop Local Services**
 

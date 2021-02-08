@@ -3,13 +3,18 @@
 (ns cljdoc-docker-preview
   (:require [babashka.classpath :as cp]
             [babashka.curl :as curl]
+            [babashka.deps :as deps]
             [clojure.java.browse :as browse]
             [clojure.string :as string]))
 
 (cp/add-classpath "./script")
-(require '[helper.fs :as fs]
-         '[helper.shell :as shell]
-         '[helper.status :as status])
+(deps/add-deps "{:deps {org.clojure/data.zip {:mvn/version \"1.0.0\"}}}")
+(require  '[clojure.data.xml :as xml]
+          '[clojure.data.zip.xml :as zxml]
+          '[clojure.zip :as zip]
+          '[helper.fs :as fs]
+          '[helper.shell :as shell]
+          '[helper.status :as status])
 
 ;;
 ;; constants
@@ -26,7 +31,7 @@
 ;;
 
 (defn check-prerequisites []
-  (let [missing-cmds (doall (remove #(fs/on-path %) ["mvn" "git" "docker"]))]
+  (let [missing-cmds (doall (remove #(fs/on-path %) ["git" "docker"]))]
     (when (seq missing-cmds)
       (status/fatal (string/join "\n" ["Required commands not found:"
                                        (string/join "\n" missing-cmds)])))))
@@ -42,21 +47,24 @@
 ;;
 ;; maven/pom
 ;;
-(defn get-from-pom [ pom-exression ]
-  (-> (shell/command ["mvn" "help:evaluate" (str "-Dexpression=" pom-exression) "-q" "-DforceStdout"]
-                     {:out :string})
-      :out
-      string/trim))
+(defn get-from-pom [& tag-path]
+  (let  [xml (-> "./pom.xml"
+                 slurp 
+                 (xml/parse-str :namespace-aware false)
+                 zip/xml-zip)]
+    (apply zxml/xml1-> (concat  [xml] tag-path [zxml/text]))))
 
 (defn local-install []
+  (status/line :info "building thin jar")
+  (shell/command ["clojure" "-X:jar"])
   (status/line :info "installing project to local maven repo")
-  (shell/command ["mvn" "install"]))
+  (shell/command ["clojure" "-X:deploy:local"]))
 
 (defn get-project []
-  (str (get-from-pom "project.groupId") "/" (get-from-pom "project.artifactId") ))
+  (str (get-from-pom :project :groupId) "/" (get-from-pom :project :artifactId) ))
 
 (defn get-version []
-  (get-from-pom "project.version"))
+  (get-from-pom :project :version))
 
 ;;
 ;; git
