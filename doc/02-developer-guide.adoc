@@ -94,6 +94,15 @@ bb ./script/cljs_watch.clj
 
 This launches https://figwheel.org/[fighweel main]. After initialization, your default web browser will automatically be opened with the figwheel auto-testing page.
 
+== Docs
+
+All documentation is written in AsciiDoc.
+We follow https://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line[AsciiDoc best practice of one sentence per line].
+
+Images are created and edited with https://github.com/jgraph/drawio-desktop/releases[draw.io desktop].
+We export to .png with a border of 10 and a transparent background.
+At the time of this writing draw.io does not remember export settings, so you'll have to enter them in each time.
+
 == Testing Doc Code Blocks
 We use https://github.com/lread/test-doc-blocks[test-doc-blocks] to verify that code blocks in our documentation are in good working order.
 
