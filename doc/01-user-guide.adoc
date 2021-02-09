@@ -220,8 +220,13 @@ You may want to refer to link:#nodes[rewrite-clj nodes] while reviewing this int
 
 ----
 
-TIP: The zip location movement functions (`right`, `left`, `up`, `down`, etc) skip over whitespace nodes.
-If you want to see all nodes, use the `+*+` counterparts (`right*`, `left*`, `up*`, `down*`, etc).
+[TIP]
+====
+The zip location movement functions (`right`, `left`, `up`, `down`, etc) skip over Clojure whitespace nodes and comment nodes.
+Remember that Clojure whitespace includes commas.
+
+If you want to navigate over all nodes, use the `+*+` counterparts (`right*`, `left*`, `up*`, `down*`, etc).
+====
 
 See link:{cljdoc-api-url}/rewrite-clj.zip[zip API docs].
 
@@ -249,7 +254,7 @@ Use:
 ----
 (require '[rewrite-clj.zip :as z])
 
-;; for sake of an runnable example we'll load from a string:
+;; for sake of a runnable example we'll load from a string:
 (def zloc (z/of-string
 "(defproject my-project \"0.1.0-SNAPSHOT\"
   :description \"Enter description\")"))
