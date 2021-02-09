@@ -27,10 +27,11 @@
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
   ([node]
    (edn* node {}))
-  ([node {:keys [track-position?]}]
-   (if track-position?
-     (z/custom-zipper node)
-     (z/zipper node))))
+  ([node opts]
+   (-> (if (:track-position? opts)
+         (z/custom-zipper node)
+         (z/zipper node))
+       (set-opts opts))))
 
 (defn edn
   "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj.parse]]),
@@ -42,13 +43,12 @@
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
   ([node] (edn node {}))
   ([node opts]
-   (-> (loop [node node opts opts]
-         (if (= (node/tag node) :forms)
-           (let [top (edn* node opts)]
-             (or (-> top z/down ws/skip-whitespace)
-                 top))
-           (recur (node/forms-node [node]) opts)))
-       (set-opts opts))))
+   (loop [node node opts opts]
+     (if (= (node/tag node) :forms)
+       (let [top (edn* node opts)]
+         (or (-> top z/down ws/skip-whitespace)
+             top))
+       (recur (node/forms-node [node]) opts)))))
 
 ;; ## Inspection
 

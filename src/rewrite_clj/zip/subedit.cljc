@@ -28,7 +28,9 @@
 (defn- move-to
   "Move to the node represented by the given path."
   [zloc path]
-  (let [root (-> zloc z/root base/edn*)]
+  (let [root (-> zloc 
+                 z/root 
+                 (base/edn* (base/get-opts zloc)))]
     (reduce move-step root path)))
 
 (defn edit-node
@@ -59,10 +61,12 @@
 (defn subzip
   "Create and return a zipper whose root is the current node in `zloc`."
   [zloc]
-  (let [zloc' (some-> zloc z/node base/edn*)]
+  (let [zloc' (some-> zloc 
+                      z/node 
+                      (base/edn* (base/get-opts zloc)))]
     (assert zloc' "could not create subzipper.")
     zloc'))
-
+ 
 (defn subedit-node
   "Return zipper replacing current node in `zloc` with result of `f` applied to said node as an isolated sub-tree.
    The resulting zipper will be located on the root of the modified sub-tree."

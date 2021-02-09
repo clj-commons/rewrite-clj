@@ -387,6 +387,41 @@ Note that the row and column are 1-based.
 ;; => [6 6]
 ----
 
+==== Zipper Options
+When creating a new zipper you may optionally include an options map.
+These options will be carried by the zipper and live for the life of the zipper.
+Current options are:
+
+* `:track-position` - see <<position-tracking>>
+* `:auto-resolve` - see <<custom-auto-resolve>>
+
+After making changes via a zipper, the final step is typically to call `root-string` or `print-root`.
+
+Less frequently, one might call `root` which affects changes and returns the root rewrite-clj node.
+This node might be fed back into a new zipper.
+The options passed into the original zipper on creation will not be automatically applied to the new zipper and must be respecified:
+
+[source, clojure]
+----
+(require '[rewrite-clj.zip :as z])
+
+;; some contrived options to demonstrate:
+(def zip-opts {:track-position true
+               :auto-resolve (fn [_alias] 'custom-resolved)})
+
+
+(-> "(+ 10 20 30)"         ;; <- something more complicated would be here, of course
+    (z/of-string zip-opts) ;; <- our opts are passed in on creation
+    z/down z/right z/right
+    (z/edit inc)
+    z/root                 ;; <- applying changes and getting root node
+    (z/edn zip-opts)       ;; <- pass the original zip-opts on creation of new zipper
+    z/down z/right z/right
+    (z/edit inc)
+    (z/root-string))
+;; => "(+ 10 22 30)"
+----
+
 [#parser-api]
 === Parser API
 Parses Clojure/ClojureScript/EDN to rewrite-clj nodes.
@@ -773,6 +808,7 @@ To illustrate:
 ;; => #:??_my-alias_??{s1 3, :b 2, :a 1}
 ----
 
+[#custom-auto-resolve]
 ==== Custom Auto-Resolve Handling
 
 Rewrite-clj will not attempt to determine the current namespace and alias namespace mappings of the code it is parsing.
