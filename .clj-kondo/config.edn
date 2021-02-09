@@ -19,7 +19,7 @@
   rewrite-clj.zip.subedit/edit->> clojure.core/->>
   rewrite-clj.custom-zipper.switchable/defn-switchable clojure.core/defn
   rewrite-clj.potemkin.clojure/import-vars potemkin/import-vars
-  rewrite-clj.potemkin.cljs/import-varfs potemkin/import-vars}
+  rewrite-clj.potemkin.cljs/import-vars potemkin/import-vars}
  :linters
  {:unsorted-required-namespaces {:level :warning}
   :unused-namespace
