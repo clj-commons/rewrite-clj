@@ -54,9 +54,11 @@
 
 #?(:clj (set! *warn-on-reflection* true))
 
-;; ## rewrite-clj nodes coerce to themselves
+;; Reminder from https://clojure.org/reference/protocols:
+;; "if one interface is derived from the other, the more derived is used, else which one is used is unspecified"
 
-;; these are records so it is important that they come before our default record type handling
+;; ## Rewrite-clj nodes coerce to themselves
+;; It is important that all rewrite-clj nodes be specified, else we'll coerce them to records
 (extend-protocol NodeCoerceable
   CommaNode          (coerce [v] v)
   CommentNode        (coerce [v] v)
@@ -113,37 +115,45 @@
                      (symbol (subs s 1 (string/index-of s "{"))))))
     (map-node (map->children m))]))
 
+(defn- create-map-node [children]
+  (node-with-meta
+   (map-node (map->children children))
+   children))
+
+;; ## Tokens
+
 (extend-protocol NodeCoerceable
   #?(:clj clojure.lang.Keyword :cljs Keyword)
   (coerce [v]
     (keyword-node v)))
 
-;; ## Tokens
 
-#?(:clj
-   ;; TODO: why do I have nested reader conditionals?
-   (extend-protocol NodeCoerceable
-     #?(:clj Object :cljs default)
-     (coerce [v]
-       (node-with-meta
-        (token-node v)
-        v)))
-   :cljs
-   (extend-protocol NodeCoerceable
-     #?(:clj Object :cljs default)
-     (coerce [v]
-       (node-with-meta
-        ;; in cljs, this is where we check for a record, in clj it happens under map handling
-        ;; TODO: Check if this can't be done by coercing an IRecord instead
-        (if (record? v)
-          (record-node v)
-          (token-node v))
-        v))))
+
+(extend-protocol NodeCoerceable
+  #?(:clj Object :cljs default)
+  (coerce [v]
+          #?(:cljs (if (record? v)
+                     (record-node v)
+                     (node-with-meta 
+                      (token-node v) 
+                      v))
+             :clj (node-with-meta
+                   (token-node v)
+                   v))))
 
 (extend-protocol NodeCoerceable
   nil
   (coerce [v]
     (token-node nil)))
+
+;; ## Record
+
+#?(:clj
+   ;; ClojureScript IRecord cannot be extended, we handle records for cljs in default coercion
+   (extend-protocol NodeCoerceable
+     clojure.lang.IRecord
+     (coerce [v]
+       (record-node v))))
 
 ;; ## Seqs
 
@@ -168,6 +178,7 @@
     (seq-node set-node sq)))
 
 #?(:cljs
+   ;; cljs empty list is special
    (extend-protocol NodeCoerceable
      EmptyList
      (coerce [sq]
@@ -179,17 +190,9 @@
    (extend-protocol NodeCoerceable
      clojure.lang.IPersistentMap
      (coerce [m]
-       (node-with-meta
-        ;; in clj a record is a persistent map
-        (if (record? m)
-          (record-node m)
-          (map-node (map->children m)))
-        m)))
+       (create-map-node m)))
    :cljs
-   (let [create-map-node (fn [m]
-                           (node-with-meta
-                            (map-node (map->children m))
-                            m))]
+   (do
      (extend-protocol NodeCoerceable
        PersistentHashMap
        (coerce [m] (create-map-node m)))
