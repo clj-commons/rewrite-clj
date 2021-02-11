@@ -1,4 +1,12 @@
 (ns ^:no-doc rewrite-clj.node.coercer
+  "Notes:
+   - Coercion of records handled specially due different behaviors on different JVMs.
+     Must be in equality of specificity of in our protocol extensions.
+
+     From https://clojure.org/reference/protocols:
+     
+       if one interface is derived from the other, the more derived is used, 
+       else which one is used is unspecified" 
   (:require
    [clojure.string :as string]
    #?@(:clj
@@ -54,8 +62,6 @@
 
 #?(:clj (set! *warn-on-reflection* true))
 
-;; Reminder from https://clojure.org/reference/protocols:
-;; "if one interface is derived from the other, the more derived is used, else which one is used is unspecified"
 
 ;; ## Rewrite-clj nodes coerce to themselves
 ;; It is important that all rewrite-clj nodes be specified, else we'll coerce them to records
@@ -145,31 +151,28 @@
   (coerce [v]
     (string-node (split-to-lines v))))
 
-(extend-protocol NodeCoerceable
-  #?(:clj Object :cljs default)
-  (coerce [v]
-          #?(:cljs (if (record? v)
-                     (record-node v)
-                     (node-with-meta 
-                      (token-node v) 
-                      v))
-             :clj (node-with-meta
-                   (token-node v)
-                   v))))
+#?(:clj
+   (extend-protocol NodeCoerceable
+     Object 
+     (coerce [v]
+       (node-with-meta
+        (token-node v)
+        v)))
+   :cljs
+   (extend-protocol NodeCoerceable
+     default
+     (coerce [v]
+       (node-with-meta
+        ;; in cljs, this is where we check for a record, in clj it happens under map handling
+        (if (record? v)
+          (record-node v)
+          (token-node v))
+        v))))
 
 (extend-protocol NodeCoerceable
   nil
   (coerce [v]
     (token-node nil)))
-
-;; ## Record
-
-#?(:clj
-   ;; ClojureScript IRecord cannot be extended, we handle records for cljs in default coercion
-   (extend-protocol NodeCoerceable
-     clojure.lang.IRecord
-     (coerce [v]
-       (record-node v))))
 
 ;; ## Seqs
 
@@ -206,7 +209,9 @@
    (extend-protocol NodeCoerceable
      clojure.lang.IPersistentMap
      (coerce [m]
-       (create-map-node m)))
+       (if (record? m)
+         (node-with-meta (record-node m) m)
+         (create-map-node m))))
    :cljs
    (do
      (extend-protocol NodeCoerceable
