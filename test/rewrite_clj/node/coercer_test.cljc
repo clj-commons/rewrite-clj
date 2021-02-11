@@ -5,54 +5,62 @@
             [rewrite-clj.parser :as p]))
 
 (deftest t-sexpr->node->sexpr-roundtrip
-  (are [?sexpr expected-tag expected-type]
-       (let [n (coerce ?sexpr)]
-         (is (node/node? n))
-         (is (= expected-tag (node/tag n)))
-         (is (= expected-type (protocols/node-type n)))
-         (is (string? (node/string n)))
-         (is (= ?sexpr (node/sexpr n)))
-         (is (not (meta n)))
-         (is (= (type ?sexpr) (type (node/sexpr n)))))
+  (testing "simple cases roundtrip"
+    (are [?sexpr expected-tag expected-type]
+         (let [n (coerce ?sexpr)]
+           (is (node/node? n))
+           (is (= ?sexpr (node/sexpr n)))
+           (is (string? (node/string n)))
+           (is (= expected-tag (node/tag n)) "tag")
+           (is (= expected-type (protocols/node-type n)) "node-type")
+           (is (not (meta n)))
+           (is (= (type ?sexpr) (type (node/sexpr n)))))
 
-    ;; TODO: we have an integer-node, do we use it?
-    ;; numbers
-    3                      :token      :token
-    3N                     :token      :token
-    3.14                   :token      :token
-    3.14M                  :token      :token
-    3e14                   :token      :token
+      ;; numbers
 
-    ;; ratios are not valid in cljs
-    #?@(:clj  [3/4         :token      :token])
+      ;; note that we do have an integer-node, but rewrite-clj never parses to it
+      ;; so we never coerce to it either 
+      3                      :token      :token
+      3N                     :token      :token
+      3.14                   :token      :token
+      3.14M                  :token      :token
+      3e14                   :token      :token
 
-    ;; symbol/keyword/string/...
-    'symbol                :token      :symbol
-    'namespace/symbol      :token      :symbol
-    :keyword               :token      :keyword
-    :1.5.1                 :token      :keyword
-    ::keyword              :token      :keyword
-    ::1.5.1                :token      :keyword
-    :namespace/keyword     :token      :keyword
-    ;; TODO: we have a string node, do we use it?
-    ""                     :token      :token
-    "hello, over there!"   :token      :token
-    "multi\nline"          :token      :token
-    ;; whitespace is coerced to string token nodes, not whitespace/newline nodes
-    " "                    :token      :token
-    "\n"                   :token      :token
+      ;; ratios are not valid in cljs
+      #?@(:clj  [3/4         :token      :token])
 
-    ;; seqs
-    []                     :vector     :seq
-    [1 2 3]                :vector     :seq
-    ()                     :list       :seq
-    '()                    :list       :seq
-    (list 1 2 3)           :list       :seq
-    #{}                    :set        :seq
-    #{1 2 3}               :set        :seq
+      ;; symbol/keyword/string/...
+      'symbol                :token      :symbol
+      'namespace/symbol      :token      :symbol
+      :keyword               :token      :keyword
+      :1.5.1                 :token      :keyword
+      ::keyword              :token      :keyword
+      ::1.5.1                :token      :keyword
+      :namespace/keyword     :token      :keyword
 
-    ;; date
-    #inst "2014-11-26T00:05:23" :token :token))
+      ""                     :token      :string
+      "hello, over there!"   :token      :string
+      "multi\nline"          :multi-line :string
+      " "                    :token      :string
+      "\n"                   :multi-line :string
+      "\n\n"                 :multi-line :string
+      ","                    :token      :string
+
+      ;; seqs
+      []                     :vector     :seq
+      [1 2 3]                :vector     :seq
+      ()                     :list       :seq
+      '()                    :list       :seq
+      (list 1 2 3)           :list       :seq
+      #{}                    :set        :seq
+      #{1 2 3}               :set        :seq
+
+      ;; date
+      #inst "2014-11-26T00:05:23" :token :token))
+  (testing "multi-line string newline variants are normalized"
+    (let [s "hey\nyou\rover\r\nthere"
+          n (node/coerce s)]
+      (is (= "hey\nyou\nover\nthere" (node/sexpr n))))))
 
 (deftest
   t-quoted-list-reader-location-metadata-elided
@@ -173,7 +181,6 @@
     (let [n (node/map-qualifier-node false "prefix")]
       (is (= n (node/coerce n)))))
   (testing "nodes that are not parsed, but can be created manually"
-    ;; TODO: there is also indent nodes, but I think it is unused
     (let [n (node/integer-node 10)]
       (is (= n (node/coerce n))))
     (let [n (node/string-node "my-string")]

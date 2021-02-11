@@ -1,5 +1,6 @@
 (ns ^:no-doc rewrite-clj.node.coercer
   (:require
+   [clojure.string :as string]
    #?@(:clj
        [[rewrite-clj.node.comment]
         [rewrite-clj.node.fn]
@@ -13,13 +14,12 @@
         [rewrite-clj.node.reader-macro :refer [reader-macro-node var-node]]
         [rewrite-clj.node.regex]
         [rewrite-clj.node.seq :refer [vector-node list-node set-node map-node]]
-        [rewrite-clj.node.string]
+        [rewrite-clj.node.string :refer [string-node]]
         [rewrite-clj.node.token :refer [token-node]]
         [rewrite-clj.node.uneval]
         [rewrite-clj.node.whitespace :as ws]]
        :cljs
-       [[clojure.string :as string]
-        [rewrite-clj.node.comment :refer [CommentNode]]
+       [[rewrite-clj.node.comment :refer [CommentNode]]
         [rewrite-clj.node.fn :refer [FnNode]]
         [rewrite-clj.node.forms :refer [FormsNode]]
         [rewrite-clj.node.integer :refer [IntNode]]
@@ -31,7 +31,7 @@
         [rewrite-clj.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
         [rewrite-clj.node.regex :refer [RegexNode]]
         [rewrite-clj.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
-        [rewrite-clj.node.stringz :refer [StringNode]]
+        [rewrite-clj.node.stringz :refer [StringNode string-node]]
         [rewrite-clj.node.token :refer [TokenNode SymbolNode token-node]]
         [rewrite-clj.node.uneval :refer [UnevalNode]]
         [rewrite-clj.node.whitespace :refer [WhitespaceNode CommaNode NewlineNode] :as ws]]))
@@ -84,6 +84,19 @@
 
 ;; ## Helpers
 
+(defn- split-to-lines
+  "Slightly different than string/split-lines in that:
+   - includes all lines even if empty
+   - behaves the same on clj and cljs"
+  [s]
+  (loop [s s
+         lines []]
+    (if-let [m (first (re-find #"(\r\n|\r|\n)" s))]
+      (let [eol-ndx (string/index-of s m)]
+        (recur (subs s (+ eol-ndx (count m)))
+               (conj lines (subs s 0 eol-ndx))))
+      (conj lines s))))
+
 (defn node-with-meta
   [n value]
   (if #?(:clj (instance? clojure.lang.IMeta value)
@@ -120,14 +133,17 @@
    (map-node (map->children children))
    children))
 
-;; ## Tokens
+;; ## Tokens (and special case for record for cljs)
 
 (extend-protocol NodeCoerceable
   #?(:clj clojure.lang.Keyword :cljs Keyword)
   (coerce [v]
     (keyword-node v)))
 
-
+(extend-protocol NodeCoerceable
+  #?(:clj java.lang.String :cljs string)
+  (coerce [v]
+    (string-node (split-to-lines v))))
 
 (extend-protocol NodeCoerceable
   #?(:clj Object :cljs default)
