@@ -6,18 +6,19 @@
 ;; ## Node
 
 (defrecord RegexNode [pattern]
-  rewrite-clj.node.protocols/Node
+  node/Node
   (tag [_node] :regex)
   (node-type [_node] :regex)
   (printable-only? [_node] false)
   (sexpr* [_node _opts]
     (list 're-pattern pattern))
   (length [_node] 1)
-  (string [_node] 
+  (string [_node]
     (str "#\"" pattern "\""))
 
-  ;; TODO: interesting, no toString like other nodes 
-  )
+  Object
+  (toString [node]
+    (node/string node)))
 
 (node/make-printable! RegexNode)
 

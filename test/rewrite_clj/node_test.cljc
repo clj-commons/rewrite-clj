@@ -2,7 +2,42 @@
   "This test namespace originated from rewrite-cljs."
   (:require [clojure.test :refer [deftest is are testing]]
             [rewrite-clj.node :as n]
+            [rewrite-clj.node.protocols :as proto]
             [rewrite-clj.parser :as p]))
+
+(deftest nodes-convert-to-strings
+  (testing "easily parseable"
+    (are [?in ?expected-tag ?expected-type]
+        (let [n (p/parse-string ?in)]
+          (is (= ?in (str n)))
+          (is (= ?expected-tag (n/tag n)))
+          (is (= ?expected-type (proto/node-type n))))
+      ","               :comma          :comma
+      "; comment"       :comment        :comment
+      "@deref"          :deref          :deref
+      "#(fn %1)"        :fn             :fn
+      ;; forms
+      ;; int
+      ":my-kw"          :token          :keyword
+      "^:meta b"        :meta           :meta
+      "#:prefix {:a 1}" :namespaced-map :namespaced-map
+      "\n"              :newline        :newline
+      "'quoted"         :quote          :quote
+      "#booya 32"       :reader-macro   :reader-macro
+      "#'myvar"         :var            :reader
+      "#\"regex\""      :regex          :regex
+      "[1 2 3]"         :vector         :seq
+      "\"string\""      :token          :string
+      "symbol"          :token          :symbol
+      "43"              :token          :token
+      "#_ nope"         :uneval         :uneval
+      "  "              :whitespace     :whitespace))
+  (testing "map qualifier"
+    (is (= "#:prefix" (str (n/map-qualifier-node false "prefix")))))
+  (testing "integer"
+    (is (= "42" (str (n/integer-node 42)))))
+  (testing "forms node"
+    (is (= "5 7" (str (p/parse-string-all "5 7"))))))
 
 (deftest namespaced-keyword
   (is (= ":dill/dall"

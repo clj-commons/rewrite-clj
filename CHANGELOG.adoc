@@ -63,6 +63,7 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 * can now read `\\##Inf`, `##-Inf` and `##Nan` https://github.com/clj-commons/rewrite-clj/issues/75[#75]
 * ensure that all rewrite-clj nodes coerce to themselves
 * now coerce strings to string nodes (instead of to token nodes) https://github.com/clj-commons/rewrite-clj/issues/126[#126]
+* regex node now converts correctly to string https://github.com/clj-commons/rewrite-clj/issues/127[#127]
 * internal version of potemkin import-vars:
 ** argument names now correct in API docs (some were gensymed previously)
 ** line numbers for protocols in API docs are now correct
