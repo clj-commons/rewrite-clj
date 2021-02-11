@@ -19,9 +19,6 @@
 (def root (z/of-string data-string))
 
 ;; ## Tests
-;;
-;; These compare fast-zip's zipper operations with rewrite-clj's whitespace-aware
-;; ones.
 
 (defn- node->vec
   [n]
@@ -61,19 +58,6 @@
 
   (is (= [:token 'defproject] (-> root z/down z/leftmost ->vec)))
   (is (= [:token 'defproject] (-> root z/down z/right z/leftmost ->vec))))
-
-;; TODO: test was commented out in rewrite-clj v0 - need to fix?
-#_ (deftest t-depth-first-traversal
-  (let [loc (z/of-string "(defn func [] (println 1))")
-        dfs (->> (iterate z/next loc)
-                 (take-while (complement z/end?)))]
-        ;;dfs => (has every? truthy)
-        ;;(nth dfs 6) => (nth dfs 7)
-        ;;(z/end? (nth dfs 6)) => falsey
-        ;;(z/end? (nth dfs 7)) => truthy
-    #_(map z/sexpr dfs) #_=> #_'[(defn func [] (println 1))
-                                 defn func [] (println 1)
-                                 println 1 1]))
 
 (let [tk (node/token-node :go)]
   (deftest t-whitespace-aware-insertappend
