@@ -103,8 +103,7 @@
          (is (= ?sexpr (node/sexpr n)))
          (is (map? (node/sexpr n))))
     #:prefix {:a 1 :b 2}
-    ;; TODO: sci barfs on auto-resolve current ns maps
-    ;; #::{:c 3 :d 4}
+    #::{:c 3 :d 4}
     #::p{:e 5 :f 6}))
 
 ;; TODO: we have a regex node, do we use it?
