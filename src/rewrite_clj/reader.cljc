@@ -5,7 +5,8 @@
             [clojure.tools.reader.reader-types :as r]
             [rewrite-clj.interop :as interop])
   #?(:cljs (:import [goog.string StringBuffer])
-     :clj (:import [java.io PushbackReader])))
+     :clj (:import [java.io PushbackReader]
+                   [clojure.tools.reader.reader_types IndexingPushbackReader])))
 
 #?(:clj (set! *warn-on-reflection* true))
 
@@ -179,8 +180,7 @@
 #?(:clj
    (defn file-reader
      "Create reader for files."
-     ;; TODO: import
-     ^clojure.tools.reader.reader_types.IndexingPushbackReader
+     ^IndexingPushbackReader
      [f]
      (-> (io/file f)
          (io/reader)
