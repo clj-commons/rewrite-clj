@@ -20,7 +20,7 @@
         [rewrite-clj.node.protocols :as node :refer [NodeCoerceable coerce]]
         [rewrite-clj.node.quote]
         [rewrite-clj.node.reader-macro :refer [reader-macro-node var-node]]
-        [rewrite-clj.node.regex]
+        [rewrite-clj.node.regex :refer [regex-node pattern-string-for-regex]]
         [rewrite-clj.node.seq :refer [vector-node list-node set-node map-node]]
         [rewrite-clj.node.string :refer [string-node]]
         [rewrite-clj.node.token :refer [token-node]]
@@ -37,7 +37,7 @@
         [rewrite-clj.node.protocols :as node :refer [NodeCoerceable coerce]]
         [rewrite-clj.node.quote :refer [QuoteNode]]
         [rewrite-clj.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
-        [rewrite-clj.node.regex :refer [RegexNode]]
+        [rewrite-clj.node.regex :refer [RegexNode regex-node pattern-string-for-regex]]
         [rewrite-clj.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
         [rewrite-clj.node.stringz :refer [StringNode string-node]]
         [rewrite-clj.node.token :refer [TokenNode SymbolNode token-node]]
@@ -173,6 +173,13 @@
   nil
   (coerce [v]
     (token-node nil)))
+
+;; ## Regex
+
+(extend-protocol NodeCoerceable
+  #?(:clj java.util.regex.Pattern :cljs js/RegExp)
+  (coerce [v]
+    (regex-node (pattern-string-for-regex v))))
 
 ;; ## Seqs
 

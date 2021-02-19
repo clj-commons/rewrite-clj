@@ -161,15 +161,19 @@
     (is (thrown-with-msg? ExceptionInfo #"unsupported operation" (node/sexpr uneval)))))
 
 (deftest t-parsing-regular-expressions
-  (are [?s ?p]
+  (are [?s ?expected-sexpr]
        (let [n (p/parse-string ?s)]
          (is (= :regex (node/tag n)))
-         (is (= ?p (node/sexpr n))))
+         (is (= (count ?s) (node/length n)))
+         (is (= ?expected-sexpr (node/sexpr n))))
     "#\"regex\""       '(re-pattern "regex")
     "#\"regex\\.\""    '(re-pattern "regex\\.")
     "#\"[reg|k].x\""   '(re-pattern "[reg|k].x")
-    "#\"a\\nb\""       '(re-pattern "a\\nb")
-    "#\"a\nb\""        '(re-pattern "a\nb")))
+    "#\"a\\nb\""       '(re-pattern  "a\\nb")
+    "#\"a\nb\""        '(re-pattern  "a\nb")
+
+    "#\"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\""
+    '(re-pattern "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")))
 
 (deftest t-parsing-strings
   (are [?s ?tag ?sexpr]
@@ -188,6 +192,7 @@
              fq (frequencies (map node/tag children))]
          (is (= ?t (node/tag n)))
          (is (= (.trim ?s) (node/string n)))
+         ;; TODO: what's this?
          (node/sexpr n)     = (read-string ?s)
          (is (= ?w (:whitespace fq 0)))
          (is (= ?c (:token fq 0))))

@@ -2,6 +2,7 @@
   (:require [clojure.test :refer [deftest testing is are]]
             [rewrite-clj.node :as node :refer [coerce]]
             [rewrite-clj.node.protocols :as protocols]
+            [rewrite-clj.node.regex :as regex]
             [rewrite-clj.parser :as p]))
 
 (deftest t-sexpr->node->sexpr-roundtrip
@@ -106,16 +107,19 @@
     #::{:c 3 :d 4}
     #::p{:e 5 :f 6}))
 
-;; TODO: we have a regex node, do we use it?
 (deftest t-sexpr->node->sexpr-roundtrip-for-regex
-  (let [sexpr #"abc"
-        n (coerce sexpr)]
-    (is (node/node? n))
-    (is (= :token (node/tag n)))
-    (is (= :token (protocols/node-type n)))
-    (is (string? (node/string n)))
-    (is (= (str sexpr) (str (node/sexpr n))))
-    (is (= (type sexpr) (type (node/sexpr n))))))
+  (are [?in]
+       (let [n (coerce ?in)]
+         (is (node/node? n))
+         (is (= :regex (node/tag n)))
+         (is (= :regex (protocols/node-type n)))
+         (is (string? (node/string n)))
+         (is (= (list 're-pattern (regex/pattern-string-for-regex ?in))
+                (node/sexpr n))))
+    #"abc"
+    #"a\nb\nc"
+    #"a\.\s*"
+    #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"))
 
 (deftest
   ^:skip-for-sci ;; sci, by design has its own var type, so skip this one for sci
