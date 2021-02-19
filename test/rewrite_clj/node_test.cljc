@@ -86,6 +86,7 @@
       (is (= sample (n/string res))))))
 
 (deftest t-node?
+  (is (not (n/node? nil)))
   (is (not (n/node? 42)))
   (is (not (n/node? "just a string")))
   (is (not (n/node? {:a 1})))

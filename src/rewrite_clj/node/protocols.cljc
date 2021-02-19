@@ -99,10 +99,9 @@
 
 
 (defn node?
-  ;; TODO: consider a marker interface instead?
   "Returns true if `x` is a rewrite-clj created node."
   [x]
-  (not= :unknown (tag x)))
+  (and (some? x) (not= :unknown (tag x))))
 
 ;; TODO: is this the right ns for this? Ok for now, it is internal
 (defn default-auto-resolve [alias]
