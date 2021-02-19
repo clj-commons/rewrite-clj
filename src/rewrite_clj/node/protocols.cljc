@@ -97,13 +97,11 @@
    (when (inner? node)
      (sexprs (children node) opts))))
 
-
 (defn node?
   "Returns true if `x` is a rewrite-clj created node."
   [x]
   (and (some? x) (not= :unknown (tag x))))
 
-;; TODO: is this the right ns for this? Ok for now, it is internal
 (defn default-auto-resolve [alias]
   (if (= :current alias)
     '?_current-ns_?
