@@ -49,12 +49,3 @@
     "#=(1 2)"         1                "#=(1 x 2 y)"
     "#_(1 2)"         1                "#_(1 x 2 y)"
     "@(f 2)"          1                "@(f x 2 y)"))
-
-;; TODO: why is this test in a comment?
-(comment
-  ;; future-fact
-  (deftest t-inserting-after-comment
-    (let [loc (-> (base/of-string "[1 2 3] ; this is a comment")
-                  (z/rightmost)
-                  (insert-right 'x))]
-      (is (= "[1 2 3] ; this is a comment\nx" (base/root-string loc))))))
