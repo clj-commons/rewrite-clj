@@ -162,7 +162,6 @@
         :my-prefix/my-kw  (n/keyword-node :my-prefix/my-kw)
         'my-prefix/my-sym (n/token-node 'my-prefix/my-sym)))
     (testing "when auto-resolver returns nil, bare or already qualified kw is returned"
-      ;; TODO: is this what we really want?
       (let [opts {:auto-resolve (fn [_alias])}]
         (is (= :my-kw (-> (n/keyword-node :my-kw true) (n/sexpr opts))))
         (is (= :my-kw (-> (n/keyword-node :my-alias/my-kw true) (n/sexpr opts))))

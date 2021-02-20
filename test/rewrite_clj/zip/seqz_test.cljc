@@ -71,7 +71,6 @@
     (is (thrown? #?(:clj IndexOutOfBoundsException :cljs js/Error)
                  (-> "[5 10 15]" base/of-string (sq/get 5))))))
 
-;; TODO: a bit repetetive?
 (deftest t-seq-namespaced-maps
   (let [opts {:auto-resolve (fn [ns-alias]
                               (if (= :current ns-alias)
@@ -94,8 +93,6 @@
       (testing "default resolver"
         (let [tmap-keys (fn [s] (->> s
                                      base/of-string
-                                     ;; TODO: this might be a bit misleading we are taking the name of the key which may be autoresolved
-                                     ;; TODO: Oh right, I don't NEED to use edit
                                      (sq/map-keys #(e/edit % name))
                                      base/string))]
           (is (= "#:my-prefix {\"x\" 7, \"y\" 123}" (tmap-keys "#:my-prefix {:x 7, :y 123}")))
@@ -103,8 +100,6 @@
 
       (testing "custom resolver"
         (let [tmap-keys (fn [s] (->> (base/of-string s opts)
-                                     ;; TODO: this might be a bit misleading we are taking the name of the key which may be autoresolved
-                                     ;; TODO: Oh right, I don't NEED to use edit
                                      (sq/map-keys #(e/edit % name))
                                      base/string))]
           (is (= "#:my-prefix {\"x\" 7, \"y\" 123}" (tmap-keys "#:my-prefix {:x 7, :y 123}")))
@@ -120,7 +115,6 @@
           (is (= "#::my-ns-alias{:x \"new-x-val\", ::y 17}" (tassoc "#::my-ns-alias{:x 42, ::y 17}" :my.aliased.ns/x "new-x-val"))))))))
 
 
-;; TODO: These aren't seq operation tests they more actually keyword tests? Or the fact that namespaced map context gets applied to keywords
 (deftest t-sexpr-namespaced-maps
   (let [opts {:auto-resolve (fn [ns-alias]
                               (if (= :current ns-alias)
