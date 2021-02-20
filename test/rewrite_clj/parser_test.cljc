@@ -192,8 +192,7 @@
              fq (frequencies (map node/tag children))]
          (is (= ?t (node/tag n)))
          (is (= (.trim ?s) (node/string n)))
-         ;; TODO: what's this?
-         (node/sexpr n)     = (read-string ?s)
+         (is (= (node/sexpr n) (read-string ?s)))
          (is (= ?w (:whitespace fq 0)))
          (is (= ?c (:token fq 0))))
     "(1 2 3)"          :list        2  3
