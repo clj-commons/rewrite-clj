@@ -242,25 +242,26 @@
     "#^{:private true}"  :meta* :map))
 
 (deftest t-parsing-multiple-metadata-forms
-  (are [?s ?t ?mt]
+  (are [?s ?expected-meta-tag ?expected-tag-on-metadata]
        (let [s (str ?s " s")
              n (p/parse-string s)
-             [mta ws n'] (node/children n)
-             ;; TODO: verify sym?
-             [mta2 ws2 _sym] (node/children n')]
-          ;; outer meta
-         (is (= ?t (node/tag n)))
-         (is (= s (node/string n)))
-         (is (= 's (node/sexpr n)))
+             [mdata ws inner-n] (node/children n)
+             [inner-mdata inner-ws sym] (node/children inner-n)]
+         ;; outer meta
+         (is (= ?expected-meta-tag (node/tag n)))
          (is (= {:private true :awe true} (meta (node/sexpr n))))
-         (is (= ?mt (node/tag mta)))
+         (is (= ?expected-tag-on-metadata (node/tag mdata)))
          (is (= :whitespace (node/tag ws)))
 
-          ;; inner meta
-         (is (= ?t (node/tag n')))
-         (is (= {:awe true} (meta (node/sexpr n'))))
-         (is (= ?mt (node/tag mta2)))
-         (is (= :whitespace (node/tag ws2))))
+         ;; inner meta
+         (is (= ?expected-meta-tag (node/tag inner-n)))
+         (is (= {:awe true} (meta (node/sexpr inner-n))))
+         (is (= ?expected-tag-on-metadata (node/tag inner-mdata)))
+         (is (= :whitespace (node/tag inner-ws)))
+
+         ;; symbol
+         (is (= s (node/string n)))
+         (is (= 's (node/sexpr sym))))
     "^:private ^:awe"                 :meta  :token
     "^{:private true} ^{:awe true}"   :meta  :map
     "#^:private #^:awe"               :meta* :token
