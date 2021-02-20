@@ -37,9 +37,19 @@
            (is (= ?sexpr (base/sexpr zloc')))
            (is (= ?root-string (base/root-string zloc'))))
       4 '[c d] "[a [ c d]]"
-      6 '[b d] "[a [b  d]]")
-    (is (thrown-with-msg? ExceptionInfo #"cannot remove at top"
-                          (u/remove-and-move-up root)))))
+      6 '[b d] "[a [b  d]]")))
+
+(deftest t-remove-and-move-up-throws
+  ;; I can't tell you why, but shadow-cljs will sometimes, under certain vesions of node and 
+  ;; other variables I do not understand culminate in a:
+  ;;    #object[RangeError RangeError: Maximum call stack size exceeded]
+  ;; when I change this test to use (thrown-with-msg? ...)
+  (let [zloc (base/of-string "[a [b c d]]")]
+    (is (= "cannot remove at top" (try
+                     (u/remove-and-move-up zloc) 
+                     (catch ExceptionInfo e
+                       ;; ex-message is only avail in 1.10 and we support clj 1.9
+                       #?(:clj (.getMessage e) :cljs (.-message e))))))))
 
 (deftest t-remove-and-move-left-tracks-current-position-correctly
   (are [?n ?pos]
