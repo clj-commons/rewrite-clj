@@ -501,24 +501,31 @@
            (into entry))
       entry)))
 
-(let [s "(defn f\n  [x]\n  (println x))"
-      positions (->> (p/parse-string-all s)
-                     (nodes-with-meta))]
-  (deftest t-rowcolumn-metadata
-    ;; TODO: why are we not checking `?end`?
-    (are [?pos _?end ?t ?s ?sexpr]
-         (let [{:keys [node _end-pos]} (positions ?pos)]
+(deftest t-rowcolumn-metadata-from-clojure-tools-reader
+  ;; if you update this test, please also review/update:
+  ;;   rewrite-clj.zip-test.t-rowcolumn-positions-from-position-tracking-zipper
+  (let [s (str
+           ;12345678901234
+           "(defn f\n"
+           "  [x]\n"
+           "  (println x))")
+        positions (->> (p/parse-string-all s)
+                       (nodes-with-meta))]
+    (are [?pos ?end ?t ?s ?sexpr]
+         (let [{:keys [node end-pos]} (positions ?pos)]
            (is (= ?t (node/tag node)))
            (is (= ?s (node/string node)))
            (is (= ?sexpr (node/sexpr node)))
-           ;; TODO: hmmm...
-           #_(deftest t-reliable-decision-on-end-pos-not-currently-possible
-               (is (= ?end end-pos))))
-      [1 1]  [3 14] :list   s              '(defn f [x] (println x))
-      [1 2]  [1 5]  :token  "defn"         'defn
+           (is (= ?end end-pos)))
+      [1 1]  [3 15] :list   s              '(defn f [x] (println x))
+      [1 2]  [1 6]  :token  "defn"         'defn
       [1 7]  [1 8]  :token  "f"            'f
-      [2 3]  [2 5]  :vector "[x]"          '[x]
+      [2 3]  [2 6]  :vector "[x]"          '[x]
       [2 4]  [2 5]  :token  "x"            'x
-      [3 3]  [3 13] :list   "(println x)"  '(println x)
-      [3 4]  [3 10] :token  "println"      'println
+      [3 3]  [3 14] :list   "(println x)"  '(println x)
+      [3 4]  [3 11] :token  "println"      'println
       [3 12] [3 13] :token  "x"            'x)))
+
+
+
+

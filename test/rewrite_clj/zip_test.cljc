@@ -1,13 +1,13 @@
 (ns rewrite-clj.zip-test
   "This test namespace originated from rewrite-cljs."
   (:require [clojure.string :as string]
-            [clojure.test :refer [deftest testing is]]
+            [clojure.test :refer [deftest testing is are]]
             [rewrite-clj.node :as n]
             [rewrite-clj.zip :as z]))
 
 (deftest of-string-simple-sexpr
   (let [sexpr "(+ 1 2)"]
-   (is (= sexpr (-> sexpr z/of-string z/root-string)))))
+    (is (= sexpr (-> sexpr z/of-string z/root-string)))))
 
 (deftest manipulate-sexpr
   (let [sexpr
@@ -29,6 +29,36 @@
                         z/down                                       ;; navigate to 5
                         z/remove                                     ;; remove 5 giving [6 7 [1 2]]
                         z/root-string)))))
+
+(deftest t-rowcolumn-positions-from-position-tracking-zipper
+  ;; if you update this test, please also review/update:
+  ;;   rewrite-clj.parser-test.t-rowcolumn-metadata-from-clojure-tools-reader
+  (let [s (str
+           ;12345678901234
+           "(defn f\n"
+           "  [x]\n"
+           "  (println x))")
+        positions (->> (z/of-string s {:track-position? true})
+                       (iterate z/next)
+                       (take-while #(not (z/end? %)))
+                       (reduce (fn [acc zloc]
+                                 (let [[start end] (z/position-span zloc)]
+                                   (assoc acc start {:node (z/node zloc) :end-pos end})))
+                               {}))]
+    (are [?pos ?end ?t ?s ?sexpr]
+         (let [{:keys [node end-pos]} (positions ?pos)]
+           (is (= ?t (n/tag node)))
+           (is (= ?s (n/string node)))
+           (is (= ?sexpr (n/sexpr node)))
+           (is (= ?end end-pos)))
+      [1 1]  [3 15] :list   s              '(defn f [x] (println x))
+      [1 2]  [1 6]  :token  "defn"         'defn
+      [1 7]  [1 8]  :token  "f"            'f
+      [2 3]  [2 6]  :vector "[x]"          '[x]
+      [2 4]  [2 5]  :token  "x"            'x
+      [3 3]  [3 14] :list   "(println x)"  '(println x)
+      [3 4]  [3 11] :token  "println"      'println
+      [3 12] [3 13] :token  "x"            'x)))
 
 (deftest namespaced-keywords
   (is (= ":dill" (-> ":dill" z/of-string z/root-string)))

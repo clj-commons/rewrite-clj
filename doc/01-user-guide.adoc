@@ -111,6 +111,9 @@ While reviewing the following example, it helps to remember that Clojure source 
 
 image::introduction-parsed-nodes.png[introduction parsed nodes]
 
+Each node carries the positional metadata `:row`, `:col`, `:end-row` and `:end-col`.
+The positional data is 1-based and `:end-col` is exclusive.
+
 You can link:#parser-api[parse] and work with link:#node-api[nodes] directly or take advantage of the power of the link:#zip-api[zip API].
 
 Rewrite-clj offers easy conversion from rewrite-clj nodes to Clojure forms and back.
@@ -326,8 +329,15 @@ It offers some functions that correspond to the standard Clojure seq functions, 
 [#position-tracking]
 ==== Tracking Position with the Zip API
 
-If you need to track the source row and column while reading and manipulating your zipper, create your zipper with `:track-position true` option.
+If you need to track the source row and column while reading and updating your zipper, create your zipper with `:track-position true` option.
 Note that the row and column are 1-based.
+
+[TIP]
+====
+If you have no interest in the zipper updating positions when the zipper changes, but are still interested in node positions, you can use a zipper without `:track-positon true` option.
+
+Read up on positional metadata under link:#nodes[rewrite-clj nodes].
+====
 
 [source,clojure]
 ----

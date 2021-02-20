@@ -74,7 +74,9 @@
   (node/replace-children node children))
 
 (defn position
-  "Returns the ones-based `[row col]` of the start of the current node in `zloc`."
+  "Returns the ones-based `[row col]` of the start of the current node in `zloc`.
+   
+  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking)."
   [zloc]
   (if (custom-zipper? zloc)
     (:position zloc)
@@ -84,11 +86,13 @@
            "':track-position?'  set to true.") {}))))
 
 (defn position-span
-  "Returns the ones-based `[[start-row start-col] [end-row end-col]]` of the current node in `zloc`."
+  "Returns the ones-based `[[start-row start-col] [end-row end-col]]` of the current node in `zloc`.
+  `end-col` is exclusive.
+
+  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking)."
   [zloc]
   (let [start-pos (position zloc)]
     [start-pos (node/+extent start-pos (node/extent (node zloc)))]))
-
 
 (defn-switchable lefts
   "Returns a seq of the left siblings of current node in `zloc`."
