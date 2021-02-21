@@ -1,6 +1,5 @@
 // NOTE: release workflow automatically updates rewrite-clj versions in this file
 = User Guide
-// TODO update these to real values
 :cljdoc-host: https://cljdoc.org
 :cljdoc-api-url: {cljdoc-host}/d/rewrite-clj/rewrite-clj/CURRENT/api
 :toclevels: 5
@@ -516,19 +515,7 @@ Rewrite-clj models nodes as they appear in the original source.
 
 image::map-nodes.png[map nodes]
 
-This is convenient when navigating through the source, but when we want to logically treat a map as a map the difference is a bit awkward.
-
-[horizontal]
-*TODO: Anything we can/want to do here?*::
-
-I was thinking a protocol for map nodes, but this would only be useful for the non-zipper (direct node) user:
-
-* `(get-map-children n)`
-* `(replace-map-children n)`?
-
-+
-So... not sure what might help.
-In a previous experiment, I modeled all maps the same, but this made dealing the space that can occur after the prefix inconsistent with the rest of the whitespace treatment in rewrite-clj.
+This is convenient when navigating through the source, but when we want to logically treat any map as a map the difference is admittedly bit awkward.
 
 [#sexpr-nuances]
 == Sexpr Nuances

@@ -12,8 +12,6 @@
          '[helper.status :as status])
 
 (defn install-locally []
-  ;; TODO: maybe this should change after dev is over?
-  ;; TODO: but for now working on local copy of rewrite-clj
   (status/line :info "installing rewrite-clj v1 locally from dev")
   (shell/command ["mvn" "install"]))
 
@@ -58,7 +56,7 @@
               :report-dir "doc/generated/api-diffs"}
         rewrite-clj-v0-lang-clj  {:coords "rewrite-clj/rewrite-clj" :version "0.6.1" :lang "clj"}
         rewrite-cljs-lang-cljs   {:coords "rewrite-cljs/rewrite-cljs" :version "0.4.5" :lang "cljs"}
-        ;; TODO: rewrite-clj version will become real on first release
+        ;; TODO: rewrite-clj version will become real on first release and maybe incorporated into release flow?
         rewrite-clj-v1-lang-clj {:coords "rewrite-clj/rewrite-clj" :version "1.0.0-alpha" :lang "clj"}
         rewrite-clj-v1-lang-cljs (assoc rewrite-clj-v1-lang-clj :lang "cljs")
         existing-to-cljc-args ["--exclude-namespace" "rewrite-clj"

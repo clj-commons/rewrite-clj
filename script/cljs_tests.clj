@@ -57,7 +57,6 @@
 
 (defn compile-opts [out-dir {:keys [:env :optimizations]}]
   {:warnings {:fn-deprecated false}
-   ;; TODO: nil might be incorrect for target in other cases, :browser might be correct?
    :target (when (= "node" env) :nodejs)
    :optimizations (keyword optimizations)
    :pretty-print (= "none" optimizations)

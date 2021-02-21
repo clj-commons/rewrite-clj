@@ -15,7 +15,7 @@
                                                   find/clj))
        (filter #(re-matches #".*-test" (str %)))))
 
-;; TODO this will not work for cljs
+;; NOTE this will not work for cljs
 (defn- vars[test-nses]
   (->> test-nses
        (mapcat (fn [ns]

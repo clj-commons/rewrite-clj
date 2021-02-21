@@ -1,6 +1,5 @@
 (ns sci-test-runner
-  "Sci interpreted test runner, grabbed concepts I needed from cognitect.test-runner.
-  TODO: consider moving more of this under JVM and out of sci interpreted world."
+  "Sci interpreted test runner, grabbed concepts I needed from cognitect.test-runner."
   (:require [clojure.java.io :as io]
             [clojure.test :as t]
             [clojure.tools.namespace.find :as find]
