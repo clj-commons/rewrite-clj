@@ -641,8 +641,10 @@ Let's take a look, using https://clojure.org/reference/reader#macrochars[Clojure
 
 (headers are *description* followed by rewrite-clj parsed node `tag`)
 
-// TODO: would be nice to auto-generate this table maybe
 [cols="25,75"]
+// Table generated via:
+//  clojure -M script/gen-user-guide-reader-macro-table.clj
+// update via updating and rerunning script and pasting result here:
 |===
 | Parsed input | Node sexpr
 
@@ -660,7 +662,7 @@ a|`\tab`
 
 2+a|*Comment* `:comment`
 a|`; comment`
-|<unsupported operation>
+a|<unsupported operation>
 
 2+a|*Deref* `:deref`
 a|`@form`
@@ -686,13 +688,13 @@ a|`(re-pattern "reg.*ex")`
 a|`#'x`
 a|`(var x)`
 
-2+a|*Anonymous function literal* `:fn`
+2+a|*Anonymous function* `:fn`
 a|`#(println %)`
-a|`(fn* [p1__10466#] (println p1__10466#))`
+a|`(fn* [p1__2976#] (println p1__2976#))`
 
 2+a|*Ignore next form* `:uneval`
 a|`#_ :ignore-me`
-|<unsupported operation>
+a|<unsupported operation>
 
 2+a|*Syntax quote* `:syntax-quote`
 a|``symbol`
