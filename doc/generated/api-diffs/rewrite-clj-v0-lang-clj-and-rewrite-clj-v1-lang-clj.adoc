@@ -46,19 +46,19 @@ l|:changed-publics
 | Element | Have [red]#pass:c[changes]# [green]#pass:c[within]# | [red]#pass:c[In A Only]# | [green]#pass:c[In B Only]#
 
 | namespaces
-| 15
-| 1
+| 16
+| 2
 | 10
 
 | publics
 | 12
-| 3
-| 100
+| 7
+| 101
 
 | arglists
 | 0
-| 5
-| 125
+| 8
+| 126
 
 |===
 **Notes:**
@@ -590,6 +590,58 @@ a|
 
 
 
+== [red]`*-*` [red]#pass:c[rewrite-clj.node.indent]#
+
+[unstyled]
+* *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
+
+=== [red]`*-*`[red]#pass:c[indent-spaces]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [red]`*-*` [red]#pass:c[[]# [red]`+node+` [red]`+n+` [red]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [red]`*-*` [red]`+:var+`
+|===
+
+=== [red]`*-*`[red]#pass:c[indent-tabs]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [red]`*-*` [red]#pass:c[[]# [red]`+node+` [red]`+n+` [red]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [red]`*-*` [red]`+:var+`
+|===
+
+=== [red]`*-*`[red]#pass:c[LinePrefixedNode]#
+|===
+| attributes
+
+a|
+[unstyled]
+* *pass:c[:type]* [red]`*-*` [red]`+:var+`
+|===
+
+=== [red]`*-*`[red]#pass:c[prefix-lines]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [red]`*-*` [red]#pass:c[[]# [red]`+node+` [red]`+prefix+` [red]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [red]`*-*` [red]`+:var+`
+|===
+
+
+
 == [black]`*≠*` [black]#pass:c[rewrite-clj.node.keyword]#
 
 [unstyled]
@@ -911,6 +963,25 @@ a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
 * *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
+|===
+
+
+
+== [black]`*≠*` [black]#pass:c[rewrite-clj.node.regex]#
+
+[unstyled]
+* *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
+
+=== [green]`*+*`[green]#pass:c[pattern-string-for-regex]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+regex+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
 |===
 
 

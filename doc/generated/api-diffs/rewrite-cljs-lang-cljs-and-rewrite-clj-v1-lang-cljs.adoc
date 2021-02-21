@@ -48,31 +48,25 @@ l|:changed-publics
 | namespaces
 | 26
 | 1
-| 11
+| 10
 
 | publics
 | 106
 | 22
-| 168
+| 165
 
 | arglists
 | 0
 | 24
-| 298
+| 296
 
 |===
 **Notes:**
 
 You'll notice that the API of the last released version of rewrite-cljs as compared to the cljs api of rewrite-clj v1 has many differences.
 
-Rewrite-cljs lagged far behind rewrite-clj v0. 
+Rewrite-cljs lagged far behind rewrite-clj v0.
 The cljs side of rewrite-clj v1 adds in, where possible, rewrite-clj features.
-
-TODO: Review
-
--coercer/seq-node
--seq/wrap*
--findz/in-range?
 
 **Table of diffs:**
 
@@ -1290,58 +1284,6 @@ a|
 
 
 
-== [green]`*+*` [green]#pass:c[rewrite-clj.node.indent]#
-
-[unstyled]
-* *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
-
-=== [green]`*+*`[green]#pass:c[indent-spaces]#
-|===
-| arglists | attributes 
-
-a|
-[unstyled]
-* [green]`*+*` [green]#pass:c[[]# [green]`+node+` [green]`+n+` [green]#pass:c[]]#
-a|
-[unstyled]
-* *pass:c[:type]* [green]`*+*` [green]`+:var+`
-|===
-
-=== [green]`*+*`[green]#pass:c[indent-tabs]#
-|===
-| arglists | attributes 
-
-a|
-[unstyled]
-* [green]`*+*` [green]#pass:c[[]# [green]`+node+` [green]`+n+` [green]#pass:c[]]#
-a|
-[unstyled]
-* *pass:c[:type]* [green]`*+*` [green]`+:var+`
-|===
-
-=== [green]`*+*`[green]#pass:c[LinePrefixedNode]#
-|===
-| attributes
-
-a|
-[unstyled]
-* *pass:c[:type]* [green]`*+*` [green]`+:var+`
-|===
-
-=== [green]`*+*`[green]#pass:c[prefix-lines]#
-|===
-| arglists | attributes 
-
-a|
-[unstyled]
-* [green]`*+*` [green]#pass:c[[]# [green]`+node+` [green]`+prefix+` [green]#pass:c[]]#
-a|
-[unstyled]
-* *pass:c[:type]* [green]`*+*` [green]`+:var+`
-|===
-
-
-
 == [green]`*+*` [green]#pass:c[rewrite-clj.node.integer]#
 
 [unstyled]
@@ -1886,6 +1828,18 @@ a|
 
 [unstyled]
 * *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
+
+=== [green]`*+*`[green]#pass:c[pattern-string-for-regex]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+regex+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
+|===
 
 === [green]`*+*`[green]#pass:c[regex-node]#
 |===
@@ -3090,7 +3044,7 @@ a|
 a|
 [unstyled]
 * [green]`*+*` [green]#pass:c[[]# [green]`+node+` [green]#pass:c[]]#
-* [green]`*+*` [green]#pass:c[[]# [green]`+node+` [green]`+{}+` [green]#pass:c[]]#
+* [green]`*+*` [green]#pass:c[[]# [green]`+node+` [green]`+opts+` [green]#pass:c[]]#
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
@@ -4175,7 +4129,7 @@ a|
 a|
 [unstyled]
 * [black]`*=*` [black]#pass:c[[]# [black]`+node+` [black]#pass:c[]]#
-* [green]`*+*` [green]#pass:c[[]# [green]`+node+` [green]`+{}+` [green]#pass:c[]]#
+* [green]`*+*` [green]#pass:c[[]# [green]`+node+` [green]`+opts+` [green]#pass:c[]]#
 a|
 [unstyled]
 * *pass:c[:type]* [black]`*=*` [black]`+:var+`
@@ -5102,7 +5056,7 @@ a|
 
 a|
 [unstyled]
-* [green]`*+*` [green]#pass:c[[]# [green]`+p?+` [green]`+f+` [green]`+loc+` [green]#pass:c[]]#
+* [green]`*+*` [green]#pass:c[[]# [green]`+p?+` [green]`+f+` [green]`+zloc+` [green]#pass:c[]]#
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
