@@ -47,7 +47,7 @@ See:
 Because the nuances of namespaced maps are not widely known by even the most experienced Clojure developers, I'll paste a subset of CLJ-1910 examples here.
 The `_` prefix and the fact that namespaced maps qualify symbols in addition to keywords is not widely understood:
 
-// some of these will resolve to the current ns which is not user for test-doc-blocks, so skip 
+// some of these will resolve to the current ns which is not user for test-doc-blocks, so skip
 // :test-doc-blocks/skip
 [source, Clojure]
 ----
@@ -254,7 +254,7 @@ This means that it will return a result and not throw if the namespace info is n
 
 * break rewrite-clj compatibility for namespaced maps.
 It was a late and incomplete addition to rewrite-clj.
-** The prefix will be stored in a new `map-qualifier-node`. 
+** The prefix will be stored in a new `map-qualifier-node`.
 Previously the prefix was stored as a keyword.
 ** Unlike rewrite-clj, rewrite-clj v1 will not call `(ns-aliases \*ns*)` to lookup namespace aliases.
 
@@ -442,7 +442,7 @@ Use of booleans in a function signature with more than one argument rarely contr
 
 Let's study the rewrite-clj v0 `KeywordNode` which currently has fields `k` and `namespaced?`.
 
-// we broke this in v1 by renaming :namespaced to :auto-resolved? so have test-doc-blocks skip this block 
+// we broke this in v1 by renaming :namespaced to :auto-resolved? so have test-doc-blocks skip this block
 // :test-doc-blocks/skip
 [source,clojure]
 ----
@@ -491,14 +491,10 @@ The prefix is now stored as a `map-qualifier-node`, in rewrite-clj the prefix wa
 
 === Node Interogation
 
-TODO: verify this.
-
-* `map-node?` - returns true if rewrite-clj node and map node
 * `keyword-node?` - return true if rewrite-clj node and keyword node
 * `symbol-node?` - return true if rewrite-clj node and symbol node
 * Both `keyword-node` and `map-qualifier-node` will have:
 ** `auto-resolved?` field
-** `qualified?` fn - returns true if the element is qualified
 
 === Notes on Coercion
 Rewrite-clj supports automatic coercion, how does this look in the context of namespaced elements?
