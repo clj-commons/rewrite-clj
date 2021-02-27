@@ -74,6 +74,7 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 ** also turfed use of custom version of potemkin defprotocol+ in favor of plain old defprotocol. Perhaps I missed something, but I did not see the benefit of defprotocol+ for rewrite-clj v1.
 
 ==== Internal changes (developer facing)
+* Tests updated to hit public APIs https://github.com/clj-commons/rewrite-clj/issues/106[#106]
 * ClojureScript tests, in addition to being run under node, are now also run under chrome-headless, shadow-cljs, and for self-hosted ClojureScript, under planck.
 * Now testing rewrite-clj compiled under GraalVM native-image in two variants:
 ** In a pure form where library and tests are compiled

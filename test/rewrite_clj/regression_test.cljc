@@ -1,6 +1,5 @@
 (ns rewrite-clj.regression-test
   (:require [clojure.test :refer [deftest is testing]]
-            [rewrite-clj.custom-zipper.core :as fz]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip :as z]))
 
@@ -44,16 +43,16 @@
 (deftest t-whitespace-aware-zipper-movement
   (is (list? (z/sexpr root)))
 
-  (is (= [:whitespace " "] (-> root fz/down fz/right ->vec)))
+  (is (= [:whitespace " "] (-> root z/down* z/right* ->vec)))
   (is (= [:token 'my-project] (-> root z/down z/right ->vec)))
 
-  (is (= :map (-> root fz/down fz/rightmost z/tag)))
+  (is (= :map (-> root z/down* z/rightmost* z/tag)))
   (is (= :map (-> root z/down z/rightmost z/tag)))
 
-  (is (= [:whitespace " "] (-> root fz/down fz/rightmost fz/left ->vec)))
+  (is (= [:whitespace " "] (-> root z/down* z/rightmost* z/left* ->vec)))
   (is (= [:token :repositories] (-> root z/down z/rightmost z/left ->vec)))
 
-  (is (= [:whitespace " "] (-> root fz/down fz/rightmost fz/next ->vec)))
+  (is (= [:whitespace " "] (-> root z/down* z/rightmost* z/next* ->vec)))
   (is (= [:token "private"] (-> root z/down z/rightmost z/next ->vec)))
 
   (is (= [:token 'defproject] (-> root z/down z/leftmost ->vec)))
@@ -61,36 +60,36 @@
 
 (let [tk (node/token-node :go)]
   (deftest t-whitespace-aware-insertappend
-    (let [loc (-> root (fz/insert-child tk) fz/down)]
+    (let [loc (-> root (z/insert-child* tk) z/down*)]
       (is (= [:token :go] (->vec loc)))
-      (is (= [:token 'defproject] (-> loc fz/right ->vec))))
+      (is (= [:token 'defproject] (-> loc z/right* ->vec))))
     (let [loc (-> root (z/insert-child :go) z/down)]
       (is (= [:token :go] (->vec loc)))
-      (is (= [:whitespace " "] (-> loc fz/right ->vec)))
+      (is (= [:whitespace " "] (-> loc z/right* ->vec)))
       (is (= [:token 'defproject] (-> loc z/right ->vec))))
 
-    (let [loc (-> root (fz/append-child tk) fz/down fz/rightmost)]
+    (let [loc (-> root (z/append-child* tk) z/down* z/rightmost*)]
       (is (= [:token :go] (->vec loc)))
-      (is (= :map (-> loc fz/left ->vec first))))
+      (is (= :map (-> loc z/left* ->vec first))))
     (let [loc (-> root (z/append-child :go) z/down z/rightmost)]
       (is (= [:token :go] (->vec loc)))
-      (is (= [:whitespace " "] (-> loc fz/left ->vec)))
+      (is (= [:whitespace " "] (-> loc z/left* ->vec)))
       (is (= :map (-> loc z/left ->vec first))))
 
-    (let [loc (-> root fz/down (fz/insert-right tk) fz/right)]
+    (let [loc (-> root z/down* (z/insert-right* tk) z/right*)]
       (is (= [:token :go] (->vec loc)))
-      (is (= [:token 'defproject] (-> loc fz/left ->vec))))
+      (is (= [:token 'defproject] (-> loc z/left* ->vec))))
     (let [loc (-> root z/down (z/insert-right :go) z/right)]
       (is (= [:token :go] (->vec loc)))
-      (is (= [:whitespace " "] (-> loc fz/left ->vec)))
+      (is (= [:whitespace " "] (-> loc z/left* ->vec)))
       (is (= [:token 'defproject] (-> loc z/left ->vec))))
 
-    (let [loc (-> root fz/down (fz/insert-left tk) fz/left)]
+    (let [loc (-> root z/down* (z/insert-left* tk) z/left*)]
       (is (= [:token :go] (->vec loc)))
-      (is (= [:token 'defproject] (-> loc fz/right ->vec))))
+      (is (= [:token 'defproject] (-> loc z/right* ->vec))))
     (let [loc (-> root z/down (z/insert-left :go) z/left)]
       (is (= [:token :go] (->vec loc)))
-      (is (= [:whitespace " "] (-> loc fz/right ->vec)))
+      (is (= [:whitespace " "] (-> loc z/right* ->vec)))
       (is (= [:token 'defproject] (-> loc z/right ->vec))))))
 
 (deftest t-zipper-modification

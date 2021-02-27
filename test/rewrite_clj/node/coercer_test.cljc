@@ -1,6 +1,6 @@
 (ns rewrite-clj.node.coercer-test
   (:require [clojure.test :refer [deftest testing is are]]
-            [rewrite-clj.node :as node :refer [coerce]]
+            [rewrite-clj.node :as node]
             [rewrite-clj.node.protocols :as protocols]
             [rewrite-clj.node.regex :as regex]
             [rewrite-clj.parser :as p]))
@@ -8,7 +8,7 @@
 (deftest t-sexpr->node->sexpr-roundtrip
   (testing "simple cases roundtrip"
     (are [?sexpr expected-tag expected-type]
-         (let [n (coerce ?sexpr)]
+         (let [n (node/coerce ?sexpr)]
            (is (node/node? n))
            (is (= ?sexpr (node/sexpr n)))
            (is (string? (node/string n)))
@@ -66,7 +66,7 @@
 (deftest
   t-quoted-list-reader-location-metadata-elided
   (are [?sexpr expected-meta-keys]
-       (let [n (coerce ?sexpr)]
+       (let [n (node/coerce ?sexpr)]
          (is (node/node? n))
          (is (= expected-meta-keys (node/string n)))
          (is (string? (node/string n)))
@@ -78,7 +78,7 @@
 
 (deftest t-maps
   (are [?sexpr]
-       (let [n (coerce ?sexpr)]
+       (let [n (node/coerce ?sexpr)]
          (is (node/node? n))
          (is (= :map (node/tag n)))
          (is (= :seq (protocols/node-type n)))
@@ -96,7 +96,7 @@
 
 (deftest t-namespaced-maps-coerce-to-maps
   (are [?sexpr]
-       (let [n (coerce ?sexpr)]
+       (let [n (node/coerce ?sexpr)]
          (is (node/node? n))
          (is (= :map (node/tag n)))
          (is (= :seq (protocols/node-type n)))
@@ -109,7 +109,7 @@
 
 (deftest t-sexpr->node->sexpr-roundtrip-for-regex
   (are [?in]
-       (let [n (coerce ?in)]
+       (let [n (node/coerce ?in)]
          (is (node/node? n))
          (is (= :regex (node/tag n)))
          (is (= :regex (protocols/node-type n)))
@@ -124,14 +124,14 @@
 (deftest
   ^:skip-for-sci ;; sci, by design has its own var type, so skip this one for sci
   t-vars
-  (let [n (coerce #'identity)]
+  (let [n (node/coerce #'identity)]
     (is (node/node? n))
     (is (= :var (node/tag n)))
     (is (= :reader (protocols/node-type n)))
     (is (= '(var #?(:clj clojure.core/identity :cljs cljs.core/identity)) (node/sexpr n)))))
 
 (deftest t-nil
-  (let [n (coerce nil)]
+  (let [n (node/coerce nil)]
     (is (node/node? n))
     (is (= :token (node/tag n)))
     (is (= :token (protocols/node-type n)))
@@ -144,7 +144,7 @@
   ^:skip-for-sci ;; records have special metadata in sci, so skip this one for sci
   t-records
   (let [v (Foo-Bar. 0)
-        n (coerce v)]
+        n (node/coerce v)]
     (is (node/node? n))
     ;; records are represented by rewrite-clj reader macro nodes
     (is (= :reader-macro (node/tag n)))

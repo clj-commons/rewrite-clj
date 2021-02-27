@@ -28,14 +28,27 @@
              {:namespaces [rewrite-clj.regression-test]}
              rewrite-clj.zip/->string
              {:namespaces [rewrite-clj.regression-test]}
+
+             rewrite-clj.zip/append-space
+             {:namespaces [rewrite-clj.zip.whitespace-test]}
              rewrite-clj.zip.whitespace/append-space
-             {:namespaces [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
+             {:namespaces [rewrite-clj.zip]}
+
+             rewrite-clj.zip/prepend-space
+             {:namespaces [rewrite-clj.zip.whitespace-test]}
              rewrite-clj.zip.whitespace/prepend-space
-             {:namespaces [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
+             {:namespaces [rewrite-clj.zip]}
+
+             rewrite-clj.zip/append-newline
+             {:namespaces  [rewrite-clj.zip.whitespace-test]}
              rewrite-clj.zip.whitespace/append-newline
-             {:namespaces  [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
+             {:namespaces  [rewrite-clj.zip]}
+
+             rewrite-clj.zip/prepend-newline
+             {:namespaces [rewrite-clj.zip.whitespace-test]}
              rewrite-clj.zip.whitespace/prepend-newline
-             {:namespaces [rewrite-clj.zip.whitespace-test rewrite-clj.zip]}
+             {:namespaces [rewrite-clj.zip]}
+
              rewrite-clj.node.protocols/value
              {:namespaces [rewrite-clj.node rewrite-clj.zip.base]}
              rewrite-clj.node/value

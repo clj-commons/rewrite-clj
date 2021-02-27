@@ -1,19 +1,17 @@
 (ns rewrite-clj.zip.removez-test
   (:require [clojure.test :refer [deftest is are]]
-            [rewrite-clj.zip.base :as base]
-            [rewrite-clj.zip.move :as m]
-            [rewrite-clj.zip.removez :as r]))
+            [rewrite-clj.zip :as z]))
 
 (deftest t-whitespace-aware-removal
   (are [?in ?n ?expected-out ?expected-out-preserve-newline]
-       (let [elements (->> (base/of-string ?in)
-                           (iterate m/next))
+       (let [elements (->> (z/of-string ?in)
+                           (iterate z/next))
              loc      (nth elements ?n)]
          (is (= ?expected-out
-                (-> loc r/remove base/root-string))
+                (-> loc z/remove z/root-string))
              "remove")
          (is (= ?expected-out-preserve-newline
-                (-> loc r/remove-preserve-newline base/root-string))
+                (-> loc z/remove-preserve-newline z/root-string))
              "remove-preserve-newline"))
     "[1 2 3 4]"              0 ""            ""
     "[1 2 3 4]"              1 "[2 3 4]"     "[2 3 4]"
@@ -32,27 +30,27 @@
     "[1\n;; c\n2]"           1 "[;; c\n2]"   "[\n;; c\n2]"))
 
 (deftest t-more-whitespace
-  (let [root (base/of-string
+  (let [root (z/of-string
               (str "  :k [[a b c]\n"
                    "      [d e f]]\n"
                    "  :keyword 0"))]
     (is (= (str "  :k [[d e f]]\n"
                 "  :keyword 0")
-           (-> root m/next m/down r/remove base/root-string)))))
+           (-> root z/next z/down z/remove z/root-string)))))
 
 (deftest t-removing-after-comment
-  (let [loc (-> (base/of-string "; comment\nx")
-                (m/rightmost)
-                (r/remove))]
-    (is (= "; comment\n" (base/root-string loc)))))
+  (let [loc (-> (z/of-string "; comment\nx")
+                (z/rightmost)
+                (z/remove))]
+    (is (= "; comment\n" (z/root-string loc)))))
 
 (deftest t-removing-at-end-of-input-preserves-an-existing-newline-at-end-of-input
   (are [?in ?expected-out ?expected-out-preserve-newline]
        (let [zloc (->> ?in
-                       base/of-string
-                       m/rightmost)]
-         (is (= ?expected-out (->> zloc r/remove base/root-string)) "remove")
-         (is (= ?expected-out-preserve-newline (->> zloc r/remove-preserve-newline base/root-string)) "remove-preserve-newline")
+                       z/of-string
+                       z/rightmost)]
+         (is (= ?expected-out (->> zloc z/remove z/root-string)) "remove")
+         (is (= ?expected-out-preserve-newline (->> zloc z/remove-preserve-newline z/root-string)) "remove-preserve-newline")
          true)
     "(def a 1) (del-me b 2)"
     "(def a 1)"
