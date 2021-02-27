@@ -28,10 +28,16 @@
       (me/with-spell-checking)
       (me/humanize)))
 
+(defn- de-osify-filename
+  "Forward slash works everywhere."
+  [s]
+  (string/replace s java.io.File/separator "/"))
+
 (defn- find-templates []
   (->> (io/file "./template")
        file-seq
        (filter #(and (.isFile %) (re-matches #".*\.clj[sc]?" (str %))))
+       (map (fn [f] (-> f str de-osify-filename)))
        sort))
 
 (defn- variadic? [arglist]
@@ -185,9 +191,8 @@
       zbase/root-string))
 
 (defn- process-templates []
-  (map (fn [t]
-         (let [new-target-clj (process-template t)
-               template-filename (str t)
+  (map (fn [template-filename]
+         (let [new-target-clj (process-template template-filename)
                target-filename (string/replace-first template-filename #"^\./template/" "./src/")
                current-target-clj (when (.exists (io/file target-filename)) (slurp target-filename))]
            {:template-filename template-filename
@@ -203,7 +208,7 @@
         stale-cnt (->> (process-templates)
                        (reduce (fn [stale-cnt {:keys [template-filename target-filename changed?]}]
                                  (println "Template:" template-filename)
-                                 (println (if changed? "✗" "✓") "Target:" target-filename (if changed? "STALE" "(no changes)"))
+                                 (println (if changed? "X" " ") "Target:" target-filename (if changed? "STALE" "(no changes)"))
                                  (if changed? (inc stale-cnt) stale-cnt))
                                0))]
     (println (format "\n%d of %d targets are stale." stale-cnt (count templates)))
