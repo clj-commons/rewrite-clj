@@ -24,6 +24,17 @@ both jdk8 and jdk11. On Windows we only test against jdk11 as tool setup for jdk
 
 === Windows Notes
 
+==== Git and newlines
+The primary development OSes for rewrite-clj are macOS and Linux.
+Our line endings are lf only.
+
+I'm not sure what Windows developers typically want for line endings while working on source.
+I expect, but don't know, that most Windows editors automatically handle lf as line ending.
+Someone let me know if I am wrong.
+
+Note that I do explicitly set git's config `core.autocrlf` to `false` on our Windows CI unit test environment.
+Our import vars code generation checks currently rely on line endings remaining uncoverted.
+
 ==== Babashka
 The Clojure story on Windows is still in the early chapters. https://scoop.sh/[Scoop] offers an easy way to install tools.
 @littleli is doing a great job  w/maintaining https://github.com/littleli/scoop-clojure[scoop apps for Clojure, Babashka and other tools] and
