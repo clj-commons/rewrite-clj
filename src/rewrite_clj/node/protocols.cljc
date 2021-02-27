@@ -1,14 +1,12 @@
 (ns ^{:added "0.4.0"} rewrite-clj.node.protocols
   (:require [clojure.string :as string]
-            [rewrite-clj.interop :as interop]
-            #?(:clj [rewrite-clj.potemkin.clojure :refer [defprotocol+]]))
-  #?(:cljs (:require-macros [rewrite-clj.potemkin.cljs :refer [defprotocol+]])))
+            [rewrite-clj.interop :as interop]))
 
 #?(:clj (set! *warn-on-reflection* true))
 
 ;; ## Node
 
-(defprotocol+ Node
+(defprotocol Node
   "Protocol for EDN/Clojure/ClojureScript nodes."
   (tag [node]
     "Returns keyword representing type of `node`.")
@@ -65,7 +63,7 @@
 
 ;; ## Inner Node
 
-(defprotocol+ InnerNode
+(defprotocol InnerNode
   "Protocol for non-leaf EDN/Clojure/ClojureScript nodes."
   (inner? [node]
     "Returns true if `node` can have children.")
@@ -109,11 +107,11 @@
 
 ;; ## Coerceable
 
-(defprotocol+ NodeCoerceable
+(defprotocol NodeCoerceable
   "Protocol for values that can be coerced to nodes."
   (coerce [form] "Coerce `form` to node."))
 
-(defprotocol+ MapQualifiable
+(defprotocol MapQualifiable
   "Protocol for nodes that can be namespaced map qualified"
   (map-context-apply [node map-qualifier]
     "Applies `map-qualifier` context to `node`")
@@ -214,3 +212,15 @@
   Use when you want to omit reader generated metadata on forms."
   [form]
   (apply dissoc (meta form) [:line :column :end-line :end-column]))
+
+(defn ^{:deprecated "0.4.0"} value
+  "DEPRECATED: Get first child as a pair of tag/sexpr (if inner node),
+   or just the node's own sexpr. (use explicit analysis of `children`
+   `child-sexprs` instead) "
+  [node]
+  (if (inner? node)
+    (some-> (children node)
+            (first)
+            ((juxt tag sexpr)))
+    (sexpr node)))
+ 

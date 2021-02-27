@@ -1,5 +1,6 @@
 (ns ^:no-doc rewrite-clj.parser.namespaced-map
-  (:require [rewrite-clj.node :as node]
+  (:require [rewrite-clj.node.namespaced-map :as nsmap]
+            [rewrite-clj.node.protocols :as node]
             [rewrite-clj.parser.utils :as u]
             [rewrite-clj.reader :as reader] ))
 
@@ -10,7 +11,7 @@
   (let [auto-resolved? (= ":" (reader/read-while reader (fn [c] (= \: c))))
         prefix (reader/read-until reader (fn [c] (or (reader/boundary? c)
                                                      (reader/whitespace? c))))]
-    (node/map-qualifier-node auto-resolved?
+    (nsmap/map-qualifier-node auto-resolved?
                              (when (seq prefix) prefix))))
 
 (defn- parse-to-next-elem [reader read-next]
@@ -33,5 +34,5 @@
       (when (or (not map-node)
                 (not= :map (node/tag map-node)))
         (u/throw-reader reader "namespaced map expects a map"))
-      (node/namespaced-map-node
+      (nsmap/namespaced-map-node
        (concat [qualifier-node] whitespace-nodes [map-node])))))

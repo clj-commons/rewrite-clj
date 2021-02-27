@@ -1,5 +1,5 @@
 (ns ^:no-doc rewrite-clj.parser.whitespace
-  (:require [rewrite-clj.node :as node]
+  (:require [rewrite-clj.node.whitespace :as nwhitespace]
             [rewrite-clj.reader :as reader]))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -10,13 +10,13 @@
   [#?(:cljs ^not-native reader :default reader)]
   (let [c (reader/peek reader)]
     (cond (reader/linebreak? c)
-          (node/newline-node
+          (nwhitespace/newline-node
             (reader/read-while reader reader/linebreak?))
 
           (reader/comma? c)
-          (node/comma-node
+          (nwhitespace/comma-node
             (reader/read-while reader reader/comma?))
 
           :else
-          (node/whitespace-node
+          (nwhitespace/whitespace-node
             (reader/read-while reader reader/space?)))))

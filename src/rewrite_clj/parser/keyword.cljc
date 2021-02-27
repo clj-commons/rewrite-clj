@@ -5,7 +5,7 @@
             [clojure.tools.reader.impl.errors :as reader-impl-errors]
             [clojure.tools.reader.impl.utils :as reader-impl-utils]
             [clojure.tools.reader.reader-types :as r]
-            [rewrite-clj.node :as node]
+            [rewrite-clj.node.keyword :as nkeyword]
             [rewrite-clj.parser.utils :as u] ))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -37,8 +37,8 @@
     (if (= c \:)
       (do
         (r/read-char reader)
-        (node/keyword-node
+        (nkeyword/keyword-node
          (read-keyword reader)
          true))
-      (node/keyword-node (read-keyword reader)))
+      (nkeyword/keyword-node (read-keyword reader)))
     (u/throw-reader reader "unexpected EOF while reading keyword.")))

@@ -1,8 +1,8 @@
 (ns ^:no-doc rewrite-clj.zip.base
   (:refer-clojure :exclude [print])
-  (:require [rewrite-clj.custom-zipper.core :as z]
-            [rewrite-clj.node :as node]
-            [rewrite-clj.node.protocols :as protocols]
+  (:require [rewrite-clj.custom-zipper.core :as zraw]
+            [rewrite-clj.node.forms :as nforms]
+            [rewrite-clj.node.protocols :as node]
             [rewrite-clj.parser :as p]
             [rewrite-clj.zip.whitespace :as ws]))
 
@@ -14,7 +14,7 @@
 (defn set-opts [zloc opts]
   (with-meta zloc
     (merge (meta zloc)
-           {:rewrite-clj.zip/opts (merge {:auto-resolve protocols/default-auto-resolve}
+           {:rewrite-clj.zip/opts (merge {:auto-resolve node/default-auto-resolve}
                                          opts)})))
 
 ;; ## Zipper
@@ -29,8 +29,8 @@
    (edn* node {}))
   ([node opts]
    (-> (if (:track-position? opts)
-         (z/custom-zipper node)
-         (z/zipper node))
+         (zraw/custom-zipper node)
+         (zraw/zipper node))
        (set-opts opts))))
 
 (defn edn
@@ -46,41 +46,41 @@
    (loop [node node opts opts]
      (if (= (node/tag node) :forms)
        (let [top (edn* node opts)]
-         (or (-> top z/down ws/skip-whitespace)
+         (or (-> top zraw/down ws/skip-whitespace)
              top))
-       (recur (node/forms-node [node]) opts)))))
+       (recur (nforms/forms-node [node]) opts)))))
 
 ;; ## Inspection
 
 (defn tag
   "Return tag of current node in `zloc`."
   [zloc]
-  (some-> zloc z/node node/tag))
+  (some-> zloc zraw/node node/tag))
 
 (defn sexpr
   "Return s-expression (the Clojure form) of current node in `zloc`.
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([zloc]
-   (some-> zloc z/node (node/sexpr (get-opts zloc)))))
+   (some-> zloc zraw/node (node/sexpr (get-opts zloc)))))
 
 (defn ^{:added "0.4.4"} child-sexprs
   "Return s-expression (the Clojure forms) of children of current node in `zloc`.
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([zloc]
-   (some-> zloc z/node (node/child-sexprs (get-opts zloc)))))
+   (some-> zloc zraw/node (node/child-sexprs (get-opts zloc)))))
 
 (defn length
   "Return length of printable string of current node in `zloc`."
   [zloc]
-  (or (some-> zloc z/node node/length) 0))
+  (or (some-> zloc zraw/node node/length) 0))
 
 (defn ^{:deprecated "0.4.0"} value
   "DEPRECATED. Return a tag/s-expression pair for inner nodes, or
    the s-expression itself for leaves."
   [zloc]
-  (some-> zloc z/node node/value))
+  (some-> zloc zraw/node node/value))
 
 ;; ## Read
 (defn of-string
@@ -109,12 +109,22 @@
 (defn ^{:added "0.4.0"} string
   "Return string representing the current node in `zloc`."
   [zloc]
-  (some-> zloc z/node node/string))
+  (some-> zloc zraw/node node/string))
+
+(defn ^{:deprecated "0.4.0"} ->string
+  "DEPRECATED. Renamed to [[string]]."
+  [zloc]
+  (string zloc))
 
 (defn ^{:added "0.4.0"} root-string
   "Return string representing the zipped-up `zloc` zipper."
   [zloc]
-  (some-> zloc z/root node/string))
+  (some-> zloc zraw/root node/string))
+
+(defn ^{:deprecated "0.4.0"} ->root-string
+  "DEPRECATED. Renamed to [[root-string]]."
+  [zloc]
+  (root-string zloc))
 
 #?(:clj
    (defn- print! [^String s writer]
@@ -129,16 +139,18 @@
   "Print current node in `zloc`.
 
    NOTE: Optional `writer` is currently ignored for ClojureScript."
-  [zloc & [writer]]
-  (some-> zloc
-          string
-          (print! writer)))
+  ([zloc writer]
+   (some-> zloc
+           string
+           (print! writer)))
+  ([zloc] (print zloc nil)))
 
 (defn print-root
   "Zip up and print `zloc` from root node.
 
    NOTE: Optional `writer` is currently ignored for ClojureScript."
-  [zloc & [writer]]
-  (some-> zloc
-          root-string
-          (print! writer)))
+  ([zloc writer]
+   (some-> zloc
+           root-string
+           (print! writer)))
+  ([zloc] (print-root zloc nil)))

@@ -95,5 +95,4 @@ We honor the original MIT license from link:LICENSE[rewrite-clj v0].
 Code has been merged/adapted from:
 
 * https://github.com/clj-commons/rewrite-cljs/blob/master/LICENSE[rewrite-cljs which has an MIT license]
-* https://github.com/ztellman/potemkin#license[potemkin import-vars and defprotocol+ which use the MIT license]
 * https://github.com/clojure/clojure/blob/master/src/clj/clojure/zip.clj[clojure zip] which is covered by https://clojure.org/community/license[Eclipse Public License 1.0]

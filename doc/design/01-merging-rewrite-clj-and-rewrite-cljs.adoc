@@ -247,11 +247,11 @@ This will be addressed by automatically updating the change log doc with the rel
 === Release Strategy
 
 We'll opt not to make SNAPSHOT releases and assume the community is good with testing pre-releases via
-github coordinates. We can adapt if there is a real need for SNAPSHOT releases. 
+github coordinates. We can adapt if there is a real need for SNAPSHOT releases.
 
 We'll keep a CHANGELOG.md carried on from rewrite-clj v0's CHANGES.md.
 
-Release cadence will be as needed. 
+Release cadence will be as needed.
 I don't want us to feel precious about releases.
 If there is a benefit to cutting a new release with a small change or fix, even just to docs, we'll go ahead and do it.
 
@@ -526,14 +526,116 @@ Not all of it is rosy.
 
 Also, there is no ClojureScript version of import-vars.
 
-That said, I decided, at least for now, to honor the original rewrite-clj codebase and carry on with it.
+==== What I started with
+That said, I decided, in the beginning, to honor the original rewrite-clj codebase and carry on with it.
 To be honest, this gave me the (the apparently too tempting to resist) opportunity to learn how to write a version of import-vars for ClojureScript.
 
 This led me to discover that while cljdoc did cope fine with import-vars trickery for Clojure code, it did not have any support for it for ClojureScript code. I made the necessary changes to cljdoc's fork of codox and subsequently cljdoc-analyzer.
 
 I also extended import-vars to rewrite-clj's purposes by adding a facility to rename imported vars and adapt docstrings.
 
-All is not entirely rainbows and unicorns, we still may at some point drop import-vars if it causes rewrite-clj users grief.
+All was not rainbows and unicorns, after yet another issue with some Clojure tooling, I decided to drop import-vars.
+
+==== What I ended up with
+I still like the concept of import-vars.
+It automatically exposes an API and helps me to avoid silly human errors that would occur should I do this manually for rewrite-clj's wide APIs.
+
+The issues with potemkin import-vars happen because vars are imported at load-time.
+I have moved to handling import-vars at build time.
+A build step reads reads an import-vars definition and generates appropriate source.
+This moves the burden from rewrite-clj users to rewrite-clj developers, which seems appropriate.
+
+First stab:
+
+* Stick with an import-vars-ish syntax.
+Maybe a clj-kondo-ish style syntax `#_{:import-vars/import {:from [[my.ns1 var1 var2 var3] [my.ns2 var4 var5])}}`.
+Perhaps we can tease out a tool someday that is generally useful.
+* Was thinking of having the build step update source in place, but @borkdude shared an idea of using templates. Options:
+
+** Maybe have `src/rewrite_clj.zip.template.cljc` that generates/overwrites `src/rewrite_clj/zip.cljc`.
+** Or a sister dir structure `template/rewrite_clj/zip.cljc` -> `src/rewrite_clj/zip.cljc`.
+I'll start with this, it:
+*** keeps templates separate from source.
+Not great for locality, but makes excluding them from release easier.
+*** keeps the ns name the same for template and target.
+
+Loses from moving to build-time solution:
+
+. When you click on view source on cljdoc you go to the implementation and see the code.
+Now you'll be directed to the delegator.
+This won't be bothersome from an IDE, most will like it better, you'll be able to flit from delegator to the implementation easily, but a loss from cljdoc.
+. An extra build step is required.
+This moves the burden from the user to the developer.
+I'm ok with this.
+. Potentially an extra call.
+Will this even register as a performance hit?
+
+Current import-vars usage.
+I don't always use import-vars to expose a public API, I sometimes use it internally to avoid human error. For example `rewrite-clj.node.string` imports from `rewrite-clj.node.stringz`; the 2 namespaces exist due to API namespace collision issues in cljs.
+
+So what would be a good name for the build step?
+Maybe `apply-import-vars gen-code`?
+
+I think we'd also want something to read-only verify that the template generated clj is different than the target.
+We can fail CI build if this is true.
+Maybe `apply-import-vars check`?
+
+How will we find templates?
+We'll start with storing all templates under `./template`
+
+How will we choose target for templates?
+We'll start `./src` using, otherwise using same template filename.
+Extension will match template. (clj vs cljc for us)
+
+Ok, so what code should we be generating?
+We want to definitely bring over the docstring (sometimes altered) and some metadata (`:added` `:deprecated`).
+For the var itself we have choices.
+
+. We could simply point to the source var.
+This is effectively what we do with current import-vars at load-time.
+. We could generate a delegating fn matching the source arities.
+This would probably be more familiar to folks, and many static analyis tooling?
+I'll start with this.
+
+And how will I find the info I need?
+The build step will be Clojure and run under the JVM, the targets are all clj or cljc, so I think we are good.
+I could use clj-kondo analysis data, but I don't think that is necessary.
+
+What types of vars am I importing?
+
+* functions - covered above.
+Note that I am also importing fns from protocols.
+Not sure if that complicates - think we'll be OK.
+* macros - I guess I'll create a delegating macro.
+* dynamic vars - I don't think I have any of these anymore, so skip for now.
+
+I think I'll repeat, in comments, throughout the generated source that source is generated and from what template.
+Just to try to avoid edits in generated source.
+
+Generated source will be checked in like all other source.
+
+Verification:
+
+* run diff-apis will will save cljdoc-analyzer output to .diff-apis/.cache.
+Save the .cache.
+* after changes verify that cljdoc-analyzer output is same.
+** we expect `:file` and `:line` meta to be different for statically imported items
+
+And what technology will we use to rewrite Clojure source?
+Well... rewrite-clj seems like a good fit.
+For now, I will use master rewrite-clj to generate rewrite-clj sources from templates.
+To achieve this, I'll use non generated sources only.
+And I'll adapt rewrite-clj to only use non-generated sources itself.
+Except for paredit, it is really a higher level API, and I don't want to uglify it by using rewrite-clj internal nses.
+
+We can adapt if my initial solution has warts.
+
+=== Potemkin defprotocol+
+Rewrite-clj v0 used a customized version for potemkin defprotocol+.
+It could be that I missed something, but I did not see how it would benefit rewrite-clj v1.
+In the spirit of simplifying a cljc code-base, I turfed defprotocol+ in favour of plain old defprotocol.
+
+We can reintroduce defprotocol+ if we learn that it does actually help with performance significantly.
 
 === Positional support
 Rewrite-clj v0:

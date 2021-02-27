@@ -16,6 +16,9 @@
 (defn lint[]
   (shell/command ["bb" "./script/lint.clj"]))
 
+(defn check-import-vars []
+  (shell/command ["bb" "./script/apply_import_vars.clj" "check"]))
+
 (defn doc-tests[]
   (shell/command ["bb" "./script/doc_tests.clj"]))
 
@@ -39,6 +42,7 @@
 (defn main[]
   (env/assert-min-versions)
   (clean)
+  (check-import-vars)
   (lint)
   (doc-tests)
   (clojure-tests)

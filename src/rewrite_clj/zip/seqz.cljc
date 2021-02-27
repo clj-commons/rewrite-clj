@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-clj.zip.seqz
   (:refer-clojure :exclude [map get assoc seq? vector? list? map? set?])
-  (:require [rewrite-clj.custom-zipper.core :as z]
+  (:require [rewrite-clj.custom-zipper.core :as zraw]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.editz :as e]
             [rewrite-clj.zip.findz :as f]
@@ -62,7 +62,7 @@
 (defn- map-vals* [f map-loc]
   (loop [loc (m/down map-loc)
          parent map-loc]
-    (if-not (and loc (z/node loc))
+    (if-not (and loc (zraw/node loc))
       parent
       (if-let [zloc-map-value (m/right loc)]
         (if-let [new-zloc-map-value (f zloc-map-value)]
@@ -99,7 +99,7 @@
 (defn- map-keys* [f map-loc]
   (loop [loc (m/down map-loc)
          parent map-loc]
-    (if-not (and loc (z/node loc))
+    (if-not (and loc (zraw/node loc))
       parent
       (if-let [zloc-map-key (f loc)]
         (recur (m/right (m/right zloc-map-key)) (m/up zloc-map-key))

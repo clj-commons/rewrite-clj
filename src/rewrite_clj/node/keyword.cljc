@@ -54,7 +54,9 @@
 
 (node/make-printable! KeywordNode)
 
-(defn keyword-node? [n]
+(defn keyword-node? 
+  "Returns true if `n` is a node representing a keyword."
+  [n]
   (= :keyword (node/node-type n)))
 
 ;; ## Constructor
@@ -69,6 +71,7 @@
   You can pass `true` for the optional `auto-resolved?` parameter:
   * `(keyword-node :kw true)` - auto-resolved to current ns, equivalent to code `::kw`
   * `(keyword-node :ns-alias/kw true)` - auto-resolved to namespace with alias ns-alias, equivalent to code `::ns-alias/kw`"
-  [k & [auto-resolved?]]
-  {:pre [(keyword? k)]}
-  (->KeywordNode k auto-resolved? nil))
+  ([k auto-resolved?]
+   {:pre [(keyword? k)]}
+   (->KeywordNode k auto-resolved? nil))
+  ([k] (keyword-node k false)))

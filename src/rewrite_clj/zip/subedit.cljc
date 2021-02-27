@@ -1,5 +1,5 @@
 (ns ^:no-doc rewrite-clj.zip.subedit
-  (:require [rewrite-clj.custom-zipper.core :as z]
+  (:require [rewrite-clj.custom-zipper.core :as zraw]
             [rewrite-clj.zip.base :as base])
   #?(:cljs (:require-macros [rewrite-clj.zip.subedit])) )
 
@@ -13,23 +13,23 @@
    and the value of each element will be the number of `z/right`s
    to run."
   [zloc]
-  (->> (iterate z/up zloc)
-       (take-while z/up)
-       (map (comp count z/lefts))
+  (->> (iterate zraw/up zloc)
+       (take-while zraw/up)
+       (map (comp count zraw/lefts))
        (reverse)))
 
 (defn- move-step
   "Move one down and `n` steps to the right."
   [loc n]
   (nth
-    (iterate z/right (z/down loc))
+    (iterate zraw/right (zraw/down loc))
     n))
 
 (defn- move-to
   "Move to the node represented by the given path."
   [zloc path]
   (let [root (-> zloc 
-                 z/root 
+                 zraw/root 
                  (base/edn* (base/get-opts zloc)))]
     (reduce move-step root path)))
 
@@ -62,7 +62,7 @@
   "Create and return a zipper whose root is the current node in `zloc`."
   [zloc]
   (let [zloc' (some-> zloc 
-                      z/node 
+                      zraw/node 
                       (base/edn* (base/get-opts zloc)))]
     (assert zloc' "could not create subzipper.")
     zloc'))
@@ -73,7 +73,7 @@
   [zloc f]
   (let [zloc' (f (subzip zloc))]
     (assert (not (nil? zloc')) "function applied in 'subedit-node' returned nil.")
-    (z/replace zloc (z/root zloc'))))
+    (zraw/replace zloc (zraw/root zloc'))))
 
 (defmacro subedit->
   "Like `->`, threads `zloc`, as an isolated sub-tree through forms, then zips

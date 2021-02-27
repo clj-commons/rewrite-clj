@@ -1,11 +1,11 @@
 (ns ^:no-doc rewrite-clj.zip.context
-  (:require [rewrite-clj.custom-zipper.core :as z]
+  (:require [rewrite-clj.custom-zipper.core :as zraw]
             [rewrite-clj.node.protocols :as protocols]
             [rewrite-clj.zip.seqz :as seqz]
             [rewrite-clj.zip.walk :as walk]))
 
 (defn- is-map-key? [zloc]
-  (->> (iterate z/left zloc)
+  (->> (iterate zraw/left zloc)
        (take-while identity)
        count
        odd?))
@@ -22,10 +22,10 @@
   * and you are moving keywords and symbols from a namespaced map to some other location."
   [zloc]
   (walk/postwalk zloc
-                 #(satisfies? protocols/MapQualifiable (z/node %))
+                 #(satisfies? protocols/MapQualifiable (zraw/node %))
                  (fn [zloc]
-                   (let [parent (-> zloc z/up z/up)
+                   (let [parent (-> zloc zraw/up zraw/up)
                          nsmap (when (and parent (seqz/namespaced-map? parent)) parent)]
                      (if (and nsmap (is-map-key? zloc))
-                       (z/replace zloc (protocols/map-context-apply (z/node zloc) (first (protocols/children (z/node nsmap)))))
-                       (z/replace zloc (protocols/map-context-clear (z/node zloc))))))))
+                       (zraw/replace zloc (protocols/map-context-apply (zraw/node zloc) (first (protocols/children (zraw/node nsmap)))))
+                       (zraw/replace zloc (protocols/map-context-clear (zraw/node zloc))))))))

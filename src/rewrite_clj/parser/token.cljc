@@ -1,5 +1,5 @@
 (ns ^:no-doc rewrite-clj.parser.token
-  (:require [rewrite-clj.node :as node]
+  (:require [rewrite-clj.node.token :as ntoken]
             [rewrite-clj.reader :as r]))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -28,9 +28,9 @@
                  reader
                  [\' \:])]
     (if (empty? suffix)
-      (node/token-node value value-string)
+      (ntoken/token-node value value-string)
       (let [s (str value-string suffix)]
-        (node/token-node
+        (ntoken/token-node
           (r/string->edn s)
           s)))))
 
@@ -45,4 +45,4 @@
         v (r/string->edn s)]
     (if (symbol? v)
       (symbol-node reader v s)
-      (node/token-node v s))))
+      (ntoken/token-node v s))))

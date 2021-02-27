@@ -52,7 +52,7 @@
              (str "-M:test-common:kaocha:" clojure-version)
              "--reporter" "documentation"]
         cmd (if coverage
-              (concat cmd ["--plugin" "cloverage" "--codecov" "--cov-ns-exclude-regex" "rewrite-clj.potemkin.cljs"])
+              (concat cmd ["--plugin" "cloverage" "--codecov"])
               cmd)]
     (if coverage
       (status/line :info (str "generating test coverage report against clojure v" clojure-version))

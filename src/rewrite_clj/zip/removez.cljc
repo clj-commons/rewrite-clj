@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-clj.zip.removez
   (:refer-clojure :exclude [remove])
-  (:require [rewrite-clj.custom-zipper.core :as z]
+  (:require [rewrite-clj.custom-zipper.core :as zraw]
             [rewrite-clj.custom-zipper.utils :as u]
             [rewrite-clj.zip.move :as m]
             [rewrite-clj.zip.whitespace :as ws]))
@@ -10,7 +10,7 @@
 (defn- node-depth 
   "Return current node location depth in `zloc`, top is 0."
   [zloc]
-  (->> (iterate z/up zloc)
+  (->> (iterate zraw/up zloc)
        (take-while identity)
        count
        dec))
@@ -21,7 +21,7 @@
   [zloc]
   (and (= 1 (node-depth zloc))
        (not (m/right zloc))
-       (->> (iterate z/right zloc)
+       (->> (iterate zraw/right zloc)
             (take-while identity)
             (some ws/linebreak?))))
 
@@ -51,8 +51,8 @@
   (->> zloc
        left-ws-trim-fn
        right-ws-trim-fn
-       z/remove
-       (ws/skip-whitespace z/prev)))
+       zraw/remove
+       (ws/skip-whitespace zraw/prev)))
 
 (defn remove
   "Return `zloc` with current node removed. Returned zipper location

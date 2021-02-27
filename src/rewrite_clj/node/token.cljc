@@ -61,7 +61,9 @@
 (node/make-printable! TokenNode)
 (node/make-printable! SymbolNode)
 
-(defn symbol-node? [n]
+(defn symbol-node? 
+  "Returns true if `n` is a node representing a symbol."
+  [n]
   (= :symbol (node/node-type n)))
 
 ;; ## Constructor

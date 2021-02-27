@@ -63,6 +63,10 @@
                     :extra-deps {org.clojure/tools.namespace {:mvn/version "1.1.0"}
                                  cli-matic/cli-matic {:mvn/version "0.4.3"}}}
 
+           :apply-import-vars {:extra-deps {babashka/fs {:mvn/version "0.0.1"}
+                                            metosin/malli {:mvn/version "0.2.1"}}
+                               :ns-default lread.apply-import-vars}
+
            ;;
            ;; Running tests under Graal
            ;;

@@ -52,7 +52,7 @@
 
 (defn -main [ & _args ]
   (let [opts {:dirs ["src"]
-              :exclude-ns-regexes [".*potemkin.*" "rewrite-clj\\.node\\.coercer" ]
+              :exclude-ns-regexes ["rewrite-clj\\.node\\.coercer" ]
               :exclude-var-regexes [".*Node.*"]
               :fn-wrappers {'import/fn-out-to-sci-out [".*/print" ".*/print-root"]}}
         ns-name "lib-under-sci-test"

@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-clj.zip.findz
   (:refer-clojure :exclude [find])
-  (:require [rewrite-clj.custom-zipper.core :as z]
+  (:require [rewrite-clj.custom-zipper.core :as zraw]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]))
 
@@ -20,7 +20,7 @@
   (let [[r c] (if (map? pos) [(:row pos) (:col pos)] pos)]
     (when (or (<= r 0) (<= c 0))
       (throw (ex-info "zipper row and col positions are ones-based" {:pos pos})))
-    (let [[[zstart-row zstart-col][zend-row zend-col]] (z/position-span zloc)]
+    (let [[[zstart-row zstart-col][zend-row zend-col]] (zraw/position-span zloc)]
       (and (>= r zstart-row)
            (<= r zend-row)
            (if (= r zstart-row) (>= c zstart-col) true)
@@ -51,7 +51,7 @@
   ([zloc pos] (find-last-by-pos zloc pos (constantly true)))
   ([zloc pos p?]
    (->> zloc
-        (iterate z/next)
+        (iterate zraw/next)
         (take-while identity)
         (take-while (complement m/end?))
         (filter #(and (p? %)

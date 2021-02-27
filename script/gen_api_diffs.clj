@@ -60,10 +60,6 @@
         rewrite-clj-v1-lang-cljs (assoc rewrite-clj-v1-lang-clj :lang "cljs")
         existing-to-cljc-args ["--exclude-namespace" "rewrite-clj"
                                "--exclude-namespace" "rewrite-clj.potemkin"
-                               "--exclude-namespace" "rewrite-clj.potemkin"
-                               "--exclude-namespace" "rewrite-clj.potemkin.cljs"
-                               "--exclude-namespace" "rewrite-clj.potemkin.clojure"
-                               "--exclude-namespace" "rewrite-clj.potemkin.helper"
                                "--exclude-namespace" "rewrite-clj.custom-zipper.switchable"
                                "--exclude-namespace" "rewrite-clj.interop"]
         to-self-args ["--exclude-namespace" "rewrite-clj.potemkin.clojure"]

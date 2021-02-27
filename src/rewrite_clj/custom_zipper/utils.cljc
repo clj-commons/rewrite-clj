@@ -1,5 +1,5 @@
 (ns ^:no-doc rewrite-clj.custom-zipper.utils
-  (:require [rewrite-clj.custom-zipper.core :as z]))
+  (:require [rewrite-clj.custom-zipper.core :as zraw]))
 
 #?(:clj (set! *warn-on-reflection* true))
 
@@ -17,7 +17,7 @@
 (defn remove-right
   "Remove right sibling of the current node (if there is one)."
   [loc]
-  (if (z/custom-zipper? loc)
+  (if (zraw/custom-zipper? loc)
     (let [{[_r & rs] :right} loc]
       (assoc loc
              :right rs
@@ -27,7 +27,7 @@
 (defn remove-left
   "Remove left sibling of the current node (if there is one)."
   [loc]
-  (if (z/custom-zipper? loc)
+  (if (zraw/custom-zipper? loc)
     (let [{:keys [left]} loc]
       (if-let [[_ lpos] (peek left)]
         (assoc loc
@@ -42,7 +42,7 @@
    the given predicate matches."
   [zloc p?]
   (loop [zloc zloc]
-    (if-let [rloc (z/right zloc)]
+    (if-let [rloc (zraw/right zloc)]
       (if (p? rloc)
         (recur (remove-right zloc))
         zloc)
@@ -53,7 +53,7 @@
    the given predicate matches."
   [zloc p?]
   (loop [zloc zloc]
-    (if-let [lloc (z/left zloc)]
+    (if-let [lloc (zraw/left zloc)]
       (if (p? lloc)
         (recur (remove-left zloc))
         zloc)
@@ -65,7 +65,7 @@
   "Remove current node and move left. If current node is at the leftmost
    location, returns `nil`."
   [loc]
-  (if (z/custom-zipper? loc)
+  (if (zraw/custom-zipper? loc)
     (let [{:keys [left]} loc]
       (when (seq left)
         (let [[lnode lpos] (peek left)]
@@ -86,7 +86,7 @@
   "Remove current node and move right. If current node is at the rightmost
    location, returns `nil`."
   [loc]
-  (if (z/custom-zipper? loc)
+  (if (zraw/custom-zipper? loc)
     (let [{:keys [right]} loc]
       (when (seq right)
         (assoc loc
@@ -107,18 +107,18 @@
     `[a [b |c d]] -> [a |[b d]]`
     `[a [|b c d]] -> [a |[c d]]`"
   [loc]
-  (if (z/custom-zipper? loc)
+  (if (zraw/custom-zipper? loc)
     (let [{:keys [left]} loc]
       (if (seq left)
-        (-> loc z/remove z/up)
-        (z/remove loc)))
+        (-> loc zraw/remove zraw/up)
+        (zraw/remove loc)))
     (let [[_node {l :l, ppath :ppath, pnodes :pnodes, rs :r, :as path}] loc]
       (if (nil? ppath)
         (throw (ex-info "cannot remove at top" {}))
         (if (pos? (count l))
-          (z/up (with-meta [(peek l)
+          (zraw/up (with-meta [(peek l)
                             (assoc path :l (pop l) :changed? true)]
                   (meta loc)))
-          (with-meta [(z/make-node loc (peek pnodes) rs)
+          (with-meta [(zraw/make-node loc (peek pnodes) rs)
                       (and ppath (assoc ppath :changed? true))]
             (meta loc)))))))

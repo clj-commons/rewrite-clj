@@ -6,7 +6,7 @@
   After parsing, the typical next step is [[rewrite-clj.zip/edn]] to create zipper.
 
   Alternatively consider parsing and zipping in one step from [[rewrite-clj.zip/of-string]] or [[rewrite-clj.zip/of-file]]."
-  (:require [rewrite-clj.node :as node]
+  (:require [rewrite-clj.node.forms :as nforms]
             [rewrite-clj.parser.core :as p]
             [rewrite-clj.reader :as reader]))
 
@@ -26,7 +26,7 @@
                    (take-while identity)
                    (doall))]
     (with-meta
-      (node/forms-node nodes)
+      (nforms/forms-node nodes)
       (meta (first nodes)))))
 
 ;; ## Specialized Parsers

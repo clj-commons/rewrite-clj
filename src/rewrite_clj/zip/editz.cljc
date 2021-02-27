@@ -1,8 +1,10 @@
 (ns ^:no-doc rewrite-clj.zip.editz
   (:refer-clojure :exclude [replace])
-  (:require [rewrite-clj.custom-zipper.core :as z]
+  (:require [rewrite-clj.custom-zipper.core :as zraw]
             [rewrite-clj.custom-zipper.utils :as u]
-            [rewrite-clj.node :as node]
+            [rewrite-clj.node.protocols :as node]
+            [rewrite-clj.node.token :as ntoken]
+            [rewrite-clj.node.whitespace :as nwhitespace]
             [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.removez :as r]
             [rewrite-clj.zip.whitespace :as ws]))
@@ -15,7 +17,7 @@
   "Return `zloc` with the current node replaced by `value`.
   If `value` is not already a node, an attempt will be made to coerce it to one."
   [zloc value]
-  (z/replace zloc (node/coerce value)))
+  (zraw/replace zloc (node/coerce value)))
 
 (defn- node-editor
   "Create s-expression from node, apply the function and create
@@ -36,7 +38,7 @@
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   [zloc f & args]
-  (z/edit zloc (node-editor (base/get-opts zloc)) #(apply f % args)))
+  (zraw/edit zloc (node-editor (base/get-opts zloc)) #(apply f % args)))
 
 ;; ## Splice
 
@@ -51,13 +53,13 @@
 
   For example, given `[[1 2 3] 4 5 6]`, if zloc is located at vector `[1 2 3]`, a splice will result in raising the vector's children up `[1 2 3 4 5 6]` and locating the zipper at node `1`."
   [zloc]
-  (if (z/branch? zloc)
-    (if-let [children (->> (z/children zloc)
-                           (drop-while node/whitespace?)
+  (if (zraw/branch? zloc)
+    (if-let [children (->> (zraw/children zloc)
+                           (drop-while nwhitespace/whitespace?)
                            (reverse)
-                           (drop-while node/whitespace?)
+                           (drop-while nwhitespace/whitespace?)
                            (seq))]
-      (let [loc (->> (reduce z/insert-right zloc children)
+      (let [loc (->> (reduce zraw/insert-right zloc children)
                      (u/remove-and-move-right))]
         (or (ws/skip-whitespace loc) loc))
       (r/remove zloc))
@@ -71,13 +73,13 @@
         e' (cond (string? e) (str-fn e)
                  (keyword? e) (keyword (namespace e) (str-fn (name e)))
                  (symbol? e) (symbol (namespace e) (str-fn (name e))))]
-    (z/replace zloc (node/token-node e'))))
+    (zraw/replace zloc (ntoken/token-node e'))))
 
 (defn- edit-multi-line
   [zloc line-fn]
-  (let [n (-> (z/node zloc)
+  (let [n (-> (zraw/node zloc)
               (update-in [:lines] (comp line-fn vec)))]
-    (z/replace zloc n)))
+    (zraw/replace zloc n)))
 
 (defn prefix
   "Return zipper with the current node in `zloc` prefixed with string `s`.

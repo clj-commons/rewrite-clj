@@ -1,5 +1,16 @@
 (ns ^:no-doc rewrite-clj.parser.core
-  (:require [rewrite-clj.node :as node]
+  (:require ;; using internal node nses rather than public rewrite-clj.node
+            ;; allows us to use rewrite-clj to generate code for import-vars target nses 
+            [rewrite-clj.node.comment :refer [comment-node]]
+            [rewrite-clj.node.fn :refer [fn-node]]
+            [rewrite-clj.node.meta :refer [meta-node raw-meta-node]]
+            [rewrite-clj.node.protocols :as protocols]
+            [rewrite-clj.node.quote :refer [quote-node syntax-quote-node unquote-node unquote-splicing-node]]
+            [rewrite-clj.node.reader-macro :refer [var-node eval-node reader-macro-node deref-node]]
+            [rewrite-clj.node.regex :refer [regex-node]]
+            [rewrite-clj.node.seq :refer [list-node map-node vector-node set-node]]
+            [rewrite-clj.node.token :refer [token-node]]
+            [rewrite-clj.node.uneval :refer [uneval-node]]
             [rewrite-clj.parser.keyword :refer [parse-keyword]]
             [rewrite-clj.parser.namespaced-map :refer [parse-namespaced-map]]
             [rewrite-clj.parser.string :refer [parse-string parse-regex]]
@@ -51,7 +62,7 @@
     reader
     node-tag
     parse-next
-    (complement node/printable-only?)
+    (complement protocols/printable-only?)
     n))
 
 ;; ## Parser Functions
@@ -87,7 +98,7 @@
 (defmethod parse-next* :comment
   [#?(:cljs ^not-native reader :default reader)]
   (reader/ignore reader)
-  (node/comment-node (reader/read-include-linebreak reader)))
+  (comment-node (reader/read-include-linebreak reader)))
 
 ;; ### Special Values
 
@@ -104,7 +115,7 @@
 (defmethod parse-next* :meta
   [#?(:cljs ^not-native reader :default reader)]
   (reader/ignore reader)
-  (node/meta-node (parse-printables reader :meta 2)))
+  (meta-node (parse-printables reader :meta 2)))
 
 ;; ### Reader Specialities
 
@@ -118,68 +129,68 @@
   (case (reader/peek reader)
     nil (reader/throw-reader reader "Unexpected EOF.")
     \# (read-symbolic-value reader) 
-    \{ (node/set-node (parse-delim reader \}))
-    \( (node/fn-node (parse-delim reader \)))
-    \" (node/regex-node (parse-regex reader))
-    \^ (node/raw-meta-node (parse-printables reader :meta 2 true))
-    \' (node/var-node (parse-printables reader :var 1 true))
-    \= (node/eval-node (parse-printables reader :eval 1 true))
-    \_ (node/uneval-node (parse-printables reader :uneval 1 true))
+    \{ (set-node (parse-delim reader \}))
+    \( (fn-node (parse-delim reader \)))
+    \" (regex-node (parse-regex reader))
+    \^ (raw-meta-node (parse-printables reader :meta 2 true))
+    \' (var-node (parse-printables reader :var 1 true))
+    \= (eval-node (parse-printables reader :eval 1 true))
+    \_ (uneval-node (parse-printables reader :uneval 1 true))
     \: (parse-namespaced-map reader parse-next)
     \? (do
          ;; we need to examine the next character, so consume one (known \?)
          (reader/next reader)
          ;; we will always have a reader-macro-node as the result
-         (node/reader-macro-node
+         (reader-macro-node
           (let [read1 (fn [] (parse-printables reader :reader-macro 1))]
             (cons (case (reader/peek reader)
                     ;; the easy case, just emit a token
-                    \( (node/token-node (symbol "?"))
+                    \( (token-node (symbol "?"))
 
                     ;; the harder case, match \@, consume it and emit the token
                     \@ (do (reader/next reader)
-                           (node/token-node (symbol "?@")))
+                           (token-node (symbol "?@")))
 
                     ;; otherwise no idea what we're reading but its \? prefixed
                     (do (reader/unread reader \?)
                         (first (read1))))
                   (read1)))))
-    (node/reader-macro-node (parse-printables reader :reader-macro 2))))
+    (reader-macro-node (parse-printables reader :reader-macro 2))))
 
 (defmethod parse-next* :deref
   [#?(:cljs ^not-native reader :default reader)]
-  (node/deref-node (parse-printables reader :deref 1 true)))
+  (deref-node (parse-printables reader :deref 1 true)))
 
 ;; ## Quotes
 
 (defmethod parse-next* :quote
   [#?(:cljs ^not-native reader :default reader)]
-  (node/quote-node (parse-printables reader :quote 1 true)))
+  (quote-node (parse-printables reader :quote 1 true)))
 
 (defmethod parse-next* :syntax-quote
   [#?(:cljs ^not-native reader :default reader)]
-  (node/syntax-quote-node (parse-printables reader :syntax-quote 1 true)))
+  (syntax-quote-node (parse-printables reader :syntax-quote 1 true)))
 
 (defmethod parse-next* :unquote
   [#?(:cljs ^not-native reader :default reader)]
   (reader/ignore reader)
   (let [c (reader/peek reader)]
     (if (= c \@)
-      (node/unquote-splicing-node
+      (unquote-splicing-node
         (parse-printables reader :unquote 1 true))
-      (node/unquote-node
+      (unquote-node
         (parse-printables reader :unquote 1)))))
 
 ;; ### Seqs
 
 (defmethod parse-next* :list
   [#?(:cljs ^not-native reader :default reader)]
-  (node/list-node (parse-delim reader \))))
+  (list-node (parse-delim reader \))))
 
 (defmethod parse-next* :vector
   [#?(:cljs ^not-native reader :default reader)]
-  (node/vector-node (parse-delim reader \])))
+  (vector-node (parse-delim reader \])))
 
 (defmethod parse-next* :map
   [#?(:cljs ^not-native reader :default reader)]
-  (node/map-node (parse-delim reader \})))
+  (map-node (parse-delim reader \})))

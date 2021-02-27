@@ -1,12 +1,13 @@
 (ns ^:no-doc rewrite-clj.zip.insert
-  (:require [rewrite-clj.custom-zipper.core :as z]
-            [rewrite-clj.node :as node]
-            [rewrite-clj.zip.whitespace :as ws]))
+  (:require [rewrite-clj.custom-zipper.core :as zraw]
+            [rewrite-clj.node.protocols :as node]
+            [rewrite-clj.node.whitespace :as nwhitespace]
+            [rewrite-clj.zip.whitespace :as zwhitespace]))
 
 #?(:clj (set! *warn-on-reflection* true))
 
 (def ^:private space
-  (node/spaces 1))
+  (nwhitespace/spaces 1))
 
 (defn- insert
   "Generic insertion helper. If the node reached by `move-fn`
@@ -15,10 +16,10 @@
   (let [item-node (node/coerce item)
         next-node (move-fn zloc)]
     (->> (concat
-           (when (and next-node (not (ws/whitespace? next-node)))
+           (when (and next-node (not (zwhitespace/whitespace? next-node)))
              [space])
            [item-node]
-           (when (not (ws/whitespace? zloc))
+           (when (not (zwhitespace/whitespace? zloc))
              prefix))
          (reduce insert-fn zloc))))
 
@@ -27,8 +28,8 @@
   Will insert a space if necessary."
   [zloc item]
   (insert
-    z/right
-    z/insert-right
+    zraw/right
+    zraw/insert-right
     [space]
     zloc item))
 
@@ -37,8 +38,8 @@
   Will insert a space if necessary."
   [zloc item]
   (insert
-    z/left
-    z/insert-left
+    zraw/left
+    zraw/insert-left
     [space]
     zloc item))
 
@@ -46,8 +47,8 @@
   "Return zipper with `item` inserted as the first child of the current node in `zloc`."
   [zloc item]
   (insert
-    z/down
-    z/insert-child
+    zraw/down
+    zraw/insert-child
     []
     zloc item))
 
@@ -56,7 +57,7 @@
   Will insert a space if necessary."
   [zloc item]
   (insert
-    #(some-> % z/down z/rightmost)
-    z/append-child
+    #(some-> % zraw/down zraw/rightmost)
+    zraw/append-child
     []
     zloc item))

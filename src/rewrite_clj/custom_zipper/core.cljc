@@ -130,8 +130,8 @@
 
 (defn-switchable root
   "Zips all the way up `zloc` and returns zipper at the root node, reflecting any changes."
-  [{:keys [end?] :as zloc}]
-  (if end?
+  [zloc]
+  (if (:end? zloc)
     (node zloc)
     (let [p (up zloc)]
       (if p
@@ -232,8 +232,8 @@
   "Returns zipper with location at the next depth-first location in the hierarchy in `zloc`.
   When reaching the end, returns a distinguished zipper detectable via [[end?]]. If already
   at the end, stays there."
-  [{:keys [end?] :as zloc}]
-  (if end?
+  [zloc]
+  (if (:end? zloc)
     zloc
     (or
      (and (branch? zloc) (down zloc))

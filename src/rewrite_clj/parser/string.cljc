@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-clj.parser.string
   (:require [clojure.string :as string]
             [clojure.tools.reader.reader-types :as r]
-            [rewrite-clj.node :as node]
+            [rewrite-clj.node.stringz :as nstring]
             [rewrite-clj.parser.utils :as u])
   #?(:cljs (:import [goog.string StringBuffer])))
 
@@ -35,7 +35,7 @@
 
 (defn parse-string
   [#?(:cljs ^not-native reader :default reader)]
-  (node/string-node (read-string-data reader)))
+  (nstring/string-node (read-string-data reader)))
 
 (defn parse-regex
   [#?(:cljs ^not-native reader :default reader)]

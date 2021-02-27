@@ -67,9 +67,11 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 * regex node now:
 ** converts correctly to string https://github.com/clj-commons/rewrite-clj/issues/127[#127]
 ** reports correct length https://github.com/clj-commons/rewrite-clj/issues/130[#130]
-* internal version of potemkin import-vars:
+* moved from potemkin import-vars to static template based version https://github.com/clj-commons/rewrite-clj/issues/98[#98]:
+** avoids frustration/mysteries of dynamic import-vars for users and maintainers
 ** argument names now correct in API docs (some were gensymed previously)
 ** line numbers for protocols in API docs are now correct
+** also turfed use of custom version of potemkin defprotocol+ in favor of plain old defprotocol. Perhaps I missed something, but I did not see the benefit of defprotocol+ for rewrite-clj v1.
 
 ==== Internal changes (developer facing)
 * ClojureScript tests, in addition to being run under node, are now also run under chrome-headless, shadow-cljs, and for self-hosted ClojureScript, under planck.
@@ -90,7 +92,7 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 ** Now using CommonMark in docstrings (they render nicely in cljdoc)
 ** Moved from TravisCI to GitHub Actions where, in addition to Linux, we also test under macOS and Windows
 ** Adopted kaocha for Clojure testing, stuck with doo for regular ClojureScript testing, and added support for ClojureScript watch testing with figwheel main.
-** Re-implemented rewrite-clj's internal version of potemkin import-vars for ClojureScript
+** Potemkin dynamic import-vars replaced with static code generation solution
 * Added GitHub issue templates
 * Fixed a generative test sporadic failure https://github.com/clj-commons/rewrite-clj/issues/88[#88]
 

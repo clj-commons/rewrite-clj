@@ -9,3 +9,5 @@
 /log
 /node_modules
 /target
+/fiddle.clj
+/faddle.clj
