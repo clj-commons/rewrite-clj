@@ -1,4 +1,4 @@
-;; DO NOT EDIT FILE, automatically generated from: template/rewrite_clj/zip.cljc
+;; DO NOT EDIT FILE, automatically generated from: ./template/rewrite_clj/zip.cljc
 (ns rewrite-clj.zip
   "A rich API for navigating and updating Clojure/ClojureScripti/EDN source code via a zipper tree.
 

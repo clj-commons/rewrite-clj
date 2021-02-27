@@ -1,4 +1,4 @@
-;; DO NOT EDIT FILE, automatically generated from: template/rewrite_clj/zip/remove.clj
+;; DO NOT EDIT FILE, automatically generated from: ./template/rewrite_clj/zip/remove.clj
 (ns ^:no-doc rewrite-clj.zip.remove
   "This ns exists to preserve compatability for rewrite-clj v0 clj users who were using an internal API.
    This ns does not work for cljs due to namespace collisions."

@@ -1,7 +1,7 @@
 ;; Run via clojure -X:
 ;; invoked by apply_import_vars.clj bb script
 (ns lread.apply-import-vars
-  (:require [babashka.fs :as fs]
+  (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [malli.core :as m]
             [malli.error :as me]
@@ -29,7 +29,10 @@
       (me/humanize)))
 
 (defn- find-templates []
-  (sort (fs/glob "template" "**.{clj,cljs,cljc}")))
+  (->> (io/file "./template")
+       file-seq
+       (filter #(and (.isFile %) (re-matches #".*\.clj[sc]?" (str %))))
+       sort))
 
 (defn- variadic? [arglist]
   (= '& (-> arglist butlast last)))
@@ -169,7 +172,7 @@
     (import-vars* f zloc import-request)))
 
 (defn- process-template [f]
-  (-> (fs/file f)
+  (-> f
       zbase/of-file
       zmove/up
       (zraw/insert-child (ncomment/comment-node (str "; DO NOT EDIT FILE, automatically generated from: " f "\n")))
@@ -185,8 +188,8 @@
   (map (fn [t]
          (let [new-target-clj (process-template t)
                template-filename (str t)
-               target-filename (string/replace-first template-filename #"^template/" "src/")
-               current-target-clj (when (fs/exists? target-filename) (slurp target-filename))]
+               target-filename (string/replace-first template-filename #"^\./template/" "./src/")
+               current-target-clj (when (.exists (io/file target-filename)) (slurp target-filename))]
            {:template-filename template-filename
             :target-clj new-target-clj
             :target-filename target-filename
@@ -196,29 +199,28 @@
 ;; entry points for clojure tools cli for -X calls
 
 (defn check [_kwargs]
-  (let [stale-cnt (->> (process-templates)
+  (let [templates (process-templates)
+        stale-cnt (->> (process-templates)
                        (reduce (fn [stale-cnt {:keys [template-filename target-filename changed?]}]
                                  (println "Template:" template-filename)
                                  (println (if changed? "✗" "✓") "Target:" target-filename (if changed? "STALE" "(no changes)"))
                                  (if changed? (inc stale-cnt) stale-cnt))
                                0))]
-    (if (zero? stale-cnt)
-      (do (println "\nNo stale files detected") (System/exit 0))
-      (do (println (format "\nStale files dectected: %d" stale-cnt)) (System/exit 1)))))
+    (println (format "\n%d of %d targets are stale." stale-cnt (count templates)))
+    (System/exit (if (zero? stale-cnt) 0 1))))
 
 (defn gen-code [_kwargs]
-  (let [update-cnt (->> (process-templates)
-                       (reduce (fn [update-cnt {:keys [template-filename target-filename changed? target-clj]}]
-                                 (println "Template:" template-filename)
-                                 (println "  Target:" target-filename (if changed? "UPDATE" "(no changes detected)"))
-                                 (if changed? 
-                                   (do
-                                     (spit target-filename target-clj)
-                                     (inc update-cnt)) 
-                                   update-cnt))
-                               0))]
-    (if (zero? update-cnt)
-      (println "\nNo targets needed to be updated.")
-      (println (format "\nTargets updated: %d" update-cnt)))))
+  (let [templates (process-templates)
+        update-cnt (->> templates
+                        (reduce (fn [update-cnt {:keys [template-filename target-filename changed? target-clj]}]
+                                  (println "Template:" template-filename)
+                                  (println "  Target:" target-filename (if changed? "UPDATE" "(no changes detected)"))
+                                  (if changed?
+                                    (do
+                                      (spit target-filename target-clj)
+                                      (inc update-cnt))
+                                    update-cnt))
+                                0))]
+      (println (format "\n%d of %d targets were updated." update-cnt (count templates)))))
 
 

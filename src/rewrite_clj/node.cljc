@@ -1,4 +1,4 @@
-;; DO NOT EDIT FILE, automatically generated from: template/rewrite_clj/node.cljc
+;; DO NOT EDIT FILE, automatically generated from: ./template/rewrite_clj/node.cljc
 (ns rewrite-clj.node
   "Create and evaluate nodes.
 
