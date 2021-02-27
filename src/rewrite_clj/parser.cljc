@@ -45,14 +45,12 @@
    (defn parse-file
      "Return node for first source code element in file `f`."
      [f]
-     (let [r (reader/file-reader f)]
-       (with-open [_ ^java.io.Closeable (.-rdr r)]
-         (parse r)))))
+     (with-open [r (reader/file-reader f)]
+       (parse r))))
 
 #?(:clj
    (defn parse-file-all
      "Return forms node for all source code elements in file `f`."
      [f]
-     (let [r (reader/file-reader f)]
-       (with-open [_ ^java.io.Closeable (.-rdr r)]
-         (parse-all r)))))
+     (with-open [r (reader/file-reader f)]
+       (parse-all r))))
