@@ -116,7 +116,7 @@ We also carry over rewrite-cljc support for `:import-vars/import-with-mods`, via
 See `template/rewrite_clj/zip.cljc` for example usage.
 
 Importing will generate delegates.
-An import of `(defn foo [a b] (+ a b))` from namespace `my.ns1` will generate `(defn foo [a b] (my.ns1 a b))`.
+An import of `(defn foo [a b] (+ a b))` from namespace `my.ns1` will generate `(defn foo [a b] (my.ns1/foo a b))`.
 No generation of requires is done, your template will have to require `my.ns1` in normal Clojure code.
 
 At this time, we don't handle destructuring in arglists, and will throw unless args are all symbols.
