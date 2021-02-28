@@ -35,7 +35,13 @@
   {:github-id "kkinnear"
    :contributions [:code-rewrite-cljs]}
   {:github-id "anmonteiro"
-   :contributions [:code-rewrite-cljs]}]
+   :contributions [:code-rewrite-cljs]}
+  {:github-id "green-coder"
+   :contributions [:code-rewrite-clj-v1]}
+  {:github-id "vemv"
+   :contributions [:encouragement :education]}
+  {:github-id "ericdallo"
+   :contributions [:encouragement]}]
  :founders
  [{:github-id "xsc"
    :contributions [:original-author :code-rewrite-clj-v0]}
