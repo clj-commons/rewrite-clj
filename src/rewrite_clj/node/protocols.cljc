@@ -1,4 +1,4 @@
-(ns ^{:added "0.4.0"} rewrite-clj.node.protocols
+(ns ^:no-doc ^{:added "0.4.0"} rewrite-clj.node.protocols
   (:require [clojure.string :as string]
             [rewrite-clj.interop :as interop]))
 
@@ -51,12 +51,12 @@
         (remove printable-only?)
         (map #(sexpr % opts)))))
 
-(defn ^:no-doc sum-lengths
+(defn sum-lengths
   "Return total string length for `nodes`."
   [nodes]
   (reduce + (map length nodes)))
 
-(defn ^:no-doc concat-strings
+(defn concat-strings
   "Return string version of `nodes`."
   [nodes]
   (reduce str (map string nodes)))
@@ -120,7 +120,7 @@
 
 ;; ## Print Helper
 
-(defn- ^:no-doc node->string
+(defn- node->string
   #?(:clj ^String [node]
      :cljs ^string [node])
   (let [n (str (if (printable-only? node)
@@ -133,12 +133,12 @@
     (interop/simple-format "<%s:%s>" (name (tag node)) n')))
 
 #?(:clj
-   (defn ^:no-doc write-node
+   (defn write-node
      [^java.io.Writer writer node]
      (.write writer (node->string node))))
 
 #?(:clj
-   (defmacro ^:no-doc make-printable-clj!
+   (defmacro make-printable-clj!
      [class]
      `(defmethod print-method ~class
         [node# w#]
@@ -157,22 +157,22 @@
 
 ;; ## Helpers
 
-(defn ^:no-doc without-whitespace
+(defn without-whitespace
   [nodes]
   (remove printable-only? nodes))
 
-(defn  ^:no-doc assert-sexpr-count
+(defn assert-sexpr-count
   [nodes c]
   (assert
    (= (count (without-whitespace nodes)) c)
    (interop/simple-format "can only contain %d non-whitespace form%s."
                           c (if (= c 1) "" "s"))))
 
-(defn ^:no-doc assert-single-sexpr
+(defn assert-single-sexpr
   [nodes]
   (assert-sexpr-count nodes 1))
 
-(defn ^:no-doc extent
+(defn extent
   "A node's extent is how far it moves the \"cursor\".
 
   Rows are simple - if we have x newlines in the string representation, we
@@ -202,7 +202,7 @@
                      inc))]
         [rows cols]))))
 
-(defn ^:no-doc +extent
+(defn +extent
   [[row col] [row-extent col-extent]]
   [(+ row row-extent)
    (cond-> col-extent (zero? row-extent) (+ col))])

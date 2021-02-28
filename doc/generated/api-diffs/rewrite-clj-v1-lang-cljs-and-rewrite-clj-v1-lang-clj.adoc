@@ -69,6 +69,7 @@ toc::[]
 == [black]`*≠*` [black]#pass:c[rewrite-clj.node.protocols]#
 
 [unstyled]
+* *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
 
 === [green]`*+*`[green]#pass:c[make-printable-clj!]#
 |===
@@ -80,7 +81,6 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:macro+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
 === [red]`*-*`[red]#pass:c[make-printable-cljs!]#
@@ -106,7 +106,6 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
 

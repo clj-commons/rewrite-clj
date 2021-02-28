@@ -27,7 +27,7 @@
 ;; To not force users into using this custom zipper, the following flag
 ;; is used to dispatch to `clojure.zip` when set to `false`.
 
-(defn ^:no-doc custom-zipper
+(defn custom-zipper
   [root]
   {::custom? true
    :node     root
@@ -36,7 +36,7 @@
    :left     []
    :right   '()})
 
-(defn ^:no-doc zipper
+(defn zipper
   [root]
   (clj-zip/zipper
     node/inner?
@@ -44,7 +44,7 @@
     node/replace-children
     root))
 
-(defn ^:no-doc custom-zipper?
+(defn custom-zipper?
   [value]
   (::custom? value))
 
@@ -67,7 +67,7 @@
     (seq (node/children node))
     (throw (ex-info "called children on a leaf node" {}))))
 
-(defn-switchable ^:no-doc make-node
+(defn-switchable make-node
   "Returns a new branch node, given an existing `node` and new
   `children`. "
   [_zloc node children]

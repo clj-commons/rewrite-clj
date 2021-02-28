@@ -13,29 +13,29 @@
 ;; Helpers
 ;;*****************************
 
-(defn- ^{:no-doc true} empty-seq? [zloc]
+(defn- empty-seq? [zloc]
   (and (z/seq? zloc) (not (seq (z/sexpr zloc)))))
 
 ;; helper
-(defn ^{:no-doc true} move-n [loc f n]
+(defn- move-n [loc f n]
   (if (= 0 n)
     loc
     (->> loc (iterate f) (take (inc n)) last)))
 
-(defn- ^{:no-doc true} top
+(defn- top
   [zloc]
   (->> zloc
        (iterate z/up)
        (take-while identity)
        last))
 
-(defn- ^{:no-doc true} global-find-by-node
+(defn- global-find-by-node
   [zloc n]
   (-> zloc
       top
       (z/find z/next* #(= (meta (z/node %)) (meta n)))))
 
-(defn- ^{:no-doc true} nodes-by-dir
+(defn- nodes-by-dir
   ([zloc f] (nodes-by-dir zloc f constantly))
   ([zloc f p?]
    (->> zloc
@@ -44,20 +44,20 @@
         (take-while p?)
         (map z/node))))
 
-(defn- ^{:no-doc true} remove-first-if-ws [nodes]
+(defn- remove-first-if-ws [nodes]
   (when (seq nodes)
     (if (nd/whitespace? (first nodes))
       (rest nodes)
       nodes)))
 
 
-(defn- ^{:no-doc true} remove-ws-or-comment [zloc]
+(defn- remove-ws-or-comment [zloc]
   (if-not (ws/whitespace-or-comment? zloc)
     zloc
     (recur (z/remove* zloc))))
 
 
-(defn- ^{:no-doc true} create-seq-node
+(defn- create-seq-node
   "Creates a sequence node of given type `t` with node values of `v`"
   [t v]
   (case t
@@ -67,7 +67,7 @@
     :set (nd/set-node v)
     (throw (ex-info (str "usupported wrap type: " t) {}))))
 
-(defn- ^{:no-doc true} string-node? [zloc]
+(defn- string-node? [zloc]
   (= (some-> zloc z/node type) (type (nd/string-node " "))))
 
 ;;*****************************
@@ -92,7 +92,7 @@
 
 
 
-(defn- ^{:no-doc true} kill-in-string-node [zloc pos]
+(defn- kill-in-string-node [zloc pos]
   (if (= (z/string zloc) "\"\"")
     (z/remove zloc)
     (let [bounds (-> zloc z/node meta)
@@ -106,7 +106,7 @@
           (update-in [row-idx] #(subs % 0 sub-length))
           (#(z/replace zloc (nd/string-node %)))))))
 
-(defn- ^{:no-doc true} kill-in-comment-node [zloc pos]
+(defn- kill-in-comment-node [zloc pos]
   (let [col-bounds (-> zloc z/node meta :col)]
     (if (= (:col pos) col-bounds)
       (z/remove zloc)
@@ -144,7 +144,7 @@
 
 
 
-(defn-  ^{:no-doc true} find-word-bounds
+(defn- find-word-bounds
   [v col]
   (when (<= col (count v))
     [(->> (seq v)
@@ -158,7 +158,7 @@
           (+  col))]))
 
 
-(defn-  ^{:no-doc true} remove-word-at
+(defn- remove-word-at
   [v col]
   (when-let [[start end] (find-word-bounds v col)]
     (str (subs v 0 start)
@@ -166,7 +166,7 @@
 
 
 
-(defn- ^{:no-doc true} kill-word-in-comment-node [zloc pos]
+(defn- kill-word-in-comment-node [zloc pos]
   (let [col-bounds (-> zloc z/node meta :col)]
   (-> zloc
       (z/replace (-> zloc
@@ -175,7 +175,7 @@
                      (remove-word-at (- (:col pos) col-bounds))
                      nd/comment-node)))))
 
-(defn- ^{:no-doc true} kill-word-in-string-node [zloc pos]
+(defn- kill-word-in-string-node [zloc pos]
   (let [bounds (-> zloc z/node meta)
         row-idx (- (:row pos) (:row bounds))
         col (if (= 0 row-idx)
@@ -213,7 +213,7 @@
     zloc))
 
 
-(defn- ^{:no-doc true} find-slurpee-up [zloc f]
+(defn- find-slurpee-up [zloc f]
   (loop [l (z/up zloc)
          n 1]
     (cond
@@ -222,7 +222,7 @@
      (nil? (z/up l)) nil
      :else (recur (z/up l) (inc n)))))
 
-(defn- ^{:no-doc true} find-slurpee [zloc f]
+(defn- find-slurpee [zloc f]
   (if (empty-seq? zloc)
     [(f zloc) 0]
     (some-> zloc (find-slurpee-up f) reverse)))
@@ -385,7 +385,7 @@
   z/splice)
 
 
-(defn- ^{:no-doc true} splice-killing
+(defn- splice-killing
   [zloc f]
   (if-not (z/up zloc)
     zloc
@@ -436,7 +436,7 @@
                     (global-find-by-node % (last lefts))))))))))
 
 
-(defn- ^{:no-doc true} split-string [zloc pos]
+(defn- split-string [zloc pos]
   (let [bounds (-> zloc z/node meta)
         row-idx (- (:row pos) (:row bounds))
         lines (-> zloc z/node :lines)
@@ -470,7 +470,7 @@
       (split candidate))
     zloc))
 
-(defn- ^{:no-doc true} join-seqs [left right]
+(defn- join-seqs [left right]
   (let [lefts (-> left z/node nd/children)
             ws-nodes (-> (z/right* left) (nodes-by-dir z/right* ws/whitespace-or-comment?))
             rights (-> right z/node nd/children)]
@@ -487,7 +487,7 @@
             (global-find-by-node (first rights)))))
 
 
-(defn- ^{:no-doc true} join-strings [left right]
+(defn- join-strings [left right]
   (-> right
       z/remove*
       remove-ws-or-comment

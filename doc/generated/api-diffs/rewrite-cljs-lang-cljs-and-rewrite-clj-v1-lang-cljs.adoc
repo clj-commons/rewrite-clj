@@ -42,18 +42,18 @@ l|:changed-publics
 | Element | Have [red]#pass:c[changes]# [green]#pass:c[within]# | [red]#pass:c[In A Only]# | [green]#pass:c[In B Only]#
 
 | namespaces
-| 26
+| 27
 | 1
 | 11
 
 | publics
-| 107
-| 22
+| 103
+| 23
 | 168
 
 | arglists
 | 0
-| 17
+| 18
 | 306
 
 |===
@@ -118,7 +118,6 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
 === [green]`*+*`[green]#pass:c[custom-zipper?]#
@@ -131,7 +130,6 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
 === [green]`*+*`[green]#pass:c[down]#
@@ -252,7 +250,6 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
 === [green]`*+*`[green]#pass:c[next]#
@@ -397,7 +394,6 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
 
@@ -1243,6 +1239,7 @@ a|
 == [green]`*+*` [green]#pass:c[rewrite-clj.node.extras]#
 
 [unstyled]
+* *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
 
 === [green]`*+*`[green]#pass:c[whitespace-or-comment?]#
 |===
@@ -1487,6 +1484,7 @@ a|
 == [black]`*≠*` [black]#pass:c[rewrite-clj.node.protocols]#
 
 [unstyled]
+* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 
 === [green]`*+*`[green]#pass:c[+extent]#
 |===
@@ -1498,10 +1496,9 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
-=== [black]`*≠*`[black]#pass:c[assert-sexpr-count]#
+=== [black]`*=*`[black]#pass:c[assert-sexpr-count]#
 |===
 | arglists | attributes 
 
@@ -1511,10 +1508,9 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [black]`*=*` [black]`+:var+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
-=== [black]`*≠*`[black]#pass:c[assert-single-sexpr]#
+=== [black]`*=*`[black]#pass:c[assert-single-sexpr]#
 |===
 | arglists | attributes 
 
@@ -1524,7 +1520,6 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [black]`*=*` [black]`+:var+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
 === [black]`*≠*`[black]#pass:c[child-sexprs]#
@@ -1540,7 +1535,7 @@ a|
 * *pass:c[:type]* [black]`*=*` [black]`+:var+`
 |===
 
-=== [black]`*≠*`[black]#pass:c[concat-strings]#
+=== [black]`*=*`[black]#pass:c[concat-strings]#
 |===
 | arglists | attributes 
 
@@ -1550,7 +1545,6 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [black]`*=*` [black]`+:var+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
 === [green]`*+*`[green]#pass:c[default-auto-resolve]#
@@ -1575,7 +1569,6 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
 === [black]`*≠*`[black]#pass:c[InnerNode]#
@@ -1774,6 +1767,25 @@ a|
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
 |===
 
+=== [black]`*=*`[black]#pass:c[NodeCoerceable]#
+|===
+.2+h| attributes 3+h| members
+h|name h| arglists h| attributes
+
+.999+a|
+[unstyled]
+* *pass:c[:type]* [black]`*=*` [black]`+:protocol+`
+a|
+[black]`*=*` [black]`+coerce+`
+a|
+[unstyled]
+* [black]`*=*` [black]#pass:c[[]# [black]`+_+` [black]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [black]`*=*` [black]`+:var+`
+
+|===
+
 === [green]`*+*`[green]#pass:c[sexpr]#
 |===
 | arglists | attributes 
@@ -1800,7 +1812,7 @@ a|
 * *pass:c[:type]* [black]`*=*` [black]`+:var+`
 |===
 
-=== [black]`*≠*`[black]#pass:c[sum-lengths]#
+=== [black]`*=*`[black]#pass:c[sum-lengths]#
 |===
 | arglists | attributes 
 
@@ -1810,7 +1822,6 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [black]`*=*` [black]`+:var+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
 === [green]`*+*`[green]#pass:c[value]#
@@ -1836,7 +1847,6 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
-* *pass:c[:no-doc]* [green]`*+*` [green]`+true+`
 |===
 
 
@@ -2289,6 +2299,25 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:macro+`
+|===
+
+
+
+== [black]`*≠*` [black]#pass:c[rewrite-clj.paredit]#
+
+[unstyled]
+
+=== [red]`*-*`[red]#pass:c[move-n]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [red]`*-*` [red]#pass:c[[]# [red]`+loc+` [red]`+f+` [red]`+n+` [red]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [red]`*-*` [red]`+:var+`
+* *pass:c[:no-doc]* [red]`*-*` [red]`+true+`
 |===
 
 
