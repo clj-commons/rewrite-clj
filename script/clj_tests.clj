@@ -47,7 +47,7 @@
     (status/line :error msg))
   (System/exit code))
 
-(defn run-tests[{:keys [:clojure-version :coverage]}]
+(defn run-unit-tests[{:keys [:clojure-version :coverage]}]
   (let [cmd ["clojure"
              (str "-M:test-common:kaocha:" clojure-version)
              "--reporter" "documentation"]
@@ -59,12 +59,19 @@
       (status/line :info (str "testing clojure source against clojure v" clojure-version)))
     (shell/command cmd)))
 
+(defn run-isolated-tests[{:keys [:clojure-version]}]
+  (status/line :info (str "running isolated tests against clojure v" clojure-version))
+  (shell/command ["clojure" (str "-M:kaocha:" clojure-version)
+                  "--profile" "test-isolated"
+                  "--reporter" "documentation"]))
+
 (defn main [args]
   (env/assert-min-versions)
   (let [{:keys [options exit-message exit-code]} (validate-args args)]
     (if exit-message
       (exit exit-code exit-message)
-      (run-tests options)))
+      (do (run-unit-tests options)
+          (run-isolated-tests options))))
   nil)
 
 (main *command-line-args*)

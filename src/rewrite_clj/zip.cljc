@@ -150,6 +150,7 @@
                             seq? map? vector? list? set?
                             print map get assoc])
   (:require [rewrite-clj.custom-zipper.core]
+            [rewrite-clj.node.coercer] ;; load coercions to make them available
             [rewrite-clj.zip.base]
             [rewrite-clj.zip.context]
             [rewrite-clj.zip.editz]
