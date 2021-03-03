@@ -12,11 +12,11 @@
   (sexpr* [_node _opts]
     (throw (ex-info "unsupported operation" {})))
   (length [_node]
-    (+ 2 ;; for #:
+    (+ 1 ;; for first :
        (if auto-resolved? 1 0) ;; for extra :
        (count prefix)))
   (string [_node]
-    (str "#:"
+    (str ":"
          (when auto-resolved? ":")
          prefix))
 
@@ -99,9 +99,10 @@
   (sexpr* [_node opts]
     (namespaced-map-sexpr children opts))
   (length [_node]
-    (node/sum-lengths children))
+    (+ 1 ;; for leading #
+       (node/sum-lengths children)))
   (string [_node]
-    (node/concat-strings children))
+    (str "#" (node/concat-strings children)))
 
   node/InnerNode
   (inner? [_node] true)

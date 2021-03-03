@@ -33,7 +33,9 @@
       "#_ nope"         :uneval         :uneval
       "  "              :whitespace     :whitespace))
   (testing "map qualifier"
-    (is (= "#:prefix" (str (n/map-qualifier-node false "prefix")))))
+    (is (= ":prefix" (str (n/map-qualifier-node false "prefix"))))
+    (is (= "::" (str (n/map-qualifier-node true nil))))
+    (is (= "::nsalias" (str (n/map-qualifier-node true "nsalias")))))
   (testing "integer"
     (is (= "42" (str (n/integer-node 42)))))
   (testing "forms node"
