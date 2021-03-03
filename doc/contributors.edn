@@ -33,7 +33,7 @@
   {:github-id "mhuebert"
    :contributions [:code-rewrite-cljs]}
   {:github-id "kkinnear"
-   :contributions [:code-rewrite-cljs]}
+   :contributions [:code-rewrite-cljs :encouragement]}
   {:github-id "anmonteiro"
    :contributions [:code-rewrite-cljs]}
   {:github-id "green-coder"
