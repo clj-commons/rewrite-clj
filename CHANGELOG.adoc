@@ -22,6 +22,7 @@ What follows is a summary of changes.
 ==== New
 * A new home under clj-commons. Thanks to @xsc, rewrite-clj will also retain its same maven coordinates on clojars making for a seamless upgrade path for rewrite-clj v0 users.
 * Now supports ClojureScript, merging in rewrite-cljs specific functionality.
+Frustrations like not having namespace map support and differences from rewrite-clj, like whitespace parsing, should now be things of the past.
 Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, feature parity with rewrite-clj.
 * Additions to the public API:
 ** `rewrite-clj.paredit` - carried over from rewrite-cljs, an API for structured editing of Clojure forms
