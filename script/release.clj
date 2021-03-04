@@ -6,7 +6,6 @@
 
 (ns release
   (:require [babashka.classpath :as cp]
-            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as string]))
 
@@ -14,7 +13,8 @@
 
 (require '[helper.fs :as fs]
          '[helper.shell :as shell]
-         '[helper.status :as status])
+         '[helper.status :as status]
+         '[release.version :as version])
 
 (defn clean! []
   (doseq [dir ["target" ".cpcache"]]
@@ -25,28 +25,9 @@
        :out
        string/trim))
 
-(defn- repo-commit-count
-  "Number of commits in the repo"
-  []
-  (->  (shell/command ["git" "rev-list" "HEAD" "--count"] {:out :string})
-       :out
-       string/trim
-       Long/parseLong))
-
-(defn- dev-specified-version []
-  (-> "version.edn"
-      slurp
-      edn/read-string))
-
 (defn- calculate-version []
   (status/line :info "Calculating release version")
-  (let [version-template (dev-specified-version)
-        patch (repo-commit-count)
-        version (str (:major version-template) "." 
-                     (:minor version-template) "."
-                     patch
-                     (cond->> (:qualifier version-template)
-                       true (str "-")))]
+  (let [version (version/calc)]
     (status/line :detail (str "version: " version))
     version))
 
@@ -179,7 +160,7 @@
 (defn- validate-args [args]
   (let [cmd (first args)]
     (when (or (not= 1 (count args))
-              (not (some #{cmd} '("prep" "deploy-remote" "commit" "validate"))))
+              (not (some #{cmd} '("prep" "deploy-remote" "commit" "validate" "version"))))
       (status/fatal (string/join "\n"
                                  ["Usage: release cmd"
                                   ""
@@ -192,8 +173,9 @@
                                   "Why the awkward separation?" 
                                   "To restrict the exposure of our CLOJARS secrets during deploy workflow"
                                   ""
-                                  "Additional commands for local use:"
-                                  " validate      - verify that change log is good for release"])))
+                                  "Additional commands:"
+                                  " validate      - verify that change log is good for release"
+                                  " version       - calculate and report version"])))
     cmd))
 
 (defn- main [args]
@@ -227,6 +209,10 @@
 
       "validate"
       (do (validate-changelog)
+          nil)
+
+      "version"
+      (do (calculate-version)
           nil))
 
     (status/line :detail (str "Release step done:" cmd))))

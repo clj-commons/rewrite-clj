@@ -80,6 +80,7 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 * Now testing rewrite-clj compiled under GraalVM native-image in two variants:
 ** In a pure form where library and tests are compiled
 ** Via sci where a sci exposed rewrite-clj is compiled, then tests are interpreted.
+* Now automatically testing rewrite-clj against popular libs https://github.com/clj-commons/rewrite-clj/issues/124[#124]
 * Now linting source with clj-kondo, added some custom hooks for our variations on import-vars
 * Code coverage reports now generated for Clojure unit test run and sent to codecov.io
 * Can now preview for cljdoc locally via `script/cljdoc_preview.clj`

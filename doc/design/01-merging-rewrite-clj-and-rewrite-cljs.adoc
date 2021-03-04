@@ -51,120 +51,148 @@ We'll happily continue with `rewrite-clj` for rewrite-clj v1 work:
 . rewrite-clj v1 will carry on in clj-commons/rewrite-clj
 . we'll continue to use the existing rewrite-clj v0 clojar maven coordinates `xsc/rewrite-clj` for rewrite-clj v1
 
+[#rewrite-clj-legacy-libs]
 == Projects Using rewrite-clj v0 and/or rewrite-cljs
 I've tried to make note of popular/active projects that make use of rewrite-clj v0 and rewrite-cljs.
 I've linked where I've explicitly verified a migration to rewrite-clj v1.
 
 [cols="15%,20%,20%,15%,30%"]
 |===
-| Project | rewrite&#8209;clj? | rewrite&#8209;cljs? | Migration Verification.footnote:[rewrite-cljc forks will be reverified for rewrite-clj v1] | Notes
+| Project | rewrite&#8209;clj? | rewrite&#8209;cljs? | link:#canary-testing[Canary Tested?] | Notes
 
 | https://github.com/mauricioszabo/atom-chlorine[chlorine]
-| no
+|
 | yes
-| -
+|
 | REPL support for Atom editor
 
 | https://github.com/borkdude/clj-kondo[clj-kondo]
 | custom version
-| no
-| -
+|
+|
 | uses an internal custom version of rewrite-clj
 
 | https://github.com/weavejester/cljfmt[cljfmt]
 | yes
 | yes
-| https://github.com/lread/cljfmt/commits/lread-rewrite-cljc-test[rewrite-cljc fork]
+| yes
 | source code formatter
 
 | https://github.com/greglook/cljstyle[cljstyle]
 | yes
-| no
-| -
+|
+|
 | source code formatter based on cljfmt
 
 | https://github.com/snoe/clojure-lsp[clojure-lsp]
 | yes
-| no
-| https://github.com/lread/clojure-lsp/commits/lread-rewrite-cljc-test[rewrite-cljc fork]
+|
+| yes
 | language server for Clojure
 
 | https://github.com/Olical/depot[depot]
 | yes
-| no
-| -
+|
+|
 | find newer versions of your deps.edn dependencies
 
 | https://github.com/jonase/kibit[kibit]
 | yes
-| no
-| -
+|
+|
 | Finds non-idiomatic Clojure code
 
 | https://github.com/xsc/lein-ancient[lein-ancient]
 | yes
-| no
-| -
+|
+|
 | find newer versions of your lein dependencies
 
 | https://github.com/benedekfazekas/mranderson[MrAnderson]
 | yes
-| no
-| -
+|
+| yes
 | Dependency inliner
 
 | https://github.com/jstepien/mutant[mutant]
 | yes
-| no
-| -
+|
+|
 | Source code mutator
 
 | https://github.com/juxt/pack.alpha[pack (alpha)]
 | yes
-| no
-| -
+|
+|
 | Clojure project packager
 
 | https://github.com/bhauman/rebel-readline[rebel-readline]
 | indirectly via cljfmt
-| no
-| -
+|
+|
 | smart editing at at the REPL terminal, optionally used in conjunction with https://github.com/bhauman/figwheel-main[figwheel-main]
 
 | https://github.com/cognitect-labs/REBL-distro[REBL]
 | indirectly via cljfmt
-| no
-| -
+|
+|
 | graphical interactive tool for browsing Clojure data
 
 | https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl]
 | yes
-| no
-| https://github.com/lread/refactor-nrepl/commits/lread-rewrite-cljc-test[rewrite-cljc fork]
+|
+| yes
 | refactoring support used in conjunction with https://github.com/clojure-emacs/cider[cider]
 
 | https://github.com/mauricioszabo/repl-tooling[repl-tooling]
-| no
+|
 | yes
-| -
+|
 | base package for Clojure editor tooling. Interesting: uses rewrite-clj.reader directly.
 
 | https://github.com/atomist-skills/update-leiningen-dependencies-skill[update-leiningen-dependencies-skill]
-| no
+|
 | yes
-| https://github.com/lread/update-leiningen-dependencies-skill/commits/lread-rewrite-cljc-test[rewrite-cljc fork]
+|
 | dependency version tracker, great for a migration test of a project that uses shadow-cljs
 
 | https://github.com/kkinnear/zprint[zprint]
 | yes
 | yes
-| https://github.com/lread/zprint/commits/lread-rewrite-cljc-test[rewrite-cljc fork]
+| yes
 | source code formatter
 
 |===
 
+[#rewrite-clj-v1-libs]
 == Projects Using rewrite-clj v1
-We have at least one early adopter!: https://github.com/borkdude/carve[carve]
+We have at least three early adopters, for all of which we do link:#canary-testing[canary testing]:
+
+* https://github.com/liquidz/antq[antq]
+* https://github.com/borkdude/carve[carve]
+* https://github.com/borkdude/rewrite-edn[rewrite-edn]
+
+[#canary-testing]
+== Canary Testing
+I'm not sure if canary testing is exactly the right term here.
+My goal is to know when changes to rewrite-clj v1 break popular libraries.
+
+This would mean running these libraries' tests against rewrite-clj v1 master.
+
+After some experimentation, my general strategy is to:
+
+. Install rewrite-clj HEAD to the local maven repository under a "canary" version
+. For each library we want to test:
+.. Grab the a specified release of a project from GitHub via zip download
+.. Patch deps to
+... Point to rewrite-clj canary release
+... Adjust Clojure version if necessary (we are 1.9 and above)
+.. Adjust sources as necessary
+... Ex. rewrite-cljc -> rewrite-clj namespace
+... At the time of the writing only zprint v1.1.1. needed a src code hack to get its tests passing.
+It is the only lib that digs into namespaced maps, and things changed a tad here for rewrite-clj v1
+.. Run any necessary library test prep steps
+.. Run libraries tests (or a subset of them)
 
 == Tooling
 

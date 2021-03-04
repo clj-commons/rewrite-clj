@@ -179,10 +179,13 @@ This generates tests for doc code blocks and then runs them under Clojure and Cl
 == Testing Before a Push
 Before pushing, you likely want to mimic what is run on each push via GitHub Actions.
 
+=== Unit tests
 Unit tests are run via:
 ----
 bb ./script/ci_tests.clj
 ----
+
+=== Native image tests
 We also verify that rewrite-clj functions as expected when compiled via Graal's `native-image`.
 
 1. Tests and library natively compiled:
@@ -195,6 +198,41 @@ bb ./script/pure_native_test.clj
 ----
 bb ./script/sci_native_test.clj
 ----
+
+=== Libs test
+To try to ensure our changes to rewrite-clj do not inadvertently break existing popular libraries, we run their tests, or a portion thereof, against rewrite-clj.
+
+----
+bb ./script/libs_tests.clj
+----
+
+Current libs we test against:
+
+* antq
+* carve
+* cljfmt
+* clojure-lsp
+* mranderson
+* rewrite-edn
+* refactor-nrepl
+* zprint
+
+Additional libs are welcome.
+
+If you are troubleshooting locally, and want to only run specific tests, you can specify which ones you'd like to run. For example:
+
+----
+bb ./script/libs_tests.clj cljfmt zprint
+----
+
+Notes:
+
+* `libs_tests.clj` was developped on macOS and is run on CI under Linux only under JDK 11 only.
+We can expand variations at some later date if there is any value to it.
+* We test the current HEAD of rewrite-clj v1 against specific versions (latest at the time of this writing) of libs.
+* We patch lib deps and sometimes code (ex. `require` for `rewrite-cljc` becomes `rewrite-clj`).
+* As folks migrate to rewrite-clj v1, the need for current patches will lessen.
+* Updating what versions we test against is currently a manual, but not an overly burdensome, task.
 
 == Checking for Outdated Dependencies
 
