@@ -215,6 +215,7 @@ Current libs we test against:
 * mranderson
 * rewrite-edn
 * refactor-nrepl
+* update-leiningen-dependencies-skill
 * zprint
 
 Additional libs are welcome.

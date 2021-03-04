@@ -169,6 +169,19 @@
   (patch-rewrite-cljc-sources home-dir))
 
 ;;
+;; update-leiningen-dependencies-skill
+;; 
+
+(defn- update-leiningen-dependencies-skill-patch [{:keys [home-dir rewrite-clj-version]}]
+  (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
+               :removals #{'rewrite-cljs}
+               :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}}))
+              
+(defn- update-leiningen-dependencies-skill-prep [{:keys [home-dir]}]
+  (status/line :detail "Installing node deps")
+  (shell/command ["npm" "ci"] {:dir home-dir}))
+
+;;
 ;; zprint
 ;; 
 
@@ -255,6 +268,13 @@
             :show-deps-fn lein-deps-tree
             :prep-fn refactor-nrepl-prep
             :test-cmd ["lein" "with-profile" "+1.10,+plugin.mranderson/config" "test"]}
+           {:name "update-leiningen-dependencies-skill"
+            :version "21c7ce794c83d6eed9c2a27e2fdd527b5da8ebb3"
+            :release-url-fmt "https://github.com/atomist-skills/update-leiningen-dependencies-skill/zipball/%s"
+            :patch-fn update-leiningen-dependencies-skill-patch
+            :prep-fn update-leiningen-dependencies-skill-prep 
+            :show-deps-fn cli-deps-tree
+            :test-cmd ["npm" "run" "test"]}
            {:name "zprint"
             :version "1.1.1"
             :note "zprint src hacked to pass with rewrite-clj v1"
