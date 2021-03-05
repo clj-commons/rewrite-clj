@@ -5,41 +5,53 @@
             [rewrite-clj.node.protocols :as proto]
             [rewrite-clj.parser :as p]))
 
-(deftest nodes-convert-to-strings
+(deftest nodes-convert-to-strings-and-sexpr-ability
   (testing "easily parseable"
-    (are [?in ?expected-tag ?expected-type]
-        (let [n (p/parse-string ?in)]
+    (are [?in ?expected-tag ?expected-type ?expected-sexpr-able?]
+      (let [n (p/parse-string ?in)]
           (is (= ?in (str n)))
           (is (= ?expected-tag (n/tag n)))
-          (is (= ?expected-type (proto/node-type n))))
-      ","               :comma          :comma
-      "; comment"       :comment        :comment
-      "@deref"          :deref          :deref
-      "#(fn %1)"        :fn             :fn
-      ;; forms
-      ;; int
-      ":my-kw"          :token          :keyword
-      "^:meta b"        :meta           :meta
-      "#:prefix {:a 1}" :namespaced-map :namespaced-map
-      "\n"              :newline        :newline
-      "'quoted"         :quote          :quote
-      "#booya 32"       :reader-macro   :reader-macro
-      "#'myvar"         :var            :reader
-      "#\"regex\""      :regex          :regex
-      "[1 2 3]"         :vector         :seq
-      "\"string\""      :token          :string
-      "symbol"          :token          :symbol
-      "43"              :token          :token
-      "#_ nope"         :uneval         :uneval
-      "  "              :whitespace     :whitespace))
+          (is (= ?expected-type (proto/node-type n)))
+          (is (= ?expected-sexpr-able? (n/sexpr-able? n))))
+      ","               :comma          :comma              false
+      "; comment"       :comment        :comment            false
+      "@deref"          :deref          :deref              true
+      "#(fn %1)"        :fn             :fn                 true
+      ":my-kw"          :token          :keyword            true
+      "^:meta b"        :meta           :meta               true
+      "#:prefix {:a 1}" :namespaced-map :namespaced-map     true
+      "\n"              :newline        :newline            false
+      "'quoted"         :quote          :quote              true
+      "#booya 32"       :reader-macro   :reader-macro       true
+      "#'myvar"         :var            :reader             true
+      "#\"regex\""      :regex          :regex              true
+      "[1 2 3]"         :vector         :seq                true
+      "\"string\""      :token          :string             true
+      "symbol"          :token          :symbol             true
+      "43"              :token          :token              true
+      "#_ nope"         :uneval         :uneval             false
+      "  "              :whitespace     :whitespace         false))
   (testing "map qualifier"
-    (is (= ":prefix" (str (n/map-qualifier-node false "prefix"))))
-    (is (= "::" (str (n/map-qualifier-node true nil))))
-    (is (= "::nsalias" (str (n/map-qualifier-node true "nsalias")))))
+    (are [?auto-resolved ?prefix ?expected-str]
+      (let [n (n/map-qualifier-node ?auto-resolved ?prefix)]
+        (is (= ?expected-str (str n)))
+        (is (= :map-qualifier (n/tag n)))
+        (is (= :map-qualifier (proto/node-type n)))
+        (is (= true (n/sexpr-able? n))))
+      false "prefix"  ":prefix"
+      true  nil       "::"
+      true  "nsalias" "::nsalias"))
   (testing "integer"
-    (is (= "42" (str (n/integer-node 42)))))
+    (let [n (n/integer-node 42)]
+      (is (= :token (n/tag n)))
+      (is (= :int (proto/node-type n)))
+      (is (= "42" (str n)))
+      (is (n/sexpr-able? n))))
   (testing "forms node"
-    (is (= "5 7" (str (p/parse-string-all "5 7"))))))
+    (let [n (p/parse-string-all "5 7")]
+      (is (= "5 7" (str n)))
+      (is (n/sexpr-able? n)))))
+
 
 (deftest namespaced-keyword
   (is (= ":dill/dall"

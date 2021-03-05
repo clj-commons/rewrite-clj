@@ -165,3 +165,8 @@
                  z/up
                  z/reapply-context ;; but we do reapply context to tree before doing a sexpr
                  z/sexpr))))))
+
+(deftest t-sexpr-able
+  ;; spot check, more thorough testing done on node tests
+  (is (= false (-> "," z/of-string z/next* z/sexpr-able?)))
+  (is (= true (-> "heyy" z/of-string z/sexpr-able?))))

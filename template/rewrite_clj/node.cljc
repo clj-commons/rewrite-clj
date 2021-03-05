@@ -39,6 +39,7 @@
             printable-only?
             replace-children
             sexpr
+            sexpr-able?
             sexprs
             map-context-apply
             map-context-clear

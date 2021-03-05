@@ -575,29 +575,67 @@ The whitespace that a rewrite-clj so carefully preserves is lost when converting
 
 === Not all Source is Sexpr-able
 
-Some source code elements are not sexpr-able.
-Reader ignore/discard `#_`, comment and whitespace all throw an "unsupported operation" exception.
+Some source code elements are not sexpr-able:
+
+* Reader ignore/discard `#_` (also known as "uneval" in rewrite-clj)
+* Comments
+* Clojure whitespace (which includes commas)
+
+Both the zip and node APIs include `sexpr-able?` to check if sexpr is supported for a node.
 
 [source, clojure]
 ----
-(require '[rewrite-clj.zip :as z])
+(require '[rewrite-clj.node :as n]
+         '[rewrite-clj.parser :as p]
+         '[rewrite-clj.zip :as z])
 
 #?(:clj (import clojure.lang.ExceptionInfo))
 
+;;
+;; Most nodes are sexpr-able
+;;
+
+;; we can check sexpr-ability through the node API
+(-> "hello" p/parse-string n/sexpr-able?)
+;; => true
+
+;; or through the zip API
+(-> "hello" z/of-string z/sexpr-able?)
+;; => true
+
+;;
+;; But some nodes are not sexpr-able
+;;
+
+;; the discard #_ node is not sexpr-able
+(-> "#_42" z/of-string z/sexpr-able?)
+;; => false
+
+;; and will throw if an attempt is made to sexpr
 (try
-  (-> (z/of-string "#_42") z/sexpr)
+  (-> "#_42" z/of-string z/sexpr)
   (catch ExceptionInfo e
     (ex-message e)))
 ;; => "unsupported operation"
 
+;; comments nodes are not sexpr-able
+(-> ";; can’t sexpr me!" z/of-string z/next* z/sexpr-able?) ;; <1>
+;; => false
+
+;; and will throw
 (try
-  (-> (z/of-string ";; can’t sexpr me!") z/next* z/sexpr) ;; <1>
+  (-> ";; can’t sexpr me!" z/of-string z/next* z/sexpr) ;; <1>
   (catch ExceptionInfo e
     (ex-message e)))
 ;; => "unsupported operation"
 
+;; and finally, Clojure whitespace nodes are not sexpr-able
+(-> " " z/of-string z/next* z/sexpr-able?) ;; <1>
+;; => false
+
+;; and will throw
 (try
-  (-> (z/of-string " ") z/next* z/sexpr) ;; <1>
+  (-> " " z/of-string z/next* z/sexpr) ;; <1>
   (catch ExceptionInfo e
     (ex-message e)))
 ;; => "unsupported operation"

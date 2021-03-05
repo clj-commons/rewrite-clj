@@ -89,6 +89,7 @@
   [[length]]
 
   **Convert**
+  [[sexpr-able?]]
   [[sexpr]]
   [[child-sexprs]]
   [[reapply-context]]
@@ -172,7 +173,7 @@
            [rewrite-clj.zip.base
             child-sexprs
             edn* edn
-            tag sexpr
+            tag sexpr sexpr-able?
             length
             value
             of-string

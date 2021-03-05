@@ -42,6 +42,8 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 *** Adds namespaced element support functions
 **** `reapply-context` - reapplies (or removes) map qualifier node context from keywords and symbols
 **** zipper creation functions now optionally accept an auto-resolve function to support sexpr on namespaced element nodes
+*** Other additions
+**** `sexpr-able?` - return true if `sexpr` is supported for current node
 ** `rewrite-clj.node`
 *** Additions:
 **** `keyword-node?` - returns true if form is a rewrite-clj keyword node
@@ -49,7 +51,8 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 **** `map-context-apply` - apply map qualifier to keyword or symbol
 **** `map-context-clear` - remove map qualifier from keyword or symbol
 **** `node?` - returns true if a form is a rewrite-clj created node
-**** `symbol-node?` - return true if node is a rwrite-clj symbol node
+**** `sexpr-able?` - return true if `sexpr` is supported for node
+**** `symbol-node?` - return true if node is a rewrite-clj symbol node
 *** Updates:
 **** `sexpr`, `sepxrs` and `child-sexprs` - now optionally take an options argument to specify an auto-resolve function
 * Many updates to docs and docstrings

@@ -7,7 +7,7 @@
   node/Node
   (tag [_node] :map-qualifier)
   (node-type [_node] :map-qualifier)
-  (printable-only? [_node] true)
+  (printable-only? [_node] false)
   (sexpr* [_node opts]
     (if auto-resolved?
       ((or (:auto-resolve opts) node/default-auto-resolve)

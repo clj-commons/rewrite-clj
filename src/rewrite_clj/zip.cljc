@@ -90,6 +90,7 @@
   [[length]]
 
   **Convert**
+  [[sexpr-able?]]
   [[sexpr]]
   [[child-sexprs]]
   [[reapply-context]]
@@ -232,6 +233,11 @@
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   [zloc] (rewrite-clj.zip.base/sexpr zloc))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
+(defn sexpr-able?
+  "Return true if current node in `zloc` can be [[sexpr]]-ed."
+  [zloc] (rewrite-clj.zip.base/sexpr-able? zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
 (defn length

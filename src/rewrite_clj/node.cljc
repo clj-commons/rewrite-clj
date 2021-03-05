@@ -88,6 +88,11 @@
   ([node opts] (rewrite-clj.node.protocols/sexpr node opts)))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.protocols
+(defn sexpr-able?
+  "Return true if [[sexpr]] is supported for `node`."
+  [node] (rewrite-clj.node.protocols/sexpr-able? node))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.protocols
 (defn sexprs
   "Return forms for `nodes`. Nodes that do not represent s-expression are skipped.
 

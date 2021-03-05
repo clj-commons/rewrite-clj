@@ -57,6 +57,11 @@
   [zloc]
   (some-> zloc zraw/node node/tag))
 
+(defn sexpr-able?
+  "Return true if current node in `zloc` can be [[sexpr]]-ed."
+  [zloc]
+  (some-> zloc zraw/node node/sexpr-able?))
+
 (defn sexpr
   "Return s-expression (the Clojure form) of current node in `zloc`.
 

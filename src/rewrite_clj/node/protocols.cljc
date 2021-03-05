@@ -31,6 +31,11 @@
   (length [this] (count (string this)))
   (string [this] (pr-str this)))
 
+(defn sexpr-able?
+  "Return true if [[sexpr]] is supported for `node`."
+  [node]
+  (not (printable-only? node)))
+
 (defn sexpr
   "Return `node` converted to form.
 
