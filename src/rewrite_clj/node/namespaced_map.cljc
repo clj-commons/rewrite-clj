@@ -3,14 +3,16 @@
 
 #?(:clj (set! *warn-on-reflection* true))
 
-;; a map qualifier is not sexpressable on its own
 (defrecord MapQualifierNode [auto-resolved? prefix]
   node/Node
   (tag [_node] :map-qualifier)
   (node-type [_node] :map-qualifier)
   (printable-only? [_node] true)
-  (sexpr* [_node _opts]
-    (throw (ex-info "unsupported operation" {})))
+  (sexpr* [_node opts]
+    (if auto-resolved?
+      ((or (:auto-resolve opts) node/default-auto-resolve)
+       (if prefix (symbol prefix) :current))
+      (symbol prefix)))
   (length [_node]
     (+ 1 ;; for first :
        (if auto-resolved? 1 0) ;; for extra :

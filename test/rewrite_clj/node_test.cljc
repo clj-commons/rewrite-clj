@@ -175,3 +175,23 @@
                (-> (n/keyword-node :foo/my-kw false)
                    (assoc :map-qualifier {:auto-resolved? true :prefix "nsmap-alias"})
                    (n/sexpr opts)))) ))))
+
+(deftest t-sexpr-on-map-qualifier-node
+  (testing "with default auto-resolve"
+    (let [default-mqn-sexpr (fn [s] (-> s p/parse-string n/children first n/sexpr))]
+      (is (= 'prefix (default-mqn-sexpr "#:prefix {:a 1 :b 2}")))
+      (is (= '?_current-ns_? (default-mqn-sexpr "#:: {:a 1 :b 2}")))
+      (is (= '??_my-ns-alias_?? (default-mqn-sexpr "#::my-ns-alias {:a 1 :b 2}")))))
+  (testing "with custom auto-resolve"
+    (let [opts {:auto-resolve (fn [alias]
+                                (if (= :current alias)
+                                  'my.current.ns
+                                  (get {'my-alias 'my.aliased.ns
+                                        'nsmap-alias 'nsmap.aliased.ns}
+                                       alias
+                                       (symbol (str alias "-unresolved")))))}
+          custom-mqn-sexpr (fn [s] (-> s p/parse-string n/children first (n/sexpr opts)))]
+      (is (= 'prefix (custom-mqn-sexpr "#:prefix {:a 1 :b 2}")))
+      (is (= 'my.current.ns (custom-mqn-sexpr "#:: {:a 1 :b 2}")))
+      (is (= 'my.aliased.ns (custom-mqn-sexpr "#::my-alias {:a 1 :b 2}")))
+      (is (= 'my-alias-nope-unresolved (custom-mqn-sexpr "#::my-alias-nope {:a 1 :b 2}"))))))
