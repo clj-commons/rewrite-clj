@@ -6,7 +6,8 @@
             [clojure.tools.reader.edn :refer [read-string]]
             [rewrite-clj.node :as node]
             [rewrite-clj.parser :as p])
-  #?(:clj (:import clojure.lang.ExceptionInfo)))
+  #?(:clj (:import [clojure.lang ExceptionInfo]
+                   [java.io File])))
 
 (deftest t-parsing-the-first-few-whitespaces
   (are [?ws ?parsed]
@@ -527,5 +528,37 @@
       [3 12] [3 13] :token  "x"            'x)))
 
 
+(deftest t-os-specific-line-endings
+  (are [?in ?expected]
+    (let [str-actual (-> ?in p/parse-string-all node/string)]
+      (is (= ?expected str-actual) "from string")
+      #?(:clj
+         (is (= ?expected (let [t-file (File/createTempFile "rewrite-clj-parse-test" ".clj")]
+                            (.deleteOnExit t-file)
+                            (spit t-file ?in)
+                            (-> t-file p/parse-file-all node/string))) "from file")))
+    "heya\r\nplaya\r\n"
+    "heya\nplaya\n"
+
+    ";; comment\r\n(+ 1 2 3)\r\n"
+    ";; comment\n(+ 1 2 3)\n"
+
+    "1\r2\r\n3\f4"
+    "1\n2\n3\n4"
+
+    "\n\n\n\n\n"
+    "\n\n\n\n\n"
+
+    "\r\r\r\r\r"
+    "\n\n\n\n\n"
+
+    "\r\n\r\n\r\n\r\n\r\n"
+    "\n\n\n\n\n"
+
+    "\f\f\f\f\f"
+    "\n\n\n\n\n"
+
+    "\r\n\r\r\f\r\n"
+    "\n\n\n\n\n"))
 
 

@@ -5,7 +5,7 @@
             [clojure.tools.reader.reader-types :as r]
             [rewrite-clj.interop :as interop])
   #?(:cljs (:import [goog.string StringBuffer])
-     :clj (:import [java.io PushbackReader]
+     :clj (:import [java.io PushbackReader Closeable]
                    [clojure.tools.reader.reader_types IndexingPushbackReader])))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -171,11 +171,55 @@
 
 ;; ## Reader Types
 
-(defn string-reader
-  "Create reader for strings."
-  [s]
-  (r/indexing-push-back-reader
-    (r/string-push-back-reader s)))
+;;
+;; clojure.tools.reader (at the time of this writing v1.3.5) does not seem to normalize Windows \r\n newlines
+;; properly to \n for Clojure 
+;;
+;; ClojureScript seems to work fine - but note that for peek it can return \r instead of \n. 
+;;
+;; see https://clojure.atlassian.net/browse/TRDR-65
+;;
+;; For now, we introduce a normalizing reader for Clojure.
+;; Once/if this isssue is fixed in in tools reader we can turf our work-around. 
+
+#?(:clj
+   (deftype NewlineNormalizingReader
+       [rdr
+        ^:unsynchronized-mutable next-char
+        ^:unsynchronized-mutable peeked-char]
+     r/Reader
+     (read-char [_reader]
+       (if peeked-char
+         (let [ch peeked-char]
+           (set! peeked-char nil)
+           ch)
+         (let [ch (or next-char (r/read-char rdr))]
+           (when next-char (set! next-char nil))
+           (cond (identical? \return ch)
+                 (let [next-ch (r/read-char rdr)]
+                   (when (not (identical? \newline next-ch))
+                     (set! next-char next-ch))
+                   \newline)
+
+                 (identical? \formfeed ch)
+                 \newline
+
+                 :else
+                 ch))))
+
+     (peek-char [reader]
+       (let [ch (or peeked-char (.read-char reader))]
+         (when-not peeked-char (set! peeked-char ch))
+         ch))))
+
+#?(:clj
+   (defn ^Closeable newline-normalizing-reader
+     "Normalizes the following line endings to LF (line feed - 0x0A):
+      - LF (remains LF)
+      - CRLF (carriage return 0x0D line feed 0x0A)
+      - FF (form feed 0x0C)"
+     [rdr]
+     (NewlineNormalizingReader. (r/to-rdr rdr) nil nil)))
 
 #?(:clj
    (defn file-reader
@@ -185,4 +229,13 @@
      (-> (io/file f)
          (io/reader)
          (PushbackReader. 2)
+         newline-normalizing-reader
          (r/indexing-push-back-reader 2))))
+
+(defn string-reader
+  "Create reader for strings."
+  [s]
+  (-> s
+      r/string-push-back-reader
+      #?@(:clj [newline-normalizing-reader])
+      r/indexing-push-back-reader))
