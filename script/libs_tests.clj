@@ -21,13 +21,27 @@
          '[io.aviso.ansi :as ansi]
          '[release.version :as version])
 
+(defn shcmd-no-exit 
+  "Thin wrapper on babashka.process/process that does not exit on error."
+  ([cmd] (shcmd-no-exit cmd {}))
+  ([cmd opts]
+   (status/line :detail (str "Running: " (string/join " " cmd)))
+   (shell/command-no-exit cmd opts)))
+
+(defn shcmd
+  "Thin wrapper on babashka.process/process that prints error message and exits on error."
+  ([cmd] (shcmd cmd {}))
+  ([cmd opts]
+   (status/line :detail (str "Running: " (string/join " " cmd)))
+   (shell/command cmd opts)))
+
 (defn- install-local [version]
   (status/line :info (format "Installing rewrite-clj %s locally" version))
   (let [pom-bak-filename  "pom.xml.canary.bak"]
     (try
       (fs/copy "pom.xml" pom-bak-filename {:replace-existing true :copy-attributes true})
-      (shell/command ["clojure" "-X:jar" ":version" (pr-str version)])
-      (shell/command ["clojure" "-X:deploy:local"])
+      (shcmd ["clojure" "-X:jar" ":version" (pr-str version)])
+      (shcmd ["clojure" "-X:deploy:local"])
       (finally
         (fs/move pom-bak-filename "pom.xml" {:replace-existing true}))))
   nil)
@@ -38,17 +52,17 @@
     (io/copy
      (:body (curl/get (format release-url-fmt  version) {:as :stream}))
      (io/file target))
-    (let [zip-root-dir (->> (shell/command ["unzip" "-qql" target] {:out :string})
+    (let [zip-root-dir (->> (shcmd ["unzip" "-qql" target] {:out :string})
                             :out
                             string/split-lines
                             first
                             (re-matches #" *\d+ +[\d-]+ +[\d:]+ +(.*)")
                             second)]
-      (shell/command ["unzip" target "-d" target-root-dir])
+      (shcmd ["unzip" target "-d" target-root-dir])
       (str (fs/file target-root-dir zip-root-dir)))))
 
 (defn- deps-tree [{:keys [home-dir]} cmd]
-  (let [{:keys [out err]} (shell/command cmd {:dir home-dir
+  (let [{:keys [out err]} (shcmd cmd {:dir home-dir
                                               :out :string
                                               :err :string})]
     (->  (format "stderr->:\n%s\nstdout->:\n%s" err out)
@@ -65,7 +79,7 @@
   (deps-tree lib ["clojure" "-Stree"]))
 
 (defn- patch-rewrite-cljc-sources [home-dir]
-  (status/line :detail "Patching sources")
+  (status/line :detail "=> Patching sources")
   (doall (map (fn [f]
                 (let [f (fs/file f)
                       content (slurp f)
@@ -77,8 +91,8 @@
               (fs/glob home-dir "**/*.{clj,cljc,cljs}"))))
 
 (defn- patch-deps [{:keys [filename removals additions]}]
-  (status/line :detail (format "Patching deps in: %s" filename))
-  (shell/command ["clojure" "-X:deps-patcher" 
+  (status/line :detail (format "=> Patching deps in: %s" filename))
+  (shcmd ["clojure" "-X:deps-patcher" 
                   (if (string/ends-with? filename "deps.edn")
                     "update-deps-deps"
                     "update-project-deps")
@@ -127,7 +141,7 @@
 ;; mranderson
 ;; 
 (defn- mranderson-patch [{:keys [home-dir rewrite-clj-version]}]
-  (status/line :detail "Patching deps")
+  (status/line :detail "=> Patching deps")
   (let [p (str (fs/file home-dir "project.clj"))]
     (-> p
         slurp
@@ -143,11 +157,11 @@
 ;; 
 
 (defn- refactor-nrepl-prep [{:keys [home-dir]}]
-  (status/line :detail "Inlining deps")
-  (shell/command ["lein" "inline-deps"] {:dir home-dir}))
+  (status/line :detail "=> Inlining deps")
+  (shcmd ["lein" "inline-deps"] {:dir home-dir}))
 
 (defn- refactor-nrepl-patch [{:keys [home-dir rewrite-clj-version]}]
-  (status/line :detail "Patching deps")
+  (status/line :detail "=> Patching deps")
   (let [p (str (fs/file home-dir "project.clj"))]
     (-> p
         slurp
@@ -178,8 +192,8 @@
                :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}}))
               
 (defn- update-leiningen-dependencies-skill-prep [{:keys [home-dir]}]
-  (status/line :detail "Installing node deps")
-  (shell/command ["npm" "ci"] {:dir home-dir}))
+  (status/line :detail "=> Installing node deps")
+  (shcmd ["npm" "ci"] {:dir home-dir}))
 
 ;;
 ;; zprint
@@ -190,8 +204,8 @@
                :removals #{'rewrite-clj 'rewrite-cljs}
                :additions [['rewrite-clj rewrite-clj-version]]})
 
-  (status/line :detail "Hacking lift-ns to compensate for rewrite-clj v0->v1 change in sexpr on nsmap keys")
-  (status/line :detail "- note the word 'hacking' - hacked for to get test passing nly")
+  (status/line :detail "=> Hacking lift-ns to compensate for rewrite-clj v0->v1 change in sexpr on nsmap keys")
+  (status/line :detail "- note the word 'hacking' - hacked for to get test passing only")
   (let [src-filename (str (fs/file home-dir "src/zprint/zutil.cljc"))
         orig-filename (str src-filename ".orig")
         content (slurp src-filename)
@@ -205,20 +219,24 @@
                  replace-str
                  (subs content (+ ndx (count find-str)))))
       (throw (ex-info "hacking zprint failed" {})))
-    (status/line :detail (format "here's the diff for %s" src-filename))
-    (shell/command-no-exit ["git" "--no-pager" "diff" "--no-index" orig-filename src-filename])))
+    (status/line :detail (format "-> here's the diff for %s" src-filename))
+    (shcmd-no-exit ["git" "--no-pager" "diff" "--no-index" orig-filename src-filename])))
 
 (defn- zprint-prep [{:keys [target-root-dir home-dir]}]
-  (status/line :detail "Installing not-yet-released expectations/cljc-test")
+  (status/line :detail "=> Installing not-yet-released expectations/cljc-test")
   (let [clone-to-dir (str (fs/file target-root-dir "clojure-test"))]
-    (shell/command ["git" "clone" "--branch" "enhancements"
+    (shcmd ["git" "clone" "--branch" "enhancements"
                     "https://github.com/kkinnear/clojure-test.git" clone-to-dir])
-    (run! #(shell/command % {:dir clone-to-dir})
+    (run! #(shcmd % {:dir clone-to-dir})
           [["git" "reset" "--hard" "a6c3be067ab06f677d3b1703ee4092d25db2bb60"]
            ["clojure" "-M:jar"]
            ["mvn" "install:install-file" "-Dfile=expectations.jar" "-DpomFile=pom.xml"]]))
-  (status/line :detail "Building uberjar for uberjar tests")
-  (shell/command ["lein" "uberjar"] {:dir home-dir}))
+
+  (status/line :detail "=> Building uberjar for uberjar tests")
+  (shcmd ["lein" "uberjar"] {:dir home-dir})
+  
+  (status/line :detail "=> Installing zprint locally for ClojureScript tests")
+  (shcmd ["lein" "install"] {:dir home-dir}))
 
 ;;
 ;; lib defs
@@ -226,63 +244,77 @@
 
 (def libs [{:name "antq"
             :version "0.11.2"
+            :platforms [:clj]
             :release-url-fmt "https://github.com/liquidz/antq/archive/%s.zip"
             :patch-fn antq-patch
             :show-deps-fn cli-deps-tree
-            :test-cmd ["clojure" "-M:dev:test"]}
+            :test-cmds [["clojure" "-M:dev:test"]]}
            {:name "carve"
             :version "0.0.2"
+            :platforms [:clj]
             :release-url-fmt "https://github.com/borkdude/carve/archive/v%s.zip"
             :patch-fn carve-patch
             :show-deps-fn cli-deps-tree
-            :test-cmd ["clojure" "-M:test"]}
+            :test-cmds [["clojure" "-M:test"]]}
            {:name "cljfmt"
             :version "0.7.0"
+            :platforms [:clj :cljs]
             :root "cljfmt"
             :release-url-fmt "https://github.com/weavejester/cljfmt/archive/%s.zip"
             :patch-fn cljfmt-patch
             :show-deps-fn lein-deps-tree
-            :test-cmd ["lein" "test"]}
+            :test-cmds [["lein" "test"]]}
            {:name "clojure-lsp"
+            :platforms [:clj]
             :version "2021.03.01-19.18.54"
             :release-url-fmt "https://github.com/clojure-lsp/clojure-lsp/archive/%s.zip"
             :patch-fn clojure-lsp-patch
             :show-deps-fn lein-deps-tree
-            :test-cmd ["lein" "test"]}
+            :test-cmds [["lein" "test"]]}
            {:name "mranderson"
             :version "0.5.3"
+            :platforms [:clj]
             :release-url-fmt "https://github.com/benedekfazekas/mranderson/archive/v%s.zip"
             :patch-fn mranderson-patch
             :show-deps-fn lein-deps-tree
-            :test-cmd ["lein" "test"]}
+            :test-cmds [["lein" "test"]]}
            {:name "rewrite-edn"
             :version "665f61cf273c79b44baacb0897d72c2157e27b09"
+            :platforms [:clj]
             :release-url-fmt "https://github.com/borkdude/rewrite-edn/zipball/%s"
             :patch-fn rewrite-edn-patch
             :show-deps-fn cli-deps-tree
-            :test-cmd ["clojure" "-M:test"]}
+            :test-cmds [["clojure" "-M:test"]]}
            {:name "refactor-nrepl"
             :version "2.5.1"
+            :platforms [:clj]
             :release-url-fmt "https://github.com/clojure-emacs/refactor-nrepl/archive/v%s.zip"
             :patch-fn refactor-nrepl-patch
             :show-deps-fn lein-deps-tree
             :prep-fn refactor-nrepl-prep
-            :test-cmd ["lein" "with-profile" "+1.10,+plugin.mranderson/config" "test"]}
+            :test-cmds [["lein" "with-profile" "+1.10,+plugin.mranderson/config" "test"]]}
            {:name "update-leiningen-dependencies-skill"
             :version "21c7ce794c83d6eed9c2a27e2fdd527b5da8ebb3"
+            :platforms [:cljs]
             :release-url-fmt "https://github.com/atomist-skills/update-leiningen-dependencies-skill/zipball/%s"
             :patch-fn update-leiningen-dependencies-skill-patch
             :prep-fn update-leiningen-dependencies-skill-prep 
             :show-deps-fn cli-deps-tree
-            :test-cmd ["npm" "run" "test"]}
+            :test-cmds [["npm" "run" "test"]]}
            {:name "zprint"
             :version "1.1.1"
+            :platforms [:clj :cljs]
             :note "zprint src hacked to pass with rewrite-clj v1"
-            :release-url-fmt "https://github.com/kkinnear/zprint/archive/%s.zip" 
+            :release-url-fmt "https://github.com/kkinnear/zprint/archive/%s.zip"
             :patch-fn zprint-patch
-            :show-deps-fn lein-deps-tree
             :prep-fn zprint-prep
-            :test-cmd ["lein" "with-profile" "expectations" "test"]}])
+            :show-deps-fn (fn [lib]  
+                             (status/line :detail "=> Deps for Clojure run:")
+                             (lein-deps-tree lib)
+                             (status/line :detail "=> Deps Clojurescript run:")
+                             (cli-deps-tree lib))
+            :test-cmds [["lein" "with-profile" "expectations" "test"]
+                        ["clj" "-M:cljs-runner"]]}])
 
 (defn- header [text]
   (let [dashes (apply str (repeat 80 "-"))]
@@ -290,7 +322,7 @@
                             text "\n"
                             dashes))))
 
-(defn- test-lib [{:keys [name root patch-fn prep-fn show-deps-fn test-cmd] :as lib}]
+(defn- test-lib [{:keys [name root patch-fn prep-fn show-deps-fn test-cmds] :as lib}]
   (header name)
   (let [home-dir (do
                    (status/line :info (format "%s: Fetching" name))
@@ -307,15 +339,17 @@
       (throw (ex-info (format "missing show-deps-fn for %s" name) {})))
     (status/line :info (format "%s: Deps report" name))
     (show-deps-fn lib)
-    (when-not test-cmd
-      (throw (ex-info (format "missing test-cmd for %s" name) {})))
+    (when-not test-cmds
+      (throw (ex-info (format "missing test-cmds for %s" name) {})))
     (status/line :info (format "%s: Running tests" name))
-    (let [{:keys [exit]} (shell/command-no-exit test-cmd {:dir home-dir})]
-      (status/line :detail "\n")
-      (if (zero? exit)
-        (status/line :detail (format "%s: TESTS PASSED" name))
-        (status/line :warn (format "%s: TESTS FAILED" name)))
-      (assoc lib :exit-code exit))))
+    (let [exit-codes (into [] (map-indexed (fn [ndx cmd]
+                                             (let [{:keys [exit]} (shcmd-no-exit cmd {:dir home-dir})]
+                                               (if (zero? exit)
+                                                 (status/line :detail (format "=> %s: TESTS %d of %d PASSED\n" name (inc ndx) (count test-cmds)))
+                                                 (status/line :warn (format "=> %s: TESTS %d of %d FAILED" name (inc ndx) (count test-cmds))))
+                                               exit))
+                                           test-cmds))]
+      (assoc lib :exit-codes exit-codes))))
 
 (defn main [args]
   ;; no args = test all libs
@@ -333,16 +367,19 @@
         target-root-dir "target/libs-test"
         _ (when (fs/exists? target-root-dir) (fs/delete-tree target-root-dir))
         rewrite-clj-version (str (version/calc) "-canary")]
-    (status/line :detail (format  "requested libs: %s" (into [] (map :name requested-libs))))
+    (status/line :detail (format  "Requested libs: %s" (into [] (map :name requested-libs))))
     (install-local rewrite-clj-version)
     (let [results (doall (map #(test-lib (assoc %
                                                 :target-root-dir target-root-dir
                                                 :rewrite-clj-version rewrite-clj-version))
                               requested-libs))]
       (status/line :info "Summary")
-      (println (doric/table [:name :version :note :exit-code] results))
-      (System/exit (if (every? #(zero? (:exit-code %)) results) 0 1))))
+      (println (doric/table [:name :version :platforms :note :exit-codes] results))
+      (System/exit (if (->> results
+                            (map :exit-codes)
+                            flatten
+                            (every? zero?))
+                     0 1))))
   nil)
 
 (main *command-line-args*)
-
