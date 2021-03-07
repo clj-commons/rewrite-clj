@@ -322,7 +322,7 @@
                              (status/line :detail "=> Deps Clojurescript run:")
                              (cli-deps-tree lib))
             :test-cmds [["lein" "with-profile" "expectations" "test"]
-                        ["clj" "-M:cljs-runner"]]}])
+                        ["clojure" "-M:cljs-runner"]]}])
 
 (defn- header [text]
   (let [dashes (apply str (repeat 80 "-"))]
