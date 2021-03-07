@@ -26,6 +26,12 @@ jobs:
       with:
         java-version: 11
 
+    - name: Install planck
+      run: |
+        sudo add-apt-repository -y ppa:mfikes/planck
+        sudo apt-get update
+        sudo apt-get install -y planck
+
     - name: Install Babashka
       run: curl -s https://raw.githubusercontent.com/borkdude/babashka/master/install | sudo bash
 
@@ -42,6 +48,8 @@ jobs:
         clojure -Sdescribe
         echo "lein --version"
         lein --version
+        echo "planck --version"
+        planck --version
 
     - name: Run Libs Tests
       run: bb ./script/libs_tests.clj
