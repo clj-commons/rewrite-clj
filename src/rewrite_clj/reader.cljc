@@ -2,6 +2,9 @@
   (:refer-clojure :exclude [peek next])
   (:require #?@(:clj [[clojure.java.io :as io]])
             [clojure.tools.reader.edn :as edn]
+            [clojure.tools.reader.impl.commons :as reader-impl-commons]
+            [clojure.tools.reader.impl.errors :as reader-impl-errors]
+            [clojure.tools.reader.impl.utils :as reader-impl-utils]
             [clojure.tools.reader.reader-types :as r]
             [rewrite-clj.interop :as interop])
   #?(:cljs (:import [goog.string StringBuffer])
@@ -124,7 +127,12 @@
 (defn peek
   "Peek next char."
   [#?(:cljs ^not-native reader :default reader)]
-  (r/peek-char reader))
+  (let [ch (r/peek-char reader)]
+    ;; compensate for cljs newline normalization in tools reader v1.3.5
+    ;; see https://clojure.atlassian.net/browse/TRDR-65
+    (if (identical? \return ch)
+      \newline
+      ch)))
 
 (defn position
   "Create map of `row-k` and `col-k` representing the current reader position."
@@ -169,13 +177,36 @@
           (if (= n 1) "" "s")))
       vs)))
 
+;;
+;; ## Customizations
+;;
+(defn read-keyword
+  "This customized version of clojure.tools.reader.edn's read-keyword allows for
+  an embedded `::` in a keyword to to support [garden-style keywords](https://github.com/noprompt/garden)
+  like `:&::before`. This function was transcribed from clj-kondo."
+  [reader]
+  (let [ch (r/read-char reader)]
+    (if-not (reader-impl-utils/whitespace? ch)
+      (let [#?(:clj ^String token :default token) (#'edn/read-token reader :keyword ch)
+            s (reader-impl-commons/parse-symbol token)]
+        (if (and s
+                 ;; (== -1 (.indexOf token "::")) becomes:
+                 (not (zero? (.indexOf token "::"))))
+          (let [#?(:clj ^String ns :default ns) (s 0)
+                #?(:clj ^String name :default name) (s 1)]
+            (if (identical? \: (nth token 0))
+              (reader-impl-errors/throw-invalid reader :keyword token) ; No ::kw in edn.
+              (keyword ns name)))
+          (reader-impl-errors/throw-invalid reader :keyword token)))
+      (reader-impl-errors/throw-single-colon reader))))
+
 ;; ## Reader Types
 
 ;;
 ;; clojure.tools.reader (at the time of this writing v1.3.5) does not seem to normalize Windows \r\n newlines
 ;; properly to \n for Clojure 
 ;;
-;; ClojureScript seems to work fine - but note that for peek it can return \r instead of \n. 
+;; ClojureScript seems to work fine - but note that for peek it will return \r for \r\n and \r\f instead of \n. 
 ;;
 ;; see https://clojure.atlassian.net/browse/TRDR-65
 ;;
@@ -185,39 +216,34 @@
 #?(:clj
    (deftype NewlineNormalizingReader
        [rdr
-        ^:unsynchronized-mutable next-char
-        ^:unsynchronized-mutable peeked-char]
+        ^:unsynchronized-mutable read-ahead-char
+        ^:unsynchronized-mutable user-peeked-char]
      r/Reader
      (read-char [_reader]
-       (if peeked-char
-         (let [ch peeked-char]
-           (set! peeked-char nil)
-           ch)
-         (let [ch (or next-char (r/read-char rdr))]
-           (when next-char (set! next-char nil))
-           (cond (identical? \return ch)
-                 (let [next-ch (r/read-char rdr)]
-                   (when (not (identical? \newline next-ch))
-                     (set! next-char next-ch))
-                   \newline)
-
-                 (identical? \formfeed ch)
-                 \newline
-
-                 :else
-                 ch))))
+       (if-let [ch user-peeked-char]
+         (do (set! user-peeked-char nil) ch)
+         (let [ch (or read-ahead-char (r/read-char rdr))]
+           (when read-ahead-char (set! read-ahead-char nil))
+           (if (not (identical? \return ch))
+             ch
+             (let [read-ahead-ch (r/read-char rdr)]
+               (when (not (or (identical? \newline read-ahead-ch)
+                              (identical? \formfeed read-ahead-ch)))
+                 (set! read-ahead-char read-ahead-ch))
+               \newline)))))
 
      (peek-char [reader]
-       (let [ch (or peeked-char (.read-char reader))]
-         (when-not peeked-char (set! peeked-char ch))
-         ch))))
+       (or user-peeked-char
+           (let [ch (.read-char reader)]
+             (set! user-peeked-char ch)
+             ch)))))
 
 #?(:clj
    (defn ^Closeable newline-normalizing-reader
      "Normalizes the following line endings to LF (line feed - 0x0A):
       - LF (remains LF)
       - CRLF (carriage return 0x0D line feed 0x0A)
-      - FF (form feed 0x0C)"
+      - CRFF (carriage return 0x0D form feed 0x0C)"
      [rdr]
      (NewlineNormalizingReader. (r/to-rdr rdr) nil nil)))
 

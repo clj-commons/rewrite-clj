@@ -58,6 +58,7 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 * Many updates to docs and docstrings
 
 ==== Fixes
+* end of line variants in source now normalized consistently to `\newline` https://github.com/clj-commons/rewrite-clj/issues/93[#93]
 * postwalk on larger source file no longer throws StackOverflow https://github.com/clj-commons/rewrite-clj/issues/69[#69]
 * postwalk now walks in post order https://github.com/clj-commons/rewrite-clj/issues/123[#123]
 * we now preserve newline at end of file https://github.com/clj-commons/rewrite-clj/issues/121[#121]
@@ -129,6 +130,8 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 ** Switched to `clojure.tools.reader.edn`
 ** Some rewrite-cljs optimizations were dropped in favor of a single code base
 ** Deleted unused `rewrite-clj.node.indent` https://github.com/clj-commons/rewrite-clj/issues/116[#116]
+** Deleted redundent `rewrite-clj.parser.util` as part of https://github.com/clj-commons/rewrite-clj/issues/93[#93].
+If you were using this internal namespace you can opt to switch to, the also internal, `rewrite-clj.reader` namespace.
 
 == rewrite-clj v0
 

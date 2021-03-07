@@ -1,8 +1,7 @@
 (ns ^:no-doc rewrite-clj.parser.string
   (:require [clojure.string :as string]
-            [clojure.tools.reader.reader-types :as r]
             [rewrite-clj.node.stringz :as nstring]
-            [rewrite-clj.parser.utils :as u])
+            [rewrite-clj.reader :as reader])
   #?(:cljs (:import [goog.string StringBuffer])))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -16,11 +15,11 @@
 
 (defn- read-string-data
   [#?(:cljs ^not-native reader :default reader)]
-  (u/ignore reader)
+  (reader/ignore reader)
   (let [buf (StringBuffer.)]
     (loop [escape? false
            lines []]
-      (if-let [c (r/read-char reader)]
+      (if-let [c (reader/next reader)]
         (cond (and (not escape?) (identical? c \"))
               (flush-into lines buf)
 
@@ -31,7 +30,7 @@
               (do
                 (.append buf c)
                 (recur (and (not escape?) (identical? c \\)) lines)))
-        (u/throw-reader reader "Unexpected EOF while reading string.")))))
+        (reader/throw-reader reader "Unexpected EOF while reading string.")))))
 
 (defn parse-string
   [#?(:cljs ^not-native reader :default reader)]

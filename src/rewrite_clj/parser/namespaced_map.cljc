@@ -1,7 +1,6 @@
 (ns ^:no-doc rewrite-clj.parser.namespaced-map
   (:require [rewrite-clj.node.namespaced-map :as nsmap]
             [rewrite-clj.node.protocols :as node]
-            [rewrite-clj.parser.utils :as u]
             [rewrite-clj.reader :as reader] ))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -21,7 +20,6 @@
         (recur (conj nodes n))
         [nodes n]))))
 
-
 (defn parse-namespaced-map
   "The caller has parsed up to `#:` and delegates the details to us."
   [reader read-next]
@@ -29,10 +27,10 @@
   (let [qualifier-node (parse-qualifier reader)]
     (when (and (not (:auto-resolved? qualifier-node))
                (nil? (:prefix qualifier-node)))
-      (u/throw-reader reader "namespaced map expects a namespace"))
+      (reader/throw-reader reader "namespaced map expects a namespace"))
     (let [[whitespace-nodes map-node] (parse-to-next-elem reader read-next)]
       (when (or (not map-node)
                 (not= :map (node/tag map-node)))
-        (u/throw-reader reader "namespaced map expects a map"))
+        (reader/throw-reader reader "namespaced map expects a map"))
       (nsmap/namespaced-map-node
        (concat [qualifier-node] whitespace-nodes [map-node])))))

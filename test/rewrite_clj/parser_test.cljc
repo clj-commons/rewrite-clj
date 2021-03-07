@@ -543,22 +543,20 @@
     ";; comment\r\n(+ 1 2 3)\r\n"
     ";; comment\n(+ 1 2 3)\n"
 
-    "1\r2\r\n3\f4"
+    "1\r2\r\n3\r\f4"
     "1\n2\n3\n4"
 
-    "\n\n\n\n\n"
-    "\n\n\n\n\n"
+    "\n\n\n\n"
+    "\n\n\n\n"
 
     "\r\r\r\r\r"
     "\n\n\n\n\n"
 
-    "\r\n\r\n\r\n\r\n\r\n"
-    "\n\n\n\n\n"
+    "\r\n\r\n\r\n\r\n\r\n\r\n"
+    "\n\n\n\n\n\n"
 
-    "\f\f\f\f\f"
-    "\n\n\n\n\n"
-
-    "\r\n\r\r\f\r\n"
-    "\n\n\n\n\n"))
+    ;1   2 3   4   5 6   7
+    "\r\n\r\r\f\r\n\r\r\n\r"
+    "\n\n\n\n\n\n\n"))
 
 
