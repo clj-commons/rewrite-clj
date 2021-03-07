@@ -61,16 +61,24 @@
       (shcmd ["unzip" target "-d" target-root-dir])
       (str (fs/file target-root-dir zip-root-dir)))))
 
+(defn- print-deps [deps-out]
+  (->  deps-out 
+       (string/replace #"(org.clojure/clojurescript|org.clojure/clojure)"
+                       (-> "$1"
+                           ansi/bold-yellow-bg
+                           ansi/black))
+       (string/replace #"(rewrite-cljc|rewrite-cljs|rewrite-clj)"
+                       (-> "$1"
+                           ansi/bold-green-bg
+                           ansi/black))
+       (println)))
+
 (defn- deps-tree [{:keys [home-dir]} cmd]
   (let [{:keys [out err]} (shcmd cmd {:dir home-dir
                                               :out :string
                                               :err :string})]
     (->  (format "stderr->:\n%s\nstdout->:\n%s" err out)
-         (string/replace #"(rewrite-cljs|rewrite-clj|org.clojure/clojurescript|org.clojure/clojure)"
-                         (-> "$1"
-                             ansi/bold-yellow-bg
-                             ansi/black))
-         (println))))
+         print-deps)))
 
 (defn- lein-deps-tree [lib]
   (deps-tree lib ["lein" "deps" ":tree"]))
