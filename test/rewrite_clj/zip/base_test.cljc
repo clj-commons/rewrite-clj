@@ -3,13 +3,13 @@
             [rewrite-clj.node :as node]
             [rewrite-clj.zip :as z]))
 
-(let [n (node/forms-node
-         [(node/spaces 3)
-          (node/coerce [[1 2] 3])])
-      s "   [[1 2] 3]"]
-  (deftest t-edn-for-zipper-creation-from-node
-    (let [loc (z/edn* n)
-          [_ a b c d] (iterate z/next* loc)]
+(deftest t-edn-for-zipper-creation-from-node
+  (let [n (node/forms-node
+           [(node/spaces 3)
+            (node/coerce [[1 2] 3])])
+        s "   [[1 2] 3]"
+        loc (z/edn* n)
+        [_ a b c d] (iterate z/next* loc)]
       (is (= :forms (z/tag loc)))
       (is (= [[1 2] 3] (z/sexpr loc)))
       (is (= :whitespace (z/tag a)))
@@ -20,13 +20,13 @@
       (is (= "[1 2]" (z/string c)))
       (is (= s (with-out-str (z/print loc))))
       (is (= s (with-out-str (z/print-root loc))))
-      (is (every? #{s} (map z/root-string [loc a b c d]))))))
+      (is (every? #{s} (map z/root-string [loc a b c d])))))
 
 #?(:clj
-   (let [f (java.io.File/createTempFile "rewrite" ".clj")
-         s "   [[1 2] 3]"]
-     (spit f s)
-     (deftest t-zipper-creation-with-movement-to-first-non-ws-node
+   (deftest t-zipper-creation-with-movement-to-first-non-ws-node
+     (let [f (java.io.File/createTempFile "rewrite" ".clj")
+           s "   [[1 2] 3]"]
+       (spit f s)
        (are [?loc]
             (let [loc ?loc
                   [_ a b c d] (iterate z/next* loc)]

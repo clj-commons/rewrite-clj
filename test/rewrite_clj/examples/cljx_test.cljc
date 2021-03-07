@@ -101,11 +101,11 @@
     (z/root-string
      (cljx-walk zloc active-profiles))))
 
-(let [data (str "(defn debug-inc\n"
-                "  [x]\n"
-                "  #+debug (println #-compact :debug 'inc x)\n"
-                "  (inc x))")]
-  (deftest t-cljx
+(deftest t-cljx
+  (let [data (str "(defn debug-inc\n"
+                  "  [x]\n"
+                  "  #+debug (println #-compact :debug 'inc x)\n"
+                  "  (inc x))")]
     (are [?profiles ?result]
          (is (= ?result (cljx-string data ?profiles)))
       #{}

@@ -1,25 +1,26 @@
 (ns rewrite-clj.zip.editz-test
-  (:require [clojure.test :refer [deftest is are]]
+  (:require [clojure.test :refer [deftest testing is are]]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip :as z]))
 
-(let [root (z/of-string "[1 \"2\" :3]")
-      elements (iterate z/next root)]
-  (deftest t-edit-operations
-    (are [?n ?f ?s]
-         (let [loc (nth elements ?n)
-               loc' (z/edit loc ?f)]
-           (is (= ?s (z/root-string loc'))))
-      0 #(subvec % 1) "[\"2\" :3]"
-      1 #(str % "_x") "[\"1_x\" \"2\" :3]"
-      2 #(keyword % "k") "[1 :2/k :3]"))
-  (deftest t-replace-operations
-    (are [?n ?v ?s]
-         (let [loc (nth elements ?n)
-               loc' (z/replace loc ?v)]
-           (is (= ?s (z/root-string loc'))))
-      0  [1]           "[1]"
-      1  #{0}          "[#{0} \"2\" :3]")))
+(deftest t-edit-operations
+  (let [root (z/of-string "[1 \"2\" :3]")
+        elements (iterate z/next root)]
+    (testing "edit"
+      (are [?n ?f ?s]
+           (let [loc (nth elements ?n)
+                 loc' (z/edit loc ?f)]
+             (is (= ?s (z/root-string loc'))))
+        0 #(subvec % 1) "[\"2\" :3]"
+        1 #(str % "_x") "[\"1_x\" \"2\" :3]"
+        2 #(keyword % "k") "[1 :2/k :3]"))
+    (testing "replace"
+      (are [?n ?v ?s]
+           (let [loc (nth elements ?n)
+                 loc' (z/replace loc ?v)]
+             (is (= ?s (z/root-string loc'))))
+        0  [1]           "[1]"
+        1  #{0}          "[#{0} \"2\" :3]"))))
 
 (deftest t-edit-with-args
   (is (= "[1 102 3]" (-> "[1 2 3]"
@@ -49,9 +50,9 @@
                                      :unexpected))
                           z/root-string)))))
 
-(let [root (z/of-string "[1 [ ] [2 3] [  4  ]]")
-      elements (iterate z/next root)]
-  (deftest t-splice-operations
+(deftest t-splice-operations
+  (let [root (z/of-string "[1 [ ] [2 3] [  4  ]]")
+        elements (iterate z/next root)]
     (are [?n ?s ?e]
          (let [loc (nth elements ?n)
                loc' (z/splice loc)]

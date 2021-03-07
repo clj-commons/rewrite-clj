@@ -3,22 +3,23 @@
             [rewrite-clj.zip :as z]
             [rewrite-clj.zip.base :as zbase]))
 
-(let [root (z/of-string "[1 #{2 [3 4] 5} 6]")]
-  (deftest t-modifying-subtrees
-    (let [loc (z/subedit-> root
-                           z/next
-                           z/next
-                           z/next
-                           (z/replace* 'x))]
-      (is (= :vector (z/tag loc)))
-      (is (= "[1 #{x [3 4] 5} 6]" (z/string loc)))))
-  (deftest t-modifying-the-whole-tree
-    (let [loc (z/edit-> (-> root z/next z/next z/next)
-                              z/prev z/prev
-                              (z/replace* 'x))]
-      (is (= :token (z/tag loc)))
-      (is (= "2" (z/string loc)))
-      (is (= "[x #{2 [3 4] 5} 6]" (z/root-string loc))))))
+(deftest t-trees
+  (let [root (z/of-string "[1 #{2 [3 4] 5} 6]")]
+    (testing "modifying subtrees"
+      (let [loc (z/subedit-> root
+                             z/next
+                             z/next
+                             z/next
+                             (z/replace* 'x))]
+        (is (= :vector (z/tag loc)))
+        (is (= "[1 #{x [3 4] 5} 6]" (z/string loc)))))
+    (testing "modifying the whole tree"
+      (let [loc (z/edit-> (-> root z/next z/next z/next)
+                          z/prev z/prev
+                          (z/replace* 'x))]
+        (is (= :token (z/tag loc)))
+        (is (= "2" (z/string loc)))
+        (is (= "[x #{2 [3 4] 5} 6]" (z/root-string loc)))))))
 
 (deftest zipper-retains-options
   (let [zloc (z/of-string "(1 (2 (3 4 ::my-kw)))" {:auto-resolve (fn [_x] 'custom-resolved)})
