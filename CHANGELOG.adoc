@@ -58,25 +58,25 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 * Many updates to docs and docstrings
 
 ==== Fixes
-* end of line variants in source now normalized consistently to `\newline` https://github.com/clj-commons/rewrite-clj/issues/93[#93]
-* postwalk on larger source file no longer throws StackOverflow https://github.com/clj-commons/rewrite-clj/issues/69[#69]
-* postwalk now walks in post order https://github.com/clj-commons/rewrite-clj/issues/123[#123]
-* we now preserve newline at end of file https://github.com/clj-commons/rewrite-clj/issues/121[#121]
-* support for garden style selectors https://github.com/clj-commons/rewrite-clj/issues/92[#92]
-* correct and document prefix and suffix functions https://github.com/clj-commons/rewrite-clj/issues/91[#91]
-* positional metadata added by the reader is elided on coercion https://github.com/clj-commons/rewrite-clj/issues/90[#90]
-* can now read `\\##Inf`, `##-Inf` and `##Nan` https://github.com/clj-commons/rewrite-clj/issues/75[#75]
-* ensure that all rewrite-clj nodes coerce to themselves
-* strings now coerce to string nodes (instead of to token nodes) https://github.com/clj-commons/rewrite-clj/issues/126[#126]
-* regexes now coerce to regex nodes https://github.com/clj-commons/rewrite-clj/issues/128[#128]
-* regex node now:
+* OS specific end of line variants in source now normalized consistently to `\newline` https://github.com/clj-commons/rewrite-clj/issues/93[#93]
+* Postwalk on larger source file no longer throws StackOverflow https://github.com/clj-commons/rewrite-clj/issues/69[#69]
+* Postwalk now walks in post order https://github.com/clj-commons/rewrite-clj/issues/123[#123]
+* We now preserve newline at end of file https://github.com/clj-commons/rewrite-clj/issues/121[#121]
+* Support for garden style selectors https://github.com/clj-commons/rewrite-clj/issues/92[#92]
+* Correct and document prefix and suffix functions https://github.com/clj-commons/rewrite-clj/issues/91[#91]
+* Positional metadata added by the reader is elided on coercion https://github.com/clj-commons/rewrite-clj/issues/90[#90]
+* Can now read `\\##Inf`, `##-Inf` and `##Nan` https://github.com/clj-commons/rewrite-clj/issues/75[#75]
+* Ensure that all rewrite-clj nodes coerce to themselves
+* Strings now coerce to string nodes (instead of to token nodes) https://github.com/clj-commons/rewrite-clj/issues/126[#126]
+* Regexes now coerce to regex nodes https://github.com/clj-commons/rewrite-clj/issues/128[#128]
+* Regex node now:
 ** converts correctly to string https://github.com/clj-commons/rewrite-clj/issues/127[#127]
 ** reports correct length https://github.com/clj-commons/rewrite-clj/issues/130[#130]
-* moved from potemkin import-vars to static template based version https://github.com/clj-commons/rewrite-clj/issues/98[#98]:
-** avoids frustration/mysteries of dynamic import-vars for users and maintainers
-** argument names now correct in API docs (some were gensymed previously)
-** line numbers for protocols in API docs are now correct
-** also turfed use of custom version of potemkin defprotocol+ in favor of plain old defprotocol. Perhaps I missed something, but I did not see the benefit of defprotocol+ for rewrite-clj v1.
+* Moved from potemkin import-vars to static template based version https://github.com/clj-commons/rewrite-clj/issues/98[#98]:
+** Avoids frustration/mysteries of dynamic import-vars for users and maintainers
+** Argument names now correct in API docs (some were gensymed previously)
+** Line numbers for protocols in API docs are now correct
+** Also turfed use of custom version of potemkin defprotocol+ in favor of plain old defprotocol. Perhaps I missed something, but I did not see the benefit of defprotocol+ for rewrite-clj v1.
 
 ==== Internal changes (developer facing)
 * Tests updated to hit public APIs https://github.com/clj-commons/rewrite-clj/issues/106[#106]
@@ -114,18 +114,140 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 
 ==== Unreleased Breaking Changes
 
-* minimum Clojure version bumped from v1.5.1 to v1.9
-* minimum ClojureScript version (from whatever is was for rewrite-cljs) bumped to v1.10
-* minimum Java version bumped from v7 to v8
-* keyword node field `namespaced?` renamed to `auto-resolved?`
-* namespaced map support reworked
-** prefix is now stored in a namespaced map qualifier node, was formerly stored as a keyword
-* namespaced element sexpr support now relies on auto-resolver to resolve qualifiers
-** unlike rewrite-clj v0, the default auto-resolver never consult `*ns*`
-** an sexpr for keyword node `::alias/foo` no longer returns `:alias/foo` (this could be consider a bug fix, but if you were expecting this, then you'll need to make changes)
+* Minimum Clojure version bumped from v1.5.1 to v1.9
+* Minimum ClojureScript version (from whatever is was for rewrite-cljs) bumped to v1.10
+* Minimum Java version bumped from v7 to v8
+* Keyword node field `namespaced?` renamed to `auto-resolved?`
 * Now using `ex-info` for explicitly raised exceptions
-* rewrite-cljs positional support migrated to rewrite-clj's positional support
+* Rewrite-cljs positional support migrated to rewrite-clj's positional support
+* Namespaced element support reworked
+** Namespace map prefix, is now stored in a namespaced map qualifier node.
+Prior to v1, was stored as a keyword.
+** Namespaced element sexpr support now relies on user specifiable auto-resolve function to resolve qualifiers
+** Unlike rewrite-clj v0, the default auto-resolve behaviour never consults `\*ns*`
+** An sexpr for keyword node `::alias/foo` no longer returns `:alias/foo` (this could be considered a bug fix, but if your code is expecting this, then you'll need to make changes)
+** The following namespaced element `sexpr` examples assume:
+*** `\*ns*` is bound to `user` namespace (important only for rewrite-clj v0):
+*** We are using the default auto-resolve function for rewrite-clj v1
+*** That you will refer to the link:01-user-guide.adoc#namespaced-elements[User Guide] for more detailed examples of v1 behaviour
++
+[%header,cols="19,27,27,27"]
+|===
+| source
+| sexpr rewrite-clj v1
+| sexpr rewrite-clj v0
+| sexpr rewrite-cljs
 
+| qualified keyword +
+`:prefix/foo`
+3+| no change
+
+| current-ns qualified keyword +
+`::foo`
+| `:?\_current-ns_?/foo`
+| `:user/foo`
+a| * throws on sexpr
+
+| ns-alias qualified keyword +
+`::alias/foo`
+| `:??\_alias_??/foo`
+| `:alias/foo`
+| `:alias/foo`
+
+| qualified map +
+`#:prefix{:a 1}`
+| `#:prefix{:a 1}`
+| `#:prefix{:a 1}`
+| `(read-string "#:prefix{:a 1}")`
+
+| current-ns qualified map +
+`#::{:b 2}`
+| `#:?\_current-ns_?{:b 2}`
+a| * throws on parse
+a| * throws on parse
+
+| ns-alias qualified map +
+`::alias{:c 3}`
+| `#:??\_alias_??{:c 3}`
+a| * throws unless namespace alias `alias` has been loaded in `\*ns*`
+* if `alias` in `*ns*` resolves to `my.ns1`: +
+`#:my.ns1{:c 3}`
+| `(read-string "#::alias{:c 3}")`
+
+|===
+
+*** Let's dig into prefix and key sub-nodes of a namespaced map to explore v1 differences:
++
+[cols="40,30,30"]
+|===
+| Description | rewrite-clj v1 | rewrite-clj v0 and rewrite-cljs
+
+3+a| prefix (aka qualifier)
+
+a|qualified
+[source,clojure]
+----
+(-> "#:prefix{:a 1}"
+    z/of-string
+    z/down z/sexpr)
+----
+| `prefix`
+| `:prefix`
+
+a| current-ns qualified
+[source,clojure]
+----
+(-> "#::{:b 2}"
+    z/of-string
+    z/down z/sexpr)
+----
+| `?\_current-ns_?`
+a| * throws on parse
+
+a| ns-alias qualified
+[source,clojure]
+----
+(-> "#::alias{:c 2}"
+     z/of-string
+     z/down z/sexpr)
+----
+a| `??\_alias_??`
+a| `:user/alias`
+
+* rewrite-cljs throws
+
+3+a| key
+a| qualified
+[source,clojure]
+----
+(-> "#:prefix{:a 1}"
+    z/of-string
+    z/down z/right z/down z/sexpr)
+----
+| `:prefix/a`
+| `:a`
+
+a| current-ns qualified
+[source,clojure]
+----
+(-> "#::{:b 2}"
+    z/of-string
+    z/down z/right z/down z/sexpr)
+----
+|`:?_current-ns_?/b`
+a| * throws on parse
+
+a| ns-alias qualified
+[source,clojure]
+----
+(-> "#::alias{:c 3}"
+    z/of-string
+    z/down z/right z/down z/sexpr)
+----
+|`:??\_alias_??/c`
+|`:c`
+
+|===
 * Potentially breaking
 ** Switched to `clojure.tools.reader.edn`
 ** Some rewrite-cljs optimizations were dropped in favor of a single code base
