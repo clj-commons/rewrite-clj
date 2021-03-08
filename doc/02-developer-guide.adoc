@@ -199,6 +199,7 @@ bb ./script/pure_native_test.clj
 bb ./script/sci_native_test.clj
 ----
 
+[#libs-test]
 === Libs test
 To try to ensure our changes to rewrite-clj do not inadvertently break existing popular libraries, we run their tests, or a portion thereof, against rewrite-clj.
 
