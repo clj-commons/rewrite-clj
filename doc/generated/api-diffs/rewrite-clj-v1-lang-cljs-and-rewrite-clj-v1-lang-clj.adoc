@@ -46,12 +46,12 @@ l|:changed-publics
 | publics
 | 0
 | 1
-| 37
+| 38
 
 | arglists
 | 0
 | 1
-| 48
+| 49
 
 |===
 **Notes:**
@@ -171,6 +171,18 @@ a|
 a|
 [unstyled]
 * [green]`*+*` [green]#pass:c[[]# [green]`+f+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
+|===
+
+=== [green]`*+*`[green]#pass:c[newline-normalizing-reader]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+rdr+` [green]#pass:c[]]#
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`

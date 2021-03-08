@@ -43,18 +43,18 @@ l|:changed-publics
 
 | namespaces
 | 16
-| 2
+| 3
 | 11
 
 | publics
 | 37
-| 8
-| 104
+| 14
+| 110
 
 | arglists
 | 0
-| 23
-| 157
+| 29
+| 163
 
 |===
 **Notes:**
@@ -544,6 +544,18 @@ a|
 a|
 [unstyled]
 * *pass:c[:type]* [black]`*=*` [black]`+:var+`
+|===
+
+=== [green]`*+*`[green]#pass:c[sexpr-able?]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+node+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
 |===
 
 === [black]`*≠*`[black]#pass:c[sexprs]#
@@ -1125,6 +1137,18 @@ a|
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
 |===
 
+=== [green]`*+*`[green]#pass:c[sexpr-able?]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+node+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
+|===
+
 === [black]`*≠*`[black]#pass:c[sexprs]#
 |===
 | arglists | attributes 
@@ -1606,10 +1630,113 @@ a|
 
 
 
+== [red]`*-*` [red]#pass:c[rewrite-clj.parser.utils]#
+
+[unstyled]
+* *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
+
+=== [red]`*-*`[red]#pass:c[ignore]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [red]`*-*` [red]#pass:c[[]# [red]`+reader+` [red]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [red]`*-*` [red]`+:var+`
+|===
+
+=== [red]`*-*`[red]#pass:c[linebreak?]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [red]`*-*` [red]#pass:c[[]# [red]`+c+` [red]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [red]`*-*` [red]`+:var+`
+|===
+
+=== [red]`*-*`[red]#pass:c[read-eol]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [red]`*-*` [red]#pass:c[[]# [red]`+reader+` [red]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [red]`*-*` [red]`+:var+`
+|===
+
+=== [red]`*-*`[red]#pass:c[space?]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [red]`*-*` [red]#pass:c[[]# [red]`+c+` [red]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [red]`*-*` [red]`+:var+`
+|===
+
+=== [red]`*-*`[red]#pass:c[throw-reader]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [red]`*-*` [red]#pass:c[[]# [red]`+reader+` [red]`+&+` [red]`+msg+` [red]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [red]`*-*` [red]`+:var+`
+|===
+
+=== [red]`*-*`[red]#pass:c[whitespace?]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [red]`*-*` [red]#pass:c[[]# [red]`+c+` [red]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [red]`*-*` [red]`+:var+`
+|===
+
+
+
 == [black]`*≠*` [black]#pass:c[rewrite-clj.reader]#
 
 [unstyled]
 * *pass:c[:no-doc]* [black]`*=*` [black]`+true+`
+
+=== [green]`*+*`[green]#pass:c[newline-normalizing-reader]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+rdr+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
+|===
+
+=== [green]`*+*`[green]#pass:c[read-keyword]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+reader+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
+|===
 
 === [black]`*≠*`[black]#pass:c[read-while]#
 |===
@@ -1868,6 +1995,18 @@ a|
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
 |===
 
+=== [green]`*+*`[green]#pass:c[sexpr-able?]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+zloc+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
+|===
+
 === [green]`*+*`[green]#pass:c[subzip]#
 |===
 | arglists | attributes 
@@ -1960,6 +2099,18 @@ a|
 a|
 [unstyled]
 * [green]`*+*` [green]#pass:c[[]# [green]`+zloc+` [green]`+opts+` [green]#pass:c[]]#
+a|
+[unstyled]
+* *pass:c[:type]* [green]`*+*` [green]`+:var+`
+|===
+
+=== [green]`*+*`[green]#pass:c[sexpr-able?]#
+|===
+| arglists | attributes 
+
+a|
+[unstyled]
+* [green]`*+*` [green]#pass:c[[]# [green]`+zloc+` [green]#pass:c[]]#
 a|
 [unstyled]
 * *pass:c[:type]* [green]`*+*` [green]`+:var+`
