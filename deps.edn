@@ -7,7 +7,7 @@
            ;; Clojure versions we support
            ;;
            :1.9 {:override-deps {org.clojure/clojure {:mvn/version "1.9.0"}}}
-           :1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.2"}}}
+           :1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
@@ -19,7 +19,7 @@
            ;;
 
            ;; linting
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.02.13"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.03.03"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}
@@ -63,7 +63,7 @@
                     :extra-deps {org.clojure/tools.namespace {:mvn/version "1.1.0"}
                                  cli-matic/cli-matic {:mvn/version "0.4.3"}}}
 
-           :apply-import-vars {:extra-deps {metosin/malli {:mvn/version "0.2.1"}}
+           :apply-import-vars {:extra-deps {metosin/malli {:mvn/version "0.3.0"}}
                                :ns-default lread.apply-import-vars}
 
            ;;
@@ -93,7 +93,7 @@
            ;;
            ;; Deployment
            ;; 
-           :jar {:replace-deps {seancorfield/depstar {:mvn/version "2.0.171"}}
+           :jar {:replace-deps {seancorfield/depstar {:mvn/version "2.0.193"}}
                  :exec-fn hf.depstar/jar
                  :exec-args {:jar "target/test-doc-blocks.jar"
                              :jar-type :thin}}
@@ -112,12 +112,10 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {antq/antq {:mvn/version "0.11.1"}
+           :outdated {:extra-deps {antq/antq {:mvn/version "0.11.2"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.30"} ;; to rid ourselves of logger warnings
                                    }
-                      :main-opts ["-m" "antq.core"
-                                  "--exclude=borkdude/sci.impl.reflector" ;; does not follow normal versioning conventions at this time
-                                  ]}
+                      :main-opts ["-m" "antq.core"]}
 
            ;;
            ;; 3rd party lib testing support
