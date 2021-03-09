@@ -359,6 +359,14 @@
                                            test-cmds))]
       (assoc lib :exit-codes exit-codes))))
 
+(defn- prep-target [target-root-dir]
+  (status/line :info "Prep target")
+  (status/line :detail (format "(re)creating: %s" target-root-dir))
+  (when (fs/exists? target-root-dir) (fs/delete-tree target-root-dir))
+  (.mkdirs (fs/file target-root-dir))
+  (status/line :detail "git init-ing target to avoid polluting our project git config/hooks with any changes libs under test might effect")
+  (shcmd ["git" "init"] {:dir target-root-dir}))
+
 (defn main [args]
   ;; no args = test all libs
   ;; or specify which libs, by name, to test (in order specified)
@@ -373,10 +381,10 @@
                                  []
                                  args))
         target-root-dir "target/libs-test"
-        _ (when (fs/exists? target-root-dir) (fs/delete-tree target-root-dir))
         rewrite-clj-version (str (version/calc) "-canary")]
     (status/line :detail (format  "Requested libs: %s" (into [] (map :name requested-libs))))
     (install-local rewrite-clj-version)
+    (prep-target target-root-dir)
     (let [results (doall (map #(test-lib (assoc %
                                                 :target-root-dir target-root-dir
                                                 :rewrite-clj-version rewrite-clj-version))
