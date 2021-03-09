@@ -39,7 +39,7 @@
 
   `base` defaults to 10.
 
-  Note: the parser does not currently parse to integer-nodes, but the write can handle them just fine."
+  Note: the parser does not currently parse to integer-nodes, but they fully supported for output."
   ([value]
    (integer-node value 10))
   ([value base]

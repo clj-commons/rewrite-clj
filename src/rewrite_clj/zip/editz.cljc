@@ -31,10 +31,9 @@
 (defn edit
   "Return `zloc` with the current node replaced with the result of:
 
-   (`f` (s-expression node) `args`)
+   `(apply f (s-expr current-node) args)`
 
-  `f` should return a node.
-  The result of `f` will be coerced to a node if possible.
+  The result of `f`, if not already a node, will be coerced to a node if possible.
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   [zloc f & args]

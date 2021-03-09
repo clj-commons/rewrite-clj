@@ -77,7 +77,7 @@
    (some-> zloc zraw/node (node/child-sexprs (get-opts zloc)))))
 
 (defn length
-  "Return length of printable string of current node in `zloc`."
+  "Return length of printable [[string]] of current node in `zloc`."
   [zloc]
   (or (some-> zloc zraw/node node/length) 0))
 

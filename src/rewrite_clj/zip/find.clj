@@ -35,7 +35,7 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-next
   "Return `zloc` located to the next node satisfying predicate `p?` else `nil`.
-   Search starts one movement `f` from the current node continues via `f`.
+   Search starts one movement `f` from the current node and continues via `f`.
 
    `f` defaults to [[rewrite-clj.zip/right]]"
   ([zloc p?] (rewrite-clj.zip.findz/find-next zloc p?))
@@ -82,7 +82,7 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-next-token
-  "Return `zloc` location to the next token node satisfying predicate `p?` else `nil`.
+  "Return `zloc` located to the next token node satisfying predicate `p?` else `nil`.
   Search starts one movement `f` after the current node and continues via `f`.
 
    `f` defaults to [[rewrite-clj.zip/right]]"

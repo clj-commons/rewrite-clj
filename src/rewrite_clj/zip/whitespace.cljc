@@ -63,7 +63,7 @@
 ;; ## Insertion
 
 (defn ^{:added "0.5.0"} insert-space-left
-  "Return zipper with `n` space whitespace node inserted to the left of the current node in `zloc`.
+  "Return zipper with `n` space whitespace node inserted to the left of the current node in `zloc`, without moving location.
    `n` defaults to 1."
   ([zloc] (insert-space-left zloc 1))
   ([zloc n]
@@ -73,7 +73,7 @@
      zloc)))
 
 (defn ^{:added "0.5.0"} insert-space-right
-  "Return zipper with `n` space whitespace node inserted to the right of the current node in `zloc`.
+  "Return zipper with `n` space whitespace node inserted to the right of the current node in `zloc`, without moving location.
    `n` defaults to 1."
   ([zloc] (insert-space-right zloc 1))
   ([zloc n]
@@ -83,14 +83,14 @@
      zloc)))
 
 (defn ^{:added "0.5.0"} insert-newline-left
-  "Return zipper with `n` newlines node inserted to the left of the current node in `zloc`.
+  "Return zipper with `n` newlines node inserted to the left of the current node in `zloc`, without moving location.
    `n` defaults to 1."
   ([zloc] (insert-newline-left zloc 1))
   ([zloc n]
    (zraw/insert-left zloc (nwhitespace/newlines n))))
 
 (defn ^{:added "0.5.0"} insert-newline-right
-  "Return zipper with `n` newlines node inserted to the right of the current node in `zloc`.
+  "Return zipper with `n` newlines node inserted to the right of the current node in `zloc`, without moving location.
    `n` defaults to 1."
   ([zloc] (insert-newline-right zloc 1))
   ([zloc n]

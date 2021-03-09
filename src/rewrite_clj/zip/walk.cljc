@@ -50,7 +50,7 @@
    - or a valid zipper
    WARNING: when function `f` changes the location in the zipper, normal traversal will be affected.
 
-   When `p?` is not specified `f` is called all locations.
+   When `p?` is not specified `f` is called on all locations.
 
    Note that by default a newly created zipper automatically navigates to the first non-whitespace
    node. If you want to be sure to walk all forms in a zipper, you'll want to navigate one up prior to your walk:
@@ -106,7 +106,7 @@
    - or a valid zipper
    WARNING: when function `f` changes the location in the zipper, normal traversal will be affected.
 
-   When `p?` is not specified `f` is called all locations.
+   When `p?` is not specified `f` is called on all locations.
 
    Note that by default a newly created zipper automatically navigates to the first non-whitespace
    node. If you want to be sure to walk all forms in a zipper, you'll want to navigate one up prior to your walk:

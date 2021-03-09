@@ -55,6 +55,6 @@
   (->SeqNode :set "#{%s}" 3 set children))
 
 (defn map-node
-  "Create a node representing an map with `children`."
+  "Create a node representing a map with `children`."
   [children]
   (->SeqNode :map "{%s}" 2 #(apply hash-map %) children))

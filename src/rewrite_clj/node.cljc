@@ -83,7 +83,9 @@
   "Return `node` converted to form.
 
   Optional `opts` can specify:
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)
+   
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([node] (rewrite-clj.node.protocols/sexpr node))
   ([node opts] (rewrite-clj.node.protocols/sexpr node opts)))
 
@@ -97,7 +99,9 @@
   "Return forms for `nodes`. Nodes that do not represent s-expression are skipped.
 
   Optional `opts` can specify:
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)
+   
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([nodes] (rewrite-clj.node.protocols/sexprs nodes))
   ([nodes opts] (rewrite-clj.node.protocols/sexprs nodes opts)))
 
@@ -160,7 +164,7 @@
 
   `base` defaults to 10.
 
-  Note: the parser does not currently parse to integer-nodes, but the write can handle them just fine."
+  Note: the parser does not currently parse to integer-nodes, but they fully supported for output."
   ([value] (rewrite-clj.node.integer/integer-node value))
   ([value base] (rewrite-clj.node.integer/integer-node value base)))
 
@@ -204,16 +208,16 @@
   - `(map-qualifier-node true \"my-ns-alias\")` -> `#::my-ns-alias` - auto-resolved namespace alias
   - `(map-qualifier-node true nil)` -> `#::` - auto-resolved current namespace
 
-  The above are the only supported variations, use [[rewrite-clj.node/map-node]] for unqualified maps."
+  The above are the only supported variations, use [[map-node]] for unqualified maps."
   [auto-resolved? prefix] (rewrite-clj.node.namespaced-map/map-qualifier-node auto-resolved? prefix))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.namespaced-map
 (defn namespaced-map-node
   "Create a namespaced map node with `children`.
 
-  - first child must be a map-qualifier node, see [[rewrite-clj.node/map-qualifier-node]]
+  - first child must be a map-qualifier node, see [[map-qualifier-node]]
   - optionally followed by whitespace node(s),
-  - followed by a map node, see [[rewrite-clj.node/map-node]]"
+  - followed by a map node, see [[map-node]]"
   [children] (rewrite-clj.node.namespaced-map/namespaced-map-node children))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.regex
@@ -253,7 +257,7 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.seq
 (defn map-node
-  "Create a node representing an map with `children`."
+  "Create a node representing a map with `children`."
   [children] (rewrite-clj.node.seq/map-node children))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.seq

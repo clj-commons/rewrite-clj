@@ -40,7 +40,9 @@
   "Return `node` converted to form.
 
   Optional `opts` can specify:
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)
+   
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([node] (sexpr node {}))
   ([node opts] (sexpr* node opts)))
 
@@ -48,7 +50,9 @@
   "Return forms for `nodes`. Nodes that do not represent s-expression are skipped.
 
   Optional `opts` can specify:
-  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)
+   
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([nodes]
    (sexprs nodes {}))
   ([nodes opts]

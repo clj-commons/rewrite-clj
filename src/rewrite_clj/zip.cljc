@@ -190,7 +190,7 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.custom-zipper.core
 (defn root
-  "Zips all the way up `zloc` and returns zipper at the root node, reflecting any changes."
+  "Zips all the way up `zloc` and returns the root node, reflecting any changes."
   [zloc] (rewrite-clj.custom-zipper.core/root zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
@@ -241,7 +241,7 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
 (defn length
-  "Return length of printable string of current node in `zloc`."
+  "Return length of printable [[string]] of current node in `zloc`."
   [zloc] (rewrite-clj.zip.base/length zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
@@ -306,10 +306,9 @@
 (defn edit
   "Return `zloc` with the current node replaced with the result of:
 
-   (`f` (s-expression node) `args`)
+   `(apply f (s-expr current-node) args)`
 
-  `f` should return a node.
-  The result of `f` will be coerced to a node if possible.
+  The result of `f`, if not already a node, will be coerced to a node if possible.
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   [zloc f & args] (apply rewrite-clj.zip.editz/edit zloc f args))
@@ -366,7 +365,7 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-next
   "Return `zloc` located to the next node satisfying predicate `p?` else `nil`.
-   Search starts one movement `f` from the current node continues via `f`.
+   Search starts one movement `f` from the current node and continues via `f`.
 
    `f` defaults to [[rewrite-clj.zip/right]]"
   ([zloc p?] (rewrite-clj.zip.findz/find-next zloc p?))
@@ -439,7 +438,7 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-next-token
-  "Return `zloc` location to the next token node satisfying predicate `p?` else `nil`.
+  "Return `zloc` located to the next token node satisfying predicate `p?` else `nil`.
   Search starts one movement `f` after the current node and continues via `f`.
 
    `f` defaults to [[rewrite-clj.zip/right]]"
@@ -463,75 +462,76 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn insert-right
-  "Return zipper with `item` inserted to the right of the current node in `zloc`.
+  "Return zipper with `item` inserted to the right of the current node in `zloc`, without moving location.
   Will insert a space if necessary."
   [zloc item] (rewrite-clj.zip.insert/insert-right zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn insert-left
-  "Return zipper with `item` inserted to the left of the current node in `zloc`.
+  "Return zipper with `item` inserted to the left of the current node in `zloc`, without moving location.
   Will insert a space if necessary."
   [zloc item] (rewrite-clj.zip.insert/insert-left zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn insert-child
-  "Return zipper with `item` inserted as the first child of the current node in `zloc`."
+  "Return zipper with `item` inserted as the first child of the current node in `zloc`, without moving location."
   [zloc item] (rewrite-clj.zip.insert/insert-child zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn append-child
-  "Return zipper with `item` appended as last child of the current node in `zloc`.
+  "Return zipper with `item` inserted as the last child of the current node in `zloc`, without moving.
   Will insert a space if necessary."
   [zloc item] (rewrite-clj.zip.insert/append-child zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
 (defn left
-  "Return zipper with location moved left to next non-whitespace/non-comment node in `zloc`."
+  "Return zipper with location moved left to next non-whitespace/non-comment sibling of current node in `zloc`."
   [zloc] (rewrite-clj.zip.move/left zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
 (defn right
-  "Return zipper with location moved right to next non-whitespace/non-comment node in `zloc`."
+  "Return zipper with location moved right to next non-whitespace/non-comment sibling of current node in `zloc`."
   [zloc] (rewrite-clj.zip.move/right zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
 (defn up
-  "Return zipper with location moved up to next non-whitespace/non-comment node in `zloc`."
+  "Return zipper with location moved up to next non-whitespace/non-comment parent of current node in `zloc`, or `nil` if at the top."
   [zloc] (rewrite-clj.zip.move/up zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
 (defn down
-  "Return zipper with location moved down to next non-whitespace/non-comment node in `zloc`."
+  "Return zipper with location moved down to the first non-whitespace/non-comment child node of the current node in `zloc`, or nil if no applicable children."
   [zloc] (rewrite-clj.zip.move/down zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
 (defn prev
-  "Return zipper with location moved to the previous depth-first non-whitespace/non-comment node in `zloc`."
+  "Return zipper with location moved to the previous depth-first non-whitespace/non-comment node in `zloc`. If already at root, returns nil."
   [zloc] (rewrite-clj.zip.move/prev zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
 (defn next
-  "Return zipper with location moved to the next depth-first non-whitespace/non-comment node in `zloc`."
+  "Return zipper with location moved to the next depth-first non-whitespace/non-comment node in `zloc`.
+   End can be detected with [[end?]], if already at end, stays there."
   [zloc] (rewrite-clj.zip.move/next zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
 (defn leftmost
-  "Return zipper with location moved to the leftmost non-whitespace/non-comment node in `zloc`."
+  "Return zipper with location moved to the leftmost non-whitespace/non-comment sibling of current node in `zloc`."
   [zloc] (rewrite-clj.zip.move/leftmost zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
 (defn rightmost
-  "Return zipper with location moved to the rightmost non-whitespace/non-comment node in `zloc`."
+  "Return zipper with location moved to the rightmost non-whitespace/non-comment sibling of current node in `zloc`."
   [zloc] (rewrite-clj.zip.move/rightmost zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
 (defn leftmost?
-  "Return true if at leftmost non-whitespace/non-comment node in `zloc`."
+  "Return true if at leftmost non-whitespace/non-comment sibling node in `zloc`."
   [zloc] (rewrite-clj.zip.move/leftmost? zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
 (defn rightmost?
-  "Return true if at rightmost non-whitespace/non-comment node in `zloc`."
+  "Return true if at rightmost non-whitespace/non-comment sibling node in `zloc`."
   [zloc] (rewrite-clj.zip.move/rightmost? zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
@@ -743,7 +743,7 @@
    - or a valid zipper
    WARNING: when function `f` changes the location in the zipper, normal traversal will be affected.
 
-   When `p?` is not specified `f` is called all locations.
+   When `p?` is not specified `f` is called on all locations.
 
    Note that by default a newly created zipper automatically navigates to the first non-whitespace
    node. If you want to be sure to walk all forms in a zipper, you'll want to navigate one up prior to your walk:
@@ -785,7 +785,7 @@
    - or a valid zipper
    WARNING: when function `f` changes the location in the zipper, normal traversal will be affected.
 
-   When `p?` is not specified `f` is called all locations.
+   When `p?` is not specified `f` is called on all locations.
 
    Note that by default a newly created zipper automatically navigates to the first non-whitespace
    node. If you want to be sure to walk all forms in a zipper, you'll want to navigate one up prior to your walk:
@@ -836,28 +836,28 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.whitespace
 (defn ^{:added "0.5.0"} insert-space-left
-  "Return zipper with `n` space whitespace node inserted to the left of the current node in `zloc`.
+  "Return zipper with `n` space whitespace node inserted to the left of the current node in `zloc`, without moving location.
    `n` defaults to 1."
   ([zloc] (rewrite-clj.zip.whitespace/insert-space-left zloc))
   ([zloc n] (rewrite-clj.zip.whitespace/insert-space-left zloc n)))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.whitespace
 (defn ^{:added "0.5.0"} insert-space-right
-  "Return zipper with `n` space whitespace node inserted to the right of the current node in `zloc`.
+  "Return zipper with `n` space whitespace node inserted to the right of the current node in `zloc`, without moving location.
    `n` defaults to 1."
   ([zloc] (rewrite-clj.zip.whitespace/insert-space-right zloc))
   ([zloc n] (rewrite-clj.zip.whitespace/insert-space-right zloc n)))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.whitespace
 (defn ^{:added "0.5.0"} insert-newline-left
-  "Return zipper with `n` newlines node inserted to the left of the current node in `zloc`.
+  "Return zipper with `n` newlines node inserted to the left of the current node in `zloc`, without moving location.
    `n` defaults to 1."
   ([zloc] (rewrite-clj.zip.whitespace/insert-newline-left zloc))
   ([zloc n] (rewrite-clj.zip.whitespace/insert-newline-left zloc n)))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.whitespace
 (defn ^{:added "0.5.0"} insert-newline-right
-  "Return zipper with `n` newlines node inserted to the right of the current node in `zloc`.
+  "Return zipper with `n` newlines node inserted to the right of the current node in `zloc`, without moving location.
    `n` defaults to 1."
   ([zloc] (rewrite-clj.zip.whitespace/insert-newline-right zloc))
   ([zloc n] (rewrite-clj.zip.whitespace/insert-newline-right zloc n)))
@@ -989,7 +989,9 @@ NOTE: This function does not skip, nor provide any special handling for whitespa
 (defn edit*
   "Raw version of [[edit]].
 
-Returns zipper with value of `(f current-node args)` replacing current node in `zloc`
+Returns zipper with value of `(apply f current-node args)` replacing current node in `zloc`.
+   
+   The result of `f` should be a rewrite-clj node.
 
 NOTE: This function does not skip, nor provide any special handling for whitespace/comment nodes."
   [zloc f & args] (apply rewrite-clj.custom-zipper.core/edit zloc f args))

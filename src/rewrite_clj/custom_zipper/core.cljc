@@ -129,7 +129,7 @@
         parent))))
 
 (defn-switchable root
-  "Zips all the way up `zloc` and returns zipper at the root node, reflecting any changes."
+  "Zips all the way up `zloc` and returns the root node, reflecting any changes."
   [zloc]
   (if (:end? zloc)
     (node zloc)
@@ -210,7 +210,9 @@
   (assoc zloc :changed? true :node node))
 
 (defn edit
-  "Returns zipper with value of `(f current-node args)` replacing current node in `zloc`"
+  "Returns zipper with value of `(apply f current-node args)` replacing current node in `zloc`.
+   
+   The result of `f` should be a rewrite-clj node."
   [zloc f & args]
   (if (custom-zipper? zloc)
     (replace zloc (apply f (node zloc) args))

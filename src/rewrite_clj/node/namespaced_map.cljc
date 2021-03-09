@@ -130,15 +130,15 @@
   - `(map-qualifier-node true \"my-ns-alias\")` -> `#::my-ns-alias` - auto-resolved namespace alias
   - `(map-qualifier-node true nil)` -> `#::` - auto-resolved current namespace
 
-  The above are the only supported variations, use [[rewrite-clj.node/map-node]] for unqualified maps."
+  The above are the only supported variations, use [[map-node]] for unqualified maps."
   [auto-resolved? prefix]
   (->MapQualifierNode auto-resolved? prefix))
 
 (defn namespaced-map-node
   "Create a namespaced map node with `children`.
 
-  - first child must be a map-qualifier node, see [[rewrite-clj.node/map-qualifier-node]]
+  - first child must be a map-qualifier node, see [[map-qualifier-node]]
   - optionally followed by whitespace node(s),
-  - followed by a map node, see [[rewrite-clj.node/map-node]]"
+  - followed by a map node, see [[map-node]]"
   [children]
   (->NamespacedMapNode (apply-context children)))
