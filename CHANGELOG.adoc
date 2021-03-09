@@ -20,7 +20,7 @@ If you wish, you can read nitty gritty details on link:doc/design/01-merging-rew
 What follows is a summary of changes.
 
 ==== New
-* A new home under clj-commons. Thanks to @xsc, rewrite-clj will also retain its same maven coordinates on clojars making for a seamless upgrade path for rewrite-clj v0 users.
+* A new home under clj-commons. Thanks to @xsc, rewrite-clj will also retain its same maven coordinates on Clojars making for a seamless upgrade path for rewrite-clj v0 users.
 * Now supports ClojureScript, merging in rewrite-cljs specific functionality.
 Frustrations like not having namespace map support and differences from rewrite-clj, like whitespace parsing, should now be things of the past.
 Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, feature parity with rewrite-clj.
@@ -120,11 +120,51 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 * Now using `ex-info` for explicitly raised exceptions
 * Rewrite-cljs positional support migrated to rewrite-clj's positional support
 * Namespaced element support reworked
+** v1 changes do not affect node traversal of the namespaced map, number and order of children remain the same.
 ** Namespace map prefix, is now stored in a namespaced map qualifier node.
-Prior to v1, was stored as a keyword.
-** Namespaced element sexpr support now relies on user specifiable auto-resolve function to resolve qualifiers
-** Unlike rewrite-clj v0, the default auto-resolve behaviour never consults `\*ns*`
-** An sexpr for keyword node `::alias/foo` no longer returns `:alias/foo` (this could be considered a bug fix, but if your code is expecting this, then you'll need to make changes)
+*** Prior to v1, the prefix was parsed to a keyword-node.
+*** Let's look at what interesting node API functions will return for the prefix node in the following namespaced maps.
+Assume we have parsed the example and traversed down to the prefix node. +
+For example via: `(-> "#:prefix{:a 1}" z/of-string z/down z/node)`. +
++
+|===
+| node API call | rewrite-clj | `#:prefix{:a 1}` |  `#::alias{:a 1}` | `#::{:a 1}`
+
+.2+| `string` +
+is unchanged
+| v1
+.2+| `":prefix"`
+.2+| `"::alias"`
+| `"::"`
+| v0
+a| * throws on parse
+
+.2+| `tag` +
+is different
+
+| v1
+3+| `:map-qualifier`
+
+| v0
+2+| `:token`
+a| * throws on parse
+
+.2+| `inner?` +
+still indicates that the node is a leaf node and has no children
+
+| v1
+3+| `false`
+| v0
+2+| `false`
+a| * throws on parse
+
+| `sexpr`
+4+| <read on below for discussion on sexpr>
+
+|===
+** Namespaced element `sexpr` support now relies on user specifiable auto-resolve function to resolve qualifiers
+*** Unlike rewrite-clj v0, the default auto-resolve behaviour never consults `\*ns*`
+*** An sexpr for keyword node `::alias/foo` no longer returns `:alias/foo` (this could be considered a bug fix, but if your code is expecting this, then you'll need to make changes)
 ** The following namespaced element `sexpr` examples assume:
 *** `\*ns*` is bound to `user` namespace (important only for rewrite-clj v0):
 *** We are using the default auto-resolve function for rewrite-clj v1
@@ -248,10 +288,10 @@ a| ns-alias qualified
 
 |===
 * Potentially breaking
-** Switched to `clojure.tools.reader.edn`
-** Some rewrite-cljs optimizations were dropped in favor of a single code base
+** Some http://rundis.github.io/blog/2015/clojurescript_performance_tuning.html[rewrite-cljs optimizations] were dropped in favor of a single code base.
+If performance for rewrite-clj v1 for ClojureScript users is poor with today's ClojureScript, we shall adapt.
 ** Deleted unused `rewrite-clj.node.indent` https://github.com/clj-commons/rewrite-clj/issues/116[#116]
-** Deleted redundent `rewrite-clj.parser.util` as part of https://github.com/clj-commons/rewrite-clj/issues/93[#93].
+** Deleted redundant `rewrite-clj.parser.util` as part of https://github.com/clj-commons/rewrite-clj/issues/93[#93].
 If you were using this internal namespace you can opt to switch to, the also internal, `rewrite-clj.reader` namespace.
 
 == rewrite-clj v0
