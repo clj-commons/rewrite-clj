@@ -3,7 +3,9 @@
 (ns lread.apply-import-vars
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
+            [io.aviso.ansi :as ansi]
             [malli.core :as m]
+
             [malli.error :as me]
             [malli.util :as mu]
             ;; use internal nses instead of exported nses, we are generating exported nses.
@@ -208,7 +210,9 @@
         stale-cnt (->> (process-templates)
                        (reduce (fn [stale-cnt {:keys [template-filename target-filename changed?]}]
                                  (println "Template:" template-filename)
-                                 (println (if changed? "X" " ") "Target:" target-filename (if changed? "STALE" "(no changes)"))
+                                 (println (if changed? "X" " ") "Target:" target-filename (if changed? 
+                                                                                            (-> "STALE" ansi/bold-red-bg ansi/black) 
+                                                                                            "(no changes)"))
                                  (if changed? (inc stale-cnt) stale-cnt))
                                0))]
     (println (format "\n%d of %d targets are stale." stale-cnt (count templates)))
@@ -219,7 +223,11 @@
         update-cnt (->> templates
                         (reduce (fn [update-cnt {:keys [template-filename target-filename changed? target-clj]}]
                                   (println "Template:" template-filename)
-                                  (println "  Target:" target-filename (if changed? "UPDATE" "(no changes detected)"))
+                                  (println "  Target:" target-filename (if changed? 
+                                                                         (-> "UPDATE"
+                                                                             ansi/bold-green-bg
+                                                                             ansi/black) 
+                                                                         "(no changes detected)"))
                                   (if changed?
                                     (do
                                       (spit target-filename target-clj)
