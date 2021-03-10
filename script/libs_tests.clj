@@ -186,7 +186,7 @@
   (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
                   :removals #{'rewrite-clj/rewrite-clj 'cljfmt/cljfmt}
                   :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}
-                              'cljfmt/cljfmt {:mvn/version "0.7.0" :exclusions ['rewrite-cljs/rewrite-clj
+                              'cljfmt/cljfmt {:mvn/version "0.7.0" :exclusions ['rewrite-cljs/rewrite-cljs
                                                                                 'rewrite-clj/rewrite-clj]}}}))
 ;;
 ;; mranderson
