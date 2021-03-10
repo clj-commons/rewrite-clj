@@ -16,8 +16,12 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+=== v1.0.572-alpha
+
 If you wish, you can read nitty gritty details on link:doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[merging rewrite clj v0 and rewrite cljs].
 What follows is a summary of changes.
+
+https://github.com/clj-commons/rewrite-clj/compare/v0.6.1\...v1.0.572-alpha[Gritty details of changes for this release]
 
 ==== New
 * A new home under clj-commons.
@@ -113,7 +117,7 @@ Perhaps I missed something, but I did not see the benefit of defprotocol+ for re
 //   - Else replace the Unreleased Breaking Changes section header with actual release version
 // If you have no breaking changes, don't include an Unreleased Breaking Changes header
 
-==== Unreleased Breaking Changes
+==== v1.0.572-alpha
 
 * Minimum Clojure version bumped from v1.5.1 to v1.9
 * Minimum ClojureScript version (from whatever is was for rewrite-cljs) bumped to v1.10
