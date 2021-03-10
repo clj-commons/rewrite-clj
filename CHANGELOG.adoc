@@ -16,6 +16,8 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* Docs now render on cljdoc https://github.com/clj-commons/rewrite-clj/issues/138[#138]
+
 === v1.0.572-alpha
 
 If you wish, you can read nitty gritty details on link:doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[merging rewrite clj v0 and rewrite cljs].

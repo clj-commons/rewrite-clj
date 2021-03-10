@@ -11,7 +11,7 @@
     <url>https://github.com/clj-commons/rewrite-clj</url>
     <connection>scm:git:git@github.com:clj-commons/rewrite-clj.git</connection>
     <developerConnection>scm:git:git@github.com:clj-commons/rewrite-clj.git</developerConnection>
-    <tag>1.0.572-alpha</tag>
+    <tag>v1.0.572-alpha</tag>
   </scm>
   <dependencies>
     <dependency>
