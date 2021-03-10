@@ -12,9 +12,9 @@ The released workflow is handled by our https://github.com/clj-commons/rewrite-c
 
 The release workflow:
 
-. Calculates a version using our versioning scheme and apply it to:
+. Calculates a version using our versioning scheme and applies it to:
 .. `deps.edn` usage example in the user guide
-.. "unreleased" and "unrelased breaking changes" headings in the change log
+.. "unreleased" and "unreleased breaking changes" headings in the change log
 .. ``pom.xml``'s `version` and `scm`->`tag`
 . Create a thin jar
 . Deploy the jar to clojars
@@ -41,17 +41,16 @@ To run the change log validation locally:
 
 [source,shell]
 ----
-bb script/release.yml validate
+bb script/release.clj validate
 ----
 
-If you so wish you can also run all steps up to, but not including, deploy locally via:
+If you so wish, you can also locally run all steps up to, but not including, deploy via:
 
 [source,shell]
 ----
-bb script/release.yml prep
+bb script/release.clj prep
 ----
 Be aware though that you will NOT want to check in changes `prep` makes to `CHANGELOG.adoc`, `pom.xml` and `01-user-guide.adoc`.
-
 
 === Invoking
 
