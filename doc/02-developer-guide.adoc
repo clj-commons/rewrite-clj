@@ -73,8 +73,10 @@ After checking out this project from GitHub,
 +
 ----
 sudo npm install karma-cli -g
-npm install
+npm install --no-save
 ----
++
+The `--no-save` tells newer versions of `npm` to not automatically upgrade `package-lock.json` to the v2 format.
 2. If you are on macOS or linux, https://github.com/planck-repl/planck#installing[install planck].
 
 3. Initialize cache for clj-kondo so it can lint against your dependencies
