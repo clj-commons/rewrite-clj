@@ -6,16 +6,21 @@
             [babashka.curl :as curl]
             [babashka.deps :as deps]
             [babashka.fs :as fs]
+            [cheshire.core :as json]
             [clojure.java.io :as io]
             [clojure.string :as string]))
 
 (deps/add-deps
  '{:deps {io.aviso/pretty {:mvn/version "0.1.36"}
+          docopt/docopt {:git/url "https://github.com/nubank/docopt.clj" 
+                         :sha "98814f559d2e50fdf10f43cbe3b7da0ca3cca423"}
           doric/doric {:mvn/version "0.9.0"}}})
 
 (cp/add-classpath (.getParent (io/file *file*)))
 
-(require '[doric.core :as doric]
+(require '[docopt.core :as docopt]
+         '[docopt.match :as docopt-match]
+         '[doric.core :as doric]
          '[helper.shell :as shell]
          '[helper.status :as status]
          '[io.aviso.ansi :as ansi]
@@ -46,11 +51,49 @@
         (fs/move pom-bak-filename "pom.xml" {:replace-existing true}))))
   nil)
 
-(defn- fetch-lib-release [{:keys [target-root-dir name version release-url-fmt]}]
-  (let [target (str (fs/file target-root-dir (format "%s-%s.zip" name version)))]
+(defn- get-current-version
+  "Get current available version of lib via GitHub API.
+
+   Note that github API does have rate limiting... so if running this a lot some calls will fail.
+
+   Could get from deps.edn RELEASE technique, but not all libs are on clojars.
+   See: https://github.com/babashka/babashka/blob/master/examples/outdated.clj"
+  [{:keys [github-release]}]
+  (case  (:via github-release)
+    ;; no official release
+    :sha
+    (-> (curl/get (format "https://api.github.com/repos/%s/git/refs/heads/master" (:repo github-release)))
+        :body
+        (json/parse-string true)
+        :object
+        :sha)
+
+    ;; tags can work better than release - sometimes libs have release 1.2 that refs tag 1.1
+    :tag
+    (-> (curl/get (format "https://api.github.com/repos/%s/tags" (:repo github-release)))
+        :body
+        (json/parse-string true)
+        first
+        :name)
+
+    ;; else via release which works better than tags sometimes due to the way tags sort
+    (->  (curl/get (format "https://api.github.com/repos/%s/releases" (:repo github-release)))
+         :body
+         (json/parse-string true)
+         first
+         :tag_name)))
+
+(defn- fetch-lib-release [{:keys [target-root-dir name version github-release]}]
+  (let [target (str (fs/file target-root-dir (format "%s-%s.zip" name version)))
+        download-url (if (= :sha (:via github-release))
+                       (format "https://github.com/%s/zipball/%s" (:repo github-release) version)
+                       (format "https://github.com/%s/archive/%s%s.zip"
+                               (:repo github-release)
+                               (or (:version-prefix github-release) "")
+                               version))]
     (io/make-parents target)
     (io/copy
-     (:body (curl/get (format release-url-fmt  version) {:as :stream}))
+     (:body (curl/get download-url {:as :stream}))
      (io/file target))
     (let [zip-root-dir (->> (shcmd ["unzip" "-qql" target] {:out :string})
                             :out
@@ -253,14 +296,15 @@
 (def libs [{:name "antq"
             :version "0.11.2"
             :platforms [:clj]
-            :release-url-fmt "https://github.com/liquidz/antq/archive/%s.zip"
+            :github-release {:repo "liquidz/antq"}
             :patch-fn antq-patch
             :show-deps-fn cli-deps-tree
             :test-cmds [["clojure" "-M:dev:test"]]}
            {:name "carve"
             :version "0.0.2"
             :platforms [:clj]
-            :release-url-fmt "https://github.com/borkdude/carve/archive/v%s.zip"
+            :github-release {:repo "borkdude/carve"
+                             :version-prefix "v"}
             :patch-fn carve-patch
             :show-deps-fn cli-deps-tree
             :test-cmds [["clojure" "-M:test"]]}
@@ -268,35 +312,41 @@
             :version "0.7.0"
             :platforms [:clj :cljs]
             :root "cljfmt"
-            :release-url-fmt "https://github.com/weavejester/cljfmt/archive/%s.zip"
+            :github-release {:repo "weavejester/cljfmt"
+                             :via :tag}
             :patch-fn cljfmt-patch
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "test"]]}
            {:name "clojure-lsp"
             :platforms [:clj]
             :version "2021.03.01-19.18.54"
-            :release-url-fmt "https://github.com/clojure-lsp/clojure-lsp/archive/%s.zip"
+            :github-release {:repo "clojure-lsp/clojure-lsp" }
             :patch-fn clojure-lsp-patch
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "test"]]}
            {:name "mranderson"
             :version "0.5.3"
             :platforms [:clj]
-            :release-url-fmt "https://github.com/benedekfazekas/mranderson/archive/v%s.zip"
+            :github-release {:repo "benedekfazekas/mranderson"
+                             :via :tag
+                             :version-prefix "v"}
             :patch-fn mranderson-patch
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "test"]]}
            {:name "rewrite-edn"
             :version "665f61cf273c79b44baacb0897d72c2157e27b09"
             :platforms [:clj]
-            :release-url-fmt "https://github.com/borkdude/rewrite-edn/zipball/%s"
+            :github-release {:repo "borkdude/rewrite-edn"
+                             :via :sha}
             :patch-fn rewrite-edn-patch
             :show-deps-fn cli-deps-tree
             :test-cmds [["clojure" "-M:test"]]}
            {:name "refactor-nrepl"
             :version "2.5.1"
             :platforms [:clj]
-            :release-url-fmt "https://github.com/clojure-emacs/refactor-nrepl/archive/v%s.zip"
+            :github-release {:repo "clojure-emacs/refactor-nrepl"
+                             :via :tag
+                             :version-prefix "v"}
             :patch-fn refactor-nrepl-patch
             :show-deps-fn lein-deps-tree
             :prep-fn refactor-nrepl-prep
@@ -304,7 +354,8 @@
            {:name "update-leiningen-dependencies-skill"
             :version "21c7ce794c83d6eed9c2a27e2fdd527b5da8ebb3"
             :platforms [:cljs]
-            :release-url-fmt "https://github.com/atomist-skills/update-leiningen-dependencies-skill/zipball/%s"
+            :github-release {:repo "atomist-skills/update-leiningen-dependencies-skill"
+                             :via :sha}
             :patch-fn update-leiningen-dependencies-skill-patch
             :prep-fn update-leiningen-dependencies-skill-prep 
             :show-deps-fn cli-deps-tree
@@ -313,7 +364,7 @@
             :version "1.1.1"
             :platforms [:clj :cljs]
             :note "zprint src hacked to pass with rewrite-clj v1"
-            :release-url-fmt "https://github.com/kkinnear/zprint/archive/%s.zip"
+            :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch
             :prep-fn zprint-prep
             :show-deps-fn (fn [lib]  
@@ -367,20 +418,25 @@
   (status/line :detail "git init-ing target to avoid polluting our project git config/hooks with any changes libs under test might effect")
   (shcmd ["git" "init"] {:dir target-root-dir}))
 
-(defn main [args]
-  ;; no args = test all libs
-  ;; or specify which libs, by name, to test (in order specified)
+;;
+;; cmds
+;; 
+(defn- report-outdated [requested-libs]
+  (status/line :info "Checking for outdated libs")
+  (status/line :detail (format  "Requested libs: %s" (into [] (map :name requested-libs))))
+  (let [outdated-libs (->> requested-libs
+                           (map #(assoc %
+                                        :available-version (get-current-version %)
+                                        :version (str (-> % :github-release :version-prefix) (:version %))))
+                           (filter #(not= (:available-version %) (:version %))))]
+    (if (seq outdated-libs)
+      (-> (doric/table [:name :version :available-version] outdated-libs) println)
+      (status/line :detail "=> All libs seems up to date"))))
+
+(defn run-tests [requested-libs]
   (status/line :info "Testing 3rd party libs")
   (status/line :detail "Test popular 3rd party libs against current rewrite-clj.")
-  (let [requested-libs (if (zero? (count args))
-                         libs
-                         (reduce (fn [ls a]
-                                   (if-let [l (first (filter #(= a (:name %)) libs))]
-                                     (conj ls l)
-                                     ls))
-                                 []
-                                 args))
-        target-root-dir "target/libs-test"
+  (let [target-root-dir "target/libs-test"
         rewrite-clj-version (str (version/calc) "-canary")]
     (status/line :detail (format  "Requested libs: %s" (into [] (map :name requested-libs))))
     (install-local rewrite-clj-version)
@@ -395,7 +451,63 @@
                             (map :exit-codes)
                             flatten
                             (every? zero?))
-                     0 1))))
-  nil)
+                     0 1)))))
+
+(def docopt-usage "Libs Tests
+
+Usage:
+  libs_tests.clj run [<lib-name>...]
+  libs_tests.clj outdated [<lib-name>...]
+
+Options:
+  -h --help     Show this screen.
+                   
+Specifying no lib-names selects all libraries.")
+
+(defn main [args]
+  (if-let [opts (-> docopt-usage docopt/parse (docopt-match/match-argv args))]
+    (let [lib-names (get opts "<lib-name>")
+          requested-libs (if (zero? (count lib-names))
+                           libs
+                           (reduce (fn [ls a]
+                                     (if-let [l (first (filter #(= a (:name %)) libs))]
+                                       (conj ls l)
+                                       ls))
+                                   []
+                                   lib-names))]
+      (cond
+        (get opts "outdated")
+        (report-outdated requested-libs)
+
+        (get opts "run")
+        (run-tests requested-libs))
+
+      nil)
+    (status/fatal docopt-usage)))
 
 (main *command-line-args*)
+
+
+#_(->  (curl/get "https://api.github.com/repos/borkdude/rewrite-edn/releases")
+     :body
+     (json/parse-string true)
+     #_#_first
+     :tag_name)
+
+#_(-> (curl/get "https://api.github.com/repos/borkdude/rewrite-edn/git/refs/heads/master")
+    :body
+    (json/parse-string true)
+    :object
+    :sha)
+
+#_(-> (curl/get "https://api.github.com/repos/weavejester/cljfmt/tags")
+    :body
+    (json/parse-string true)
+    first)
+
+#_(get-current-version (nth libs 5))
+
+
+#_(docopt/docopt docopt-usage
+               *command-line-args*
+               (fn [arg-map] arg-map))

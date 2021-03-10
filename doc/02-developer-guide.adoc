@@ -33,7 +33,7 @@ I expect, but don't know, that most Windows editors automatically handle lf as l
 Someone let me know if I am wrong.
 
 Note that I do explicitly set git's config `core.autocrlf` to `false` on our Windows CI unit test environment.
-Our import vars code generation checks currently rely on line endings remaining uncoverted.
+Our import vars code generation checks currently rely on line endings remaining unconverted.
 
 ==== Babashka
 The Clojure story on Windows is still in the early chapters. https://scoop.sh/[Scoop] offers an easy way to install tools.
@@ -204,7 +204,7 @@ bb ./script/sci_native_test.clj
 To try to ensure our changes to rewrite-clj do not inadvertently break existing popular libraries, we run their tests, or a portion thereof, against rewrite-clj.
 
 ----
-bb ./script/libs_tests.clj
+bb ./script/libs_tests.clj run
 ----
 
 Current libs we test against:
@@ -224,12 +224,22 @@ Additional libs are welcome.
 If you are troubleshooting locally, and want to only run specific tests, you can specify which ones you'd like to run. For example:
 
 ----
-bb ./script/libs_tests.clj cljfmt zprint
+bb ./script/libs_tests.clj run cljfmt zprint
 ----
+
+Running current versions of libs is recommended, but care must be taken when updating.
+We want to make sure we are patching correctly to use rewrite-clj v1 and running a lib's tests as intended.
+
+To check for outdated libs:
+
+----
+bb ./script/libs_test.clj outdated
+----
+
 
 Notes:
 
-* `libs_tests.clj` was developped on macOS and is run on CI under Linux only under JDK 11 only.
+* `libs_tests.clj` was developed on macOS and is run on CI under Linux only under JDK 11 only.
 We can expand variations at some later date if there is any value to it.
 * We test the current HEAD of rewrite-clj v1 against specific versions (latest at the time of this writing) of libs.
 * We patch lib deps and sometimes code (ex. `require` for `rewrite-cljc` becomes `rewrite-clj`).
