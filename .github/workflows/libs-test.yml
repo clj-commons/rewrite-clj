@@ -52,4 +52,4 @@ jobs:
         planck --version
 
     - name: Run Libs Tests
-      run: bb ./script/libs_tests.clj
+      run: bb ./script/libs_tests.clj run
