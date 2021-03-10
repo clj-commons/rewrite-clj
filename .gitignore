@@ -5,6 +5,7 @@
 /.lsp
 .nrepl-port
 /.shadow-cljs
+/.vscode
 /classes
 /log
 /node_modules
