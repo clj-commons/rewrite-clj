@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>rewrite-clj</groupId>
   <artifactId>rewrite-clj</artifactId>
-  <version>1.0.572-alpha</version>
+  <version>1.0.574-alpha</version>
   <name>rewrite-clj</name>
   <description>A library that reads and writes Clojure, ClojureScript and EDN from Clojure and ClojureScript in a whitespace and comment preserving way.</description>
   <url>https://github.com/clj-commons/rewrite-clj</url>
@@ -11,7 +11,7 @@
     <url>https://github.com/clj-commons/rewrite-clj</url>
     <connection>scm:git:git@github.com:clj-commons/rewrite-clj.git</connection>
     <developerConnection>scm:git:git@github.com:clj-commons/rewrite-clj.git</developerConnection>
-    <tag>v1.0.572-alpha</tag>
+    <tag>v1.0.574-alpha</tag>
   </scm>
   <dependencies>
     <dependency>
