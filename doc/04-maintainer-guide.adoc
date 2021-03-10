@@ -1,0 +1,61 @@
+= Maintainer Guide
+:toclevels: 6
+:toc:
+
+== Introduction
+This doc covers notes for project maintainers.
+
+== Releasing
+
+=== Overview
+The released workflow is handled by our https://github.com/clj-commons/rewrite-clj/actions?query=workflow%3A%22Release%22[Release] GitHub Action.
+
+The release workflow:
+
+. Calculates a version using our versioning scheme and applies it to:
+.. `deps.edn` usage example in the user guide
+.. "unreleased" and "unreleased breaking changes" headings in the change log
+.. ``pom.xml``'s `version` and `scm`->`tag`
+. Create a thin jar
+. Deploy the jar to clojars
+. Commit and push updates made to `CHANGELOG.adoc`, `pom.xml` and `01-user-guide.adoc` back to the project
+. Create and push a release tag back to the project repo
+. Inform cljdoc of the new release
+
+At this time, the release workflow does not run tests.
+The assumption is that you've waited for the last CI test run to complete and are happy with the results.
+
+The release workflow will fail if the change log is not ready for release.
+
+=== Updating the Version
+
+Edit `version.edn` in the project root.
+The release workflow consults this file when constructing the version.
+
+=== Special Setup
+
+GitHub has been configured with necessary secrets for GitHub Actions to deploy to clojars.
+
+=== Local Verification
+To run the change log validation locally:
+
+[source,shell]
+----
+bb script/release.clj validate
+----
+
+If you so wish, you can also locally run all steps up to, but not including, deploy via:
+
+[source,shell]
+----
+bb script/release.clj prep
+----
+Be aware though that you will NOT want to check in changes `prep` makes to `CHANGELOG.adoc`, `pom.xml` and `01-user-guide.adoc`.
+
+=== Invoking
+
+As a maintainer you should have sufficient privileges to see a "Run Workflow" dropdown button on the https://github.com/clj-commons/rewrite-clj/actions?query=workflow%3A%22Release%22[Release] action page.
+The dropdown will prompt for a branch.
+I did not see a way to disable this prompt, simply leave it at "main" and run the workflow.
+
+TIP: Don't forget to pull after a release to get the changes made by the release workflow.

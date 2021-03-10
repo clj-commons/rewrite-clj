@@ -1,0 +1,48 @@
+name: Code Coverage
+
+on: push
+
+jobs:
+  code-coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Clojure deps cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.m2/repository
+          ~/.gitlibs
+        key: $${ runner.os }}-cljdeps-${{ hashFiles('deps.edn') }}
+        restore-keys: $${ runner.os }}-cljdeps-
+
+    - name: Setup Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+
+    - name: Install babashka
+      run: curl -s https://raw.githubusercontent.com/borkdude/babashka/master/install | sudo bash
+
+    - name: Install clojure
+      run: curl -s https://download.clojure.org/install/linux-install-1.10.1.763.sh | sudo bash
+
+    - name: Tools versions
+      run: |
+        echo "bb --version"
+        bb --version
+        echo "java -version"
+        java -version
+        echo "clojure -Sdescribe"
+        clojure -Sdescribe
+
+    - name: Download clojure dependencies
+      run: clojure -Spath
+
+    - name: Run Tests with Code Coverage
+      run: bb ./script/clj_tests.clj --coverage
+
+    - name: Upload Code Coverage Results
+      run: bash <(curl -s https://codecov.io/bash) -f target/coverage/codecov.json

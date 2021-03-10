@@ -1,48 +1,14 @@
+;; DO NOT EDIT FILE, automatically generated from: ./template/rewrite_clj/node/string.clj
 (ns ^:no-doc rewrite-clj.node.string
-  (:require [rewrite-clj.node.protocols :as node]
-            [clojure.tools.reader.edn :as edn]
-            [clojure.string :as string]))
+  "This ns exists to preserve compatability for rewrite-clj v0 clj users who were using an internal API.
+   This ns does not work for cljs due to namespace collisions."
+  (:require [rewrite-clj.node.stringz]))
 
-;; ## Node
+(set! *warn-on-reflection* true)
 
-(defn- wrap-string
-  [s]
-  (format "\"%s\"" s))
 
-(defn- join-lines
-  [lines]
-  (string/join "\n" lines))
-
-(defrecord StringNode [lines]
-  node/Node
-  (tag [_]
-    (if (next lines)
-      :multi-line
-      :token))
-  (printable-only? [_]
-    false)
-  (sexpr [_]
-    (join-lines
-      (map
-        (comp edn/read-string wrap-string)
-        lines)))
-  (length [_]
-    (+ 2 (reduce + (map count lines))))
-  (string [_]
-    (wrap-string (join-lines lines)))
-
-  Object
-  (toString [this]
-    (node/string this)))
-
-(node/make-printable! StringNode)
-
-;; ## Constructors
-
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.stringz
 (defn string-node
-  "Create node representing a string value.
-   Takes either a seq of strings or a single one."
-  [lines]
-  (if (string? lines)
-    (->StringNode [lines])
-    (->StringNode lines)))
+  "Create node representing a string value where `lines`
+   can be a sequence of strings or a single string."
+  [lines] (rewrite-clj.node.stringz/string-node lines))

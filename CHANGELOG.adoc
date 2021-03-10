@@ -1,0 +1,519 @@
+// NOTE: release workflow automatically updates "unreleased" headers in this file
+= Changelog
+:toc:
+:toclevels: 1
+
+== rewrite-clj v1
+
+For a list of breaking changes see link:#v1-breaking[breaking changes].
+
+// Release workflow will:
+// - Fail when:
+//   - there is no "== Unreleased" section header
+//   - or the section contains no descriptive text
+// - Replace the Unreleased section header with actual release version
+// - Prepend a new Unreleased section header
+
+=== Unreleased
+
+If you wish, you can read nitty gritty details on link:doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[merging rewrite clj v0 and rewrite cljs].
+What follows is a summary of changes.
+
+==== New
+* A new home under clj-commons.
+Thanks to @xsc, rewrite-clj will also retain its same maven coordinates on Clojars making for a seamless upgrade path for rewrite-clj v0 users.
+* Now supports ClojureScript, merging in rewrite-cljs specific functionality.
+Frustrations like not having namespace map support and differences from rewrite-clj, like whitespace parsing, should now be things of the past.
+Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, feature parity with rewrite-clj.
+* Additions to the public API:
+** `rewrite-clj.paredit` - carried over from rewrite-cljs, an API for structured editing of Clojure forms
+** `rewrite-clj.zip`
+*** Exposes the following (accidentally?) omitted functions:
+**** `append-child*`
+**** `insert-newline-left`
+**** `insert-newline-right`
+**** `insert-space-left`
+**** `insert-space-right`
+**** `subzip`
+*** Adds functions from rewrite-cljs
+**** `find-last-by-pos` - navigate to node at row/col
+**** `find-tag-by-pos` - navigate to node with tag at row/col
+**** `position-span` - returns start and end row/col for a form
+**** `remove-preserve-newline` - same as remove but preserves newlines
+*** Adds namespaced element support functions
+**** `reapply-context` - reapplies (or removes) map qualifier node context from keywords and symbols
+**** zipper creation functions now optionally accept an auto-resolve function to support sexpr on namespaced element nodes
+*** Other additions
+**** `sexpr-able?` - return true if `sexpr` is supported for current node
+** `rewrite-clj.node`
+*** Additions:
+**** `keyword-node?` - returns true if form is a rewrite-clj keyword node
+**** `map-qualifier-node` - to create a namespaced map's map qualifier node manually
+**** `map-context-apply` - apply map qualifier to keyword or symbol
+**** `map-context-clear` - remove map qualifier from keyword or symbol
+**** `node?` - returns true if a form is a rewrite-clj created node
+**** `sexpr-able?` - return true if `sexpr` is supported for node
+**** `symbol-node?` - return true if node is a rewrite-clj symbol node
+*** Updates:
+**** `sexpr`, `sepxrs` and `child-sexprs` - now optionally take an options argument to specify an auto-resolve function
+* Many updates to docs and docstrings
+
+==== Fixes
+* OS specific end of line variants in source now normalized consistently to `\newline` https://github.com/clj-commons/rewrite-clj/issues/93[#93]
+* Postwalk on larger source file no longer throws StackOverflow https://github.com/clj-commons/rewrite-clj/issues/69[#69]
+* Postwalk now walks in post order https://github.com/clj-commons/rewrite-clj/issues/123[#123]
+* We now preserve newline at end of file https://github.com/clj-commons/rewrite-clj/issues/121[#121]
+* Support for garden style selectors https://github.com/clj-commons/rewrite-clj/issues/92[#92]
+* Correct and document prefix and suffix functions https://github.com/clj-commons/rewrite-clj/issues/91[#91]
+* Positional metadata added by the reader is elided on coercion https://github.com/clj-commons/rewrite-clj/issues/90[#90]
+* Can now read `\\##Inf`, `##-Inf` and `##Nan` https://github.com/clj-commons/rewrite-clj/issues/75[#75]
+* Ensure that all rewrite-clj nodes coerce to themselves
+* Strings now coerce to string nodes (instead of to token nodes) https://github.com/clj-commons/rewrite-clj/issues/126[#126]
+* Regexes now coerce to regex nodes https://github.com/clj-commons/rewrite-clj/issues/128[#128]
+* Regex node now:
+** converts correctly to string https://github.com/clj-commons/rewrite-clj/issues/127[#127]
+** reports correct length https://github.com/clj-commons/rewrite-clj/issues/130[#130]
+* Moved from potemkin import-vars to static template based version https://github.com/clj-commons/rewrite-clj/issues/98[#98]:
+** Avoids frustration/mysteries of dynamic import-vars for users and maintainers
+** Argument names now correct in API docs (some were gensymed previously)
+** Also turfed use of custom version of potemkin defprotocol+ in favor of plain old defprotocol.
+Perhaps I missed something, but I did not see the benefit of defprotocol+ for rewrite-clj v1.
+
+==== Internal changes (developer facing)
+* Tests updated to hit public APIs https://github.com/clj-commons/rewrite-clj/issues/106[#106]
+* ClojureScript tests, in addition to being run under node, are now also run under chrome-headless, shadow-cljs, and for self-hosted ClojureScript, under planck.
+* Now testing rewrite-clj compiled under GraalVM native-image in two variants:
+** In a pure form where library and tests are compiled
+** Via sci where a sci exposed rewrite-clj is compiled, then tests are interpreted.
+* Now automatically testing rewrite-clj against popular libs https://github.com/clj-commons/rewrite-clj/issues/124[#124]
+* Now linting source with clj-kondo
+* Code coverage reports now generated for Clojure unit test run and sent to codecov.io
+* Can now preview for cljdoc locally via `script/cljdoc_preview.clj`
+* API diffs for rewrite-clj v1 vs rewrite-clj v0 vs rewrite-cljs can be generated by `script/gen_api_diffs.clj`
+* Contributors are acknowledged in README and updated via `script/update_readme.clj`
+* Doc code blocks are automatically tested via `script/doc_tests.clj` https://github.com/clj-commons/rewrite-clj/issues/100[#100]
+* Some tooling and tech replaced:
+** All scripts are written in Clojure and run via Babashka or Clojure.
+** Switched from leiningen `project.clj` to Clojure tools CLI `deps.edn`
+** Moved from CommonMark to AsciiDoc for docs
+** Moved from publishing docs locally via codox to publishing to cljdoc
+** Now using CommonMark in docstrings (they render nicely in cljdoc)
+** Moved from TravisCI to GitHub Actions where, in addition to Linux, we also test under macOS and Windows
+** Adopted kaocha for Clojure testing, stuck with doo for regular ClojureScript testing, and added support for ClojureScript watch testing with figwheel main.
+** Potemkin dynamic import-vars replaced with static code generation solution
+* Added GitHub issue templates
+* Fixed a generative test sporadic failure https://github.com/clj-commons/rewrite-clj/issues/88[#88]
+
+[#v1-breaking]
+=== v1 Breaking Changes
+
+// Release workflow will:
+// - If an "=== Unreleased Breaking Changes" section header exists here:
+//   - Fail when the section contains no descriptive text
+//   - Else replace the Unreleased Breaking Changes section header with actual release version
+// If you have no breaking changes, don't include an Unreleased Breaking Changes header
+
+==== Unreleased Breaking Changes
+
+* Minimum Clojure version bumped from v1.5.1 to v1.9
+* Minimum ClojureScript version (from whatever is was for rewrite-cljs) bumped to v1.10
+* Minimum Java version bumped from v7 to v8
+* Keyword node field `namespaced?` renamed to `auto-resolved?`
+* Now using `ex-info` for explicitly raised exceptions
+* Rewrite-cljs positional support migrated to rewrite-clj's positional support
+* Namespaced element support reworked
+** v1 changes do not affect node traversal of the namespaced map, number and order of children remain the same.
+** Namespace map prefix, is now stored in a namespaced map qualifier node.
+*** Prior to v1, the prefix was parsed to a keyword-node.
+*** Let's look at what interesting node API functions will return for the prefix node in the following namespaced maps.
+Assume we have parsed the example and traversed down to the prefix node. +
+For example via: `(-> "#:prefix{:a 1}" z/of-string z/down z/node)`. +
++
+|===
+| node API call | rewrite-clj | `#:prefix{:a 1}` |  `#::alias{:a 1}` | `#::{:a 1}`
+
+.2+| `string` +
+is unchanged
+| v1
+.2+| `":prefix"`
+.2+| `"::alias"`
+| `"::"`
+| v0
+a| * throws on parse
+
+.2+| `tag` +
+is different
+
+| v1
+3+| `:map-qualifier`
+
+| v0
+2+| `:token`
+a| * throws on parse
+
+.2+| `inner?` +
+still indicates that the node is a leaf node and has no children
+
+| v1
+3+| `false`
+| v0
+2+| `false`
+a| * throws on parse
+
+| `sexpr`
+4+| <read on below for discussion on sexpr>
+
+|===
+** Namespaced element `sexpr` support now relies on user specifiable auto-resolve function to resolve qualifiers
+*** Unlike rewrite-clj v0, the default auto-resolve behaviour never consults `\*ns*`
+*** An sexpr for keyword node `::alias/foo` no longer returns `:alias/foo` (this could be considered a bug fix, but if your code is expecting this, then you'll need to make changes)
+** The following namespaced element `sexpr` examples assume:
+*** `\*ns*` is bound to `user` namespace (important only for rewrite-clj v0):
+*** We are using the default auto-resolve function for rewrite-clj v1
+*** That you will refer to the link:doc/01-user-guide.adoc#namespaced-elements[User Guide] for more detailed examples of v1 behaviour
++
+[%header,cols="19,27,27,27"]
+|===
+| source
+| sexpr rewrite-clj v1
+| sexpr rewrite-clj v0
+| sexpr rewrite-cljs
+
+| qualified keyword +
+`:prefix/foo`
+3+| no change
+
+| current-ns qualified keyword +
+`::foo`
+| `:?\_current-ns_?/foo`
+| `:user/foo`
+a| * throws on sexpr
+
+| ns-alias qualified keyword +
+`::alias/foo`
+| `:??\_alias_??/foo`
+| `:alias/foo`
+| `:alias/foo`
+
+| qualified map +
+`#:prefix{:a 1}`
+| `#:prefix{:a 1}`
+| `#:prefix{:a 1}`
+| `(read-string "#:prefix{:a 1}")`
+
+| current-ns qualified map +
+`#::{:b 2}`
+| `#:?\_current-ns_?{:b 2}`
+a| * throws on parse
+a| * throws on parse
+
+| ns-alias qualified map +
+`::alias{:c 3}`
+| `#:??\_alias_??{:c 3}`
+a| * throws unless namespace alias `alias` has been loaded in `\*ns*`
+* if `alias` in `*ns*` resolves to `my.ns1`: +
+`#:my.ns1{:c 3}`
+| `(read-string "#::alias{:c 3}")`
+
+|===
+
+*** Let's dig into prefix and key sub-nodes of a namespaced map to explore v1 differences:
++
+[cols="40,30,30"]
+|===
+| Description | rewrite-clj v1 | rewrite-clj v0 and rewrite-cljs
+
+3+a| prefix (aka qualifier)
+
+a|qualified
+[source,clojure]
+----
+(-> "#:prefix{:a 1}"
+    z/of-string
+    z/down z/sexpr)
+----
+| `prefix`
+| `:prefix`
+
+a| current-ns qualified
+[source,clojure]
+----
+(-> "#::{:b 2}"
+    z/of-string
+    z/down z/sexpr)
+----
+| `?\_current-ns_?`
+a| * throws on parse
+
+a| ns-alias qualified
+[source,clojure]
+----
+(-> "#::alias{:c 2}"
+     z/of-string
+     z/down z/sexpr)
+----
+a| `??\_alias_??`
+a| `:user/alias`
+
+* rewrite-cljs throws
+
+3+a| key
+a| qualified
+[source,clojure]
+----
+(-> "#:prefix{:a 1}"
+    z/of-string
+    z/down z/right z/down z/sexpr)
+----
+| `:prefix/a`
+| `:a`
+
+a| current-ns qualified
+[source,clojure]
+----
+(-> "#::{:b 2}"
+    z/of-string
+    z/down z/right z/down z/sexpr)
+----
+|`:?_current-ns_?/b`
+a| * throws on parse
+
+a| ns-alias qualified
+[source,clojure]
+----
+(-> "#::alias{:c 3}"
+    z/of-string
+    z/down z/right z/down z/sexpr)
+----
+|`:??\_alias_??/c`
+|`:c`
+
+|===
+* Potentially breaking
+** Some http://rundis.github.io/blog/2015/clojurescript_performance_tuning.html[rewrite-cljs optimizations] were dropped in favor of a single code base.
+If performance for rewrite-clj v1 for ClojureScript users is poor with today's ClojureScript, we shall adapt.
+** Deleted unused `rewrite-clj.node.indent` https://github.com/clj-commons/rewrite-clj/issues/116[#116]
+** Deleted redundant `rewrite-clj.parser.util` as part of https://github.com/clj-commons/rewrite-clj/issues/93[#93].
+If you were using this internal namespace you can opt to switch to, the also internal, `rewrite-clj.reader` namespace.
+
+== rewrite-clj v0
+
+=== 0.6.0
+
+* **BREAKING**: uses a dedicated node type for regular expressions. (see #49 –
+  thanks @ChrisBlom!)
+* implement `NodeCoercable` for `nil`. (set #53 – thanks @jespera!)
+
+=== 0.5.2
+
+* fixes parsing of splicing reader conditionals `#?@...`. (see #48)
+
+=== 0.5.1
+
+* fixes parsing of multi-line regular expressions. (see #51)
+
+=== 0.5.0
+
+* **BREAKING**: commas will no longer be parsed into `:whitespace` nodes but
+  `:comma`. (see #44 - thanks @arrdem!)
+* **BREAKING**: `position` will throw exception if not used on rewrite-clj
+  custom zipper. (see #45)
+* **BREAKING**: drops testing against JDK6.
+* **DEPRECATED**:
+** `append-space` in favour of `insert-space-right`
+** `prepend-space` in favour of `insert-space-left`
+** `append-newline` in favour of `insert-newline-right`
+** `prepend-newline` in favour of `insert-newline-left`
+* fix insertion of nodes in the presense of existing whitespace. (see #33, #34 -
+  thanks @eraserhd!)
+* `edn` and `edn*` now take a `:track-position?` option that activates a custom
+  zipper implementation allowing `position` to be called on. (see #41, #45 -
+  thanks @eraserhd!)
+* fix parsing of whitespace, e.g. `<U+2028>`. (see #43)
+* fix serialization of `integer-node`s. (see #37 - thanks @eraserhd!)
+* adds `insert-left*` and `insert-right*` to facade.
+* generative tests. (see #41 - thanks @eraserhd!)
+
+=== 0.4.13
+
+_Development has branched off, using the `0.4.x` branch_
+
+* upgrades dependencies.
+* fixes a compatibility issue when running 'benedekfazekas/mranderson' on
+  a project with both 'rewrite-clj' and 'potemkin'.
+* switch to Clojure 1.8.0 as base Clojure dependency; mark as "provided".
+* switch to MIT License.
+* drop support for JDK6.
+
+=== 0.4.12
+
+* drop `fast-zip` and `potemkin` dependencies. (see #26)
+
+=== 0.4.11
+
+* fix handling of symbols with boundary character inside. (see #25)
+
+=== 0.4.10
+
+* fix handling of symbols with trailing quote, e.g. `x'`. (see #24)
+
+=== 0.4.9
+
+* fix `replace-children` for `:uneval` nodes. (see #23)
+* add `rewrite-clj.zip/postwalk`. (see #22)
+
+=== 0.4.8
+
+* allow parsing of aliased keywords, e.g. `::ns/foo`. (see #21)
+
+=== 0.4.7
+
+* fixes zipper creation over whitespace-/comment-only data. (see #20)
+
+=== 0.4.6
+
+* fixes parsing of empty comments. (see #19)
+
+=== 0.4.5
+
+* fixes parsing of comments that are at the end of a file without linebreak. (see #18)
+
+=== 0.4.4
+
+* upgrades dependencies.
+* add `rewrite-clj.zip/child-sexprs` to public API.
+
+=== 0.4.3
+
+* fix parsing of backslash `\\` character. (see #17)
+
+=== 0.4.2
+
+* fix `:fn` nodes (were `printable-only?` but should actually create an s-sexpression).
+* fix `assert-sexpr-count` to not actually create the s-expressions.
+
+=== 0.4.1
+
+* fixes infinite loop when trying to read a character.
+
+=== 0.4.0
+
+* **BREAKING** `rewrite-clj.zip.indent` no longer usable.
+* **BREAKING** node creation/edit has stricter preconditions (e.g. `:meta` has to
+  contain exactly two non-whitespace forms).
+* **BREAKING** moved to a type/protocol based implementation of nodes.
+* fix radix support. (see #13)
+* fix handling of spaces between certain forms. (see #7)
+* add node constructor functions.
+* add `child-sexprs` function.
+
+=== 0.3.12
+
+* fix `assoc` on empty map. (see #16)
+
+=== 0.3.11
+
+* drop tests for Clojure 1.4.0.
+* fix behaviour of `leftmost`.
+* upgrade to fast-zip 0.5.2.
+
+=== 0.3.10
+
+- fix behaviour of `next` and `end?`.
+- fix prewalk.
+- add row/column metadata.
+
+=== 0.3.9
+
+* add `end?`.
+* allow access to children of quoted forms. (see #6)
+* fix children lookup for zipper (return `nil` on missing children). (see #5)
+
+=== 0.3.8
+
+* add `:uneval` element type (for `#_form` elements).
+* fix `estimate-length` for multi-line strings.
+
+=== 0.3.7
+
+* fix zipper creation from file.
+
+=== 0.3.6
+
+* upgrade dependencies.
+* fix file parser (UTF-8 characters were not parsed correctly, see #24@xsc/lein-ancient).
+
+=== 0.3.5
+
+* upgrade dependencies.
+* cleanup dependency chain.
+
+=== 0.3.4
+
+* upgrade dependencies.
+
+=== 0.3.3
+
+* Bugfix: parsing of a variety of keywords threw an exception.
+
+=== 0.3.2
+
+* Bugfix: `:1.4` and others threw an exception.
+
+=== 0.3.1
+
+* added namespaced keywords.
+
+=== 0.3.0
+
+* added token type `:newline` to handle linebreak characters.
+* `rewrite-clj.zip/edn` wraps everything into `[:forms ...]` node, but the initial location
+  is the node passed to it.
+* new functions in `rewrite-clj.zip.core`:
+** `length`
+** `move-to-node`
+** `edit->>`, `edit-node`
+** `subedit->`, `subedit->>`, `edit-children`
+** `leftmost?`, `rightmost?`
+* new functions in `rewrite-clj.zip.edit`:
+** `splice-or-remove`
+** `prefix`, `suffix` (formerly `rewrite-clj.zip.utils`)
+* `rewrite-clj.zip.edit/remove` now handles whitespace appropriately.
+* indentation-aware modification functions in `rewrite-clj.zip.indent`:
+** `indent`
+** `indent-children`
+** `replace`
+** `edit`
+** `insert-left`
+** `insert-right`
+** `remove`
+** `splice`
+* fast-zip utility functions in `rewrite-clj.zip.utils`
+
+=== 0.2.0
+
+* added more expressive error handling to parser.
+* added multi-line string handling (node type: `:multi-line`)
+* new functions in `rewrite-clj.printer`:
+** `->string`
+** `estimate-length`
+* new functions in `rewrite-clj.zip`:
+** `of-string`, `of-file`
+** `print`, `print-root`
+** `->string`, `->root-string`
+** `append-space`, `prepend-space`
+** `append-newline`, `prepend-newline`
+** `right*`, `left*`, ... (delegating to `fast-zip.core/right`, ...)
+* new token type `:forms`
+* new functions in `rewrite-clj.parser`:
+** `parse-all`
+** `parse-string-all`
+** `parse-file-all`
+* zipper utility functions in `rewrite-clj.zip.utils` (able to handle multi-line strings):
+** `prefix`
+** `suffix`
+
+=== 0.1.0
+
+* Initial Release
+

@@ -1,0 +1,6 @@
+The cljs and clj sides of rewrite-clj v1 have the following differences of note:
+
+1. You'll notice that the Clojure API has the ability to deal with files, the ClojureScript API does not.
+2. If we were to exclude api namespaces and functions marked with `no-doc` we link:rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj-documented-only.adoc[would see only item 1 as differences].
+We include them because it seems that historically, internal undocumented features have been used in rewrite-cljs and rewrite-clj.
+3. The ClojureScript API is missing the Clojure API namespaces that cause link:../../design/01-merging-rewrite-clj-and-rewrite-cljs.adoc#_clojurescript_namespace_clashes[namespace clashes on the clojurescript side].

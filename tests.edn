@@ -1,0 +1,11 @@
+;; kaocha config for clj testing
+#kaocha/v1
+{:tests [#profile {:default {:id :unit
+                             :source-paths ["src"]
+                             :test-paths  ["test"]}
+                   :test-isolated {:id :test-isolated
+                                   :source-paths ["src"]
+                                   :test-paths ["test-isolated"]}
+                   :test-docs {:id :docs
+                               :test-paths ["target/test-doc-blocks/test"]}}]
+ :reporter kaocha.report.progress/report}

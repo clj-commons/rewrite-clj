@@ -1,47 +1,40 @@
+;; DO NOT EDIT FILE, automatically generated from: ./template/rewrite_clj/zip/remove.clj
 (ns ^:no-doc rewrite-clj.zip.remove
+  "This ns exists to preserve compatability for rewrite-clj v0 clj users who were using an internal API.
+   This ns does not work for cljs due to namespace collisions."
   (:refer-clojure :exclude [remove])
-  (:require [rewrite-clj.zip
-             [move :as m]
-             [whitespace :as ws]]
-            [rewrite-clj.custom-zipper
-             [core :as z]
-             [utils :as u]]))
+  (:require [rewrite-clj.zip.removez]))
 
-(defn- remove-trailing-space
-  "Remove all whitespace following a given node."
-  [zloc]
-  (u/remove-right-while zloc ws/whitespace?))
+(set! *warn-on-reflection* true)
 
-(defn- remove-preceding-space
-  "Remove all whitespace preceding a given node."
-  [zloc]
-  (u/remove-left-while zloc ws/whitespace?))
 
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.removez
 (defn remove
-  "Remove value at the given zipper location. Returns the first non-whitespace
-   node that would have preceded it in a depth-first walk. Will remove whitespace
-   appropriately.
+  "Return `zloc` with current node removed. Returned zipper location
+   is moved to the first non-whitespace node preceding removed node in a depth-first walk.
+   Removes whitespace appropriately.
 
-       [1  2  3]   => [1  3]
-       [1 2]       => [1]
-       [1 2]       => [2]
-       [1]         => []
-       [  1  ]     => []
-       [1 [2 3] 4] => [1 [2 3]]
-       [1 [2 3] 4] => [[2 3] 4]
+  - `[1 |2  3]    => [|1 3]`
+  - `[1 |2]       => [|1]`
+  - `[|1 2]       => |[2]`
+  - `[|1]         => |[]`
+  - `[  |1  ]     => |[]`
+  - `[1 [2 3] |4] => [1 [2 |3]]`
+  - `[|1 [2 3] 4] => |[[2 3] 4]`
 
-   If a node is located rightmost, both preceding and trailing spaces are removed,
-   otherwise only trailing spaces are touched. This means that a following element
-   (no matter whether on the same line or not) will end up in the same position
-   (line/column) as the removed one, _unless_ a comment lies between the original
-   node and the neighbour."
-  [zloc]
-  {:pre [zloc]
-   :post [%]}
-  (->> (-> (if (or (m/rightmost? zloc)
-                   (m/leftmost? zloc))
-             (remove-preceding-space zloc)
-             zloc)
-           (remove-trailing-space)
-           z/remove)
-       (ws/skip-whitespace z/prev)))
+   If the removed node is a rightmost sibling, both leading and trailing whitespace
+   is removed, otherwise only trailing whitespace is removed.
+
+   The result is that a following element (no matter whether it is on the same line
+   or not) will end up at same positon (line/column) as the removed one.
+   If a comment lies betwen the original node and the neighbour this will not hold true.
+   
+   If the removed node is at end of input and is trailed by 1 or more newlines, 
+   a single trailing newline will be preserved."
+  [zloc] (rewrite-clj.zip.removez/remove zloc))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.removez
+(defn remove-preserve-newline
+  "Same as [[remove]] but preserves newlines.
+   Specifically: will trim all whitespace - or whitespace up to first linebreak if present."
+  [zloc] (rewrite-clj.zip.removez/remove-preserve-newline zloc))

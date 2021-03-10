@@ -1,0 +1,112 @@
+:notitle:
+:figure-caption!:
+:imagesdir: ./doc
+
+image:rewrite-clj-logo.png[rewrite-clj,270,60]
+
+https://cljdoc.org/d/rewrite-clj/rewrite-clj/CURRENT[image:https://cljdoc.org/badge/rewrite-clj/rewrite-clj[cljdoc]]
+https://github.com/clj-commons/rewrite-clj/actions?query=workflow%3A%22Unit+Tests%22[image:https://github.com/clj-commons/rewrite-clj/workflows/Unit%20Tests/badge.svg[Unit Tests]]
+https://github.com/clj-commons/rewrite-clj/actions?query=workflow%3A%22Native+Image+Tests%22[image:https://github.com/clj-commons/rewrite-clj/workflows/Native%20Image%20Tests/badge.svg[Native Image Tests]]
+https://codecov.io/gh/clj-commons/rewrite-clj[image:https://codecov.io/gh/clj-commons/rewrite-clj/branch/main/graph/badge.svg[Code Coverage]]
+https://clojurians.slack.com/messages/CHB5Q2XUJ[image:https://img.shields.io/badge/slack-join_chat-brightgreen.svg[Join chat]]
+https://clojars.org/rewrite-clj[image:https://img.shields.io/clojars/v/rewrite-clj.svg[Clojars project]]
+
+A library that reads and writes Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] from Clojure and ClojureScript in a whitespace and comment preserving way.
+
+== Status
+
+*Warning*: v1 Alpha Release
+
+* Migration from https://github.com/lread/rewrite-cljc-playground[rewrite-cljc-playground] complete.
+Rewrite-cljc-playground is where I first merged rewrite-clj v0 and rewrite-cljs.
+* We are automatically link:doc/02-developer-guide.adoc#libs-test[testing against popular libraries].
+We patch them to use rewrite-clj v1 and then run their test suites.
+Only a minor failure on zprint v1.1.1 was found due to intentional breaking changes in namespaced maps.
+* Please review link:CHANGELOG.adoc[change log] for an overview of all v1 changes.
+* I am very conservative on making any further v0->v1 breaking changes, but am open to breaking changes to any of the new v1 work.
+
+We'll move out of alpha after folks have had a chance to give rewrite-clj v1 alpha a good shake.
+Things look solid but I would be very surprised if there are no issues and/or feedback.
+
+See https://github.com/clj-commons/rewrite-clj/projects/1[project page for current priorities].
+
+== Docs
+
+* link:doc/01-user-guide.adoc[User Guide]
+* link:doc/02-developer-guide.adoc[Developer Guide]
+* Design
+** link:doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs]
+* link:doc/03-faq.adoc[FAQ]
+
+== Versioning
+
+Rewrite-clj versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
+
+* `major` increments when a non alpha release API has been broken - something, as a rule, we'd like to avoid.
+* `minor` increments to convey significant new features have been added.
+* `patch` indicates bug fixes - it is the total number of commits in the repo.
+* `test-qualifier` is absent for stable releases.
+Can be `alpha`, `beta`, `rc1`, etc.
+
+== People
+
+=== Contributors
+// Contributors updated by script, do not edit
+// AUTO-GENERATED:CONTRIBUTORS-START
+:imagesdir: ./doc/generated/contributors
+[.float-group]
+--
+image:borkdude.png[borkdude,role="left",width=310,link="https://github.com/borkdude"]
+image:slipset.png[slipset,role="left",width=310,link="https://github.com/slipset"]
+image:sogaiu.png[sogaiu,role="left",width=310,link="https://github.com/sogaiu"]
+image:danielcompton.png[danielcompton,role="left",width=310,link="https://github.com/danielcompton"]
+image:kkinnear.png[kkinnear,role="left",width=310,link="https://github.com/kkinnear"]
+image:PEZ.png[PEZ,role="left",width=310,link="https://github.com/PEZ"]
+image:vemv.png[vemv,role="left",width=310,link="https://github.com/vemv"]
+image:AndreaCrotti.png[AndreaCrotti,role="left",width=310,link="https://github.com/AndreaCrotti"]
+image:anmonteiro.png[anmonteiro,role="left",width=310,link="https://github.com/anmonteiro"]
+image:arrdem.png[arrdem,role="left",width=310,link="https://github.com/arrdem"]
+image:bbatsov.png[bbatsov,role="left",width=310,link="https://github.com/bbatsov"]
+image:brian-dawn.png[brian-dawn,role="left",width=310,link="https://github.com/brian-dawn"]
+image:eraserhd.png[eraserhd,role="left",width=310,link="https://github.com/eraserhd"]
+image:ericdallo.png[ericdallo,role="left",width=310,link="https://github.com/ericdallo"]
+image:green-coder.png[green-coder,role="left",width=310,link="https://github.com/green-coder"]
+image:jespera.png[jespera,role="left",width=310,link="https://github.com/jespera"]
+image:martinklepsch.png[martinklepsch,role="left",width=310,link="https://github.com/martinklepsch"]
+image:mhuebert.png[mhuebert,role="left",width=310,link="https://github.com/mhuebert"]
+image:plexus.png[plexus,role="left",width=310,link="https://github.com/plexus"]
+image:stathissideris.png[stathissideris,role="left",width=310,link="https://github.com/stathissideris"]
+image:swannodette.png[swannodette,role="left",width=310,link="https://github.com/swannodette"]
+--
+// AUTO-GENERATED:CONTRIBUTORS-END
+
+=== Founders
+// Founders updated by script, do not edit
+// AUTO-GENERATED:FOUNDERS-START
+:imagesdir: ./doc/generated/contributors
+[.float-group]
+--
+image:rundis.png[rundis,role="left",width=310,link="https://github.com/rundis"]
+image:xsc.png[xsc,role="left",width=310,link="https://github.com/xsc"]
+--
+// AUTO-GENERATED:FOUNDERS-END
+
+=== Current maintainers
+// Maintainers updated by script, do not edit
+// AUTO-GENERATED:MAINTAINERS-START
+:imagesdir: ./doc/generated/contributors
+[.float-group]
+--
+image:lread.png[lread,role="left",width=310,link="https://github.com/lread"]
+--
+// AUTO-GENERATED:MAINTAINERS-END
+
+== link:CHANGELOG.adoc[Changes]
+
+== Licences
+We honor the original MIT license from link:LICENSE[rewrite-clj v0].
+
+Code has been merged/adapted from:
+
+* https://github.com/clj-commons/rewrite-cljs/blob/master/LICENSE[rewrite-cljs which has an MIT license]
+* https://github.com/clojure/clojure/blob/master/src/clj/clojure/zip.clj[clojure zip] which is covered by https://clojure.org/community/license[Eclipse Public License 1.0]

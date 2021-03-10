@@ -1,0 +1,716 @@
+= Merging rewrite-clj and rewrite-cljs
+:toc:
+:toclevels: 6
+
+== Introduction
+Rewrite-clj v1 is a merge of https://github.com/clj-commons/rewrite-clj/tree/f515767e4f07f27389ee2885cb459bd87d903887[rewrite-clj v0] and https://github.com/clj-commons/rewrite-cljs[rewrite-cljs] giving us a one stop rewrite-clj shop for Clojure and ClojureScript developers.
+
+== Goals
+1. *Minimize API breakage*.
+Within reason, maintain API compatibility with both rewrite-clj v0 and rewrite-cljs.
+I'd like rewrite-clj v1 to be an low friction replacement for `rundis/rewrite-cljs` (actually now living at `clj-commons/rewrite-cljs`) and `xsc/rewrite-clj` v0 (now living a clj-commons/rewrite-clj).
+2. *Feature parity*.
+Rewrite-cljs has lagged behind rewrite-clj v0.
+Bring rewrite-cljs up to parity with rewrite-clj v0.
+Bring any rewrite-cljs specific features over to rewrite-clj v1.
+3. *Preserve type hints*.
+I will respect and carry over existing type hinting in rewrite-clj v0 and rewrite-cljs.
+I will not, at this time, evaluate if existing type hinting has value.
+4. *Improve documentation*.
+I think that rewrite-clj v0 documentation is good, but as I dig deeper into using the library and get feedback on Slack, I see places where guidance could be improved.
+5. *Document design decisions*.
+I'm not sure what form this will take, but I do like projects that include histories of architectural and design decisions.
+Perhaps I'll adopt https://github.com/cljdoc/cljdoc/tree/master/doc/adr[ADR ala cljdoc].
+For now you can think of this document as I kind of sloppy-mega ADR for my merge work.
+6. *Modernize/update test/build*.
+Look at what is available today and make a choice.
+7. *Define library version scheme*.
+Evaluate options, pick one and document.
+8. *Find home for this work*.
+We have achieved the ideal here.
+Rewrite-clj v1 will continue from the same source repo as rewrite-clj v0.
+We will also continue to deploy to clojars rewrite-clj/rewrite-clj.
+
+== Strategic Compromises
+1. *Favor single code base*.
+I will favor a single code base over maintaining  http://rundis.github.io/blog/2015/clojurescript_performance_tuning.html[ClojureScript specific optimizations from rewrite-cljs].
+These can be brought in at a later date if needed.
+2. *Use generic exceptions*.
+This is technically an API breakage, but I will switch to using the Clojure/ClojureScript agnostic `ex-info` for exceptions.
+3. *Favor rewrite-clj features when there is overlap*.
+I currently only see one feature that overlaps between the two projects.
+Rewrite-clj v0 and rewrite-cljs both have positional (row/col) support.
+Base positional support in rewrite-clj v0 is full featured and updates with any changes made, so we'll use it instead of rewrite-cljs's more primitive tools reader based positional support.
+This technically constitutes an API breakage for rewrite-cljs.
+We will, though, carry over rewrite-cljs's higher level positional functions.
+
+== Changes
+See link:../../CHANGELOG.adoc[change log].
+
+=== Detailed API diffs
+
+I've used https://github.com/lread/diff-apis[diff-apis] to compare apis.
+Normally I would have excluded any apis tagged with `:no-doc` metadata, but because many folks used undocumented features in rewrite-clj v0 and rewrite-cljs, I have done a complete comparison of all publics - except where noted.
+Each report contains some observations under the "Notes" header.
+
+* link:../generated/api-diffs/rewrite-clj-v0-lang-clj-and-rewrite-cljs-lang-cljs.adoc[rewrite-clj v0 vs rewrite-cljs] API differences between the projects on which rewrite-clj v1 is based.
+* link:../generated/api-diffs/rewrite-clj-v0-lang-clj-and-rewrite-clj-v1-lang-clj.adoc[rewrite-clj v0 vs rewrite-clj v1] how different is rewrite-clj v1 from rewrite-clj v0?
+* link:../generated/api-diffs/rewrite-cljs-lang-cljs-and-rewrite-clj-v1-lang-cljs.adoc[rewrite-cljs vs rewrite-clj v1] how different is rewrite-clj v1 from rewrite-cljs?
+* link:../generated/api-diffs/rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj.adoc[rewrite-clj v1] a look at how cljs and clj sides of rewrite-clj v1 differ
+* link:../generated/api-diffs/rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj-documented-only.adoc[rewrite-clj v1 documented apis only] a look at how cljs and clj sides of rewrite-clj v1 differ for documented apis.
+
+=== Feature Differences
+No ability to read from files when using rewrite-clj v1 from ClojureScript.
+
+== Root namespace of `rewrite-clj`
+
+Both rewrite-clj v0 and rewrite-cljs share the same root namespace of `rewrite-clj`.
+
+We'll happily continue with `rewrite-clj` for rewrite-clj v1 work:
+
+. rewrite-clj v0 was transferred to clj-commons/rewrite-clj
+. rewrite-clj v1 will carry on in clj-commons/rewrite-clj
+. we'll continue to use the existing rewrite-clj v0 clojars maven coordinates `xsc/rewrite-clj` for rewrite-clj v1
+
+[#rewrite-clj-legacy-libs]
+== Projects Using rewrite-clj v0 and/or rewrite-cljs
+I've tried to make note of popular/active projects that make use of rewrite-clj v0 and rewrite-cljs.
+I've linked where I've explicitly verified a migration to rewrite-clj v1.
+
+[cols="15%,20%,20%,15%,30%"]
+|===
+| Project | rewrite&#8209;clj? | rewrite&#8209;cljs? | link:#canary-testing[Canary Tested?] | Notes
+
+| https://github.com/mauricioszabo/atom-chlorine[chlorine]
+|
+| yes
+|
+| REPL support for Atom editor
+
+| https://github.com/borkdude/clj-kondo[clj-kondo]
+| custom version
+|
+|
+| uses an internal custom version of rewrite-clj
+
+| https://github.com/weavejester/cljfmt[cljfmt]
+| yes
+| yes
+| yes
+| source code formatter
+
+| https://github.com/greglook/cljstyle[cljstyle]
+| yes
+|
+|
+| source code formatter based on cljfmt
+
+| https://github.com/snoe/clojure-lsp[clojure-lsp]
+| yes
+|
+| yes
+| language server for Clojure
+
+| https://github.com/Olical/depot[depot]
+| yes
+|
+|
+| find newer versions of your deps.edn dependencies
+
+| https://github.com/jonase/kibit[kibit]
+| yes
+|
+|
+| Finds non-idiomatic Clojure code
+
+| https://github.com/xsc/lein-ancient[lein-ancient]
+| yes
+|
+|
+| find newer versions of your lein dependencies
+
+| https://github.com/benedekfazekas/mranderson[MrAnderson]
+| yes
+|
+| yes
+| Dependency inliner
+
+| https://github.com/jstepien/mutant[mutant]
+| yes
+|
+|
+| Source code mutator
+
+| https://github.com/juxt/pack.alpha[pack (alpha)]
+| yes
+|
+|
+| Clojure project packager
+
+| https://github.com/bhauman/rebel-readline[rebel-readline]
+| indirectly via cljfmt
+|
+|
+| smart editing at at the REPL terminal, optionally used in conjunction with https://github.com/bhauman/figwheel-main[figwheel-main]
+
+| https://github.com/cognitect-labs/REBL-distro[REBL]
+| indirectly via cljfmt
+|
+|
+| graphical interactive tool for browsing Clojure data
+
+| https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl]
+| yes
+|
+| yes
+| refactoring support used in conjunction with https://github.com/clojure-emacs/cider[cider]
+
+| https://github.com/mauricioszabo/repl-tooling[repl-tooling]
+|
+| yes
+|
+| base package for Clojure editor tooling. Interesting: uses rewrite-clj.reader directly.
+
+| https://github.com/atomist-skills/update-leiningen-dependencies-skill[update-leiningen-dependencies-skill]
+|
+| yes
+|
+| dependency version tracker, great for a migration test of a project that uses shadow-cljs
+
+| https://github.com/kkinnear/zprint[zprint]
+| yes
+| yes
+| yes
+| source code formatter
+
+|===
+
+[#rewrite-clj-v1-libs]
+== Projects Using rewrite-clj v1
+We have at least three early adopters, for all of which we do link:#canary-testing[canary testing]:
+
+* https://github.com/liquidz/antq[antq]
+* https://github.com/borkdude/carve[carve]
+* https://github.com/borkdude/rewrite-edn[rewrite-edn]
+
+[#canary-testing]
+== Canary Testing
+I'm not sure if canary testing is exactly the right term here.
+My goal is to know when changes to rewrite-clj v1 break popular libraries.
+
+This would mean running these libraries' tests against rewrite-clj v1 master.
+
+After some experimentation, my general strategy is to:
+
+. Install rewrite-clj HEAD to the local maven repository under a "canary" version
+. For each library we want to test:
+.. Grab the a specified release of a project from GitHub via zip download
+.. Patch deps to
+... Point to rewrite-clj canary release
+... Adjust Clojure version if necessary (we are 1.9 and above)
+.. Adjust sources as necessary
+... Ex. rewrite-cljc -> rewrite-clj namespace
+... At the time of the writing only zprint v1.1.1. needed a src code hack to get its tests passing.
+It is the only lib that digs into namespaced maps, and things changed a tad here for rewrite-clj v1
+.. Run any necessary library test prep steps
+.. Run libraries tests (or a subset of them)
+
+== Tooling
+
+=== Build tools
+I have moved from leiningen to tools cli and `deps.edn`.
+Like everything, this change has pros and cons.
+Overall, I like the simplicity and control it brings.
+Babashka scripts take the place of lein aliases where I can have the build do exactly what I want it to.
+
+=== Continuous integration
+The future of https://travis-ci.org/[Travis CI] looked a bit tenuous when I started work on rewrite-clj v1.
+I initially switched over to https://circleci.com/[CircleCI], but then when GitHub Actions became available decided it was a better fit:
+
+* in addition to Linux, offers macOS and Windows testing in its free tier
+* 7gb of RAM satisfies GraalVM's memory hungry `native-image`
+
+=== Testing and linting tools
+After looking around, I settled on the following for continuous integration:
+
+. https://github.com/lambdaisland/kaocha[Kaocha] for running Clojure unit tests.
+. moved from lein-doo to https://github.com/Olical/cljs-test-runner[cljs-test-runner] (which still uses https://github.com/bensu/doo[doo] under the hood) for running ClojureScript unit tests under node and chrome headless.
+I considered Kaocha's cljs support and will reconsider when it matures a bit.
+. I fail the build when a lint with https://github.com/borkdude/clj-kondo[clj-kondo] produces any warnings and/or errors.
+
+During development, I found the following helpful:
+
+. kaocha in watch mode for Clojure
+. figwheel main for ClojureScript
+
+== General Decisions
+
+=== Library version scheme
+I see plenty of version scheme variations out there these days.
+Here are a few examples I find interesting:
+
+[cols="10,40,20,~",options="header"]
+|====
+|Project
+|Scheme
+|Example
+|Observation
+
+|https://github.com/clojure/clojurescript/releases[ClojureScript]
+|major.minor.<commit count since major.minor>
+|`1.10.520`
+|Tracks Clojure version.
+
+|https://github.com/borkdude/clj-kondo/releases[clj-kondo]
+|yyyy-mm-dd-qualifier
+|`2019.07.05-alpha`
+|Freshness built into version.
+
+|https://github.com/cljdoc/cljdoc[cljdoc]
+|major.minor.<commit count>-<short git sha>
+|`0.0.1315-c9e9a73`
+|The short-sha safeguards against any potential confusion with duplicate commit counts for builds on different machines.
+
+|https://github.com/noprompt/meander[meander]
+|meander/<release> 0.0.<commit count>
+|`meander/delta` `0.0.137`
+|This scheme changes the artifact-id (for example gamma to delta) every time a potentially breaking change is introduced effectively releasing a new product for every breaking change.
+
+|https://github.com/clojure/spec.alpha[spec.alpha]
+|unimportant
+|unimportant
+|The alpha state is burnt into the project name and library namespace.
+|====
+
+Rewrite-clj v1 is not a new project.
+I feel the version should reflect at least some familiarity with its v0 scheme.
+
+As of this writing the current version of rewrite-clj is `0.6.1`.
+I am guessing that the 0 is an unused version element, and we have a `0.major.minor` scheme.
+
+Rewrite-clj v1 is going to switch to a `major.minor.<commit count>-<qualifier>` scheme. +
+Our first version will be `1.0.451-alpha` where `451` is just a wild guess right now.
+
+An small awkwardness with this scheme is the change log.
+The change log should be part of the release but it does reference a git commit count.
+This will be addressed by automatically updating the change log doc with the release version as part of the release process.
+
+=== Release Strategy
+
+We'll opt not to make SNAPSHOT releases and assume the community is good with testing pre-releases via GitHub coordinates.
+We can adapt if there is a real need for SNAPSHOT releases.
+
+We'll keep a CHANGELOG.adoc carried on from rewrite-clj v0's CHANGES.md.
+
+Release cadence will be as needed.
+I don't want us to feel precious about releases.
+If there is a benefit to cutting a new release with a small change or fix, even just to docs, we'll go ahead and do it.
+
+
+=== Source directory layout
+When I first started to experiment with a cljc version of rewrite-clj, my directory layout looked like:
+
+----
+src/
+  clj/
+    rewrite-clj/
+  cljs/
+    rewrite-clj/
+  cljc/
+    rewrite-clj/
+test/
+  clj/
+    rewrite-clj/
+  cljs/
+    rewrite-clj/
+  cljc/
+    rewrite-clj/
+----
+
+After a certain amount of work, I realized the majority of the code was cljc so opted for the much simpler:
+
+----
+src/
+  rewrite-clj/
+test/
+  rewrite-clj/
+----
+
+===  GraalVM Support
+
+Some command line tools written in Clojure are using Graal to compile to native executables for fast startup times.
+
+Others have done the work to test that rewrite-clj v0 can be compiled with Graal.
+There is benefit to the community to test that rewrite-clj v1 can also be compiled to native code with Graal.
+
+Noticing that there were differing approaches Graalifying Clojure, none of them centrally documented, @borkdude and I created https://github.com/lread/clj-graal-docs[clj-graal-docs] to develop and share scripts and tips.
+
+My goal is to run the rewrite-clj v1 test suite from a GraalVM native image to give some confidence that rewrite-clj v1 works after compiled with Graal.
+
+==== Technical Issues
+
+. Windows tooling requirements.
+Setup for running GraalVM JDK8 on Windows relies on old Microsoft tooling making setup challenging.
+. RAM requirements.
+GraalVM's `native-image` which creates the target executable, can consume a significant amount of RAM.
+
+==== Windows Tooling Requirements
+I've decided that, for now, figuring out how to setup the proper tooling for Windows for GraalVM JDK8 is not worth my effort.
+We'll continue to test on Windows but only for GraalVM JDK11.
+
+==== Ram Requirements
+I spent quite a bit of time trying to figure out how to overcome the RAM limitations of free tiers of continuous integration services.
+Drone Cloud is the most generous with 64gb of RAM available but only supports Linux.
+CircleCI offers 3.5gb of RAM and is also Linux only in its free tier.
+GitHub Actions, offers 7gb of RAM and offers macOS, Linux and Windows.
+
+I seriously explored two approaches:
+
+. natively compile tests and library
+. interpret tests via sci over natively compile library
+
+If I had applied https://github.com/lread/clj-graal-docs#native-image-compilation-time[Clojure direct linking] earlier in my tests, I might have stopped at the first approach.
+For me, direct linking made approach 1 viable.
+
+For now, I am testing using both approaches.
+Overviews can be found at https://github.com/lread/clj-graal-docs/blob/master/doc/testing-strategies.md[clj-graal-doc's testing strategies page].
+
+== Questionable Decisions
+
+=== Allowing garden style keywords
+
+Borkdude is kind enough to ping me when there are issues with the internally forked version of rewrite-clj he uses for clj-kondo.
+It turns out that clojure.tools.reader.edn does not parse https://github.com/noprompt/garden[garden-style] keywords such as `:&::before`.
+The reader sees a double colon as illegal if it is anywhere in the keyword.
+Borkdude overcame this limitation by allowing a keyword to contain embedded double colons via a customized version of ``clojure.tools.reader.edn``'s `read-keyword` function.
+
+I transcribed his work to rewrite-clj v1.
+
+The maintenance cost to hacking a 3rd party lib is that upgrades will have to be carefully tracked.
+That said, we do have a good suite of tests that should uncover any issues.
+
+=== Not allowing symbols with multiple slashes
+
+While Clojure reads `'org/clojure/math.numeric-tower`, `clojure.tools.reader.edn` barfs on this and therefore rewrite-clj does as well.
+
+It has been documented as illegal for a symbol to have more than one `/`.
+
+I have opted to not, at this time, adapt rewrite-clj v1 to allow parsing of this illegal syntax.
+This might seem a bit hypocritical because I did, some time ago, innocently https://github.com/borkdude/clj-kondo/issues/378[raise an issue on clj-kondo for this].
+
+== Clojure/ClojureScript Issues
+
+=== ClojureScript namespace clashes
+ClojureScript uses Google Closure under the hood.
+Because of the way Google Closure handles namespaces, some namespaces that work fine on Clojure clash under ClojureScript.
+Some rewrite-clj v0 namespaces clash for ClojureScript, for example:
+
+* `rewrite-clj.zip/find`
+* `rewrite-clj.zip.find`
+
+The original rewrite-cljs author worked around this problem by renaming namespaces to avoid the clashes.
+
+[%autowidth]
+|===
+
+.2+h|library .2+h|namespace 3+h|in rewrite-clj v1
+h|namespace h|clj? h|cljs?
+
+|rewrite-clj
+|rewrite-clj.node.coerce
+|rewrite-clj.node.coerce
+|yes
+|no
+
+|rewrite-cljs
+|rewrite-clj.node.coerce[yellow-background]**r**
+|rewrite-clj.node.coercer
+|yes
+|yes
+
+|rewrite-clj
+|rewrite-clj.node.string
+|rewrite-clj.node.string
+|yes
+|no
+
+|rewrite-cljs
+|rewrite-clj.node.string[yellow-background]**z**
+|rewrite-clj.node.stringz
+|yes
+|yes
+
+|rewrite-clj
+|rewrite-clj.zip.edit
+|rewrite-clj.zip.edit
+|yes
+|no
+
+|rewrite-cljs
+|rewrite-clj.zip.edit[yellow-background]**z**
+|rewrite-clj.zip.editz
+|yes
+|yes
+
+|rewrite-clj
+|rewrite-clj.zip.find
+|rewrite-clj.zip.find
+|yes
+|no
+
+|rewrite-cljs
+|rewrite-clj.zip.find[yellow-background]**z**
+|rewrite-clj.zip.findz
+|yes
+|yes
+
+|rewrite-clj
+|rewrite-clj.zip.remove
+|rewrite-clj.zip.remove
+|yes
+|no
+
+|rewrite-cljs
+|rewrite-clj.zip.remove[yellow-background]**z**
+|rewrite-clj.zip.removez
+|yes
+|yes
+
+|rewrite-clj
+|rewrite-clj.zip.seq
+|rewrite-clj.zip.seq
+|yes
+|no
+
+|rewrite-cljs
+|rewrite-clj.zip.seq[yellow-background]**z**
+|rewrite-clj.zip.seqz
+|yes
+|yes
+|===
+
+None of these namespaces are part of public APIs, but because I see a lot of code that uses these internal namespaces, I decided to preserve the existing rewrite-clj v0 and rewrite-cljs naming for rewrite-clj v1.
+
+=== Clojure/ClojureScript Interop
+
+* Where I felt I could get away with it, I localized Clojure/ClojureScript differences in the new `rewrite-clj.interop` namespace.
+* Although technically an API breakage, I made a choice to switch all rewrite-clj v0 thrown exceptions to the Clojure/ClojureScript compatible ex-info for rewrite-clj v1.
+* Some notes on differences between Clojure and ClojureScript
+** throws and catches, if not using ex-info are different
+** namespace requires cannot use shorthand syntax in cljs
+** macros must (sometimes) be included differently
+** IMetaData and other base types differ (this comes into play for us in coercion support)
+** format not part of cljs standard lib
+** no Character in cljs
+** no ratios in cljs
+** testing for NaN is different
+** different max numerics
+
+== Rewrite-clj/cljs Analysis
+
+=== What is the public API?
+rewrite-clj v0 purposefully only generated documentation for specific namespaces.
+It is reasonable to assume that these namespaces represent the public API:
+
+* `rewrite-clj.parse`
+* `rewrite-clj.node`
+* `rewrite-clj.zip`
+
+I am not sure why `rewrite-clj.custom-zipper` is included in the documented public API, because its functionality is exposed through `rewrite-clj.zip`, I expect this was perhaps an oversight, but might be wrong.
+
+Because what is public versus what is private was not stressed strongly in the rewrite-clj v0 README, I frequently see private APIs used in code.
+For this reason, I've worked, within reason, not to break what I understand to be private APIs.
+
+=== S-expressions
+rewrite-clj allows parsed Clojure/ClojureScript/EDN to be converted back and forth to s-expressions.
+Example from a REPL session:
+
+[source,clojure]
+----
+(require '[rewrite-clj.zip :as z])
+
+(def zipper (z/of-string "[1 2 3]"))  ;; <1>
+(pr zipper)
+=stdout=> [<vector: [1 2 3]> {:l [], :pnodes [<forms: [1 2 3]>], :ppath nil, :r nil}]
+
+(def s (z/sexpr zipper)) ;; <2>
+s
+=> [1 2 3]
+
+(require '[rewrite-clj.node :as n])
+(pr (n/coerce s)) ;; <3>
+=stdout=> <vector: [1 2 3]>
+----
+<1> parse string to rewrite-clj nodes and create zipper
+<2> convert rewrite-clj node at current location in zipper to s-expression
+<3> convert s-expression to rewrite-clj node
+
+While I expect this can be quite convenient, it does come with caveats:
+
+1. What happens when we try to `sexpr` Clojure specific features from ClojureScript?
+For example, ratios are available in Clojure but not ClojureScript.
+2. If you try to `sexpr` something that cannot be converted into an s-expression an exception will be thrown.
+
+My guidance is use `sexpr` in only in specific cases, where you know ahead of time what you are parsing.
+General blind use of `sexpr` is not recommended.
+
+For rewrite-clj v1 itself, I have removed internal problematic uses of `sepxr` and documented some of its nuances.
+
+=== Which reader?
+Rewrite-clj makes use of Clojure's reader.
+There are a few choices though:
+
+1. `clojure.tools.reader`
+2. `clojure.tools.reader.edn`
+3. `clojure.reader`
+4. `clojure/reader-string`
+
+As I understand it, `clojure.tools.reader.edn` is the safest choice and rewrite-clj v1 uses it in all cases.
+
+=== Potemkin import-vars
+Rewrite-clj v0 makes use of a slightly modified version of https://github.com/ztellman/potemkin#import-vars[Potemkin import-vars].
+The intent of import-vars is to make it easy to expose a public API from a set of internal namespaces.
+
+When I first reviewed its usage in rewrite-clj, I found import-vars to be quite elegant.
+I have since learned that there is quite a bit of strong opinion in the Clojure community surrounding import-vars.
+Not all of it is rosy.
+
+Also, there is no ClojureScript version of import-vars.
+
+==== What I started with
+That said, I decided, in the beginning, to honor the original rewrite-clj codebase and carry on with it.
+To be honest, this gave me the (the apparently too tempting to resist) opportunity to learn how to write a version of import-vars for ClojureScript.
+
+This led me to discover that while cljdoc did cope fine with import-vars trickery for Clojure code, it did not have any support for it for ClojureScript code.
+I made the necessary changes to cljdoc's fork of codox and subsequently cljdoc-analyzer.
+
+I also extended import-vars to rewrite-clj's purposes by adding a facility to rename imported vars and adapt docstrings.
+
+All was not rainbows and unicorns, after yet another issue with some Clojure tooling, I decided to drop import-vars.
+
+==== What I ended up with
+I still like the concept of import-vars.
+It automatically exposes an API and helps me to avoid silly human errors that would occur should I do this manually for rewrite-clj's wide APIs.
+
+The issues with potemkin import-vars happen because vars are imported at load-time.
+I have moved to handling import-vars at build time.
+A build step reads reads an import-vars definition and generates appropriate source.
+This moves the burden from rewrite-clj users to rewrite-clj developers, which seems appropriate.
+
+First stab:
+
+* Stick with an import-vars-ish syntax.
+Maybe a clj-kondo-ish style syntax `#_{:import-vars/import {:from [[my.ns1 var1 var2 var3] [my.ns2 var4 var5])}}`.
+Perhaps we can tease out a tool someday that is generally useful.
+* Was thinking of having the build step update source in place, but @borkdude shared an idea of using templates.
+Options:
+
+** Maybe have `src/rewrite_clj.zip.template.cljc` that generates/overwrites `src/rewrite_clj/zip.cljc`.
+** Or a sister dir structure `template/rewrite_clj/zip.cljc` -> `src/rewrite_clj/zip.cljc`.
+I'll start with this, it:
+*** keeps templates separate from source.
+Not great for locality, but makes excluding them from release easier.
+*** keeps the ns name the same for template and target.
+
+Loses from moving to build-time solution:
+
+. When you click on view source on cljdoc you go to the implementation and see the code.
+Now you'll be directed to the delegator.
+This won't be bothersome from an IDE, most will like it better, you'll be able to flit from delegator to the implementation easily, but a loss from cljdoc.
+. An extra build step is required.
+This moves the burden from the user to the developer.
+I'm ok with this.
+. Potentially an extra call.
+Will this even register as a performance hit?
+
+Current import-vars usage.
+I don't always use import-vars to expose a public API, I sometimes use it internally to avoid human error.
+For example `rewrite-clj.node.string` imports from `rewrite-clj.node.stringz`; the 2 namespaces exist due to API namespace collision issues in cljs.
+
+So what would be a good name for the build step?
+Maybe `apply-import-vars gen-code`?
+
+I think we'd also want something to read-only verify that the template generated clj is different than the target.
+We can fail CI build if this is true.
+Maybe `apply-import-vars check`?
+
+How will we find templates?
+We'll start with storing all templates under `./template`
+
+How will we choose target for templates?
+We'll start `./src` using, otherwise using same template filename.
+Extension will match template (clj vs cljc for us).
+
+Ok, so what code should we be generating?
+We want to definitely bring over the docstring (sometimes altered) and some metadata (`:added` `:deprecated`).
+For the var itself we have choices.
+
+. We could simply point to the source var.
+This is effectively what we do with current import-vars at load-time.
+. We could generate a delegating fn matching the source arities.
+This would probably be more familiar to folks, and many static analysis tooling?
+I'll start with this.
+
+And how will I find the info I need?
+The build step will be Clojure and run under the JVM, the targets are all clj or cljc, so I think we are good.
+I could use clj-kondo analysis data, but I don't think that is necessary.
+
+What types of vars am I importing?
+
+* functions - covered above.
+Note that I am also importing fns from protocols.
+Not sure if that complicates - think we'll be OK.
+* macros - I guess I'll create a delegating macro.
+* dynamic vars - I don't think I have any of these anymore, so skip for now.
+
+I think I'll repeat, in comments, throughout the generated source that source is generated and from what template.
+Just to try to avoid edits in generated source.
+
+Generated source will be checked in like all other source.
+
+Verification:
+
+* run diff-apis will will save cljdoc-analyzer output to .diff-apis/.cache.
+Save the .cache.
+* after changes verify that cljdoc-analyzer output is same.
+** we expect `:file` and `:line` meta to be different for statically imported items
+
+And what technology will we use to rewrite Clojure source?
+Well... rewrite-clj seems like a good fit.
+For now, I will use master rewrite-clj to generate rewrite-clj sources from templates.
+To achieve this, I'll use non generated sources only.
+And I'll adapt rewrite-clj to only use non-generated sources itself.
+Except for paredit, it is really a higher level API, and I don't want to uglify it by using rewrite-clj internal nses.
+
+We can adapt if my initial solution has warts.
+
+=== Potemkin defprotocol+
+Rewrite-clj v0 used a customized version for potemkin defprotocol+.
+It could be that I missed something, but I did not see how it would benefit rewrite-clj v1.
+In the spirit of simplifying a cljc code-base, I turfed defprotocol+ in favour of plain old defprotocol.
+
+We can reintroduce defprotocol+ if we learn that it does actually help with performance significantly.
+
+=== Positional support
+Rewrite-clj v0:
+
+1. added a custom zipper to optionally track row/col within Clojure/ClojureScript/EDN files.
+2. expresses positions as a `[row-number col-number]` vector.
+
+Rewrite-cljs:
+
+1. made use of the positional support provided by Clojure tools reader.
+2. exposed a couple of functions to search by position.
+3. expressed positions as a `{:row row-number :col col-number}` map
+
+Because the positional support in rewrite-clj v0 tracks row/col even after zipper modifications, we use it in rewrite-clj v1 instead of rewrite-cljs's implementation.
+We:
+
+1. continue to support both rewrite-clj v0 vector and rewrite-cljs map notations for positions on function parameters.
+2. use vector notation for position on function returns.
+I personally prefer the map notation, but, as a rule, favor rewrite-clj v0 over rewrite-cljs because rewrite-clj v0 is the more widely used library and thus changes affect more users.
+3. include rewrite-cljs's positional functions: `rewrite-clj.zip/find-last-by-pos` and `rewrite-clj.zip/find-tag-by-pos`.
+
+The most glaring breaking change for ClojureScript is that it must now create the zipper with positional support enabled, for example: `(z/of-string "[1 2 3]" {:track-position true})`
+
+=== link:namespaced-elements.adoc[Namespaced maps and keywords]

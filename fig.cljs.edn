@@ -1,0 +1,7 @@
+;; figwheel main config
+^{:watch-dirs ["test" "src"]
+  :auto-testing true
+  :open-url "http://[[server-hostname]]:[[server-port]]/figwheel-extra-main/auto-testing"}
+{:main rewrite-clj.hello-figwheel
+ :warnings {:fn-deprecated false
+            :single-segment-namespace false}}

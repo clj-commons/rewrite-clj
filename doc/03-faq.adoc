@@ -1,0 +1,19 @@
+= Frequently Asked Questions
+
+== Documentation
+
+=== What is the meaning of the ^:no-doc metadata?
+Our goal is to produce documentation for users of rewrite-clj.
+As such we only want to document public APIs.
+
+`^:no-doc` is a signal to https://cljdoc.org/[cljdoc] that source code should not be included in generated documentation.
+This metadata convention was introduced by https://github.com/weavejester/codox[codox].
+
+== What the markdown?
+Stand alone articles are written up in https://asciidoctor.org/docs/what-is-asciidoc/[AsciiDoc].
+
+1. it is a richer markup language than GitHub markdown.
+2. is supported by cljdoc.
+
+Our docstrings sometimes take advantage of https://commonmark.org/[CommonMark] which is supported by cljdoc for docstrings.
+GitHub uses CommonMark as part of of its markdown solution.

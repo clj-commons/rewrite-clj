@@ -1,0 +1,148 @@
+name: Unit Tests
+
+on: push
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        java: [ 8, 11 ]
+
+    name: ${{ matrix.os }},jdk ${{ matrix.java }}
+
+    steps:
+    #
+    # Tell git not to convert newlines on checkout for Windows
+    #
+    - name: Prepare git (Windows)
+      run: git config --global core.autocrlf false
+      if: matrix.os == 'windows-latest'
+
+    - uses: actions/checkout@v2
+
+    #
+    # Caches
+    #
+    - name: Clojure deps cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.m2/repository
+          ~/.gitlibs
+        key: $${ runner.os }}-cljdeps-${{ hashFiles('deps.edn') }}
+        restore-keys: $${ runner.os }}-cljdeps-
+
+    - name: Node modules cache
+      uses: actions/cache@v2
+      with:
+        path: ./node_modules
+        key: $${ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+        restore-keys: $${ runner.os }}-node-
+
+    #
+    # Setup Java
+    #
+    - name: "Setup Java"
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.java }}
+
+    #
+    # Install Planck
+    #
+    - name: Install planck (macOS)
+      run: brew install planck
+      if: matrix.os == 'macos-latest'
+    - name: Install planck (linux)
+      run: |
+        sudo add-apt-repository -y ppa:mfikes/planck
+        sudo apt-get update
+        sudo apt-get install -y planck
+      if: matrix.os == 'ubuntu-latest'
+    - name: Install planck (macOS)
+      run: brew install planck
+      if: matrix.os == 'macos-latest'
+
+    #
+    # Install Babashka
+    #
+    - name: Install babashka (windows)
+      run: |
+       iwr -useb get.scoop.sh | iex
+       scoop bucket add scoop-clojure https://github.com/littleli/scoop-clojure
+       scoop bucket add extras
+       scoop install babashka --independent
+       echo "$HOME\scoop\shims" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      if: matrix.os == 'windows-latest'
+    - name: Install babashka (macOS)
+      run: brew install borkdude/brew/babashka
+      if: matrix.os == 'macos-latest'
+    - name: Install babashka (linux)
+      run: curl -s https://raw.githubusercontent.com/borkdude/babashka/master/install | sudo bash
+      if: matrix.os == 'ubuntu-latest'
+
+    #
+    # Install Clojure
+    #
+    - name: Install clojure (windows)
+      # On windows, deps.clj's deps.exe is used in place of clojure to avoid complexities of official clojure install
+      run: |
+       PowerShell -Command "iwr -useb https://raw.githubusercontent.com/borkdude/deps.clj/master/install.ps1 | iex"
+       Rename-Item $HOME\deps.clj\deps.exe clojure.exe
+       echo "$HOME\deps.clj" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      if: matrix.os == 'windows-latest'
+    - name: Install clojure (macos)
+      run: brew install clojure/tools/clojure
+      if: matrix.os == 'macos-latest'
+    - name: Install clojure (linux)
+      run: curl -s https://download.clojure.org/install/linux-install-1.10.1.763.sh | sudo bash
+      if: matrix.os == 'ubuntu-latest'
+
+    - name: Bring down ClojureTools early
+      run: clojure -Sdescribe
+
+    #
+    # Summarize installs
+    #
+    - name: Tools versions
+      run: |
+        echo "bb --version"
+        bb --version
+        echo "node --version"
+        node --version
+        echo "java -version"
+        java -version
+        echo "clojure -Sdescribe"
+        clojure -Sdescribe
+    - name: Tools versions (macos, linux)
+      run: |
+        echo "planck --version"
+        planck --version
+      if: matrix.os != 'windows-latest'
+
+    #
+    # Node modules
+    #
+    - name: Install karma command line (windows)
+      run: npm install karma-cli -g
+      if: matrix.os == 'windows-latest'
+    - name: Install karma command line (macos, linux)
+      run: sudo npm install karma-cli -g
+      if: matrix.os != 'windows-latest'
+
+    - name: Install node modules
+      run: npm install
+
+    #
+    # Prep Clojure
+    #
+    - name: Download clojure main dependencies
+      run: clojure -Spath
+
+    #
+    # Run tests
+    #
+    - name: Run CI tests
+      run: bb ./script/ci_tests.clj

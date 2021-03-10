@@ -1,113 +1,116 @@
+;; DO NOT EDIT FILE, automatically generated from: ./template/rewrite_clj/zip/find.clj
 (ns ^:no-doc rewrite-clj.zip.find
+  "This ns exists to preserve compatability for rewrite-clj v0 clj users who were using an internal API.
+   This ns does not work for cljs due to namespace collisions."
   (:refer-clojure :exclude [find])
-  (:require [rewrite-clj.zip
-             [base :as base]
-             [move :as m]]
-            [rewrite-clj.node :as node]
-            [rewrite-clj.custom-zipper.core :as z]))
+  (:require [rewrite-clj.zip.findz]))
 
-;; ## Helpers
+(set! *warn-on-reflection* true)
 
-(defn- tag-predicate
-  [t & [additional]]
-  (if additional
-    (fn [node]
-      (and (= (base/tag node) t)
-           (additional node)))
-    #(= (base/tag %) t)))
 
-;; ## Find Operations
-
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find
-  "Find node satisfying the given predicate by repeatedly
-   applying the given movement function to the initial zipper
-   location."
-  ([zloc p?]
-   (find zloc m/right p?))
-  ([zloc f p?]
-   (->> zloc
-        (iterate f)
-        (take-while identity)
-        (take-while (complement m/end?))
-        (drop-while (complement p?))
-        (first))))
+  "Return `zloc` located to the first node satisfying predicate `p?` else nil.
+   Search starts at the current node and continues via movement function `f`.
 
+   `f` defaults to [[rewrite-clj.zip/right]]"
+  ([zloc p?] (rewrite-clj.zip.findz/find zloc p?))
+  ([zloc f p?] (rewrite-clj.zip.findz/find zloc f p?)))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
+(defn find-last-by-pos
+  "Return `zloc` located to the last node spanning position `pos` that satisfies predicate `p?` else `nil`.
+   Search is depth-first from the current node.
+
+  NOTE: Does not ignore whitespace/comment nodes."
+  ([zloc pos] (rewrite-clj.zip.findz/find-last-by-pos zloc pos))
+  ([zloc pos p?] (rewrite-clj.zip.findz/find-last-by-pos zloc pos p?)))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-depth-first
-  "Find node satisfying the given predicate by traversing
-   the zipper in a depth-first way."
-  [zloc p?]
-  (find zloc m/next p?))
+  "Return `zloc` located to the first node satisfying predicate `p?` else `nil`.
+   Search is depth-first from the current node."
+  [zloc p?] (rewrite-clj.zip.findz/find-depth-first zloc p?))
 
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-next
-  "Find node other than the current zipper location matching
-   the given predicate by applying the given movement function
-   to the initial zipper location."
-  ([zloc p?]
-   (find-next zloc m/right p?))
-  ([zloc f p?]
-   (some-> zloc f (find f p?))))
+  "Return `zloc` located to the next node satisfying predicate `p?` else `nil`.
+   Search starts one movement `f` from the current node and continues via `f`.
 
+   `f` defaults to [[rewrite-clj.zip/right]]"
+  ([zloc p?] (rewrite-clj.zip.findz/find-next zloc p?))
+  ([zloc f p?] (rewrite-clj.zip.findz/find-next zloc f p?)))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-next-depth-first
-  "Find node other than the current zipper location matching
-   the given predicate by traversing the zipper in a
-   depth-first way."
-  [zloc p?]
-  (find-next zloc m/next p?))
+  "Return `zloc` located to next node satisfying predicate `p?` else `nil`.
+   Search starts depth-first after the current node."
+  [zloc p?] (rewrite-clj.zip.findz/find-next-depth-first zloc p?))
 
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-tag
-  "Find node with the given tag by repeatedly applying the given
-   movement function to the initial zipper location."
-  ([zloc t]
-   (find-tag zloc m/right t))
-  ([zloc f t]
-   (find zloc f #(= (base/tag %) t))))
+  "Return `zloc` located to the first node with tag `t` else `nil`.
+   Search starts at the current node and continues via movement function `f`.
 
+   `f` defaults to [[rewrite-clj.zip/right]]"
+  ([zloc t] (rewrite-clj.zip.findz/find-tag zloc t))
+  ([zloc f t] (rewrite-clj.zip.findz/find-tag zloc f t)))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-next-tag
-  "Find node other than the current zipper location with the
-   given tag by repeatedly applying the given movement function to
-   the initial zipper location."
-  ([zloc t]
-   (find-next-tag zloc m/right t))
-  ([zloc f t]
-   (->> (tag-predicate t)
-        (find-next zloc f))))
+  "Return `zloc` located to the next node with tag `t` else `nil`.
+  Search starts one movement `f` after the current node and continues via `f`.
 
+   `f` defaults to [[rewrite-clj.zip/right]]"
+  ([zloc t] (rewrite-clj.zip.findz/find-next-tag zloc t))
+  ([zloc f t] (rewrite-clj.zip.findz/find-next-tag zloc f t)))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
+(defn find-tag-by-pos
+  "Return `zloc` located to the last node spanning position `pos` with tag `t` else `nil`.
+  Search is depth-first from the current node."
+  [zloc pos t] (rewrite-clj.zip.findz/find-tag-by-pos zloc pos t))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-token
-  "Find token node matching the given predicate by applying the
-   given movement function to the initial zipper location, defaulting
-   to `right`."
-  ([zloc p?]
-   (find-token zloc m/right p?))
-  ([zloc f p?]
-   (->> (tag-predicate :token p?)
-        (find zloc f))))
+  "Return `zloc` located to the the first token node satisfying predicate `p?`.
+  Search starts at the current node and continues via movement function `f`.
 
+   `f` defaults to [[rewrite-clj.zip/right]]"
+  ([zloc p?] (rewrite-clj.zip.findz/find-token zloc p?))
+  ([zloc f p?] (rewrite-clj.zip.findz/find-token zloc f p?)))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-next-token
-  "Find next token node matching the given predicate by applying the
-   given movement function to the initial zipper location, defaulting
-   to `right`."
-  ([zloc p?]
-   (find-next-token zloc m/right p?))
-  ([zloc f p?]
-   (find-token (f zloc) f p?)))
+  "Return `zloc` located to the next token node satisfying predicate `p?` else `nil`.
+  Search starts one movement `f` after the current node and continues via `f`.
 
+   `f` defaults to [[rewrite-clj.zip/right]]"
+  ([zloc p?] (rewrite-clj.zip.findz/find-next-token zloc p?))
+  ([zloc f p?] (rewrite-clj.zip.findz/find-next-token zloc f p?)))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-value
-  "Find token node whose value matches the given one by applying the
-   given movement function to the initial zipper location, defaulting
-   to `right`."
-  ([zloc v]
-   (find-value zloc m/right v))
-  ([zloc f v]
-   (let [p? (if (set? v)
-              (comp v base/sexpr)
-              #(= (base/sexpr %) v))]
-     (find-token zloc f p?))))
+  "Return `zloc` located to the first token node that `sexpr`esses to `v` else `nil`.
+   Search starts from the current node and continues via movement function `f`.
 
+   `v` can be a single value or a set. When `v` is a set, matches on any value in set.
+
+   `f` defaults to [[rewrite-clj.zip/right]] in short form call.
+
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
+  ([zloc v] (rewrite-clj.zip.findz/find-value zloc v))
+  ([zloc f v] (rewrite-clj.zip.findz/find-value zloc f v)))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-next-value
-  "Find next token node whose value matches the given one by applying the
-   given movement function to the initial zipper location, defaulting
-   to `right`."
-  ([zloc v]
-   (find-next-value zloc m/right v))
-  ([zloc f v]
-   (find-value (f zloc) f v)))
+  "Return `zloc` located to the next token node that `sexpr`esses to `v` else `nil`.
+   Search starts one movement `f` from the current location, and continues via `f`.
+
+   `v` can be a single value or a set. When `v` is a set matches on any value in set.
+
+   `f` defaults to [[rewrite-clj.zip/right]] in short form call.
+
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
+  ([zloc v] (rewrite-clj.zip.findz/find-next-value zloc v))
+  ([zloc f v] (rewrite-clj.zip.findz/find-next-value zloc f v)))
