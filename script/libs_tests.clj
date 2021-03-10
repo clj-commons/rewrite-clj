@@ -321,7 +321,7 @@
             :test-cmds [["lein" "test"]]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.03.01-19.18.54"
+            :version "2021.03.06-17.05.35"
             :github-release {:repo "clojure-lsp/clojure-lsp" }
             :patch-fn clojure-lsp-patch
             :show-deps-fn lein-deps-tree
