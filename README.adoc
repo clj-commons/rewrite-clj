@@ -25,7 +25,8 @@ Only a minor failure on zprint v1.1.1 was found due to intentional breaking chan
 * Please review link:CHANGELOG.adoc[change log] for an overview of all v1 changes.
 * I am very conservative on making any further v0->v1 breaking changes, but am open to breaking changes to any of the new v1 work.
 
-We'll move out of alpha after folks have had a chance to give rewrite-clj v1 alpha a good shake. Things look solid but I would be very surprised if there are no issues and/or feedback.
+We'll move out of alpha after folks have had a chance to give rewrite-clj v1 alpha a good shake.
+Things look solid but I would be very surprised if there are no issues and/or feedback.
 
 See https://github.com/clj-commons/rewrite-clj/projects/1[project page for current priorities].
 
@@ -44,7 +45,8 @@ Rewrite-clj versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 * `major` increments when a non alpha release API has been broken - something, as a rule, we'd like to avoid.
 * `minor` increments to convey significant new features have been added.
 * `patch` indicates bug fixes - it is the total number of commits in the repo.
-* `test-qualifier` is absent for stable releases. Can be `alpha`, `beta`, `rc1`, etc.
+* `test-qualifier` is absent for stable releases.
+Can be `alpha`, `beta`, `rc1`, etc.
 
 == People
 

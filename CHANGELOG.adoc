@@ -20,7 +20,8 @@ If you wish, you can read nitty gritty details on link:doc/design/01-merging-rew
 What follows is a summary of changes.
 
 ==== New
-* A new home under clj-commons. Thanks to @xsc, rewrite-clj will also retain its same maven coordinates on Clojars making for a seamless upgrade path for rewrite-clj v0 users.
+* A new home under clj-commons.
+Thanks to @xsc, rewrite-clj will also retain its same maven coordinates on Clojars making for a seamless upgrade path for rewrite-clj v0 users.
 * Now supports ClojureScript, merging in rewrite-cljs specific functionality.
 Frustrations like not having namespace map support and differences from rewrite-clj, like whitespace parsing, should now be things of the past.
 Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, feature parity with rewrite-clj.
@@ -75,7 +76,8 @@ Rewrite-cljs users migrating to rewrite-clj v1 are now at, and will remain at, f
 * Moved from potemkin import-vars to static template based version https://github.com/clj-commons/rewrite-clj/issues/98[#98]:
 ** Avoids frustration/mysteries of dynamic import-vars for users and maintainers
 ** Argument names now correct in API docs (some were gensymed previously)
-** Also turfed use of custom version of potemkin defprotocol+ in favor of plain old defprotocol. Perhaps I missed something, but I did not see the benefit of defprotocol+ for rewrite-clj v1.
+** Also turfed use of custom version of potemkin defprotocol+ in favor of plain old defprotocol.
+Perhaps I missed something, but I did not see the benefit of defprotocol+ for rewrite-clj v1.
 
 ==== Internal changes (developer facing)
 * Tests updated to hit public APIs https://github.com/clj-commons/rewrite-clj/issues/106[#106]

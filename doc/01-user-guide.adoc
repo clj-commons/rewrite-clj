@@ -12,7 +12,7 @@ Rewrite-clj is a library that can read, update and write Clojure, ClojureScript 
 If rewrite-clj is not your cup of tea, consider following alternatives:
 
 |===
-| Project | Parsing? | Writing? | Whitespace Perserving? | Includes Element Row/Col?
+| Project | Parsing? | Writing? | Whitespace Preserving? | Includes Element Row/Col?
 
 | https://github.com/carocad/parcera[parcera]
 | yes
@@ -124,7 +124,7 @@ As you get more experienced with rewrite-clj, you will want to review link:#sexp
 === Tools Deps
 Include the following dependency in your `deps.edn` file:
 //:test-doc-blocks/skip
-// NOTE: the version in this snippit is automaticaly updated by our release workflow
+// NOTE: the version in this snippit is automatically updated by our release workflow
 [source,clojure]
 ----
 rewrite-clj/rewrite-clj {:mvn/version "0.6.1"}
@@ -288,7 +288,7 @@ Use:
 ==== Familiar Functions for Updating Nodes with the Zip API
 
 The zip API provides familiar ways to work with parsed Clojure data structures.
-It offers some functions that correspond to the standard Clojure seq functions, for example:
+It offers some functions that correspond to the standard Clojure `seq` functions, for example:
 
 [source, clojure]
 ----
@@ -324,7 +324,7 @@ It offers some functions that correspond to the standard Clojure seq functions, 
 ;; => "{:prefix/a 10 :prefix/b 20}"
 ----
 
-// Targetted from docstrings
+// Targeted from docstrings
 [#position-tracking]
 ==== Tracking Position with the Zip API
 
@@ -764,7 +764,8 @@ Observations:
 Rewrite-clj v1 will carry on.
 ** It seems the idea might have been that the caller could eval the sexpr result if they wanted to?
 ** Note for ClojureScript users, `read-string` is not available under `cljs.core`, but a version is available under `cljs.tools.reader`.
-2. Tag metadata is returned as boolean metadata. A user could infer the intent through inspection though.
+2. Tag metadata is returned as boolean metadata.
+A user could infer the intent through inspection though.
 
 // NOTE: target of some docstrings
 [#namespaced-elements]
@@ -889,7 +890,7 @@ The resulting zipper will then automatically apply your `:auto-resolve` within a
 ** `edit` - the current node is sexpr-ed
 ** `get` and `assoc` - sexpr is applied to the map key
 
-// NOTE: targetted from docstrings
+// NOTE: targeted from docstrings
 [#impact-of-auto-resolve]
 ==== Impact of Auto-Resolve
 

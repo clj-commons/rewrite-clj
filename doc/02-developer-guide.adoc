@@ -5,14 +5,16 @@
 == Supported Environments
 Rewrite-clj is verified on each push on macOS, Ubuntu and Windows via GitHub Actions.
 
-All scripts are written in Clojure and most invoked via https://github.com/borkdude/babashka[babashka]. This gives us a cross platform
-scripting language that is familiar, fun and consistent. These docs will show babashka scripts invoked explicitly via babashka's `bb`; on
-macOS and linux feel free to leave out `bb`.
+All scripts are written in Clojure and most invoked via https://github.com/borkdude/babashka[babashka].
+This gives us a cross platform scripting language that is familiar, fun and consistent.
+These docs will show babashka scripts invoked explicitly via babashka's `bb`; on macOS and linux feel free to leave out `bb`.
 
-We make use of planck for cljs bootstrap (aka cljs self-hosted) testing. Planck is currently not available for Windows.
+We make use of planck for cljs bootstrap (aka cljs self-hosted) testing.
+Planck is currently not available for Windows.
 
-We test that rewrite-clj operates as expected when natively compile via GraalVM. Automated testing is setup using GraalVM v21 for
-both jdk8 and jdk11. On Windows we only test against jdk11 as tool setup for jdk8 on Windows seemed overly arduous.
+We test that rewrite-clj operates as expected when natively compile via GraalVM.
+Automated testing is setup using GraalVM v21 for both JDK8 and JDK11.
+On Windows we only test against JDK11 as tool setup for JDK8 on Windows seemed overly arduous.
 
 == Prerequisites
 * Java JDK 1.8 or above
@@ -26,25 +28,23 @@ both jdk8 and jdk11. On Windows we only test against jdk11 as tool setup for jdk
 
 ==== Git and newlines
 The primary development OSes for rewrite-clj are macOS and Linux.
-Our line endings are lf only.
+Our line endings are LF only.
 
 I'm not sure what Windows developers typically want for line endings while working on source.
-I expect, but don't know, that most Windows editors automatically handle lf as line ending.
+I expect, but don't know, that most Windows editors automatically handle LF as line ending.
 Someone let me know if I am wrong.
 
 Note that I do explicitly set git's config `core.autocrlf` to `false` on our Windows CI unit test environment.
 Our import vars code generation checks currently rely on line endings remaining unconverted.
 
 ==== Babashka
-The Clojure story on Windows is still in the early chapters. https://scoop.sh/[Scoop] offers an easy way to install tools.
-@littleli is doing a great job  w/maintaining https://github.com/littleli/scoop-clojure[scoop apps for Clojure, Babashka and other tools] and
-this is how I installed Babashka.
+The Clojure story on Windows is still in the early chapters.
+https://scoop.sh/[Scoop] offers an easy way to install tools.
+@littleli is doing a great job  w/maintaining https://github.com/littleli/scoop-clojure[scoop apps for Clojure, Babashka and other tools] and this is how I installed Babashka.
 
 ==== Clojure
-We all choose our own paths, but for me, using https://github.com/borkdude/deps.clj[deps.clj] instead of
-https://github.com/clojure/tools.deps.alpha/wiki/clj-on-Windows[Clojure's PowerShell Module] offered me no
-fuss no muss Clojure on Windows and GitHub Actions on Windows. I decided to install deps.clj not through scoop but through
-https://github.com/borkdude/deps.clj#windows[the deps.clj `install.ps1` script].
+We all choose our own paths, but for me, using https://github.com/borkdude/deps.clj[deps.clj] instead of https://github.com/clojure/tools.deps.alpha/wiki/clj-on-Windows[Clojure's PowerShell Module] offered me no fuss no muss Clojure on Windows and GitHub Actions on Windows.
+I decided to install deps.clj not through scoop but through https://github.com/borkdude/deps.clj#windows[the deps.clj `install.ps1` script].
 This makes it simple to treat `deps.exe` as if it were the official `clojure` via a simple rename:
 
 ----
@@ -64,10 +64,10 @@ Here's what works on my Windows dev environment:
 call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
 ----
 
-And finally, I never did figure out how to get the Windows prerequisites setup for the jdk8 version of GraalVM, so I only test on the jdk11 version.
+And finally, I never did figure out how to get the Windows prerequisites setup for the JDK8 version of GraalVM, so I only test on the JDK11 version.
 
 == Setup
-After checking out this project from github,
+After checking out this project from GitHub,
 
 1. Install JavaScript libraries and tools required by https://github.com/bensu/doo[doo] and https://github.com/thheller/shadow-cljs[shadow-cljs]:
 +
@@ -150,13 +150,14 @@ bb ./script/clj_watch.clj
 This launches https://github.com/lambdaisland/kaocha[kaocha] in watch mode.
 
 === ClojureScript
-For Clojurescript, I open a shell terminal window and run:
+For ClojureScript, I open a shell terminal window and run:
 
 ----
 bb ./script/cljs_watch.clj
 ----
 
-This launches https://figwheel.org/[fighweel main]. After initialization, your default web browser will automatically be opened with the figwheel auto-testing page.
+This launches https://figwheel.org/[fighweel main].
+After initialization, your default web browser will automatically be opened with the figwheel auto-testing page.
 
 == Docs
 
@@ -221,7 +222,8 @@ Current libs we test against:
 
 Additional libs are welcome.
 
-If you are troubleshooting locally, and want to only run specific tests, you can specify which ones you'd like to run. For example:
+If you are troubleshooting locally, and want to only run specific tests, you can specify which ones you'd like to run.
+For example:
 
 ----
 bb ./script/libs_tests.clj run cljfmt zprint
@@ -235,7 +237,6 @@ To check for outdated libs:
 ----
 bb ./script/libs_test.clj outdated
 ----
-
 
 Notes:
 
@@ -267,7 +268,8 @@ Note that checks are only done against installed `./node_modules`, so you may wa
 == Linting
 We use https://github.com/borkdude/clj-kondo[clj-kondo] for linting rewrite-clj source code.
 
-We fail the build on any lint violations. The ci server runs:
+We fail the build on any lint violations.
+The CI server runs:
 ----
 bb ./script/lint.clj
 ----
@@ -288,14 +290,12 @@ bb ./script/gen_api_diffs.clj
 Run this script manually on an as-needed basis, and certainly before any official release.
 Generated reports are to be checked in to version control.
 
-Reports are generated to `doc/generated/api-diffs/` and include manually written
-notes from `doc/diff-notes/`.
+Reports are generated to `doc/generated/api-diffs/` and include manually written notes from `doc/diff-notes/`.
 
-These reports are referenced from other docs, so if you rename files, be sure to
-search for links.
+These reports are referenced from other docs, so if you rename files, be sure to search for links.
 
-Makes use of https://github.com/lread/diff-apis[diff-apis]. Delete
-`.diff-apis/.cache` if you need a clean run.
+Makes use of https://github.com/lread/diff-apis[diff-apis].
+Delete `.diff-apis/.cache` if you need a clean run.
 
 
 == Cljdoc Preview
@@ -318,8 +318,7 @@ bb ./script/cljdoc_preview.clj start
 
 The local cljdoc server allows your ingested docs to be viewed in your web browser.
 
-The start command also automatically checks docker hub for any updates so that our cljdoc preview matches the
-current production version of cljdoc.
+The start command also automatically checks docker hub for any updates so that our cljdoc preview matches the current production version of cljdoc.
 
 **Ingest Docs**
 
@@ -328,9 +327,8 @@ To ingest rewrite-clj API and docs into the local cljdoc database:
 bb ./script/cljdoc_preview.clj ingest
 ----
 
-The ingest command automatically publishes rewrite-clj to your local maven repository
-(cljdoc only works with published jars), but you'll have to remember to git commit and git push
-your changes before ingesting.
+The ingest command automatically publishes rewrite-clj to your local maven repository (cljdoc only works with published jars).
+You'll have to remember to git commit and git push your changes before ingesting.
 
 Repeat these steps any time you want to preview changes.
 
@@ -350,8 +348,7 @@ When you are done, you'll want to stop your docker container:
 bb ./script/cljdoc_preview.clj stop
 ----
 
-This will also delete temporary files created to support your preview session, most notably the local
-cljdoc database.
+This will also delete temporary files created to support your preview session, most notably the local cljdoc database.
 
 Note that NO cleanup is done for any rewrite-clj artifacts published to your local maven repository.
 
