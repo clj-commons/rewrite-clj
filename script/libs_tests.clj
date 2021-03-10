@@ -244,7 +244,9 @@
               
 (defn- update-leiningen-dependencies-skill-prep [{:keys [home-dir]}]
   (status/line :detail "=> Installing node deps")
-  (shcmd ["npm" "ci"] {:dir home-dir}))
+  (shcmd ["npm" "ci"] {:dir home-dir})
+  (status/line :detail "=> Running tests as recommended, but this cmd always exits with 0, so consider this a prep step")
+  (shcmd ["npm" "run" "test"] {:dir home-dir}))
 
 ;;
 ;; zprint
@@ -359,7 +361,8 @@
             :patch-fn update-leiningen-dependencies-skill-patch
             :prep-fn update-leiningen-dependencies-skill-prep 
             :show-deps-fn cli-deps-tree
-            :test-cmds [["npm" "run" "test"]]}
+            :test-cmds [;; running tests a 2nd time via node to get non-zero exit code on failure
+                        ["node" "tests.js"]]}
            {:name "zprint"
             :version "1.1.1"
             :platforms [:clj :cljs]
