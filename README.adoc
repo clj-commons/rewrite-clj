@@ -1,14 +1,17 @@
 :notitle:
 :figure-caption!:
 :imagesdir: ./doc
+:project-src-coords: clj-commons/rewrite-clj
+:project-mvn-coords: rewrite-clj/rewrite-clj
+:workflow-url: https://github.com/{project-src-coords}/actions/workflows
 
 image:rewrite-clj-logo.png[rewrite-clj,270,60]
 
-https://cljdoc.org/d/rewrite-clj/rewrite-clj/CURRENT[image:https://cljdoc.org/badge/rewrite-clj/rewrite-clj[cljdoc]]
-https://github.com/clj-commons/rewrite-clj/actions/workflows/unit-test.yml[image:https://github.com/clj-commons/rewrite-clj/actions/workflows/unit-test.yml/badge.svg[Unit Tests]]
-https://github.com/clj-commons/rewrite-clj/actions/workflows/libs-test.yml[image:https://github.com/clj-commons/rewrite-clj/actions/workflows/libs-test.yml/badge.svg[Libs Test]]
-https://github.com/clj-commons/rewrite-clj/actions/workflows/native-image-test.yml[image:https://github.com/clj-commons/rewrite-clj/actions/workflows/native-image-test.yml/badge.svg[Native Image Tests]]
-https://codecov.io/gh/clj-commons/rewrite-clj[image:https://codecov.io/gh/clj-commons/rewrite-clj/branch/main/graph/badge.svg[Code Coverage]]
+https://cljdoc.org/d/{project-mvn-coords}/CURRENT[image:https://cljdoc.org/badge/{project-mvn-coords}[cljdoc]]
+{workflow-url}/unit-test.yml[image:{workflow-url}/unit-test.yml/badge.svg[Unit Tests]]
+{workflow-url}/libs-test.yml[image:{workflow-url}/libs-test.yml/badge.svg[Libs Test]]
+{workflow-url}/native-image-test.yml[image:{workflow-url}/native-image-test.yml/badge.svg[Native Image Tests]]
+https://codecov.io/gh/{project-src-coords}[image:https://codecov.io/gh/{project-src-coords}/branch/main/graph/badge.svg[Code Coverage]]
 https://clojurians.slack.com/messages/CHB5Q2XUJ[image:https://img.shields.io/badge/slack-join_chat-brightgreen.svg[Join chat]]
 https://clojars.org/rewrite-clj[image:https://img.shields.io/clojars/v/rewrite-clj.svg[Clojars project]]
 
