@@ -16,7 +16,11 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+=== v1.0.579-alpha
+
 * Release workflow now creates a GitHub release
+
+https://github.com/clj-commons/rewrite-clj/compare/v1.0.574-alpha\...v1.0.579-alpha[Gritty details of changes for this release]
 
 === v1.0.574-alpha
 
