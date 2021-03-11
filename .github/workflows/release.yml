@@ -52,14 +52,26 @@ jobs:
     - name: Download Clojure Dependencies
       run: clojure -Spath
 
-    - name: Release Prep (step 1 of 3)
+    - name: Release Prep (step 1 of 4)
       run: bb ./script/release.clj prep
 
-    - name: Release Deploy (step 2 of 3)
+    - name: Release Deploy (step 2 of 4)
       env:
         CLOJARS_USERNAME: ${{ secrets.CLOJARS_USERNAME }}
         CLOJARS_PASSWORD: ${{ secrets.CLOJARS_PASSWORD }}
       run: bb ./script/release.clj deploy-remote
 
-    - name: Release Commit (step 3 of 3)
+    - name: Release Commit (step 3 of 4)
       run: bb ./script/release.clj commit
+
+    - name: Make GitHub Actions aware of target version tag
+      run: echo "::set-output name=tag::v$(cat ./target/target-version.txt)"
+      id: target-version
+
+    - name: Create GitHub release (step 4 of 4)
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.target-version.outputs.tag}}
+        release_name: ${{ steps.target-version.outputs.tag}}
