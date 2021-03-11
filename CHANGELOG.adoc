@@ -16,9 +16,7 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
-==== Internal changes (developer/maintainer facing only)
 * Release workflow now creates a GitHub release
-* Upgrade to current test-doc-blocks
 
 === v1.0.574-alpha
 

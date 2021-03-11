@@ -26,10 +26,7 @@
                          :extra-paths ["test"]}
 
            ;; document block testing
-           :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:mvn/version "1.0.85-alpha"}
-                                            ;; TODO: once we promote rewrite-clj to v1 in test-doc-blocks this weirdness will not be necessary
-                                            rewrite-clj/rewrite-clj {:git/url "https://github.com/clj-commons/rewrite-clj.git"
-                                                                     :sha "f44662cb78e10bcbcb6ae345e89cafd51bfef255"}}
+           :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:mvn/version "1.0.101-alpha"}}
                              :replace-paths []
                              :ns-default lread.test-doc-blocks
                              :exec-args {:docs ["doc/01-user-guide.adoc"
