@@ -62,15 +62,33 @@
 ;; ## Constructor
 
 (defn keyword-node
-  "Create a node representing a keyword `k`.
+  "Create a node representing a keyword `k`. 
 
-  Examples usages:
-  * `(keyword-node :kw)` - unqualified
-  * `(keyword-node :my-prefix/kw)` - qualified
+   Optionally include `auto-resolved?`, which defaults to `false`.
 
-  You can pass `true` for the optional `auto-resolved?` parameter:
-  * `(keyword-node :kw true)` - auto-resolved to current ns, equivalent to code `::kw`
-  * `(keyword-node :ns-alias/kw true)` - auto-resolved to namespace with alias ns-alias, equivalent to code `::ns-alias/kw`"
+   ```Clojure
+   (require '[rewrite-clj.node :as n]) 
+
+   ;; unqualified keyword
+   (-> (n/keyword-node :kw)
+       n/string)
+   ;; => \":kw\"
+
+   ;; qualified keyword
+   (-> (n/keyword-node :my-prefix/kw)
+       n/string)
+   ;; => \":my-prefix/kw\"
+
+   ;; keyword auto-resolved to current ns
+   (-> (n/keyword-node :kw true)
+       n/string)
+   ;; => \"::kw\"
+
+   ;; keyword auto-resolved to a namespace with given alias
+   (-> (n/keyword-node :ns-alias/kw true)
+       n/string)
+   ;; => \"::ns-alias/kw\"
+   ```"
   ([k auto-resolved?]
    {:pre [(keyword? k)]}
    (->KeywordNode k auto-resolved? nil))

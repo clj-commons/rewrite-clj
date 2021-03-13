@@ -12,8 +12,8 @@
   (printable-only? [_node] false)
   (sexpr* [_node _opts]
     (list 're-pattern pattern))
-  (length [_node] 
-    (+ 3 ;; 2 double quotes and a hash 
+  (length [_node]
+    (+ 3 ;; 2 double quotes and a hash
        (count pattern)))
   (string [_node]
     (str "#\"" pattern "\""))
@@ -35,6 +35,14 @@
 
 (defn regex-node
   "Create node representing a regex with `pattern-string`.
-   Use same escape rules for `pattern-string` as you would for `(re-pattern \"pattern-string\")`"
+   Use same escape rules for `pattern-string` as you would for `(re-pattern \"pattern-string\")`
+
+   ```Clojure
+   (require '[rewrite-clj.node :as n])
+
+   (-> (n/regex-node \"my\\\\.lil.*regex\")
+       n/string)
+   ;; => \"#\\\"my\\\\.lil.*regex\\\"\"  
+   ```"
   [pattern-string]
   (->RegexNode pattern-string))

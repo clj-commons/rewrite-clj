@@ -498,6 +498,81 @@ Inspect, analyze, create and render rewrite-clj nodes.
 
 See link:{cljdoc-api-url}/rewrite-clj.node[node API docs].
 
+==== Creating Nodes
+
+Rewrite-clj nodes can be created in a number of ways:
+
+1. Indirectly via the parser API:
++
+[source,Clojure]
+----
+(-> (p/parse-string "[1 2 3]")
+    n/string)
+;; => "[1 2 3]"
+----
+2. Indirectly via the zip API (which uses the parser API):
++
+[source,Clojure]
+----
+(-> (z/of-string "[1 2 3]")
+    z/node
+    n/string)
+;; => "[1 2 3]"
+----
+3. Via coercion from Clojure forms:
++
+[source,Clojure]
+----
+(-> (n/coerce '[1 2 3])
+     n/string)
+;; => "[1 2 3]"
+----
+4. By explicitly calling node creation functions.
++
+[source,Clojure]
+----
+(-> (n/vector-node [(n/token-node 1)
+                    (n/whitespace-node " ")
+                    (n/token-node 2)
+                    (n/whitespace-node " ")
+                    (n/token-node 3)])
+    n/string)
+;; => "[1 2 3]"
+----
++
+The node creation function are what the parser API uses to create nodes.
+
+Which technique you use depends on our needs.
+
+Coercion is convenient, but doesn't offer control over whitespace. In some cases coercion might not give you the result you expect:
+
+//:test-doc-blocks/skip
+[source,Clojure]
+----
+(-> (n/coerce '#(+ %1 %2))
+    n/string)
+;; => "(fn* [p1__10532# p2__10533#] (+ p1__10532# p2__10533#))"
+----
+
+Be aware that node creation functions do not force you to use rewrite-clj nodes (notice the raw `1` `2` and `3`):
+
+[source,Clojure]
+----
+(-> (n/vector-node [1 (n/spaces 1) 2 (n/spaces 1) 3])
+    n/string)
+;; => "[1 2 3]"
+----
+
+...but no automatic coercion will be done on non rewrite-clj elements and their `tag` will return unknown.
+
+[source,Clojure]
+----
+(n/tag 1)
+;; :unknown
+----
+
+Finally, there are a handful of node whitespace creation convenience functions such as `spaces`, `newlines`, `line-separated` and `comma-separated`, see link:{cljdoc-api-url}/rewrite-clj.node[the node API docs for details].
+
 === Paredit API
 Structured editing was introduce by rewrite-cljs and carried over to rewrite-clj v1.
 

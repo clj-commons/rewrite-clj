@@ -69,7 +69,17 @@
 ;; ## Constructor
 
 (defn token-node
-  "Create node for an unspecified token of `value`."
+  "Create node for an unspecified token of `value`.
+   
+   ```Clojure
+   (require '[rewrite-clj.node :as n])
+
+   (-> (n/token-node 'sym) n/string)
+   ;; => \"sym\"
+
+   (-> (n/token-node 42) n/string)
+   ;; => \"42\"
+   ```"
   ([value]
    (token-node value (pr-str value)))
   ([value string-value]

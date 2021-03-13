@@ -39,7 +39,19 @@
 
   `base` defaults to 10.
 
-  Note: the parser does not currently parse to integer-nodes, but they fully supported for output."
+   ```Clojure
+   (require '[rewrite-clj.node :as n])
+
+   (-> (n/integer-node 42)
+       n/string)
+   ;; => \"42\"
+
+   (-> (n/integer-node 31 2)
+       n/string)
+   ;; => \"2r11111\"
+   ```   
+
+   Note: the parser does not currently parse to integer-nodes, but they fully supported for output."
   ([value]
    (integer-node value 10))
   ([value base]

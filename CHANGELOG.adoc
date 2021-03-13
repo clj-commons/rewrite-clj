@@ -16,6 +16,8 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* Beef up docs on node creation https://github.com/clj-commons/rewrite-clj/issues/97[#97]
+
 === v1.0.579-alpha
 
 * Release workflow now creates a GitHub release

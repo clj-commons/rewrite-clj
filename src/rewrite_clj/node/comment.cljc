@@ -26,7 +26,19 @@
 ;; ## Constructor
 
 (defn comment-node
-  "Create node representing a comment with text `s`."
+  "Create node representing a comment with text `s`.
+
+   `s` should:
+   - not specify the first leading semicolon
+   - usually include the trailing newline character, otherwise subsequent nodes will be on the comment line
+
+   ```Clojure
+   (require '[rewrite-clj.node :as n])
+
+   (-> (n/comment-node \"; my comment\\n\")
+       n/string)
+   ;; => \";; my comment\\n\"
+   ```"
   [s]
   {:pre [(re-matches #"[^\r\n]*[\r\n]?" s)]}
   (->CommentNode s))

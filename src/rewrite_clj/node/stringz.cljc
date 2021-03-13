@@ -40,8 +40,21 @@
 ;; ## Constructors
 
 (defn string-node
-  "Create node representing a string value where `lines`
-   can be a sequence of strings or a single string."
+  "Create node representing a string value where `lines` can be a sequence of strings or a single string.
+  
+  When `lines` is a sequence, the resulting node will `tag` will be `:multi-line`, otherwise `:token`.
+   
+  ```Clojure
+  (require '[rewrite-clj.node :as n])
+
+  (-> (n/string-node \"hello\")
+      n/string)
+  ;; => \"\\\"hello\\\"\"
+
+  (-> (n/string-node [\"line1\" \"\" \"line3\"])
+       n/string)
+  ;; => \"\\\"line1\\n\\nline3\\\"\"
+  ```"
   [lines]
   (if (string? lines)
     (->StringNode [lines])

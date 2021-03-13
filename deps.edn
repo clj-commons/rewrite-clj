@@ -26,12 +26,13 @@
                          :extra-paths ["test"]}
 
            ;; document block testing
-           :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:mvn/version "1.0.101-alpha"}}
+           :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:mvn/version "1.0.107-alpha"}}
                              :replace-paths []
                              :ns-default lread.test-doc-blocks
                              :exec-args {:docs ["doc/01-user-guide.adoc"
                                                 "doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc"
-                                                "doc/design/namespaced-elements.adoc"]}}
+                                                "doc/design/namespaced-elements.adoc"
+                                                "src/rewrite_clj/node.cljc"]}}
 
            :test-docs {:extra-paths ["target/test-doc-blocks/test"]}
 

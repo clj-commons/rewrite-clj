@@ -34,7 +34,16 @@
 ;; ## Constructor
 
 (defn uneval-node
-  "Create node representing an uneval `#_` form with `children`."
+  "Create node representing an unevaled form via `children`.
+   
+   ```Clojure
+   (require '[rewrite-clj.node :as n])
+
+   (-> (n/uneval-node [(n/spaces 1)
+                       (n/token-node 42)])
+       n/string)
+   ;; => \"#_ 42\"
+   ```"
   [children]
   (if (sequential? children)
     (do

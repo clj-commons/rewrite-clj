@@ -125,20 +125,46 @@
 
 (defn map-qualifier-node
   "Create a map qualifier node.
+   The map qualifier node is a child node of [[namespaced-map-node]].
+     
+   ```Clojure
+   (require '[rewrite-clj.node :as n]) 
+   
+   ;; qualified
+   (-> (n/map-qualifier-node false \"my-prefix\")
+       n/string)
+   ;; => \":my-prefix\"
 
-  - `(map-qualifier-node false \"my-prefix\")` -> `#:my-prefix` - qualified
-  - `(map-qualifier-node true \"my-ns-alias\")` -> `#::my-ns-alias` - auto-resolved namespace alias
-  - `(map-qualifier-node true nil)` -> `#::` - auto-resolved current namespace
+   ;; auto-resolved to current ns
+   (-> (n/map-qualifier-node true nil)
+       n/string)
+   ;; => \"::\"
 
-  The above are the only supported variations, use [[map-node]] for unqualified maps."
+   ;; auto-resolve to namespace with alias
+   (-> (n/map-qualifier-node true \"my-ns-alias\")
+       n/string)
+   ;; => \"::my-ns-alias\"
+   ```"
   [auto-resolved? prefix]
   (->MapQualifierNode auto-resolved? prefix))
 
 (defn namespaced-map-node
   "Create a namespaced map node with `children`.
 
-  - first child must be a map-qualifier node, see [[map-qualifier-node]]
-  - optionally followed by whitespace node(s),
-  - followed by a map node, see [[map-node]]"
+   ```Clojure
+   (require '[rewrite-clj.node :as n]) 
+   
+   (-> (n/namespaced-map-node [(n/map-qualifier-node true \"my-ns-alias\")
+                               (n/spaces 1)
+                               (n/map-node [(n/keyword-node :a)
+                                            (n/spaces 1)
+                                            (n/token-node 1)])])
+       n/string)
+   ;; => \"#::my-ns-alias {:a 1}\"
+   ``` 
+   
+   Map qualifier context is automatically applied to map keys for sexpr support.
+
+   See also [[map-qualifier-node]] and [[map-node]]."
   [children]
   (->NamespacedMapNode (apply-context children)))

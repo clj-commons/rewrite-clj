@@ -40,21 +40,78 @@
 ;; ## Constructors
 
 (defn list-node
-  "Create a node representing a list with `children`."
+  "Create a node representing a list with `children`.
+   
+   ```Clojure
+   (require '[rewrite-clj.node :as n])
+
+   (-> (n/list-node [(n/token-node 1)
+                     (n/spaces 1)
+                     (n/token-node 2)
+                     (n/spaces 1)
+                     (n/token-node 3)])
+       n/string)
+   ;; => \"(1 2 3)\"
+   ```"
   [children]
   (->SeqNode :list "(%s)" 2 #(apply list %) children))
 
 (defn vector-node
-  "Create a node representing a vector with `children`."
+  "Create a node representing a vector with `children`.
+
+   ```Clojure
+   (require '[rewrite-clj.node :as n]) 
+
+   (-> (n/vector-node [(n/token-node 1)
+                       (n/spaces 1)
+                       (n/token-node 2)
+                       (n/spaces 1)
+                       (n/token-node 3)])
+       n/string)
+   ;; => \"[1 2 3]\"
+   ```"
   [children]
   (->SeqNode :vector "[%s]" 2 vec children))
 
 (defn set-node
-  "Create a node representing a set with `children`."
+  "Create a node representing a set with `children`.
+   
+   ```Clojure
+   (require '[rewrite-clj.node :as n]) 
+
+   (-> (n/set-node [(n/token-node 1)
+                    (n/spaces 1)
+                    (n/token-node 2)
+                    (n/spaces 1)
+                    (n/token-node 3)])
+       n/string) 
+   ;; => \"#{1 2 3}\"
+   ```"
   [children]
   (->SeqNode :set "#{%s}" 3 set children))
 
 (defn map-node
-  "Create a node representing a map with `children`."
+  "Create a node representing a map with `children`.
+   ```Clojure
+   (require '[rewrite-clj.node :as n]) 
+
+   (-> (n/map-node [(n/keyword-node :a)
+                    (n/spaces 1)
+                    (n/token-node 1)
+                    (n/spaces 1)
+                    (n/keyword-node :b)
+                    (n/spaces 1)
+                    (n/token-node 2)])
+       (n/string))
+   ;; => \"{:a 1 :b 2}\" 
+   ```
+
+   Note that rewrite-clj allows unbalanced maps:
+   ```Clojure
+   (-> (n/map-node [(n/keyword-node :a)])
+       (n/string))
+   ;; => \"{:a}\"
+   ```
+   Note also that [[sexpr]] will fail on an unbalanced map."
   [children]
   (->SeqNode :map "{%s}" 2 #(apply hash-map %) children))

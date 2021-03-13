@@ -91,6 +91,18 @@
 ;; ## Constructor
 
 (defn fn-node
-  "Create node representing an anonymous function with `children`."
+  "Create node representing an anonymous function with `children`.
+
+   ```Clojure
+   (require '[rewrite-clj.node :as n])
+
+   (-> (n/fn-node [(n/token-node '+)
+                   (n/spaces 1)
+                   (n/token-node 1)
+                   (n/spaces 1)
+                   (n/token-node '%1)])
+       n/string)
+   ;; => \"#(+ 1 %1)\"
+   ```"
   [children]
   (->FnNode children))

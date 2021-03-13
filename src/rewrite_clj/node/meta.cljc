@@ -40,7 +40,33 @@
 ;; ## Constructor
 
 (defn meta-node
-  "Create node representing a form `data` and its `metadata`."
+  "Create a node representing a form with metadata.
+
+   When creating manually, you can specify `metadata` and `data` and spacing between the 2 elems will be included: 
+
+   ```Clojure
+   (require '[rewrite-clj.node :as n]) 
+
+   (-> (n/meta-node (n/keyword-node :foo)
+                    (n/vector-node [(n/token-node 1)]))
+       n/string)
+   ;; => \"^:foo [1]\"
+
+   (-> (n/meta-node (n/map-node [:foo (n/spaces 1) 42])
+                    (n/vector-node [(n/token-node 1)]))
+       n/string)
+   ;; => \"^{:foo 42} [1]\"
+   ```
+   When specifying a sequence of `children`, spacing is explicit:
+
+   ```Clojure
+   (-> (n/meta-node [(n/keyword-node :foo)
+                     (n/spaces 1)
+                     (n/vector-node [(n/token-node 1)])])
+       n/string)
+   ;; => \"^:foo [1]\"
+   ```
+   See also: [[raw-meta-node]]"
   ([children]
    (node/assert-sexpr-count children 2)
    (->MetaNode :meta "^" children))
@@ -48,8 +74,35 @@
    (meta-node [metadata (ws/spaces 1) data])))
 
 (defn raw-meta-node
-  "Create node representing a form `data` and its `metadata` using the
-   `#^` prefix."
+  "Create a node representing a form with metadata that renders to the reader syntax.
+   
+   When creating manually, you can specify `metadata` and `data` and spacing between the 2 elems will be included: 
+
+   ```Clojure
+   (require '[rewrite-clj.node :as n]) 
+
+   (-> (n/raw-meta-node (n/keyword-node :foo)
+                        (n/vector-node [(n/token-node 2)]))
+        n/string)
+   ;; => \"#^:foo [2]\"
+   
+   (-> (n/raw-meta-node (n/map-node [:foo (n/spaces 1) 42])
+                        (n/vector-node [(n/token-node 2)]))
+       n/string)
+   ;; => \"#^{:foo 42} [2]\"
+   ``` 
+   When specifying a sequence of `children`, spacing is explicit:
+
+   ```Clojure
+   (require '[rewrite-clj.node :as n]) 
+   
+   (-> (n/raw-meta-node [(n/keyword-node :foo)
+                         (n/spaces 1)
+                         (n/vector-node [(n/token-node 2)])])
+       n/string)
+   ;; => \"#^:foo [2]\"
+   ```
+   See also: [[meta-node]]"
   ([children]
    (node/assert-sexpr-count children 2)
    (->MetaNode :meta* "#^" children))

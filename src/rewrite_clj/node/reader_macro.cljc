@@ -102,16 +102,50 @@
     children))
 
 (defn var-node
-  "Create node representing a var
-   where `children` is either a sequence of nodes or a single node."
+  "Create node representing a var where `children` is either a 
+   sequence of nodes or a single node.
+   
+   ```Clojure
+   (require '[rewrite-clj.node :as n])  
+
+   (-> (n/var-node (n/token-node 'my-var))
+       n/string)
+   ;; => \"#'my-var\"
+
+   ;; specifying a sequence allows for whitespace between the 
+   ;; prefix and the var 
+   (-> (n/var-node [(n/spaces 2)
+                    (n/token-node 'my-var)])
+       n/string)
+   ;; => \"#'  my-var\"
+   ```"
   [children]
   (if (sequential? children)
     (->node :var "'" "" #(list* 'var %) 1 children)
     (recur [children])))
 
 (defn eval-node
-  "Create node representing an inline evaluation (i.e. `#=...`)
-   where `children` is either a sequence of nodes or a single node."
+  "Create node representing an inline evaluation
+   where `children` is either a sequence of nodes or a single node.
+   
+   ```Clojure
+   (require '[rewrite-clj.node :as n])  
+
+   (-> (n/eval-node (n/list-node [(n/token-node 'inc)
+                                  (n/spaces 1)
+                                  (n/token-node 1)]))
+       n/string)
+   ;; => \"#=(inc 1)\"
+
+   ;; specifying a sequence allows for whitespace between the 
+   ;; prefix and the form 
+   (-> (n/eval-node [(n/spaces 3)
+                     (n/list-node [(n/token-node 'inc)
+                                   (n/spaces 1)
+                                   (n/token-node 1)])])
+       n/string)
+   ;; => \"#=   (inc 1)\"
+   ```"
   [children]
   (if (sequential? children)
     (->node
@@ -121,15 +155,46 @@
     (recur [children])))
 
 (defn reader-macro-node
-  "Create node representing a reader macro (i.e. `#... ...`) with `children`. "
+  "Create node representing a reader macro with `macro-node` and `form-node` or `children`.
+
+   ```Clojure
+   (require '[rewrite-clj.node :as n])  
+
+   ;; here we call with macro-node and form-node
+   (-> (n/reader-macro-node (n/token-node 'my-macro) 
+                            (n/token-node 42))
+       n/string)
+   ;; => \"#my-macro 42\"
+
+   ;; calling with a sequence of children gives us control over whitespace
+   (-> (n/reader-macro-node [(n/token-node 'my-macro)
+                             (n/spaces 4)
+                             (n/token-node 42)])
+       n/string)
+   ;; => \"#my-macro    42\" 
+   ```"
   ([children]
    (->ReaderMacroNode children))
   ([macro-node form-node]
    (->ReaderMacroNode [macro-node (ws/spaces 1) form-node])))
 
 (defn deref-node
-  "Create node representing the dereferencing of a form (i.e. `@...`)
-   where `children` is either a sequence of nodes or a single node."
+  "Create node representing the dereferencing of a form 
+   where `children` is either a sequence of nodes or a single node.
+
+   ```Clojure
+   (require '[rewrite-clj.node :as n])   
+
+   (-> (n/deref-node (n/token-node 'my-var))
+       n/string)
+   ;; => \"@my-var\"
+
+   ;; specifying a sequence allows for whitespace between @ and form
+   (-> (n/deref-node [(n/spaces 2)
+                      (n/token-node 'my-var)])
+       n/string)
+   ;; => \"@  my-var\"
+   ```"
   [children]
   (if (sequential? children)
     (->DerefNode children)

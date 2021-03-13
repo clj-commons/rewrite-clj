@@ -163,7 +163,10 @@
                                                           ;; mimic what parser does 
                                                           (nstring/string-node (some->> (imported-docstring vm opts)
                                                                                         string/split-lines
-                                                                                        (map #(string/replace % "\"" "\\\""))
+                                                                                        ;; TODO: this escaping seems too awkward
+                                                                                        (map #(-> % 
+                                                                                                  (string/replace "\\" "\\\\")
+                                                                                                  (string/replace "\"" "\\\"")))
                                                                                         (into []))))
                                                     (if (= 1 (count delegators))
                                                       (concat [(nws/newlines 1) (nws/spaces 2)]
