@@ -42,6 +42,36 @@ See https://github.com/clj-commons/rewrite-clj/projects/1[project page for curre
 ** link:doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-clj and rewrite-cljs]
 * link:doc/03-faq.adoc[FAQ]
 
+== Used In...
+
+Some projects using rewrite-clj v1
+
+* https://github.com/liquidz/antq[antq] ^t^
+* https://github.com/borkdude/carve[carve] ^t^ (in dev)
+* https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] ^t^ (in dev)
+* https://github.com/borkdude/rewrite-edn[rewrite-edn] ^t^
+* https://github.com/lread/test-doc-blocks[test-doc-blocks]
+
+Some projects using rewrite-clj v0 and/or rewrite-cljs
+
+* https://github.com/mauricioszabo/atom-chlorine[atom-chlorine]
+* https://github.com/weavejester/cljfmt[cljfmt] ^t^
+* https://github.com/greglook/cljstyle[cljstyle]
+* https://github.com/Olical/depot[depot]
+* https://github.com/jonase/kibit[kibit]
+* https://github.com/xsc/lein-ancient[lein-ancient]
+* https://github.com/benedekfazekas/mranderson[mranderson] ^t^
+* https://github.com/jstepien/mutant[mutant]
+* https://github.com/juxt/pack.alpha[pack (alpha)]
+* https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl] ^t^
+* https://github.com/mauricioszabo/repl-tooling[repl-tooling]
+* https://github.com/atomist-skills/update-leiningen-dependencies-skill[update-leiningen-dependencies-skill]
+* https://github.com/kkinnear/zprint[zprint] ^t^
+
+Have an update? Let us know!
+
+^t^ [.small]#included in rewrite-clj v1 link:doc/02-developer-guide.adoc#libs-test[lib test suite]#
+
 == Versioning
 
 Rewrite-clj versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`

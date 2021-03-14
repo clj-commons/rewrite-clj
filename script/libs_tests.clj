@@ -152,6 +152,15 @@
                   :additions (str additions)]))
 
 ;;
+;; Generic patch for deps.edn rewrite-clj v1 projects
+;;
+(defn deps-edn-v1-patch [{:keys [home-dir rewrite-clj-version]}]
+  (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
+               :removals #{'rewrite-clj 'rewrite-clj/rewrite-clj}
+               :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}})
+  (patch-rewrite-cljc-sources home-dir))
+
+;;
 ;; antq
 ;; 
 (defn antq-patch [{:keys [home-dir rewrite-clj-version]}]
@@ -224,31 +233,6 @@
        (->> (spit p)))))
 
 ;;
-;; rewrite-edn
-;; 
-;; 
-(defn rewrite-edn-patch [{:keys [home-dir rewrite-clj-version]}]
-  (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
-               :removals #{'lread/rewrite-cljc}
-               :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}})
-  (patch-rewrite-cljc-sources home-dir))
-
-;;
-;; update-leiningen-dependencies-skill
-;; 
-
-(defn- update-leiningen-dependencies-skill-patch [{:keys [home-dir rewrite-clj-version]}]
-  (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
-               :removals #{'rewrite-cljs}
-               :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}}))
-              
-(defn- update-leiningen-dependencies-skill-prep [{:keys [home-dir]}]
-  (status/line :detail "=> Installing node deps")
-  (shcmd ["npm" "ci"] {:dir home-dir})
-  (status/line :detail "=> Running tests as recommended, but this cmd always exits with 0, so consider this a prep step")
-  (shcmd ["npm" "run" "test"] {:dir home-dir}))
-
-;;
 ;; zprint
 ;; 
 
@@ -296,10 +280,10 @@
 ;;
 
 (def libs [{:name "antq"
-            :version "0.11.2"
+            :version "0.12.0"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
-            :patch-fn antq-patch
+            :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds [["clojure" "-M:dev:test"]]}
            {:name "carve"
@@ -322,7 +306,7 @@
            {:name "clojure-lsp"
             :platforms [:clj]
             :version "2021.03.06-17.05.35"
-            :github-release {:repo "clojure-lsp/clojure-lsp" }
+            :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "test"]]}
@@ -335,12 +319,13 @@
             :patch-fn mranderson-patch
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "test"]]}
-           {:name "rewrite-edn"
-            :version "665f61cf273c79b44baacb0897d72c2157e27b09"
+           {;; has a release on clojars but no release in GitHub repo
+            :name "rewrite-edn"
+            :version "8f75cf124984c6c4494df93ce10359de8beb588d"
             :platforms [:clj]
             :github-release {:repo "borkdude/rewrite-edn"
                              :via :sha}
-            :patch-fn rewrite-edn-patch
+            :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds [["clojure" "-M:test"]]}
            {:name "refactor-nrepl"
@@ -353,16 +338,15 @@
             :show-deps-fn lein-deps-tree
             :prep-fn refactor-nrepl-prep
             :test-cmds [["lein" "with-profile" "+1.10,+plugin.mranderson/config" "test"]]}
-           {:name "update-leiningen-dependencies-skill"
-            :version "21c7ce794c83d6eed9c2a27e2fdd527b5da8ebb3"
-            :platforms [:cljs]
-            :github-release {:repo "atomist-skills/update-leiningen-dependencies-skill"
-                             :via :sha}
-            :patch-fn update-leiningen-dependencies-skill-patch
-            :prep-fn update-leiningen-dependencies-skill-prep 
+           {:name "test-doc-blocks"
+            :version "1.0.114-alpha"
+            :platforms [:clj :cljs]
+            :note "generates tests under clj, but can also be run under cljs"
+            :github-release {:repo "lread/test-doc-blocks"
+                             :version-prefix "v"}
+            :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
-            :test-cmds [;; running tests a 2nd time via node to get non-zero exit code on failure
-                        ["node" "tests.js"]]}
+            :test-cmds [["bb" "./script/ci_tests.clj"]]}
            {:name "zprint"
             :version "1.1.1"
             :platforms [:clj :cljs]
@@ -370,11 +354,11 @@
             :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch
             :prep-fn zprint-prep
-            :show-deps-fn (fn [lib]  
-                             (status/line :detail "=> Deps for Clojure run:")
-                             (lein-deps-tree lib)
-                             (status/line :detail "=> Deps Clojurescript run:")
-                             (cli-deps-tree lib))
+            :show-deps-fn (fn [lib]
+                            (status/line :detail "=> Deps for Clojure run:")
+                            (lein-deps-tree lib)
+                            (status/line :detail "=> Deps Clojurescript run:")
+                            (cli-deps-tree lib))
             :test-cmds [["lein" "with-profile" "expectations" "test"]
                         ["clojure" "-M:cljs-runner"]]}])
 
@@ -436,6 +420,13 @@
       (-> (doric/table [:name :version :available-version] outdated-libs) println)
       (status/line :detail "=> All libs seems up to date"))))
 
+(defn- print-results [results]
+  (status/line :info "Summary")
+  (println (doric/table [:name :version :platforms :exit-codes] results))
+  (when (seq (filter :note results))
+    (status/line :detail "Notes")
+    (println (doric/table [:name :note] (filter :note results)))))
+
 (defn run-tests [requested-libs]
   (status/line :info "Testing 3rd party libs")
   (status/line :detail "Test popular 3rd party libs against current rewrite-clj.")
@@ -448,8 +439,7 @@
                                                 :target-root-dir target-root-dir
                                                 :rewrite-clj-version rewrite-clj-version))
                               requested-libs))]
-      (status/line :info "Summary")
-      (println (doric/table [:name :version :platforms :note :exit-codes] results))
+      (print-results results)
       (System/exit (if (->> results
                             (map :exit-codes)
                             flatten
@@ -489,28 +479,3 @@ Specifying no lib-names selects all libraries.")
     (status/fatal docopt-usage)))
 
 (main *command-line-args*)
-
-
-#_(->  (curl/get "https://api.github.com/repos/borkdude/rewrite-edn/releases")
-     :body
-     (json/parse-string true)
-     #_#_first
-     :tag_name)
-
-#_(-> (curl/get "https://api.github.com/repos/borkdude/rewrite-edn/git/refs/heads/master")
-    :body
-    (json/parse-string true)
-    :object
-    :sha)
-
-#_(-> (curl/get "https://api.github.com/repos/weavejester/cljfmt/tags")
-    :body
-    (json/parse-string true)
-    first)
-
-#_(get-current-version (nth libs 5))
-
-
-#_(docopt/docopt docopt-usage
-               *command-line-args*
-               (fn [arg-map] arg-map))
