@@ -42,7 +42,7 @@ jobs:
       run: clojure -Spath
 
     - name: Run Tests with Code Coverage
-      run: bb ./script/clj_tests.clj --coverage
+      run: bb ./script/coverage.clj
 
     - name: Upload Code Coverage Results
       run: bash <(curl -s https://codecov.io/bash) -f target/coverage/codecov.json

@@ -7,5 +7,7 @@
                                    :source-paths ["src"]
                                    :test-paths ["test-isolated"]}
                    :test-docs {:id :docs
-                               :test-paths ["target/test-doc-blocks/test"]}}]
+                               :test-paths ["target/test-doc-blocks/test"]}
+                   :coverage {:id :coverage
+                              :test-paths ["test" "target/test-doc-blocks/test"]}}]
  :reporter kaocha.report.progress/report}

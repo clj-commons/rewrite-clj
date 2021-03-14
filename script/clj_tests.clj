@@ -18,7 +18,6 @@
     :default default-clojure-version
     :validate [#(some #{%} allowed-clojure-versions)
                (str "Must be one of: " (string/join ", " allowed-clojure-versions))]]
-   ["-c" "--coverage" "Generate code coverage report"]
    ["-h" "--help"]])
 
 (defn usage [options-summary]
@@ -47,17 +46,11 @@
     (status/line :error msg))
   (System/exit code))
 
-(defn run-unit-tests[{:keys [:clojure-version :coverage]}]
-  (let [cmd ["clojure"
-             (str "-M:test-common:kaocha:" clojure-version)
-             "--reporter" "documentation"]
-        cmd (if coverage
-              (concat cmd ["--plugin" "cloverage" "--codecov"])
-              cmd)]
-    (if coverage
-      (status/line :info (str "generating test coverage report against clojure v" clojure-version))
-      (status/line :info (str "testing clojure source against clojure v" clojure-version)))
-    (shell/command cmd)))
+(defn run-unit-tests [{:keys [:clojure-version]}]
+  (status/line :info (str "testing clojure source against clojure v" clojure-version))
+  (shell/command ["clojure"
+                  (str "-M:test-common:kaocha:" clojure-version)
+                  "--reporter" "documentation"]))
 
 (defn run-isolated-tests[{:keys [:clojure-version]}]
   (status/line :info (str "running isolated tests against clojure v" clojure-version))
