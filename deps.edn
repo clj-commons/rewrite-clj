@@ -26,7 +26,7 @@
                          :extra-paths ["test"]}
 
            ;; document block testing
-           :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:mvn/version "1.0.107-alpha"}}
+           :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:mvn/version "1.0.114-alpha"}}
                              :replace-paths []
                              :ns-default lread.test-doc-blocks
                              :exec-args {:docs ["doc/01-user-guide.adoc"
