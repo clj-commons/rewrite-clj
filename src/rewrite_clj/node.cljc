@@ -744,7 +744,7 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.uneval
 (defn uneval-node
-  "Create node representing an unevaled form via `children`.
+  "Create node representing an unevaled form with `children`.
    
    ```Clojure
    (require '[rewrite-clj.node :as n])
