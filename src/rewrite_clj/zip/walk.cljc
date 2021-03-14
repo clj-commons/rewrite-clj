@@ -60,7 +60,8 @@
        zip/up
        (zip/prewalk ...))
    ```
-   "
+
+   See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   ([zloc f] (prewalk zloc (constantly true) f))
   ([zloc p? f]
    (->> (partial prewalk-subtree p? f)
@@ -116,7 +117,8 @@
        zip/up
        (zip/postwalk ...))
    ```
-   "
+
+   See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   ([zloc f] (postwalk zloc (constantly true) f))
   ([zloc p? f]
    (subedit/subedit-node zloc #(postwalk-subtree p? f %))))

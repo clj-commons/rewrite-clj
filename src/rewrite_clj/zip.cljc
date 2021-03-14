@@ -122,17 +122,19 @@
   [[append-child*]]
   [[remove*]]
 
-  **Isolated update without changing location**
+  **Update without changing location**
   [[edit-node]]
+  [[edit->]]
+  [[edit->>]]
+
+  **Isolated update without changing location**
   [[subedit-node]]
   [[subzip]]
   [[prewalk]]
   [[postwalk]]
-  [[edit->]]
-  [[edit->>]]
   [[subedit->]]
   [[subedit->>]]
-
+ 
   **Sequence operations**
   [[map]]
   [[map-keys]]
@@ -675,44 +677,58 @@
 (defn edit-node
   "Return zipper applying function `f` to `zloc`. The resulting
    zipper will be located at the same path (i.e. the same number of
-   downwards and right movements from the root) incoming `zloc`."
+   downwards and right movements from the root) incoming `zloc`.
+   
+   See also [[subedit-node]] for an isolated edit."
   [zloc f] (rewrite-clj.zip.subedit/edit-node zloc f))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.subedit
 (defn subedit-node
   "Return zipper replacing current node in `zloc` with result of `f` applied to said node as an isolated sub-tree.
-   The resulting zipper will be located on the root of the modified sub-tree."
+   The resulting zipper will be located on the root of the modified sub-tree.
+   
+   See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   [zloc f] (rewrite-clj.zip.subedit/subedit-node zloc f))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.subedit
 (defn subzip
-  "Create and return a zipper whose root is the current node in `zloc`."
+  "Create and return a zipper whose root is the current node in `zloc`.
+   
+   See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   [zloc] (rewrite-clj.zip.subedit/subzip zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.subedit
 (defmacro edit->
   "Like `->`, threads `zloc` through forms.
    The resulting zipper will be located at the same path (i.e. the same
-   number of downwards and right movements from the root) as incoming `zloc`."
+   number of downwards and right movements from the root) as incoming `zloc`.
+   
+   See also [[subedit->]] for an isolated edit."
   [zloc & body] `(rewrite-clj.zip.subedit/edit-> ~zloc ~@body))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.subedit
 (defmacro edit->>
   "Like `->>`, threads `zloc` through forms.
    The resulting zipper will be located at the same path (i.e. the same
-   number of downwards and right movements from the root) as incoming `zloc`."
+   number of downwards and right movements from the root) as incoming `zloc`.
+   
+   See also [[subedit->>]] for an isolated edit."
   [zloc & body] `(rewrite-clj.zip.subedit/edit->> ~zloc ~@body))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.subedit
 (defmacro subedit->
   "Like `->`, threads `zloc`, as an isolated sub-tree through forms, then zips
-   up to, and locates at, the root of the modified sub-tree."
+   up to, and locates at, the root of the modified sub-tree.
+   
+   See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   [zloc & body] `(rewrite-clj.zip.subedit/subedit-> ~zloc ~@body))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.subedit
 (defmacro subedit->>
   "Like `->`. Threads `zloc`, as an isolated sub-tree through forms, then zips
-      up to, and locates at, the root of the modified sub-tree."
+      up to, and locates at, the root of the modified sub-tree.
+
+   See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   [zloc & body] `(rewrite-clj.zip.subedit/subedit->> ~zloc ~@body))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.walk
@@ -753,7 +769,8 @@
        zip/up
        (zip/prewalk ...))
    ```
-   "
+
+   See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   ([zloc f] (rewrite-clj.zip.walk/prewalk zloc f))
   ([zloc p? f] (rewrite-clj.zip.walk/prewalk zloc p? f)))
 
@@ -795,7 +812,8 @@
        zip/up
        (zip/postwalk ...))
    ```
-   "
+
+   See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   ([zloc f] (rewrite-clj.zip.walk/postwalk zloc f))
   ([zloc p? f] (rewrite-clj.zip.walk/postwalk zloc p? f)))
 

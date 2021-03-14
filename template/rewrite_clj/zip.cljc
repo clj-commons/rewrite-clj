@@ -121,17 +121,19 @@
   [[append-child*]]
   [[remove*]]
 
-  **Isolated update without changing location**
+  **Update without changing location**
   [[edit-node]]
+  [[edit->]]
+  [[edit->>]]
+
+  **Isolated update without changing location**
   [[subedit-node]]
   [[subzip]]
   [[prewalk]]
   [[postwalk]]
-  [[edit->]]
-  [[edit->>]]
   [[subedit->]]
   [[subedit->>]]
-
+ 
   **Sequence operations**
   [[map]]
   [[map-keys]]

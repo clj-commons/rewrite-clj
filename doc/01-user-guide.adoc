@@ -325,6 +325,112 @@ It offers some functions that correspond to the standard Clojure `seq` functions
 ----
 
 // Targeted from docstrings
+[#sub-editing]
+==== Sub Editing with the Zip API
+
+Sub editing allows you to effect changes to an isolated subtree (actually a sub zipper) while preserving your original location in the zipper
+
+When sub editing, your sub zipper is isolated to the current node and its children.
+The sub zipper acts like, and is, a full zipper; `rewrite-clj.zip/end?` will return `true` when you have navigated to the end of the sub zipper.
+
+This can be useful when you:
+
+* Are not interested in restoring your location after digging down deep to make a change
+* Want to restrict your changes to a node and its children.
+It can be helpful to bound your movement when using functions that also affect current location such as `rewrite-clj.zip/remove`.
+
+[source,Clojure]
+----
+(require '[rewrite-clj.zip :as z])
+
+;; A sample to illustrate
+(def zloc (z/of-string "[a [b [c [d [e [f]]]]] g h]"))
+
+;; ... and a little helper that navigates our location to the end node:
+(defn to-end [zloc]
+  (->> zloc
+       (iterate z/next)
+       (drop-while (complement z/end?))
+       first))
+
+;; ... and a little editor to show which node was hit:
+(defn update-at-loc [zloc]
+  (z/edit zloc #(symbol "UPDATED" (str %))))
+
+;; If we don't use a sub zipper our end node is h:
+(-> zloc
+    to-end
+    update-at-loc
+    z/root-string)
+;; => "[a [b [c [d [e [f]]]]] g UPDATED/h]"
+
+;; If we subedit on the first node in the vector, we are restricted to that node.
+;; In our case that node is a:
+(-> zloc
+    z/down
+    (z/subedit->
+     to-end
+     update-at-loc)
+    z/root-string)
+;; => "[UPDATED/a [b [c [d [e [f]]]]] g h]"
+
+;; If we subedit on the second node in the vector, we are restricted to that node.
+;; In our case that node is [b [c [d [f]]]] with subedit end node f
+(-> zloc
+    z/down
+    z/right
+    (z/subedit->
+     to-end
+     update-at-loc)
+    z/root-string)
+;; => "[a [b [c [d [e [UPDATED/f]]]]] g h]"
+
+;; To show our original location was preserved,
+;; after a subedit of the last node within the 2nd node in the vector,
+;; a movement right brings us to node g
+(-> zloc
+    z/down
+    z/right
+    (z/subedit->
+     to-end
+     (z/edit #(symbol "UPDATED" (str %))))
+    z/right
+    z/string)
+;; => "g"
+----
+
+The zip API walk functions also isolate your work to the current node.
+Let's explore:
+
+[source,Clojure]
+----
+(require '[rewrite-clj.zip :as z])
+
+;; Let's contrive an example with multiple top level forms:
+(def zloc (z/of-string "(def x 1) (def y [2 3 [4 [5]]])"))
+
+;; Now let's add 100 to all numbers:
+(-> zloc
+    (z/postwalk (fn select [zloc] (number? (z/sexpr zloc)))
+                (fn visit [zloc] (z/edit zloc + 100)))
+    z/root-string)
+;; => "(def x 101) (def y [2 3 [4 [5]]])"
+
+;; Hmmm... what happened? Only the first number was affected.
+;; A new zipper automaticaly navigates to the first non-whitespace/non-comment node.
+;; In our example, this is node (def x 1).
+;; Our walk was isolated to current node (def x 1) so that's all that got updated
+
+;; We can adapt to walk all nodes with a movement up to the top level prior to our walk
+(-> zloc
+    z/up
+    (z/postwalk (fn select [zloc] (number? (z/sexpr zloc)))
+                (fn visit [zloc] (z/edit zloc + 100)))
+    z/root-string)
+;; => "(def x 101) (def y [102 103 [104 [105]]])"
+----
+
+// Targeted from docstrings
 [#position-tracking]
 ==== Tracking Position with the Zip API
 
