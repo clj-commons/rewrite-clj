@@ -226,7 +226,7 @@ a| * throws on parse
 a| * throws on parse
 
 | ns-alias qualified map +
-`::alias{:c 3}`
+`#::alias{:c 3}`
 | `#:??\_alias_??{:c 3}`
 a| * throws unless namespace alias `alias` has been loaded in `\*ns*`
 * if `alias` in `*ns*` resolves to `my.ns1`: +
