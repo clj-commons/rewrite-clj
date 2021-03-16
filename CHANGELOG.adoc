@@ -16,6 +16,7 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* namespaced map should allow all Clojure whitespace between prefix and map https://github.com/clj-commons/rewrite-clj/issues/140[#140]
 * Beef up docs on node creation https://github.com/clj-commons/rewrite-clj/issues/97[#97]
 * Describe subedit in docs https://github.com/clj-commons/rewrite-clj/issues/111[#111]
 

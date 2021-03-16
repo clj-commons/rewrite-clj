@@ -345,6 +345,9 @@
     "#:abc   {:x 1, :y 1}"
     {:abc/x 1, :abc/y 1}
 
+    "#:abc  ,,, \n\n {:x 1 :y 2}" 
+    {:abc/x 1, :abc/y 2}
+
     "#:foo{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
     {:foo/kw 1, :n/kw 2, :bare 3, 0 4}
 
@@ -369,6 +372,10 @@
     {:booya.fooya/x 1, :booya.fooya/y 1}
 
     "#::   {:x 1, :y 1}"
+    {:?_current-ns_?/x 1, :?_current-ns_?/y 1}
+    {:booya.fooya/x 1, :booya.fooya/y 1}
+
+    "#:: \n,,\n,,  {:x 1, :y 1}"
     {:?_current-ns_?/x 1, :?_current-ns_?/y 1}
     {:booya.fooya/x 1, :booya.fooya/y 1}
 
@@ -400,6 +407,10 @@
     '{:bing.bang/x 1, :bing.bang/y 1}
 
     "#::nsalias   {:x 1, :y 1}"
+    '{:??_nsalias_??/x 1, :??_nsalias_??/y 1}
+    '{:bing.bang/x 1, :bing.bang/y 1}
+
+    "#::nsalias ,,,,,,,,,,\n,,,,,,\n,,,,,  {:x 1, :y 1}"
     '{:??_nsalias_??/x 1, :??_nsalias_??/y 1}
     '{:bing.bang/x 1, :bing.bang/y 1}
 

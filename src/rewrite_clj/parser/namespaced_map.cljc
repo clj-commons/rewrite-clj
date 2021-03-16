@@ -1,6 +1,7 @@
 (ns ^:no-doc rewrite-clj.parser.namespaced-map
   (:require [rewrite-clj.node.namespaced-map :as nsmap]
             [rewrite-clj.node.protocols :as node]
+            [rewrite-clj.node.whitespace :as nws]
             [rewrite-clj.reader :as reader] ))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -16,7 +17,7 @@
 (defn- parse-to-next-elem [reader read-next]
   (loop [nodes []]
     (let [n (read-next reader)]
-      (if (and n (= :whitespace (node/tag n)))
+      (if (and n (nws/whitespace? n))
         (recur (conj nodes n))
         [nodes n]))))
 
