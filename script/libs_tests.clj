@@ -160,6 +160,18 @@
                :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}})
   (patch-rewrite-cljc-sources home-dir))
 
+(defn- replace-in-file [fname match replacement]
+  (let [orig-filename (str fname ".orig")
+        content (slurp fname)]
+    (fs/copy fname orig-filename)
+    (status/line :detail (format "- hacking %s" fname))
+    (let [new-content (string/replace content match replacement)]
+      (if (= new-content content)
+        (throw (ex-info (format "hacking file failed: %s" fname) {}))
+        (spit fname new-content)))
+    (status/line :detail (format "-> here's the diff for %s" fname))
+    (shcmd-no-exit ["git" "--no-pager" "diff" "--no-index" orig-filename fname])))
+
 ;;
 ;; antq
 ;; 
@@ -197,6 +209,27 @@
                   :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}
                               'cljfmt/cljfmt {:mvn/version "0.7.0" :exclusions ['rewrite-cljs/rewrite-cljs
                                                                                 'rewrite-clj/rewrite-clj]}}}))
+
+;;
+;; cljstyle
+;; 
+
+(defn- cljstyle-patch [{:keys [home-dir rewrite-clj-version]}]
+  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
+               :removals #{'rewrite-clj}
+               :additions [['rewrite-clj rewrite-clj-version]]})
+
+  (status/line :detail "=> cljstyle needs to hacks to work with rewrite-clj v1")
+  (status/line :detail "=> hack 1 of 2: update ref to internal use of StringNode")
+  (replace-in-file (str (fs/file home-dir "src/cljstyle/format/zloc.clj"))
+                   "rewrite_clj.node.string.StringNode"
+                   "rewrite_clj.node.stringz.StringNode")
+
+  (status/line :detail "=> hack 2 of 2: update test expectation of exception type")
+  (replace-in-file (str (fs/file home-dir "test/cljstyle/task_test.clj"))
+                   "java.lang.Exception: Unexpected"
+                   "clojure.lang.ExceptionInfo: Unexpected"))
+
 ;;
 ;; mranderson
 ;; 
@@ -303,6 +336,16 @@
             :patch-fn cljfmt-patch
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "test"]]}
+           {:name "cljstyle"
+            :version "0.14.0"
+            :platforms [:clj]
+            :note "2 minor hacks to pass with rewrite-clj v1"
+            :github-release {:repo "greglook/cljstyle"
+                             :via :tag}
+            :patch-fn cljstyle-patch
+            :show-deps-fn lein-deps-tree
+            :test-cmds [["lein" "check"]
+                        ["lein" "test"]]}
            {:name "clojure-lsp"
             :platforms [:clj]
             :version "2021.03.06-17.05.35"
@@ -350,7 +393,7 @@
            {:name "zprint"
             :version "1.1.1"
             :platforms [:clj :cljs]
-            :note "zprint src hacked to pass with rewrite-clj v1"
+            :note "1 minor hack to pass with rewrite-clj v1"
             :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch
             :prep-fn zprint-prep
@@ -375,6 +418,9 @@
                    (fetch-lib-release lib))
         home-dir (str (fs/file home-dir (or root "")))
         lib (assoc lib :home-dir home-dir)]
+    (status/line :detail "git init-ing target, some libs expect that they were cloned")
+    (shcmd ["git" "init"] {:dir home-dir})
+
     (when patch-fn
       (status/line :info (format "%s: Patching" name))
       (patch-fn lib))
@@ -402,8 +448,7 @@
   (status/line :detail (format "(re)creating: %s" target-root-dir))
   (when (fs/exists? target-root-dir) (fs/delete-tree target-root-dir))
   (.mkdirs (fs/file target-root-dir))
-  (status/line :detail "git init-ing target to avoid polluting our project git config/hooks with any changes libs under test might effect")
-  (shcmd ["git" "init"] {:dir target-root-dir}))
+ )
 
 ;;
 ;; cmds

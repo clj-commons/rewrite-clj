@@ -215,6 +215,7 @@ Current libs we test against:
 * antq
 * carve
 * cljfmt
+* cljstyle
 * clojure-lsp
 * mranderson
 * rewrite-edn
