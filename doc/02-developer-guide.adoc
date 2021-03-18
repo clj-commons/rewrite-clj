@@ -210,18 +210,7 @@ To try to ensure our changes to rewrite-clj do not inadvertently break existing 
 bb ./script/libs_tests.clj run
 ----
 
-Current libs we test against:
-
-* antq
-* carve
-* cljfmt
-* cljstyle
-* clojure-lsp
-* mranderson
-* rewrite-edn
-* refactor-nrepl
-* test-doc-blocks
-* zprint
+See link:../README.adoc#used-in[README] for current libs we test against.
 
 Additional libs are welcome.
 

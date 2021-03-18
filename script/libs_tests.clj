@@ -231,6 +231,44 @@
                    "clojure.lang.ExceptionInfo: Unexpected"))
 
 ;;
+;; depot
+;;
+(defn depot-patch [{:keys [home-dir rewrite-clj-version]}]
+  (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
+               :removals #{'rewrite-clj/rewrite-clj}
+               :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}})
+  (patch-rewrite-cljc-sources home-dir)
+  (status/line :detail "=> depot uses but does not require rewrite-clj.node, need to adjust for rewrite-clj v1")
+  (replace-in-file (str (fs/file home-dir "src/depot/zip.clj"))
+                   "[rewrite-clj.zip :as rzip]"
+                   "[rewrite-clj.zip :as rzip] [rewrite-clj.node]"))
+
+;;
+;; kibit patch
+;;
+(defn- kibit-patch [{:keys [home-dir rewrite-clj-version]}]
+  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
+               :removals #{'rewrite-clj 'org.clojure/clojure}
+               :additions [['rewrite-clj rewrite-clj-version]
+                           ['org.clojure/clojure "1.9.0"]]}))
+
+;;
+;; lein ancient
+;; 
+(defn- lein-ancient-patch [{:keys [home-dir rewrite-clj-version]}]
+  (status/line :detail "=> Patching deps")
+  (let [p (str (fs/file home-dir "project.clj"))]
+    (-> p
+        slurp
+        ;; done with exercising my rewrite-clj skills for now! :-)
+        (string/replace #"rewrite-clj \"[0-9.]+\""
+                        (format "rewrite-clj \"%s\"" rewrite-clj-version))
+        ;; lein-ancient uses pedantic? :abort, so need to match clojure versions
+        (string/replace #"\[org.clojure/clojure .*\]"
+                        "[org.clojure/clojure \"1.10.3\" :scope \"provided\"]")
+        (->> (spit p)))))
+
+;;
 ;; mranderson
 ;; 
 (defn- mranderson-patch [{:keys [home-dir rewrite-clj-version]}]
@@ -244,6 +282,15 @@
         (string/replace #"\[(org.clojure/tools.namespace\ \"[0-9-a-z.]+\")\]"
                         "[$1 :exclusions [org.clojure/tools.reader]]")
         (->> (spit p)))))
+
+;;
+;; mutant
+;;
+(defn- mutant-patch [{:keys [home-dir rewrite-clj-version]}]
+  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
+               :removals #{'rewrite-clj 'org.clojure/clojure}
+               :additions [['rewrite-clj rewrite-clj-version]
+                           ['org.clojure/clojure "1.9.0"]]}))
 
 ;;
 ;; refactor-nrepl
@@ -353,6 +400,32 @@
             :patch-fn clojure-lsp-patch
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "test"]]}
+           {:name "depot"
+            :platforms [:clj]
+            :note "1 patch required due to using, but not requiring, rewrite-clj.node"
+            :version "2.1.0"
+            :github-release {:repo "Olical/depot"
+                             :version-prefix "v"}
+            :patch-fn depot-patch
+            :show-deps-fn cli-deps-tree
+            :test-cmds [["bin/kaocha" "--reporter" "documentation"]]}
+           {:name "kibit"
+            :platforms [:clj]
+            :root "kibit"
+            :version "0.1.8"
+            :github-release {:repo "jonase/kibit"}
+            :patch-fn kibit-patch
+            :show-deps-fn lein-deps-tree
+            :test-cmds [["lein" "test-all"]]}
+           {:name "lein-ancient"
+            :platforms [:clj]
+            :version "1.0.0-RC3"
+            :github-release {:repo "xsc/lein-ancient"
+                             :via :tag
+                             :version-prefix "v"}
+            :patch-fn lein-ancient-patch
+            :show-deps-fn lein-deps-tree
+            :test-cmds [["lein" "test"]]}
            {:name "mranderson"
             :version "0.5.3"
             :platforms [:clj]
@@ -362,10 +435,19 @@
             :patch-fn mranderson-patch
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "test"]]}
-           {;; has a release on clojars but no release in GitHub repo
-            :name "rewrite-edn"
+           {:name "mutant"
+            :version "0.2.0"
+            :platforms [:clj]
+            :note "Dormant project"
+            :github-release {:repo "jstepien/mutant"
+                             :via :tag}
+            :patch-fn mutant-patch
+            :show-deps-fn lein-deps-tree
+            :test-cmds [["lein" "test"]]}
+           {:name "rewrite-edn"
             :version "8f75cf124984c6c4494df93ce10359de8beb588d"
             :platforms [:clj]
+            :note "has a relase on clojars but no release in GitHub repo"
             :github-release {:repo "borkdude/rewrite-edn"
                              :via :sha}
             :patch-fn deps-edn-v1-patch

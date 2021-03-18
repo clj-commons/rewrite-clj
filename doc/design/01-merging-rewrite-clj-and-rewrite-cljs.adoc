@@ -77,24 +77,24 @@ We'll happily continue with `rewrite-clj` for rewrite-clj v1 work:
 I've tried to make note of popular/active projects that make use of rewrite-clj v0 and rewrite-cljs.
 I've linked where I've explicitly verified a migration to rewrite-clj v1.
 
-[cols="15%,20%,20%,15%,30%"]
+See README for up to date list of which libraries directly use so form of rewrite-clj and which ones we are currently link:#canary-testing[canary testing].
+
+[cols="15%,20%,20%,55%"]
 |===
-| Project | rewrite&#8209;clj? | rewrite&#8209;cljs? | link:#canary-testing[Canary Tested?] | Notes
+| Project | rewrite&#8209;clj? | rewrite&#8209;cljs? | Notes
 
 | https://github.com/mauricioszabo/atom-chlorine[chlorine]
 |
 | yes
-|
-| REPL support for Atom editor
+| REPL support for Atom editor. +
+I do not see easy to run unit tests for this project.
 
 | https://github.com/borkdude/clj-kondo[clj-kondo]
 | custom version
 |
-|
 | uses an internal custom version of rewrite-clj
 
 | https://github.com/weavejester/cljfmt[cljfmt]
-| yes
 | yes
 | yes
 | source code formatter
@@ -102,83 +102,70 @@ I've linked where I've explicitly verified a migration to rewrite-clj v1.
 | https://github.com/greglook/cljstyle[cljstyle]
 | yes
 |
-|
 | source code formatter based on cljfmt
 
 | https://github.com/snoe/clojure-lsp[clojure-lsp]
 | yes
 |
-| yes
 | language server for Clojure
 
 | https://github.com/Olical/depot[depot]
 | yes
-|
 |
 | find newer versions of your deps.edn dependencies
 
 | https://github.com/jonase/kibit[kibit]
 | yes
 |
-|
 | Finds non-idiomatic Clojure code
 
 | https://github.com/xsc/lein-ancient[lein-ancient]
 | yes
-|
 |
 | find newer versions of your lein dependencies
 
 | https://github.com/benedekfazekas/mranderson[MrAnderson]
 | yes
 |
-| yes
 | Dependency inliner
 
 | https://github.com/jstepien/mutant[mutant]
 | yes
-|
 |
 | Source code mutator
 
 | https://github.com/juxt/pack.alpha[pack (alpha)]
 | yes
 |
-|
 | Clojure project packager
 
 | https://github.com/bhauman/rebel-readline[rebel-readline]
 | indirectly via cljfmt
-|
 |
 | smart editing at at the REPL terminal, optionally used in conjunction with https://github.com/bhauman/figwheel-main[figwheel-main]
 
 | https://github.com/cognitect-labs/REBL-distro[REBL]
 | indirectly via cljfmt
 |
-|
 | graphical interactive tool for browsing Clojure data
 
 | https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl]
 | yes
 |
-| yes
 | refactoring support used in conjunction with https://github.com/clojure-emacs/cider[cider]
 
 | https://github.com/mauricioszabo/repl-tooling[repl-tooling]
 |
 | yes
-|
-| base package for Clojure editor tooling. Interesting: uses rewrite-clj.reader directly.
+| base package for Clojure editor tooling. Interesting: uses rewrite-clj.reader directly. +
+I do not see easy to run unit tests for this project.
 
 | https://github.com/atomist-skills/update-leiningen-dependencies-skill[update-leiningen-dependencies-skill]
 |
 | yes
-|
 | dependency version tracker, great for a migration test of a project that uses shadow-cljs
 
 | https://github.com/kkinnear/zprint[zprint]
-| yes
 | yes
 | yes
 | source code formatter
@@ -187,11 +174,8 @@ I've linked where I've explicitly verified a migration to rewrite-clj v1.
 
 [#rewrite-clj-v1-libs]
 == Projects Using rewrite-clj v1
-We have at least three early adopters, for all of which we do link:#canary-testing[canary testing]:
 
-* https://github.com/liquidz/antq[antq]
-* https://github.com/borkdude/carve[carve]
-* https://github.com/borkdude/rewrite-edn[rewrite-edn]
+See README for up to date list.
 
 [#canary-testing]
 == Canary Testing
