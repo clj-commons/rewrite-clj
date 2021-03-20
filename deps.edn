@@ -1,6 +1,6 @@
 {:paths ["src"]
 
- :deps {org.clojure/clojure {:mvn/version "1.10.3"}
+ :deps {org.clojure/clojure {:mvn/version "1.9.0"}
         org.clojure/tools.reader {:mvn/version "1.3.5"}}
 
  :aliases {;;
@@ -26,7 +26,8 @@
                          :extra-paths ["test"]}
 
            ;; document block testing
-           :test-doc-blocks {:replace-deps {lread/test-doc-blocks {:mvn/version "1.0.114-alpha"}}
+           :test-doc-blocks {:replace-deps {org.clojure/clojure {:mvn/version "1.10.3"}
+                                            lread/test-doc-blocks {:mvn/version "1.0.114-alpha"}}
                              :replace-paths []
                              :ns-default lread.test-doc-blocks
                              :exec-args {:docs ["doc/01-user-guide.adoc"
@@ -34,7 +35,8 @@
                                                 "doc/design/namespaced-elements.adoc"
                                                 "src/rewrite_clj/node.cljc"]}}
 
-           :test-docs {:extra-paths ["target/test-doc-blocks/test"]}
+           :test-docs {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
+                       :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for clojure testing
            :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.732"}
@@ -61,7 +63,8 @@
                     :extra-deps {org.clojure/tools.namespace {:mvn/version "1.1.0"}
                                  cli-matic/cli-matic {:mvn/version "0.4.3"}}}
 
-           :apply-import-vars {:extra-deps {metosin/malli {:mvn/version "0.3.0"}
+           :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
+                               :extra-deps {metosin/malli {:mvn/version "0.3.0"}
                                             io.aviso/pretty {:mvn/version "0.1.36"}}
                                :ns-default lread.apply-import-vars}
 
@@ -72,13 +75,15 @@
            ;; sci-test - interpret tests via sci over natively compiled rewrite-clj
            ;; native-test - natively compile src and tests and run
 
-           :sci-test {:extra-paths ["target/generated/sci-test/src"]
+           :sci-test {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
+                      :extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
                                                    :sha "dac1979c96c51a6bb53108b65c8270d8f30c67fa"}}}
 
-           :native-test {:extra-paths ["target/generated/graal"]}
+           :native-test {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
+                         :extra-paths ["target/generated/graal"]}
 
-           ;; usage -A:sci-test:gen-reflection
+           ;; usage -M:sci-test:gen-reflection
            :gen-reflection {:main-opts ["-m" "sci-test.generate-reflection-file"]}
 
            ;;

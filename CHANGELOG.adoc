@@ -16,6 +16,8 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* rewrite-clj now explicitly depends on the minimum version of Clojure required, v1.9.0, rather than v1.10.3 https://github.com/clj-commons/rewrite-clj/issues/142[#142]
+
 === v1.0.591-alpha
 
 * namespaced map should allow all Clojure whitespace between prefix and map https://github.com/clj-commons/rewrite-clj/issues/140[#140]
