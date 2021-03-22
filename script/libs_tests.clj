@@ -360,7 +360,7 @@
 ;;
 
 (def libs [{:name "antq"
-            :version "0.12.0"
+            :version "0.12.2"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -395,7 +395,7 @@
                         ["lein" "test"]]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.03.06-17.05.35"
+            :version "2021.03.21-23.29.19"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn lein-deps-tree
@@ -405,6 +405,7 @@
             :note "1 patch required due to using, but not requiring, rewrite-clj.node"
             :version "2.1.0"
             :github-release {:repo "Olical/depot"
+                             :via :tag
                              :version-prefix "v"}
             :patch-fn depot-patch
             :show-deps-fn cli-deps-tree
@@ -445,7 +446,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "test"]]}
            {:name "rewrite-edn"
-            :version "8f75cf124984c6c4494df93ce10359de8beb588d"
+            :version "e8efb455011d4b796b321852c2b45d87b79de1ad"
             :platforms [:clj]
             :note "has a relase on clojars but no release in GitHub repo"
             :github-release {:repo "borkdude/rewrite-edn"
@@ -464,7 +465,7 @@
             :prep-fn refactor-nrepl-prep
             :test-cmds [["lein" "with-profile" "+1.10,+plugin.mranderson/config" "test"]]}
            {:name "test-doc-blocks"
-            :version "1.0.114-alpha"
+            :version "1.0.116-alpha"
             :platforms [:clj :cljs]
             :note "generates tests under clj, but can also be run under cljs"
             :github-release {:repo "lread/test-doc-blocks"

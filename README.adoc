@@ -49,14 +49,14 @@ Some projects using rewrite-clj v1
 
 * https://github.com/liquidz/antq[antq] ^🐥^
 * https://github.com/borkdude/carve[carve] ^🐥^ (in dev)
-* https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] ^🐥^ (in dev)
+* https://github.com/weavejester/cljfmt[cljfmt] ^🐥^ (in dev)
+* https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] ^🐥^
 * https://github.com/borkdude/rewrite-edn[rewrite-edn] ^🐥^
 * https://github.com/lread/test-doc-blocks[test-doc-blocks] ^🐥^
 
 Some projects using rewrite-clj v0 and/or rewrite-cljs
 
 * https://github.com/mauricioszabo/atom-chlorine[atom-chlorine] ^📍^
-* https://github.com/weavejester/cljfmt[cljfmt] ^🐥^
 * https://github.com/greglook/cljstyle[cljstyle] ^🐥^ ^🩹^
 * https://github.com/Olical/depot[depot] ^🐥^ ^🩹^
 * https://github.com/jonase/kibit[kibit] ^🐥^
