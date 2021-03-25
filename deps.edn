@@ -19,7 +19,7 @@
            ;;
 
            ;; linting
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.03.03"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.03.22"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}
@@ -64,8 +64,8 @@
                                  cli-matic/cli-matic {:mvn/version "0.4.3"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.3.0"}
-                                            io.aviso/pretty {:mvn/version "0.1.36"}}
+                               :extra-deps {metosin/malli {:mvn/version "0.3.1"}
+                                            io.aviso/pretty {:mvn/version "0.1.37"}}
                                :ns-default lread.apply-import-vars}
 
            ;;
@@ -97,7 +97,7 @@
            ;;
            ;; Deployment
            ;; 
-           :jar {:replace-deps {seancorfield/depstar {:mvn/version "2.0.193"}}
+           :jar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.206"}}
                  :exec-fn hf.depstar/jar
                  :exec-args {:jar "target/rewrite-clj.jar"
                              :jar-type :thin}}
@@ -116,7 +116,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {antq/antq {:mvn/version "0.11.2"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "0.12.2"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.30"} ;; to rid ourselves of logger warnings
                                    }
                       :main-opts ["-m" "antq.core"]}

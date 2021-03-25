@@ -8,11 +8,11 @@ jobs:
     strategy:
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
-        graal: [ 21.0.0.java8, 21.0.0.java11 ]
+        graal: [ 21.0.0.2.java8, 21.0.0.2.java11 ]
         test: [ pure, sci ]
         exclude:
           - os: windows-latest
-            graal: 21.0.0.java8
+            graal: 21.0.0.2.java8
 
     name: ${{ matrix.os }},${{ matrix.graal }},${{ matrix.test }}
 
@@ -80,7 +80,7 @@ jobs:
       run: brew install clojure/tools/clojure
       if: matrix.os == 'macos-latest'
     - name: Install clojure (linux)
-      run: curl -s https://download.clojure.org/install/linux-install-1.10.1.763.sh | sudo bash
+      run: curl -s https://download.clojure.org/install/linux-install-1.10.3.814.sh | sudo bash
       if: matrix.os == 'ubuntu-latest'
 
     - name: Bring down ClojureTools early
