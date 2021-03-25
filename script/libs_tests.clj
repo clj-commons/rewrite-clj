@@ -205,10 +205,8 @@
 ;; 
 (defn- clojure-lsp-patch [{:keys [home-dir rewrite-clj-version]}]
   (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
-                  :removals #{'rewrite-clj/rewrite-clj 'cljfmt/cljfmt}
-                  :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}
-                              'cljfmt/cljfmt {:mvn/version "0.7.0" :exclusions ['rewrite-cljs/rewrite-cljs
-                                                                                'rewrite-clj/rewrite-clj]}}}))
+                  :removals #{'rewrite-clj/rewrite-clj}
+                  :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}}))
 
 ;;
 ;; cljstyle
@@ -395,11 +393,11 @@
                         ["lein" "test"]]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.03.21-23.29.19"
+            :version "2021.03.24-00.41.55"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
-            :show-deps-fn lein-deps-tree
-            :test-cmds [["lein" "test"]]}
+            :show-deps-fn cli-deps-tree
+            :test-cmds [["make" "test"]]}
            {:name "depot"
             :platforms [:clj]
             :note "1 patch required due to using, but not requiring, rewrite-clj.node"
@@ -446,11 +444,11 @@
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "test"]]}
            {:name "rewrite-edn"
-            :version "e8efb455011d4b796b321852c2b45d87b79de1ad"
+            :version "0.0.2"
             :platforms [:clj]
-            :note "has a relase on clojars but no release in GitHub repo"
             :github-release {:repo "borkdude/rewrite-edn"
-                             :via :sha}
+                             :version-prefix "v"
+                             :via :tag}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds [["clojure" "-M:test"]]}
