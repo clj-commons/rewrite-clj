@@ -75,3 +75,4 @@ jobs:
       with:
         tag_name: ${{ steps.target-version.outputs.tag}}
         release_name: ${{ steps.target-version.outputs.tag}}
+        commitish: main
