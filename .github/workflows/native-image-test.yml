@@ -8,13 +8,13 @@ jobs:
     strategy:
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
-        graal: [ 21.0.0.2.java8, 21.0.0.2.java11 ]
+        graal-java: [ java8, java11 ]
         test: [ pure, sci ]
         exclude:
           - os: windows-latest
-            graal: 21.0.0.2.java8
+            graal-java: java8
 
-    name: ${{ matrix.os }},${{ matrix.graal }},${{ matrix.test }}
+    name: ${{ matrix.os }},${{ matrix.graal-java }},${{ matrix.test }}
 
     steps:
     - uses: actions/checkout@v2
@@ -44,9 +44,10 @@ jobs:
     # Install GraalVM
     #
     - name: Install GraalVM
-      uses: DeLaGuardo/setup-graalvm@master
+      uses: DeLaGuardo/setup-graalvm@4.0
       with:
-        graalvm-version: ${{ matrix.graal }}
+        graalvm: '20.0.0.2'
+        java: ${{ matrix.graal-java }}
 
     #
     # Install Babashka
