@@ -46,7 +46,7 @@ jobs:
     - name: Install GraalVM
       uses: DeLaGuardo/setup-graalvm@4.0
       with:
-        graalvm: '20.0.0.2'
+        graalvm: '21.0.0.2'
         java: ${{ matrix.graal-java }}
 
     #
