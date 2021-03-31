@@ -47,7 +47,7 @@
                           "--report-filename" (str  (io/file report-dir (str report-name ".adoc")))]
                          extra-args)))
 
-(defn main []
+(defn -main []
   (env/assert-min-versions)
   (let [opts {:notes-dir "doc/diff-notes"
               :report-dir "doc/generated/api-diffs"}
@@ -70,4 +70,5 @@
     (diff-apis opts rewrite-clj-v1-lang-cljs   rewrite-clj-v1-lang-clj   "rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj-documented-only" (concat to-self-args documented-only-args)))
   nil)
 
-(main)
+(env/when-invoked-as-script
+ (-main))

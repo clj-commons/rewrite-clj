@@ -17,10 +17,11 @@
                   "--no-randomize"
                   "--reporter" "documentation"]))
 
-(defn main []
+(defn -main []
   (env/assert-min-versions)
   (generate-doc-tests)
   (run-clj-doc-tests)
   nil)
 
-(main)
+(env/when-invoked-as-script
+ (-main))

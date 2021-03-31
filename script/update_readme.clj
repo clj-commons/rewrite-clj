@@ -6,6 +6,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as string]
+            [helper.env :as env]
             [helper.fs :as fs]
             [helper.shell :as shell]
             [helper.status :as status]
@@ -188,7 +189,7 @@
       (status/line :detail "* error: did not find google chrome - need it to generate images."))
     chrome-info))
 
-(defn main []
+(defn -main []
   (let [readme-filename "README.adoc"
         contributors-source "doc/contributors.edn"
         image-opts {:image-width 310
@@ -205,5 +206,6 @@
     (status/line :detail "SUCCESS"))
   (shutdown-agents))
 
-(main)
+(env/when-invoked-as-script
+ (-main))
 

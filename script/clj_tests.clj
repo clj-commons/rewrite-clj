@@ -55,7 +55,7 @@
                   "--profile" "test-isolated"
                   "--reporter" "documentation"]))
 
-(defn main [args]
+(defn -main [& args]
   (env/assert-min-versions)
   (let [{:keys [options exit-message exit-code]} (validate-args args)]
     (if exit-message
@@ -64,4 +64,5 @@
           (run-isolated-tests options))))
   nil)
 
-(main *command-line-args*)
+(env/when-invoked-as-script
+ (apply -main *command-line-args*))

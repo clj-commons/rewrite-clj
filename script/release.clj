@@ -7,6 +7,7 @@
 (ns release
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
+            [helper.env :as env]
             [helper.fs :as fs]
             [helper.shell :as shell]
             [helper.status :as status]
@@ -174,7 +175,7 @@
                                   " version       - calculate and report version"])))
     cmd))
 
-(defn- main [args]
+(defn -main [& args]
   (let [cmd (validate-args args)
         target-version-filename "target/target-version.txt"]
     (status/line :info (str  "Attempting release step: " cmd))
@@ -213,4 +214,5 @@
 
     (status/line :detail (str "Release step done:" cmd))))
 
-(main *command-line-args*)
+(env/when-invoked-as-script
+ (apply -main *command-line-args*))

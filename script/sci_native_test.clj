@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns sci-test-gen-native-image
+(ns sci-native-test
   (:require [clojure.java.io :as io]
             [helper.env :as env]
             [helper.graal :as graal]
@@ -26,7 +26,7 @@
       (status/fatal (str "native image " exe-fname " not found.") 1))
     (shell/command [exe-fname "--file" "script/sci_test_runner.clj" "--classpath" "test"])))
 
-(defn -main [ & _args ]
+(defn -main []
   (env/assert-min-versions)
   (let [native-image-xmx "6g"
         graal-reflection-fname "target/native-image/reflection.json"
@@ -53,4 +53,5 @@
   (interpret-tests)
   nil)
 
-(-main)
+(env/when-invoked-as-script
+ (-main))

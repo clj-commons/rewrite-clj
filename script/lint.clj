@@ -10,7 +10,7 @@
 (defn cache-exists? []
   (.exists (io/file ".clj-kondo/.cache")))
 
-(defn lint[]
+(defn -main[]
   (env/assert-min-versions)
   (if (not (cache-exists?))
     (status/line :info "linting and building cache")
@@ -31,4 +31,5 @@
       (status/fatal (str "clj-kondo existed with unexpected exit code: " exit) exit))
     (System/exit exit)))
 
-(lint)
+(env/when-invoked-as-script
+ (-main))

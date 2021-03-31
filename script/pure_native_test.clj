@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns native-test
+(ns pure-native-test
   (:require [clojure.java.io :as io]
             [helper.env :as env]
             [helper.fs :as fs]
@@ -16,7 +16,7 @@
                   "-m" "clj-graal.gen-test-runner"
                   "--dest-dir" dir "test-by-namespace"]))
 
-(defn -main [ & _args ]
+(defn -main []
   (env/assert-min-versions)
   (let [native-image-xmx "6g"
         target-exe "target/rewrite-clj-test"]
@@ -42,4 +42,5 @@
     (shell/command [target-exe]))
   nil)
 
-(-main)
+(env/when-invoked-as-script
+ (-main))

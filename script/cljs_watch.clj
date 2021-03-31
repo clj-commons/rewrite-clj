@@ -5,6 +5,10 @@
             [helper.shell :as shell]
             [helper.status :as status]))
 
-(env/assert-min-versions)
-(status/line :detail "compiling code, then opening repl, afterwich your web browser will automatically open to figwheel test run summary")
-(shell/command ["clojure" "-M:test-common:cljs:fig-test"])
+(defn -main []
+  (env/assert-min-versions)
+  (status/line :detail "compiling code, then opening repl, afterwich your web browser will automatically open to figwheel test run summary")
+  (shell/command ["clojure" "-M:test-common:cljs:fig-test"]))
+
+(env/when-invoked-as-script
+ (-main))

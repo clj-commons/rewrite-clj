@@ -1,12 +1,13 @@
 #!/usr/bin/env bb
 
-(ns cljdoc-docker-preview
+(ns cljdoc-preview
   (:require [babashka.curl :as curl]
             [clojure.data.xml :as xml]
             [clojure.data.zip.xml :as zxml]
             [clojure.java.browse :as browse]
             [clojure.string :as string]
             [clojure.zip :as zip]
+            [helper.env :as env]
             [helper.fs :as fs]
             [helper.shell :as shell]
             [helper.status :as status]))
@@ -211,7 +212,7 @@
 (defn cleanup-resources []
   (fs/delete-file-recursively cljdoc-db-dir true))
 
-(defn main [args]
+(defn -main [& args]
 
   (check-prerequisites)
 
@@ -256,4 +257,5 @@
           (println "Must be run from project root directory.")
           (System/exit 1)))))
 
-(main *command-line-args*)
+(env/when-invoked-as-script
+ (apply -main *command-line-args*))

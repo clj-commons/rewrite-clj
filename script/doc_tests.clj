@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns doc_tests
+(ns doc-tests
   (:require [helper.env :as env]
             [helper.shell :as shell]
             [helper.status :as status]))
@@ -23,11 +23,12 @@
                   "--dir" "target/test-doc-blocks/test"
                   "--out" "target/cljsbuild/doc-tests"]))
 
-(defn main []
+(defn -main []
   (env/assert-min-versions)
   (generate-doc-tests)
   (run-clj-doc-tests)
   (run-cljs-doc-tests)
   nil)
 
-(main)
+(env/when-invoked-as-script
+ (-main))

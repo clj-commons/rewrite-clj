@@ -5,7 +5,7 @@
             [helper.shell :as shell]
             [helper.status :as status]))
 
-(defn main[args]
+(defn -main[& args]
   (env/assert-min-versions)
   (let [cmd (first args)]
     (when (not (#{"gen-code" "check"} cmd))
@@ -14,4 +14,5 @@
     (shell/command ["clojure" "-X:apply-import-vars:script" cmd])
     nil))
 
-(main *command-line-args*)
+(env/when-invoked-as-script
+ (apply -main *command-line-args*))

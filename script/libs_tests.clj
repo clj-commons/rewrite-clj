@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns libs-test
+(ns libs-tests
   "Test 3rd party libs against rewrite-clj head"
   (:require [babashka.curl :as curl]
             [babashka.fs :as fs]
@@ -10,6 +10,7 @@
             [docopt.core :as docopt]
             [docopt.match :as docopt-match]
             [doric.core :as doric]
+            [helper.env :as env]
             [helper.shell :as shell]
             [helper.status :as status]
             [io.aviso.ansi :as ansi]
@@ -551,7 +552,8 @@ Options:
 
 Specifying no lib-names selects all libraries.")
 
-(defn main [args]
+(defn -main [& args]
+  (env/assert-min-versions)
   (if-let [opts (-> docopt-usage docopt/parse (docopt-match/match-argv args))]
     (let [lib-names (get opts "<lib-name>")
           requested-libs (if (zero? (count lib-names))
@@ -572,4 +574,5 @@ Specifying no lib-names selects all libraries.")
       nil)
     (status/fatal docopt-usage)))
 
-(main *command-line-args*)
+(env/when-invoked-as-script
+ (apply -main *command-line-args*))

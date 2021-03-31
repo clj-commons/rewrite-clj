@@ -21,10 +21,11 @@
       (status/line :detail "All Node.js dependencies seem up to date.")
       (status/line :detail "(warning: deps are only checked against installed ./node_modules)"))))
 
-(defn check-outdated[]
+(defn -main[]
   (env/assert-min-versions)
   (check-clojure)
   (check-nodejs)
   (status/line :detail "\nDone."))
 
-(check-outdated)
+(env/when-invoked-as-script
+ (-main))
