@@ -23,9 +23,9 @@ A library that reads and writes Clojure, ClojureScript and https://github.com/ed
 
 * Migration from https://github.com/lread/rewrite-cljc-playground[rewrite-cljc-playground] complete.
 Rewrite-cljc-playground is where I first merged rewrite-clj v0 and rewrite-cljs.
-* We are automatically link:doc/02-developer-guide.adoc#libs-test[testing against popular libraries].
+* We are automatically link:#used-in[testing against popular libraries].
 We patch them to use rewrite-clj v1 and then run their test suites.
-Only a minor failure on zprint v1.1.1 was found due to intentional breaking changes in namespaced maps.
+No major issues have been found.
 * Please review link:CHANGELOG.adoc[change log] for an overview of all v1 changes.
 * I am very conservative on making any further v0->v1 breaking changes, but am open to breaking changes to any of the new v1 work.
 
@@ -50,6 +50,7 @@ Some projects using rewrite-clj v1
 * https://github.com/liquidz/antq[antq] ^🐥^
 * https://github.com/borkdude/carve[carve] ^🐥^ (in dev)
 * https://github.com/weavejester/cljfmt[cljfmt] ^🐥^ (in dev)
+* https://github.com/greglook/cljstyle[cljstyle] ^🐥^
 * https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] ^🐥^
 * https://github.com/borkdude/rewrite-edn[rewrite-edn] ^🐥^
 * https://github.com/lread/test-doc-blocks[test-doc-blocks] ^🐥^
@@ -57,7 +58,6 @@ Some projects using rewrite-clj v1
 Some projects using rewrite-clj v0 and/or rewrite-cljs
 
 * https://github.com/mauricioszabo/atom-chlorine[atom-chlorine] ^📍^
-* https://github.com/greglook/cljstyle[cljstyle] ^🐥^ ^🩹^
 * https://github.com/Olical/depot[depot] ^🐥^ ^🩹^
 * https://github.com/jonase/kibit[kibit] ^🐥^
 * https://github.com/xsc/lein-ancient[lein-ancient] ^🐥^
@@ -73,7 +73,7 @@ Have an update? Let us know!
 
 ^🐥^ [.small]#canary tested against rewrite-clj v1 link:doc/02-developer-guide.adoc#libs-test[lib test suite]# +
 ^🩹^ [.small]#source required minor change to work with rewrite-clj v1# +
-^📍^ [.small]#no easy to run unit tests found for this project#
+^📍^ [.small]#no easy to run automated unit tests found for this project#
 
 == Versioning
 

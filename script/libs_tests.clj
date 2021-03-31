@@ -162,15 +162,6 @@
     (shcmd-no-exit ["git" "--no-pager" "diff" "--no-index" orig-filename fname])))
 
 ;;
-;; antq
-;;
-(defn antq-patch [{:keys [home-dir rewrite-clj-version]}]
-  (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
-               :removals #{'lread/rewrite-cljc}
-               :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}})
-  (patch-rewrite-cljc-sources home-dir))
-
-;;
 ;; carve
 ;;
 (defn carve-patch [{:keys [home-dir rewrite-clj-version]}]
@@ -204,18 +195,7 @@
 (defn- cljstyle-patch [{:keys [home-dir rewrite-clj-version]}]
   (patch-deps {:filename (str (fs/file home-dir "project.clj"))
                :removals #{'rewrite-clj}
-               :additions [['rewrite-clj rewrite-clj-version]]})
-
-  (status/line :detail "=> cljstyle needs to hacks to work with rewrite-clj v1")
-  (status/line :detail "=> hack 1 of 2: update ref to internal use of StringNode")
-  (replace-in-file (str (fs/file home-dir "src/cljstyle/format/zloc.clj"))
-                   "rewrite_clj.node.string.StringNode"
-                   "rewrite_clj.node.stringz.StringNode")
-
-  (status/line :detail "=> hack 2 of 2: update test expectation of exception type")
-  (replace-in-file (str (fs/file home-dir "test/cljstyle/task_test.clj"))
-                   "java.lang.Exception: Unexpected"
-                   "clojure.lang.ExceptionInfo: Unexpected"))
+               :additions [['rewrite-clj rewrite-clj-version]]}))
 
 ;;
 ;; depot
@@ -371,9 +351,8 @@
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "test"]]}
            {:name "cljstyle"
-            :version "0.14.0"
+            :version "0.15.0"
             :platforms [:clj]
-            :note "2 minor hacks to pass with rewrite-clj v1"
             :github-release {:repo "greglook/cljstyle"
                              :via :tag}
             :patch-fn cljstyle-patch
@@ -382,7 +361,7 @@
                         ["lein" "test"]]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.03.24-00.41.55"
+            :version "2021.03.30-20.42.34"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn cli-deps-tree
@@ -452,7 +431,7 @@
             :prep-fn refactor-nrepl-prep
             :test-cmds [["lein" "with-profile" "+1.10,+plugin.mranderson/config" "test"]]}
            {:name "test-doc-blocks"
-            :version "1.0.116-alpha"
+            :version "1.0.124-alpha"
             :platforms [:clj :cljs]
             :note "generates tests under clj, but can also be run under cljs"
             :github-release {:repo "lread/test-doc-blocks"
