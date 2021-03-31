@@ -3,19 +3,16 @@
 (ns update-readme
   "Script to update README.adoc to credit contributors
   Run manually as needed."
-  (:require [babashka.classpath :as cp]
-            [clojure.edn :as edn]
+  (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as string]
+            [helper.fs :as fs]
+            [helper.shell :as shell]
+            [helper.status :as status]
             [hiccup.util :as hu]
             [hiccup2.core :as h])
   (:import (java.nio.file Files Paths CopyOption StandardCopyOption)
            (java.nio.file.attribute FileAttribute)))
-
-(cp/add-classpath "./script")
-(require '[helper.fs :as fs]
-         '[helper.shell :as shell]
-         '[helper.status :as status])
 
 (def contributions-lookup
   {:code-rewrite-clj-v1  "💻 rewrite-clj v1"
@@ -63,7 +60,7 @@
     [:link {:type "text/css", :href style, :rel "stylesheet"}]))
 
 (defn generate-contributor-html [github-id contributions]
-  (str 
+  (str
    (h/html
     [:head
      (include-css "https://fonts.googleapis.com/css?family=Fira+Code&display=swap")
@@ -171,9 +168,9 @@
         (fs/delete-file-recursively (.toFile work-dir) true)
         (throw e)))))
 
-(defn- sort-contributors 
+(defn- sort-contributors
   "Maybe not perfect but the aim for now is to sort by number of contributions then github id.
-   Maybe I should just sort by github id?" 
+   Maybe I should just sort by github id?"
   [contributors]
   (reduce-kv (fn [m k v]
                (assoc m k (sort-by (juxt #(- (count (:contributions %)))

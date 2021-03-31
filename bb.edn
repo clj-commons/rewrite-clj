@@ -1,0 +1,7 @@
+{:paths ["script"]
+ :deps {org.clojure/data.zip {:mvn/version "1.0.0"}
+        io.aviso/pretty {:mvn/version "0.1.36"}
+        docopt/docopt {:git/url "https://github.com/nubank/docopt.clj"
+                       :sha "98814f559d2e50fdf10f43cbe3b7da0ca3cca423"}
+        doric/doric {:mvn/version "0.9.0"}
+        version-clj/version-clj {:mvn/version "0.1.2"}}}

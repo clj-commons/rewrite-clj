@@ -1,12 +1,9 @@
 #!/usr/bin/env bb
 
 (ns apply-import-vars
-  (:require [babashka.classpath :as cp]))
-
-(cp/add-classpath "./script")
-(require '[helper.env :as env]
-         '[helper.shell :as shell]
-         '[helper.status :as status])
+  (:require [helper.env :as env]
+            [helper.shell :as shell]
+            [helper.status :as status]))
 
 (defn main[args]
   (env/assert-min-versions)

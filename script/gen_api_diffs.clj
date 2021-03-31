@@ -1,15 +1,12 @@
 #!/usr/bin/env bb
 
 (ns gen-api-diffs
-  (:require [babashka.classpath :as cp]
-            [clojure.java.io :as io]
-            [clojure.string :as string]))
-
-(cp/add-classpath "./script")
-(require '[helper.env :as env]
-         '[helper.fs :as fs]
-         '[helper.shell :as shell]
-         '[helper.status :as status])
+  (:require [clojure.java.io :as io]
+            [clojure.string :as string]
+            [helper.env :as env]
+            [helper.fs :as fs]
+            [helper.shell :as shell]
+            [helper.status :as status]))
 
 (defn install-locally []
   (status/line :info "installing rewrite-clj v1 locally from dev")

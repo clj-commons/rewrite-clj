@@ -1,15 +1,11 @@
 #!/usr/bin/env bb
 
 (ns sci-test-gen-native-image
-  (:require
-   [babashka.classpath :as cp]
-   [clojure.java.io :as io]))
-
-(cp/add-classpath "./script")
-(require '[helper.env :as env]
-         '[helper.graal :as graal]
-         '[helper.shell :as shell]
-         '[helper.status :as status])
+  (:require [clojure.java.io :as io]
+            [helper.env :as env]
+            [helper.graal :as graal]
+            [helper.shell :as shell]
+            [helper.status :as status]))
 
 (defn expose-api-to-sci []
   (status/line :info "Expose rewrite-clj API to sci")

@@ -1,3 +1,4 @@
+;; Run via clojure in service of sci native tests
 (ns sci-test-gen-publics
   (:require [clojure.java.io :as io]
             [clojure.pprint :as pprint]

@@ -1,12 +1,9 @@
 #!/usr/bin/env bb
 
 (ns sci_jvm_test
-  (:require [babashka.classpath :as cp]))
-
-(cp/add-classpath "./script")
-(require '[helper.env :as env]
-         '[helper.shell :as shell]
-         '[helper.status :as status])
+  (:require [helper.env :as env]
+            [helper.shell :as shell]
+            [helper.status :as status]))
 
 (env/assert-min-versions)
 (status/line :info "Exposing rewrite-clj API to sci")

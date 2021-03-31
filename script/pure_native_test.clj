@@ -1,16 +1,12 @@
 #!/usr/bin/env bb
 
 (ns native-test
-  (:require [babashka.classpath :as cp]
-            [clojure.java.io :as io]))
-
-(cp/add-classpath "./script")
-
-(require '[helper.env :as env]
-         '[helper.fs :as fs]
-         '[helper.graal :as graal]
-         '[helper.shell :as shell]
-         '[helper.status :as status] )
+  (:require [clojure.java.io :as io]
+            [helper.env :as env]
+            [helper.fs :as fs]
+            [helper.graal :as graal]
+            [helper.shell :as shell]
+            [helper.status :as status]))
 
 (defn generate-test-runner [dir]
   (status/line :info "Generate test runner")

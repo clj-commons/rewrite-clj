@@ -1,12 +1,9 @@
 #!/usr/bin/env bb
 
 (ns doc_tests
-  (:require [babashka.classpath :as cp]))
-
-(cp/add-classpath "./script")
-(require '[helper.env :as env]
-         '[helper.shell :as shell]
-         '[helper.status :as status])
+  (:require [helper.env :as env]
+            [helper.shell :as shell]
+            [helper.status :as status]))
 
 (defn generate-doc-tests []
   (status/line :info "Generating tests for code blocks in documents")

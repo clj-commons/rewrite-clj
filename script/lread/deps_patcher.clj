@@ -1,3 +1,4 @@
+;; Called with clojure in support of libs tests
 (ns lread.deps-patcher
   "Quick and dirty little project.clj and deps.edn patcher"
   (:require [rewrite-clj.zip :as z]))

@@ -1,14 +1,11 @@
 #!/usr/bin/env bb
 
-(ns clj_tests
-  (:require [babashka.classpath :as cp]
-            [clojure.string :as string]
-            [clojure.tools.cli :as cli] ))
-
-(cp/add-classpath "./script")
-(require '[helper.env :as env]
-         '[helper.shell :as shell]
-         '[helper.status :as status])
+(ns clj-tests
+  (:require [clojure.string :as string]
+            [clojure.tools.cli :as cli]
+            [helper.env :as env]
+            [helper.shell :as shell]
+            [helper.status :as status]))
 
 (def allowed-clojure-versions '("1.9" "1.10"))
 (def default-clojure-version "1.10")

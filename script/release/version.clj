@@ -1,11 +1,7 @@
 (ns release.version
-  (:require [babashka.classpath :as cp]
-            [clojure.edn :as edn]
-            [clojure.string :as string]))
-
-(cp/add-classpath "script")
-
-(require '[helper.shell :as shell])
+  (:require [clojure.edn :as edn]
+            [clojure.string :as string]
+            [helper.shell :as shell]))
 
 (defn- repo-commit-count
   "Number of commits in the repo"

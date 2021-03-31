@@ -1,3 +1,4 @@
+;; Interperted as part of sci native tests
 (ns sci-test-runner
   "Sci interpreted test runner, grabbed concepts I needed from cognitect.test-runner."
   (:require [clojure.java.io :as io]
