@@ -8,9 +8,10 @@
 
 (def comment-node
   (gen/fmap
-   (fn [[text eol]]
-     (node/comment-node (str text eol)))
+   (fn [[prefix text eol]]
+     (node/comment-node prefix (str text eol)))
    (gen/tuple
+    (gen/elements [";" "#!"])
     (gen/such-that
      #(re-matches #"[^\r\n]*" %)
      gen/string-ascii)

@@ -5,7 +5,7 @@
 
 ;; ## Node
 
-(defrecord CommentNode [s]
+(defrecord CommentNode [prefix s]
   node/Node
   (tag [_node] :comment)
   (node-type [_node] :comment)
@@ -13,9 +13,9 @@
   (sexpr* [_node _opts]
     (throw (ex-info "unsupported operation" {})))
   (length [_node]
-    (+ 1 (count s)))
+    (+ (count prefix) (count s)))
   (string [_node]
-    (str ";" s))
+    (str prefix s))
 
   Object
   (toString [node]
@@ -28,9 +28,11 @@
 (defn comment-node
   "Create node representing a comment with text `s`.
 
-   `s` should:
-   - not specify the first leading semicolon
-   - usually include the trailing newline character, otherwise subsequent nodes will be on the comment line
+   You may optionally specify a `prefix` of `\";\"` or `\"#!\"`, defaults is `\";\"`.
+
+   Argument `s`:
+   - must not include the `prefix`
+   - usually includes the trailing newline character, otherwise subsequent nodes will be on the comment line
 
    ```Clojure
    (require '[rewrite-clj.node :as n])
@@ -38,10 +40,17 @@
    (-> (n/comment-node \"; my comment\\n\")
        n/string)
    ;; => \";; my comment\\n\"
+
+   (-> (n/comment-node \"#!\" \"/usr/bin/env bb\\n\")
+       n/string)
+   ;; => \"#!/usr/bin/env bb\\n\"
    ```"
-  [s]
-  {:pre [(re-matches #"[^\r\n]*[\r\n]?" s)]}
-  (->CommentNode s))
+  ([s]
+   (comment-node ";" s))
+  ([prefix s]
+   {:pre [(and (re-matches #"[^\r\n]*[\r\n]?" s)
+               (or (= prefix ";") (= prefix "#!")))]}
+   (->CommentNode prefix s)))
 
 (defn comment?
   "Returns true if `node` is a comment."

@@ -318,7 +318,10 @@
     ";"
     ";;"
     ";\n"
-    ";;\n"))
+    ";;\n"
+    "#!shebang comment\n"
+    "#! this is a comment"
+    "#!\n"))
 
 (deftest t-parsing-auto-resolve-keywords
   (are [?s ?sexpr-default ?sexpr-custom]
@@ -345,7 +348,7 @@
     "#:abc   {:x 1, :y 1}"
     {:abc/x 1, :abc/y 1}
 
-    "#:abc  ,,, \n\n {:x 1 :y 2}" 
+    "#:abc  ,,, \n\n {:x 1 :y 2}"
     {:abc/x 1, :abc/y 2}
 
     "#:foo{:kw 1, :n/kw 2, :_/bare 3, 0 4}"
@@ -391,7 +394,7 @@
     {:?_current-ns_?/a {:?_current-ns_?/b 1}}
     {:booya.fooya/a {:booya.fooya/b 1}}))
 
-(deftest parsing-auto-resolve-ns-alias-maps 
+(deftest parsing-auto-resolve-ns-alias-maps
   (are [?s ?sexpr-default ?sexpr-custom]
        (let [n (p/parse-string ?s)]
          (is (= :namespaced-map (node/tag n)))

@@ -20,7 +20,7 @@
       ;; numbers
 
       ;; note that we do have an integer-node, but rewrite-clj never parses to it
-      ;; so we never coerce to it either 
+      ;; so we never coerce to it either
       3                      :token      :token
       3N                     :token      :token
       3.14                   :token      :token
@@ -159,6 +159,7 @@
            (is (= ?tag (node/tag n)))
            (is (= ?type (protocols/node-type n))))
       ";; comment"      :comment        :comment
+      "#! comment"      :comment        :comment
       "#(+ 1 %)"        :fn             :fn
       ":my-kw"          :token          :keyword
       "^:m1 [1 2 3]"    :meta           :meta

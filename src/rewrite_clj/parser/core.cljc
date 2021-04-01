@@ -1,6 +1,6 @@
 (ns ^:no-doc rewrite-clj.parser.core
   (:require ;; using internal node nses rather than public rewrite-clj.node
-            ;; allows us to use rewrite-clj to generate code for import-vars target nses 
+            ;; allows us to use rewrite-clj to generate code for import-vars target nses
             [rewrite-clj.node.comment :refer [comment-node]]
             [rewrite-clj.node.fn :refer [fn-node]]
             [rewrite-clj.node.meta :refer [meta-node raw-meta-node]]
@@ -98,7 +98,7 @@
 (defmethod parse-next* :comment
   [#?(:cljs ^not-native reader :default reader)]
   (reader/ignore reader)
-  (comment-node (reader/read-include-linebreak reader)))
+  (comment-node ";" (reader/read-include-linebreak reader)))
 
 ;; ### Special Values
 
@@ -123,12 +123,17 @@
   (reader/unread reader \#)
   (parse-token reader))
 
+(defn- parse-shebang-comment [reader]
+  (reader/ignore reader)
+  (comment-node "#!" (reader/read-include-linebreak reader)))
+
 (defmethod parse-next* :sharp
   [#?(:cljs ^not-native reader :default reader)]
   (reader/ignore reader)
   (case (reader/peek reader)
     nil (reader/throw-reader reader "Unexpected EOF.")
-    \# (read-symbolic-value reader) 
+    \# (read-symbolic-value reader)
+    \! (parse-shebang-comment reader)
     \{ (set-node (parse-delim reader \}))
     \( (fn-node (parse-delim reader \)))
     \" (regex-node (parse-regex reader))

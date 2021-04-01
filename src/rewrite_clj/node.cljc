@@ -210,9 +210,11 @@
 (defn comment-node
   "Create node representing a comment with text `s`.
 
-   `s` should:
-   - not specify the first leading semicolon
-   - usually include the trailing newline character, otherwise subsequent nodes will be on the comment line
+   You may optionally specify a `prefix` of `\";\"` or `\"#!\"`, defaults is `\";\"`.
+
+   Argument `s`:
+   - must not include the `prefix`
+   - usually includes the trailing newline character, otherwise subsequent nodes will be on the comment line
 
    ```Clojure
    (require '[rewrite-clj.node :as n])
@@ -220,8 +222,13 @@
    (-> (n/comment-node \"; my comment\\n\")
        n/string)
    ;; => \";; my comment\\n\"
+
+   (-> (n/comment-node \"#!\" \"/usr/bin/env bb\\n\")
+       n/string)
+   ;; => \"#!/usr/bin/env bb\\n\"
    ```"
-  [s] (rewrite-clj.node.comment/comment-node s))
+  ([s] (rewrite-clj.node.comment/comment-node s))
+  ([prefix s] (rewrite-clj.node.comment/comment-node prefix s)))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.comment
 (defn comment?

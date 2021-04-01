@@ -15,6 +15,7 @@
           (is (= ?expected-sexpr-able? (n/sexpr-able? n))))
       ","               :comma          :comma              false
       "; comment"       :comment        :comment            false
+      "#! comment"      :comment        :comment            false
       "@deref"          :deref          :deref              true
       "#(fn %1)"        :fn             :fn                 true
       ":my-kw"          :token          :keyword            true
