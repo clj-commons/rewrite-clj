@@ -16,7 +16,11 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+=== v1.0.605-alpha
+
 * rewrite-clj now understands the `#!` comment, a construct often used in scripts https://github.com/clj-commons/rewrite-clj/issues/145[#145]
+
+https://github.com/clj-commons/rewrite-clj/compare/v1.0.594-alpha\...v1.0.605-alpha[Gritty details of changes for this release]
 
 === v1.0.594-alpha
 
