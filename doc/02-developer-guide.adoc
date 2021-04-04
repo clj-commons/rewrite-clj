@@ -21,7 +21,7 @@ On Windows we only test against JDK11 as tool setup for JDK8 on Windows seemed o
 * NodeJs v12 or above
 * Clojure v1.10.1.697 or above for `clojure` command
 ** Note that rewrite-clj v1 itself supports Clojure v1.9 and above
-* Babashka v0.3.1 or above
+* Babashka v0.3.2 or above
 * GraalVM v21.0.0 (if you want to run GraalVM native image tests)
 
 === Windows Notes

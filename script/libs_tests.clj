@@ -10,6 +10,7 @@
             [docopt.core :as docopt]
             [docopt.match :as docopt-match]
             [doric.core :as doric]
+            [helper.deps-patcher :as deps-patcher]
             [helper.env :as env]
             [helper.shell :as shell]
             [helper.status :as status]
@@ -131,24 +132,19 @@
                     (spit f new-content))))
               (fs/glob home-dir "**/*.{clj,cljc,cljs}"))))
 
-(defn- patch-deps [{:keys [filename removals additions]}]
+(defn- patch-deps [{:keys [filename] :as opts}]
   (status/line :detail (format "=> Patching deps in: %s" filename))
-  (shcmd ["clojure" "-X:deps-patcher"
-                  (if (string/ends-with? filename "deps.edn")
-                    "update-deps-deps"
-                    "update-project-deps")
-                  :filename (pr-str filename)
-                  :removals (str removals)
-                  :additions (str additions)]))
+  (if (string/ends-with? filename "deps.edn")
+    (deps-patcher/update-deps-deps opts)
+    (deps-patcher/update-project-deps opts)))
 
 ;;
-;; Generic patch for deps.edn rewrite-clj v1 projects
+;; Generic patch for deps.edn rewrite-clj v1 projects to v1 current
 ;;
 (defn deps-edn-v1-patch [{:keys [home-dir rewrite-clj-version]}]
   (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
                :removals #{'rewrite-clj 'rewrite-clj/rewrite-clj}
-               :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}})
-  (patch-rewrite-cljc-sources home-dir))
+               :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}}))
 
 (defn- replace-in-file [fname match replacement]
   (let [orig-filename (str fname ".orig")

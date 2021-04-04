@@ -96,7 +96,7 @@
 
            ;;
            ;; Deployment
-           ;; 
+           ;;
            :jar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.206"}}
                  :exec-fn hf.depstar/jar
                  :exec-args {:jar "target/rewrite-clj.jar"
@@ -119,12 +119,5 @@
            :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "0.12.2"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.30"} ;; to rid ourselves of logger warnings
                                    }
-                      :main-opts ["-m" "antq.core"]}
-
-           ;;
-           ;; 3rd party lib testing support
-           ;;
-
-           :deps-patcher {:extra-paths ["script"]
-                          :ns-default lread.deps-patcher}}}
+                      :main-opts ["-m" "antq.core"]}}}
 
