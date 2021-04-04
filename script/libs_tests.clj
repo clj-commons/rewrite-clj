@@ -154,9 +154,10 @@
     (let [new-content (string/replace content match replacement)]
       (if (= new-content content)
         (throw (ex-info (format "hacking file failed: %s" fname) {}))
-        (spit fname new-content)))
-    (status/line :detail (format "-> here's the diff for %s" fname))
-    (shcmd-no-exit ["git" "--no-pager" "diff" "--no-index" orig-filename fname])))
+        (spit fname new-content)))))
+
+(defn- show-patch-diff [{:keys [home-dir]}]
+  (shcmd-no-exit ["git" "--no-pager" "diff"] {:dir home-dir}))
 
 ;;
 ;; carve
@@ -299,9 +300,7 @@
             (str (subs content 0 ndx)
                  replace-str
                  (subs content (+ ndx (count find-str)))))
-      (throw (ex-info "hacking zprint failed" {})))
-    (status/line :detail (format "-> here's the diff for %s" src-filename))
-    (shcmd-no-exit ["git" "--no-pager" "diff" "--no-index" orig-filename src-filename])))
+      (throw (ex-info "hacking zprint failed" {})))))
 
 (defn- zprint-prep [{:keys [target-root-dir home-dir]}]
   (status/line :detail "=> Installing not-yet-released expectations/cljc-test")
@@ -466,6 +465,8 @@
         lib (assoc lib :home-dir home-dir)]
     (status/line :detail "git init-ing target, some libs expect that they were cloned")
     (shcmd ["git" "init"] {:dir home-dir})
+    (status/line :detail "git adding, so that we can easily show effect of our patches later")
+    (shcmd ["git" "add" "."] {:dir home-dir})
 
     (when patch-fn
       (status/line :info (format "%s: Patching" name))
@@ -475,6 +476,8 @@
       (prep-fn lib))
     (when (not show-deps-fn)
       (throw (ex-info (format "missing show-deps-fn for %s" name) {})))
+    (status/line :info (format "%s: Effect of our patches" name))
+    (show-patch-diff lib)
     (status/line :info (format "%s: Deps report" name))
     (show-deps-fn lib)
     (when-not test-cmds
