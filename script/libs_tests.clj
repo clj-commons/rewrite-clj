@@ -362,7 +362,7 @@
            {:name "depot"
             :platforms [:clj]
             :note "1 patch required due to using, but not requiring, rewrite-clj.node"
-            :version "2.1.0"
+            :version "2.2.0"
             :github-release {:repo "Olical/depot"
                              :via :tag
                              :version-prefix "v"}
