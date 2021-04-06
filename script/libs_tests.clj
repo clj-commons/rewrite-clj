@@ -144,7 +144,7 @@
 (defn deps-edn-v1-patch [{:keys [home-dir rewrite-clj-version]}]
   (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
                :removals #{'rewrite-clj 'rewrite-clj/rewrite-clj}
-               :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}}))
+               :additions [['rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}]]}))
 
 (defn- replace-in-file [fname match replacement]
   (let [orig-filename (str fname ".orig")
@@ -165,7 +165,7 @@
 (defn carve-patch [{:keys [home-dir rewrite-clj-version]}]
   (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
                :removals #{'borkdude/rewrite-cljc}
-               :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}})
+               :additions [['rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}]]})
   (patch-rewrite-cljc-sources home-dir))
 
 ;;
@@ -184,7 +184,7 @@
 (defn- clojure-lsp-patch [{:keys [home-dir rewrite-clj-version]}]
   (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
                   :removals #{'rewrite-clj/rewrite-clj}
-                  :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}}))
+                  :additions [['rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}]]}))
 
 ;;
 ;; cljstyle
@@ -201,7 +201,7 @@
 (defn depot-patch [{:keys [home-dir rewrite-clj-version]}]
   (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
                :removals #{'rewrite-clj/rewrite-clj}
-               :additions {'rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}}})
+               :additions [['rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}]]})
   (patch-rewrite-cljc-sources home-dir)
   (status/line :detail "=> depot uses but does not require rewrite-clj.node, need to adjust for rewrite-clj v1")
   (replace-in-file (str (fs/file home-dir "src/depot/zip.clj"))
@@ -228,9 +228,6 @@
         ;; done with exercising my rewrite-clj skills for now! :-)
         (string/replace #"rewrite-clj \"[0-9.]+\""
                         (format "rewrite-clj \"%s\"" rewrite-clj-version))
-        ;; lein-ancient uses pedantic? :abort, so need to match clojure versions
-        (string/replace #"\[org.clojure/clojure .*\]"
-                        "[org.clojure/clojure \"1.10.3\" :scope \"provided\"]")
         (->> (spit p)))))
 
 ;;

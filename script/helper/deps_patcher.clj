@@ -1,6 +1,7 @@
 (ns helper.deps-patcher
   "Quick and dirty little project.clj and deps.edn patcher"
-  (:require [rewrite-clj.zip :as z]))
+  (:require [rewrite-clj.node :as n]
+            [rewrite-clj.zip :as z]))
 
 (defn- find-project-deps
   "Interested in top level deps only at this time."
@@ -22,10 +23,15 @@
                 last))
 
 (defn- add-project-deps [zloc new-deps]
-  (reduce (fn [zloc dep]
-            (z/append-child zloc dep))
-          (find-project-deps zloc)
-          new-deps))
+  (let [zloc-deps (find-project-deps zloc)
+        indent (n/spaces (-> zloc-deps z/node meta :col))]
+    (reduce (fn [zloc dep]
+              (-> zloc
+                  (z/append-child* (n/newlines 1))
+                  (z/append-child* indent)
+                  (z/append-child dep)))
+            zloc-deps
+            new-deps)))
 
 (defn update-project-deps [{:keys [filename additions removals] :as kwargs}]
   (println kwargs)
@@ -48,9 +54,16 @@
           dep-syms))
 
 (defn- add-deps-deps [zloc new-deps]
-  (reduce (fn [zloc dep] (z/append-child zloc dep))
-          (z/get zloc :deps)
-          (mapcat identity new-deps)))
+  (let [zloc-deps (z/get zloc :deps)
+        indent (n/spaces (-> zloc-deps z/node meta :col))]
+    (reduce (fn [zloc [k v]]
+              (-> zloc
+                  (z/append-child* (n/newlines 1))
+                  (z/append-child* indent)
+                  (z/append-child k)
+                  (z/append-child v)))
+            zloc-deps
+            new-deps)))
 
 (defn update-deps-deps [{:keys [filename additions removals] :as kwargs}]
   (println kwargs)
