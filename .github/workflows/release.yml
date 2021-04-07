@@ -28,9 +28,10 @@ jobs:
         restore-keys: $${ runner.os }}-cljdeps-release-
 
     - name: Setup Java
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v2
       with:
-        java-version: 11
+        distribution: 'adopt'
+        java-version: '11'
 
     - name: Install Babashka
       run: curl -s https://raw.githubusercontent.com/borkdude/babashka/master/install | sudo bash

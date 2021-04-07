@@ -22,9 +22,10 @@ jobs:
         restore-keys: $${ runner.os }}-clj-libs-deps-
 
     - name: Setup Java
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v2
       with:
-        java-version: 11
+        distribution: 'adopt'
+        java-version: '11'
 
     - name: Install planck
       run: |
