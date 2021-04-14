@@ -320,7 +320,7 @@
 ;;
 
 (def libs [{:name "antq"
-            :version "0.12.4"
+            :version "0.13.0"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -354,7 +354,7 @@
                         ["lein" "test"]]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.04.03-18.43.55"
+            :version "2021.04.13-12.47.33"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn cli-deps-tree
