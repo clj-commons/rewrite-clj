@@ -4,6 +4,8 @@ on:
 
 jobs:
   release:
+    environment: release
+
     runs-on: ubuntu-latest
     # I do not know of a way to restrict to the main branch so try to skip the whole job if
     # user selected some other branch from GitHub Actions GUI
