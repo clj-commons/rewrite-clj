@@ -46,4 +46,14 @@ jobs:
       run: bb ./script/coverage.clj
 
     - name: Upload Code Coverage Results
-      run: bash <(curl -s https://codecov.io/bash) -f target/coverage/codecov.json
+      run: |
+        echo "Downloading codecov uploader script"
+        curl -s https://codecov.io/bash > codecov
+        echo "Verifying codedov uploader script"
+        VERSION=$(grep 'VERSION=\".*\"' codecov | cut -d'"' -f2);
+        for i in 1 256 512
+        do
+          sha${i}sum -c <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
+        done
+        echo "Uploading to codecov"
+        bash codecov -f target/coverage/codecov.json
