@@ -7,7 +7,7 @@
             [helper.env :as env]
             [helper.fs :as fs]
             [helper.shell :as shell]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 (def valid-envs '("node" "chrome-headless" "planck"))
 (def valid-optimizations '("none" "advanced"))
@@ -48,9 +48,7 @@
 (defn exit [code msg]
   (if (zero? code)
     (status/line :detail msg)
-    (status/line :error msg))
-  (System/exit code))
-
+    (status/die code msg)))
 
 (defn compile-opts [out-dir {:keys [:env :optimizations]}]
   {:warnings {:fn-deprecated false}
@@ -80,9 +78,7 @@
       (string/split #" ")))
 
 (defn run-tests [{:keys [:env :optimizations :run-granularity] :as opts}]
-  (status/line :info (format "testing ClojureScript source under %s, cljs optimizations: %s"
-                             env
-                             optimizations))
+  (status/line :head "testing ClojureScript source under %s, cljs optimizations: %s" env optimizations)
   (let [test-combo (str env "-" optimizations)
         out-dir (str "target/cljsbuild/test/" test-combo)
         compile-opts-fname (str out-dir "-cljs-opts.edn")
@@ -105,13 +101,12 @@
       "all" (shell/command cmd)
       ;; I sometimes use namespace granularity to figure out which tests are affecting graal testing
       "namespace" (do
-                    (status/line :info "+ one run for each namespace")
+                    (status/line :head "+ one run for each namespace")
                     (let [nses (find-test-namespaces)
                           total-nses (count nses)]
                       (doall (map-indexed
                               (fn [ndx ns]
-                                (status/line :info (format "%d of %d) running tests for namespace: %s"
-                                                           (inc ndx) total-nses ns))
+                                (status/line :head "%d of %d) running tests for namespace: %s" (inc ndx) total-nses ns)
                                 (shell/command (concat cmd ["--namespace" ns])))
                               nses)))))))
 

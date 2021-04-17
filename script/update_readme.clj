@@ -9,9 +9,9 @@
             [helper.env :as env]
             [helper.fs :as fs]
             [helper.shell :as shell]
-            [helper.status :as status]
             [hiccup.util :as hu]
-            [hiccup2.core :as h])
+            [hiccup2.core :as h]
+            [lread.status-line :as status])
   (:import (java.nio.file Files Paths CopyOption StandardCopyOption)
            (java.nio.file.attribute FileAttribute)))
 
@@ -41,7 +41,7 @@
                     (str marker-start "\n" (string/trim new-content) "\n" marker-end))))
 
 (defn update-readme-file! [contributors readme-filename image-info]
-  (status/line :info (str "updating " readme-filename))
+  (status/line :head (str "updating " readme-filename))
   (let [old-text (slurp readme-filename)
         new-text (-> old-text
                      (update-readme-text "CONTRIBUTORS" (generate-asciidoc (:contributors contributors) image-info))
@@ -151,13 +151,13 @@
         (fs/delete-file-recursively (io/file html-file) true)))))
 
 (defn- generate-contributor-images! [contributors image-opts]
-  (status/line :info "generating contributor images")
+  (status/line :head "generating contributor images")
   (let [work-dir (temp-Path "rewrite-clj-update-readme")]
     (try
       (doall
        (for [contributor-type (keys contributors)]
          (do
-           (status/line :detail contributor-type)
+           (status/line :detail (str contributor-type))
            (doall
             (for [{:keys [github-id contributions]} (contributor-type contributors)]
               (do
@@ -181,11 +181,11 @@
              contributors))
 
 (defn- check-prerequesites []
-  (status/line :info  "checking prerequesites")
+  (status/line :head  "checking prerequesites")
   (let [chrome-info (chrome-info)]
     (if chrome-info
-      (status/line :detail  (str "found chrome:" (:exe chrome-info) "\n"
-                                 "version:" (:version chrome-info)))
+      (status/line :detail (str "found chrome:" (:exe chrome-info) "\n"
+                                "version:" (:version chrome-info)))
       (status/line :detail "* error: did not find google chrome - need it to generate images."))
     chrome-info))
 
@@ -197,9 +197,9 @@
         contributors (->> (slurp contributors-source)
                           edn/read-string
                           sort-contributors)]
-    (status/line :info "updating docs to honor those who contributed")
+    (status/line :head "updating docs to honor those who contributed")
     (when (not (check-prerequesites))
-      (status/fatal "pre-requisites not met"))
+      (status/die 1 "pre-requisites not met"))
     (status/line :detail (str  "contributors source: " contributors-source))
     (generate-contributor-images! contributors image-opts)
     (update-readme-file! contributors readme-filename image-opts)

@@ -4,7 +4,7 @@
             [helper.env :as env]
             [helper.fs :as fs]
             [helper.shell :as shell]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 (defn find-graal-prog [prog-name]
   (or (fs/on-path prog-name)
@@ -26,24 +26,25 @@
                           last
                           Long/parseLong)]
     (when (< actual-major min-major)
-      (status/fatal (format "Need a minimum major version of %d for Graal\nnative-image returned: %s"
-                            min-major version-out)))))
+      (status/die 1
+                  "Need a minimum major version of %d for Graal\nnative-image returned: %s"
+                  min-major version-out))))
 
 (defn find-graal-native-image []
-  (status/line :info "Locate GraalVM native-image")
+  (status/line :head "Locate GraalVM native-image")
   (if-let [gu (find-gu-prog)]
     ;; its ok (and simpler and safer) to request an install of native-image when it is already installed
     (do (shell/command [gu "install" "native-image"])
         (let [native-image (or (find-native-image-prog)
-                               (status/fatal "failed to install GraalVM native-image, check your GraalVM installation" 1))]
+                               (status/die 1 "failed to install GraalVM native-image, check your GraalVM installation"))]
           (status/line :detail (str "found: " native-image))
           (assert-min-native-image-version native-image)
           native-image))
-    (status/fatal "GraalVM native image not found nor its installer, check your GraalVM installation" 1)))
+    (status/die 1 "GraalVM native image not found nor its installer, check your GraalVM installation")))
 
 
 (defn clean []
-  (status/line :info "Clean")
+  (status/line :head "Clean")
   (fs/delete-file-recursively ".cpcache" true)
   (fs/delete-file-recursively "classes" true)
 
@@ -52,7 +53,7 @@
   (status/line :detail "all clean"))
 
 (defn aot-compile-sources [classpath ns]
-  (status/line :info "AOT compile sources")
+  (status/line :head "AOT compile sources")
   (shell/command ["java"
                   "-Dclojure.compiler.direct-linking=true"
                   "-cp" classpath
@@ -60,7 +61,7 @@
                   "-e" (str "(compile '" ns ")")]))
 
 (defn compute-classpath [base-alias]
-  (status/line :info "Compute classpath")
+  (status/line :head "Compute classpath")
   (let [alias-opt (str "-A:" base-alias)
         classpath (-> (shell/command ["clojure" alias-opt "-Spath"] {:out :string})
                       :out
@@ -74,7 +75,7 @@
 (defn run-native-image [{:keys [:graal-native-image :graal-reflection-fname
                                 :target-exe :classpath :native-image-xmx
                                 :entry-class]}]
-  (status/line :info "Graal native-image compile AOT")
+  (status/line :head "Graal native-image compile AOT")
   (fs/delete-file-recursively target-exe true)
   (let [native-image-cmd (->> [graal-native-image
                                (str "-H:Name=" target-exe)

@@ -4,14 +4,14 @@
   (:require [clojure.java.io :as io]
             [helper.env :as env]
             [helper.shell :as shell]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 (defn check-clojure []
-  (status/line :info "Checking Clojure deps")
+  (status/line :head "Checking Clojure deps")
   (shell/command-no-exit ["clojure" "-M:outdated"]))
 
 (defn check-nodejs []
-  (status/line :info "Checking Node.js deps")
+  (status/line :head "Checking Node.js deps")
   (when (not (.exists (io/file "node_modules")))
     (status/line :detail "node_modules, not found, installing.")
     (shell/command ["npm" "install"]))

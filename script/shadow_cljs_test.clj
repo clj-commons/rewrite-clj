@@ -4,7 +4,7 @@
   (:require [clojure.java.io :as io]
             [helper.env :as env]
             [helper.shell :as shell]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 (def compiled-tests "target/shadow-cljs/node-test.js")
 
@@ -17,7 +17,7 @@
 
 (defn -main []
   (env/assert-min-versions)
-  (status/line :info "testing ClojureScript source with Shadow CLJS, node, optimizations: none")
+  (status/line :head "testing ClojureScript source with Shadow CLJS, node, optimizations: none")
   (let [shadow-config-file (io/file "shadow-cljs.edn")]
     (.deleteOnExit shadow-config-file)
     (spit shadow-config-file shadow-cljs-cfg)

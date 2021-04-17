@@ -10,7 +10,7 @@
             [helper.env :as env]
             [helper.fs :as fs]
             [helper.shell :as shell]
-            [helper.status :as status]
+            [lread.status-line :as status]
             [release.version :as version]))
 
 (defn clean! []
@@ -23,7 +23,7 @@
        string/trim))
 
 (defn- calculate-version []
-  (status/line :info "Calculating release version")
+  (status/line :head "Calculating release version")
   (let [version (version/calc)]
     (status/line :detail (str "version: " version))
     version))
@@ -33,14 +33,14 @@
         new-content (reduce (fn [in [desc match replacement]]
                               (let [out (string/replace-first in match replacement)]
                                 (if (= in out)
-                                  (status/fatal (format "Expected to %s in %s" desc fname))
+                                  (status/die 1 "Expected to %s in %s" desc fname)
                                   out)))
                             old-content
                             match-replacements)]
     (spit fname new-content)))
 
 (defn- update-user-guide! [version]
-  (status/line :info (str "Updating project version in user guide to " version))
+  (status/line :head (str "Updating project version in user guide to " version))
   (update-file! "doc/01-user-guide.adoc"
                 [["update version in deps.edn example"
                   #"(?m)(^ *rewrite-clj/rewrite-clj *\{ *:mvn/version *\").*(\" *\} *$)"
@@ -63,7 +63,7 @@
 (defn- validate-changelog
   "Certainly not fool proof, but should help for common mistakes"
   []
-  (status/line :info "Validating change log")
+  (status/line :head "Validating change log")
   (let [content (slurp "CHANGELOG.adoc")
         unreleased-status (adoc-section-search content "Unreleased")
         unreleased-breaking-status (adoc-section-search content "Unreleased Breaking Changes")]
@@ -80,13 +80,13 @@
 
     (if (or (not (= :found unreleased-status))
             (= :found-with-no-text unreleased-breaking-status))
-      (status/fatal "Changelog needs some love")
+      (status/die 1 "Changelog needs some love")
       (status/line :detail "Changelog looks good for update by release workflow."))
     {:unreleased unreleased-status
      :unreleased-breaking unreleased-breaking-status}))
 
 (defn- update-changelog! [version last-version {:keys [unreleased-breaking]}]
-  (status/line :info (str "Updating Change Log unreleased headers to release " version))
+  (status/line :head (str "Updating Change Log unreleased headers to release " version))
   (update-file! "CHANGELOG.adoc"
                 (cond-> [["update unreleased header"
                           #"(?ims)^(=+) +unreleased *$(.*?)(^=+)"
@@ -105,7 +105,7 @@
                          (str "$1 v" version)]))))
 
 (defn- create-jar! [version]
-  (status/line :info (str "Creating jar for version " version))
+  (status/line :head (str "Creating jar for version " version))
   (status/line :detail "Reflecting deps in deps.edn to pom.xml")
   (shell/command ["clojure" "-Spom"])
   (status/line :detail "Updating pom.xml version and creating thin jar")
@@ -116,19 +116,19 @@
   "Little blocker to save myself from myself when testing."
   [action]
   (when (not (System/getenv "CI"))
-    (status/fatal (format  "We only want to %s from CI" action))))
+    (status/die 1 "We only want to %s from CI" action)))
 
 (defn- deploy-jar!
   "For this to work, appropriate CLOJARS_USERNAME and CLOJARS_PASSWORD must be in environment."
   []
-  (status/line :info "Deploying jar to clojars")
+  (status/line :head "Deploying jar to clojars")
   (assert-on-ci "deploy a jar")
   (shell/command ["clojure" "-X:deploy:remote"])
   nil)
 
 (defn- commit-changes! [version]
   (let [tag-version (str "v" version)]
-    (status/line :info (str  "Committing and pushing changes made for " tag-version))
+    (status/line :head (str  "Committing and pushing changes made for " tag-version))
     (assert-on-ci "commit changes")
     (status/line :detail "Adding changes")
     (shell/command ["git" "add" "doc/01-user-guide.adoc" "CHANGELOG.adoc" "pom.xml"])
@@ -143,7 +143,7 @@
     nil))
 
 (defn- inform-cljdoc! [version]
-  (status/line :info (str "Informing cljdoc of new version " version))
+  (status/line :head (str "Informing cljdoc of new version " version))
   (assert-on-ci "inform cljdoc")
   (let [exit-code (->  (shell/command-no-exit ["curl" "-X" "POST"
                                                "-d" "project=rewrite-clj/rewrite-clj"
@@ -158,7 +158,7 @@
   (let [cmd (first args)]
     (when (or (not= 1 (count args))
               (not (some #{cmd} '("prep" "deploy-remote" "commit" "validate" "version"))))
-      (status/fatal (string/join "\n"
+      (status/die 1 (string/join "\n"
                                  ["Usage: release cmd"
                                   ""
                                   "Where cmd can be:"
@@ -178,7 +178,7 @@
 (defn -main [& args]
   (let [cmd (validate-args args)
         target-version-filename "target/target-version.txt"]
-    (status/line :info (str  "Attempting release step: " cmd))
+    (status/line :head (str "Attempting release step: " cmd))
     (case cmd
       "prep"
       (do (clean!)
@@ -198,8 +198,9 @@
 
       "commit"
       (if (not (.exists (io/file target-version-filename)))
-        (status/fatal (str "Target version file not found: " target-version-filename
-                           "\nWas prep step run?"))
+        (status/die 1
+                    "Target version file not found: %s\nWas prep step run?"
+                    target-version-filename)
         (let [target-version (slurp target-version-filename)]
           (commit-changes! target-version)
           (inform-cljdoc! target-version)))

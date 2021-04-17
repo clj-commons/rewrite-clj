@@ -6,10 +6,10 @@
             [helper.env :as env]
             [helper.fs :as fs]
             [helper.shell :as shell]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 (defn install-locally []
-  (status/line :info "installing rewrite-clj v1 locally from dev")
+  (status/line :head "installing rewrite-clj v1 locally from dev")
   (shell/command ["mvn" "install"]))
 
 (defn wipe-rewrite-clj-diff-cache [ {:keys [coords version]}]
@@ -24,7 +24,7 @@
       (fs/delete-file-recursively proj-cache-dir true))))
 
 (defn clean [{:keys [:report-dir]} rewrite-clj-v1-coords]
-  (status/line :info "Clean")
+  (status/line :head "Clean")
   (status/line :detail "- report dir")
   (fs/delete-file-recursively report-dir true)
   (.mkdirs (io/file report-dir))
@@ -37,7 +37,7 @@
            (:coords project)) " " (:version project) " " (:lang project)))
 
 (defn diff-apis [{:keys [:notes-dir :report-dir]} projecta projectb report-name extra-args]
-  (status/line :info (str "Diffing " (describe-proj projecta) " and " (describe-proj projectb)))
+  (status/line :head "Diffing %s and %s" (describe-proj projecta) (describe-proj projectb))
   (shell/command (concat ["clojure" "-M:diff-apis"]
                          (map projecta [:coords :version :lang])
                          (map projectb [:coords :version :lang])

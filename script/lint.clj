@@ -5,7 +5,7 @@
             [clojure.string :as string]
             [helper.env :as env]
             [helper.shell :as shell]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 (defn cache-exists? []
   (.exists (io/file ".clj-kondo/.cache")))
@@ -13,8 +13,8 @@
 (defn -main[]
   (env/assert-min-versions)
   (if (not (cache-exists?))
-    (status/line :info "linting and building cache")
-    (status/line :info "linting"))
+    (status/line :head "linting and building cache")
+    (status/line :head "linting"))
 
   (let [lint-args (if (not (cache-exists?))
                     [(-> (shell/command ["clojure" "-A:test-common:script" "-Spath"] {:out :string})
@@ -28,7 +28,8 @@
                                 lint-args
                                 ["--config" ".clj-kondo/ci-config.edn"]))]
     (when (not (some #{exit} '(0 2 3)))
-      (status/fatal (str "clj-kondo existed with unexpected exit code: " exit) exit))
+      (status/die exit
+                  "clj-kondo existed with unexpected exit code: %d" exit))
     (System/exit exit)))
 
 (env/when-invoked-as-script

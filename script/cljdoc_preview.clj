@@ -10,7 +10,7 @@
             [helper.env :as env]
             [helper.fs :as fs]
             [helper.shell :as shell]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 ;;
 ;; constants
@@ -29,7 +29,7 @@
 (defn check-prerequisites []
   (let [missing-cmds (doall (remove #(fs/on-path %) ["git" "docker"]))]
     (when (seq missing-cmds)
-      (status/fatal (string/join "\n" ["Required commands not found:"
+      (status/die 1 (string/join "\n" ["Required commands not found:"
                                        (string/join "\n" missing-cmds)])))))
 ;;
 ;; os/fs support
@@ -51,9 +51,9 @@
     (apply zxml/xml1-> (concat  [xml] tag-path [zxml/text]))))
 
 (defn local-install []
-  (status/line :info "building thin jar")
+  (status/line :head "building thin jar")
   (shell/command ["clojure" "-X:jar"])
-  (status/line :info "installing project to local maven repo")
+  (status/line :head "installing project to local maven repo")
   (shell/command ["clojure" "-X:deploy:local"]))
 
 (defn get-project []
@@ -107,7 +107,7 @@
                                                     {:out :string})]
     (if (zero? exit)
       (-> out string/trim seq)
-      (status/fatal "Failed to check for unpushed commits to branch, is your branch pushed?"))))
+      (status/die 1 "Failed to check for unpushed commits to branch, is your branch pushed?"))))
 
 ;;
 ;; docker
@@ -125,17 +125,20 @@
 
 (defn stop-server [ container ]
   (when (= "down" (status-server container))
-    (status/fatal (str (:name container) " does not appear to be running")))
+    (status/die 1
+                "%s does not appear to be running"
+                (:name container)))
   (shell/command ["docker" "stop" (:name container) "--time" "0"]))
 
 (defn wait-for-server
   "Wait for container's http server to become available, assumes server has valid root page"
   [ container ]
-  (status/line :info (str "Waiting for " (:name container) " to become available"))
+  (status/line :head "Waiting for %s to become available" (:name container))
   (when (= "down" (status-server container))
-    (status/fatal (string/join "\n" [(str  (:name container) " does not seem to be running.")
-                                     "Did you run this script with the start command yet?"])))
-  (status/line :detail (str (:name container) " container is running"))
+    (status/die 1
+                "%s does not seem to be running.\nDid you run this script with the start command yet?"
+                (:name container)))
+  (status/line :detail "%s container is running" (:name container))
   (let [url (str "http://localhost:" (:port container))]
     (loop []
       (try
@@ -154,7 +157,7 @@
 ;;
 
 (defn cljdoc-ingest [container project version]
-  (status/line :info (str "Ingesting project " project " " version "\ninto local cljdoc database"))
+  (status/line :head "Ingesting project %s %s\ninto local cljdoc database" project version)
   (shell/command ["docker"
                   "run" "--rm"
                   "-v" (str cljdoc-db-dir ":/app/data")
@@ -173,10 +176,12 @@
 
 (defn start-cljdoc-server [container]
   (when (= "up" (status-server container))
-    (status/fatal (str (:name container) " is already running")))
-  (status/line :info "Checking for updates")
+    (status/die 1
+                "%s is already running"
+                (:name container)))
+  (status/line :head "Checking for updates")
   (docker-pull-latest container)
-  (status/line :info (str "Starting " (:name container) " on port " (:port container)))
+  (status/line :head "Starting %s on port %d" (:name container) (:port container))
   (shell/command ["docker"
                   "run" "--rm"
                   "--name" (:name container)
@@ -188,11 +193,9 @@
                   (:image container)]))
 
 (defn view-in-browser [url]
-  (status/line :info (str "opening " url " in browser"))
+  (status/line :head "opening %s in browser" url)
   (when (not= 200 (:status (curl/get url {:throw false})))
-    (status/fatal (string/join "\n" ["Could not reach:"
-                                     url
-                                     "\nDid you run this script with ingest command yet?"])))
+    (status/die 1 "Could not reach:\n%s\nDid you run this script with ingest command yet?" url))
   (browse/browse-url url))
 
 

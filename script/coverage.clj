@@ -3,14 +3,14 @@
 (ns coverage
   (:require [helper.env :as env]
             [helper.shell :as shell]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 (defn generate-doc-tests []
-  (status/line :info "Generating tests for code blocks in documents")
+  (status/line :head "Generating tests for code blocks in documents")
   (shell/command ["clojure" "-X:test-doc-blocks" "gen-tests"]))
 
 (defn run-clj-doc-tests []
-  (status/line :info "Running unit and code block tests under Clojure for coverage report")
+  (status/line :head "Running unit and code block tests under Clojure for coverage report")
   (shell/command ["clojure" "-M:test-common:test-docs:kaocha"
                   "--plugin" "cloverage" "--codecov"
                   "--profile" "coverage"

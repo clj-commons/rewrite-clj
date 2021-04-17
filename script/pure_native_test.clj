@@ -6,10 +6,10 @@
             [helper.fs :as fs]
             [helper.graal :as graal]
             [helper.shell :as shell]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 (defn generate-test-runner [dir]
-  (status/line :info "Generate test runner")
+  (status/line :head "Generate test runner")
   (fs/delete-file-recursively dir true)
   (io/make-parents dir)
   (shell/command ["clojure" "-M:script:test-common"
@@ -20,7 +20,7 @@
   (env/assert-min-versions)
   (let [native-image-xmx "6g"
         target-exe "target/rewrite-clj-test"]
-    (status/line :info "Creating native image for test")
+    (status/line :head "Creating native image for test")
     (status/line :detail "java -version")
     (shell/command ["java" "-version"])
     (status/line :detail (str "\nnative-image max memory: " native-image-xmx))
@@ -35,10 +35,9 @@
                                  :classpath classpath
                                  :native-image-xmx native-image-xmx
                                  :entry-class "clj_graal.test_runner"})))
-    (status/line :info "Native image built")
-    (status/line :detail (format "built: %s, %d bytes"
-                                 target-exe (.length (io/file target-exe))))
-    (status/line :info "Running tests natively")
+    (status/line :head "Native image built")
+    (status/line :detail "built: %s, %d bytes" target-exe (.length (io/file target-exe)))
+    (status/line :head "Running tests natively")
     (shell/command [target-exe]))
   nil)
 

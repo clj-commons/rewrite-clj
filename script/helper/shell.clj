@@ -1,7 +1,7 @@
 (ns helper.shell
   (:require [babashka.process :as process]
             [clojure.pprint :as pprint]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 (defn command-no-exit
   "Thin wrapper on babashka.process/process that does not exit on error."
@@ -18,8 +18,8 @@
   ([cmd opts]
    (let [{:keys [exit] :as res} (command-no-exit cmd opts)]
      (if (not (zero? exit))
-       (status/fatal (format "shell exited with %d for:\n %s"
-                             exit
-                             (with-out-str (pprint/pprint cmd)))
-                     exit)
+       (status/die exit
+                   "shell exited with %d for:\n %s"
+                   exit
+                   (with-out-str (pprint/pprint cmd)))
        res))))

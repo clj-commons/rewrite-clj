@@ -4,7 +4,7 @@
   (:require [helper.env :as env]
             [helper.fs :as fs]
             [helper.shell :as shell]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 (defn clean []
   (doseq [dir ["target" ".cpcache .shadow-cljs"]]

@@ -13,8 +13,8 @@
             [helper.deps-patcher :as deps-patcher]
             [helper.env :as env]
             [helper.shell :as shell]
-            [helper.status :as status]
             [io.aviso.ansi :as ansi]
+            [lread.status-line :as status]
             [release.version :as version]))
 
 (defn shcmd-no-exit
@@ -32,7 +32,7 @@
    (shell/command cmd opts)))
 
 (defn- install-local [version]
-  (status/line :info (format "Installing rewrite-clj %s locally" version))
+  (status/line :head "Installing rewrite-clj %s locally" version)
   (let [pom-bak-filename  "pom.xml.canary.bak"]
     (try
       (fs/copy "pom.xml" pom-bak-filename {:replace-existing true :copy-attributes true})
@@ -128,12 +128,12 @@
                       new-content (string/replace content #"(\[rewrite-)cljc(\.\w+\s+:as\s+\w+\])"
                                                   "$1clj$2")]
                   (when (not= content new-content)
-                    (status/line :detail (format "- patching source: %s" f))
+                    (status/line :detail "- patching source: %s" f)
                     (spit f new-content))))
               (fs/glob home-dir "**/*.{clj,cljc,cljs}"))))
 
 (defn- patch-deps [{:keys [filename] :as opts}]
-  (status/line :detail (format "=> Patching deps in: %s" filename))
+  (status/line :detail "=> Patching deps in: %s" filename)
   (if (string/ends-with? filename "deps.edn")
     (deps-patcher/update-deps-deps opts)
     (deps-patcher/update-project-deps opts)))
@@ -150,7 +150,7 @@
   (let [orig-filename (str fname ".orig")
         content (slurp fname)]
     (fs/copy fname orig-filename)
-    (status/line :detail (format "- hacking %s" fname))
+    (status/line :detail "- hacking %s" fname)
     (let [new-content (string/replace content match replacement)]
       (if (= new-content content)
         (throw (ex-info (format "hacking file failed: %s" fname) {}))
@@ -291,7 +291,7 @@
         find-str "(namespace (z/sexpr k))"
         replace-str "(namespace (keyword (z/string k)))"]
     (fs/copy src-filename orig-filename)
-    (status/line :detail (format "- hacking %s" src-filename))
+    (status/line :detail "- hacking %s" src-filename)
     (if-let [ndx (string/last-index-of content find-str)]
       (spit src-filename
             (str (subs content 0 ndx)
@@ -449,14 +449,14 @@
 
 (defn- header [text]
   (let [dashes (apply str (repeat 80 "-"))]
-    (status/line :info (str dashes "\n"
+    (status/line :head (str dashes "\n"
                             text "\n"
                             dashes))))
 
 (defn- test-lib [{:keys [name root patch-fn prep-fn show-deps-fn test-cmds] :as lib}]
   (header name)
   (let [home-dir (do
-                   (status/line :info (format "%s: Fetching" name))
+                   (status/line :head "%s: Fetching" name)
                    (fetch-lib-release lib))
         home-dir (str (fs/file home-dir (or root "")))
         lib (assoc lib :home-dir home-dir)]
@@ -466,32 +466,32 @@
     (shcmd ["git" "add" "."] {:dir home-dir})
 
     (when patch-fn
-      (status/line :info (format "%s: Patching" name))
+      (status/line :head "%s: Patching" name)
       (patch-fn lib))
     (when prep-fn
-      (status/line :info (format "%s: Preparing" name))
+      (status/line :head "%s: Preparing" name)
       (prep-fn lib))
     (when (not show-deps-fn)
       (throw (ex-info (format "missing show-deps-fn for %s" name) {})))
-    (status/line :info (format "%s: Effect of our patches" name))
+    (status/line :head "%s: Effect of our patches" name)
     (show-patch-diff lib)
-    (status/line :info (format "%s: Deps report" name))
+    (status/line :head "%s: Deps report" name)
     (show-deps-fn lib)
     (when-not test-cmds
       (throw (ex-info (format "missing test-cmds for %s" name) {})))
-    (status/line :info (format "%s: Running tests" name))
+    (status/line :head "%s: Running tests" name)
     (let [exit-codes (into [] (map-indexed (fn [ndx cmd]
                                              (let [{:keys [exit]} (shcmd-no-exit cmd {:dir home-dir})]
                                                (if (zero? exit)
-                                                 (status/line :detail (format "=> %s: TESTS %d of %d PASSED\n" name (inc ndx) (count test-cmds)))
-                                                 (status/line :warn (format "=> %s: TESTS %d of %d FAILED" name (inc ndx) (count test-cmds))))
+                                                 (status/line :detail "=> %s: TESTS %d of %d PASSED\n" name (inc ndx) (count test-cmds))
+                                                 (status/line :warn "=> %s: TESTS %d of %d FAILED" name (inc ndx) (count test-cmds)))
                                                exit))
                                            test-cmds))]
       (assoc lib :exit-codes exit-codes))))
 
 (defn- prep-target [target-root-dir]
-  (status/line :info "Prep target")
-  (status/line :detail (format "(re)creating: %s" target-root-dir))
+  (status/line :head "Prep target")
+  (status/line :detail "(re)creating: %s" target-root-dir)
   (when (fs/exists? target-root-dir) (fs/delete-tree target-root-dir))
   (.mkdirs (fs/file target-root-dir))
  )
@@ -500,8 +500,8 @@
 ;; cmds
 ;;
 (defn- report-outdated [requested-libs]
-  (status/line :info "Checking for outdated libs")
-  (status/line :detail (format  "Requested libs: %s" (into [] (map :name requested-libs))))
+  (status/line :head "Checking for outdated libs")
+  (status/line :detail "Requested libs: %s" (into [] (map :name requested-libs)))
   (let [outdated-libs (->> requested-libs
                            (map #(assoc %
                                         :available-version (get-current-version %)
@@ -512,18 +512,18 @@
       (status/line :detail "=> All libs seems up to date"))))
 
 (defn- print-results [results]
-  (status/line :info "Summary")
+  (status/line :head "Summary")
   (println (doric/table [:name :version :platforms :exit-codes] results))
   (when (seq (filter :note results))
     (status/line :detail "Notes")
     (println (doric/table [:name :note] (filter :note results)))))
 
 (defn run-tests [requested-libs]
-  (status/line :info "Testing 3rd party libs")
+  (status/line :head "Testing 3rd party libs")
   (status/line :detail "Test popular 3rd party libs against current rewrite-clj.")
   (let [target-root-dir "target/libs-test"
         rewrite-clj-version (str (version/calc) "-canary")]
-    (status/line :detail (format  "Requested libs: %s" (into [] (map :name requested-libs))))
+    (status/line :detail "Requested libs: %s" (into [] (map :name requested-libs)))
     (install-local rewrite-clj-version)
     (prep-target target-root-dir)
     (let [results (doall (map #(test-lib (assoc %
@@ -568,7 +568,7 @@ Specifying no lib-names selects all libraries.")
         (run-tests requested-libs))
 
       nil)
-    (status/fatal docopt-usage)))
+    (status/die 1 docopt-usage)))
 
 (env/when-invoked-as-script
  (apply -main *command-line-args*))

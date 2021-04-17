@@ -3,7 +3,7 @@
 (ns cljs-watch
   (:require [helper.env :as env]
             [helper.shell :as shell]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 (defn -main []
   (env/assert-min-versions)

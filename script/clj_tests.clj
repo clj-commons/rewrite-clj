@@ -5,7 +5,7 @@
             [clojure.tools.cli :as cli]
             [helper.env :as env]
             [helper.shell :as shell]
-            [helper.status :as status]))
+            [lread.status-line :as status]))
 
 (def allowed-clojure-versions '("1.9" "1.10"))
 (def default-clojure-version "1.10")
@@ -40,17 +40,16 @@
 (defn exit [code msg]
   (if (zero? code)
     (status/line :detail msg)
-    (status/line :error msg))
-  (System/exit code))
+    (status/die code msg)))
 
 (defn run-unit-tests [{:keys [:clojure-version]}]
-  (status/line :info (str "testing clojure source against clojure v" clojure-version))
+  (status/line :head (str "testing clojure source against clojure v" clojure-version))
   (shell/command ["clojure"
                   (str "-M:test-common:kaocha:" clojure-version)
                   "--reporter" "documentation"]))
 
 (defn run-isolated-tests[{:keys [:clojure-version]}]
-  (status/line :info (str "running isolated tests against clojure v" clojure-version))
+  (status/line :head (str "running isolated tests against clojure v" clojure-version))
   (shell/command ["clojure" (str "-M:kaocha:" clojure-version)
                   "--profile" "test-isolated"
                   "--reporter" "documentation"]))
