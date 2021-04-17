@@ -13,6 +13,7 @@
   rewrite-clj.custom-zipper.switchable/defn-switchable clojure.core/defn}
  :linters
  {:unsorted-required-namespaces {:level :warning}
+  :unresolved-var {:exclude [io.aviso.ansi]}
   :unused-namespace
   {:exclude [clojure.test.check]}
   :unused-referred-var

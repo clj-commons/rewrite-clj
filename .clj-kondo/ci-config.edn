@@ -1,1 +1,0 @@
-{:output {:include-files ["^src" "^test" "^script" "^deps.edn"]}}

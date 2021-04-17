@@ -264,7 +264,11 @@ The CI server runs:
 ----
 bb ./script/lint.clj
 ----
-and you can too.
+and you can too. The lint script will build the clj-kondo cache when it is missing.
+If you want to force a rebuild of the cache run:
+----
+bb ./script/lint.clj --rebuild-cache
+----
 
 https://github.com/borkdude/clj-kondo/blob/master/doc/editor-integration.md[Integrate clj-kondo into your editor] to catch mistakes as they happen.
 
