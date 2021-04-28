@@ -11,10 +11,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Ensure lookups for current hostname are handled
-      run: |
-        echo -e "$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)\t$(hostname -f) $(hostname -s)" | sudo tee -a /etc/hosts
-
     - name: Clojure deps cache
       uses: actions/cache@v2
       with:
