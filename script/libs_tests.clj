@@ -354,7 +354,7 @@
                         ["lein" "test"]]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.04.13-12.47.33"
+            :version "2021.04.27-20.17.45"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn cli-deps-tree
@@ -424,7 +424,7 @@
             :prep-fn refactor-nrepl-prep
             :test-cmds [["lein" "with-profile" "+1.10,+plugin.mranderson/config" "test"]]}
            {:name "test-doc-blocks"
-            :version "1.0.124-alpha"
+            :version "1.0.129-alpha"
             :platforms [:clj :cljs]
             :note "generates tests under clj, but can also be run under cljs"
             :github-release {:repo "lread/test-doc-blocks"
