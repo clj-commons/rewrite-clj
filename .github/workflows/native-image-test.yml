@@ -8,11 +8,8 @@ jobs:
     strategy:
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
-        graal-java: [ java8, java11 ]
+        graal-java: [ java11 ]
         test: [ pure, sci ]
-        exclude:
-          - os: windows-latest
-            graal-java: java8
 
     name: ${{ matrix.os }},${{ matrix.graal-java }},${{ matrix.test }}
 
@@ -46,7 +43,7 @@ jobs:
     - name: Install GraalVM
       uses: DeLaGuardo/setup-graalvm@4.0
       with:
-        graalvm: '21.0.0.2'
+        graalvm: '21.1.0'
         java: ${{ matrix.graal-java }}
 
     #

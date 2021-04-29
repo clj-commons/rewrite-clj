@@ -13,8 +13,7 @@ We make use of planck for cljs bootstrap (aka cljs self-hosted) testing.
 Planck is currently not available for Windows.
 
 We test that rewrite-clj operates as expected when natively compile via GraalVM.
-Automated testing is setup using GraalVM v21 for both JDK8 and JDK11.
-On Windows we only test against JDK11 as tool setup for JDK8 on Windows seemed overly arduous.
+Automated testing is setup using GraalVM v21 JDK11.
 
 == Prerequisites
 * Java JDK 1.8 or above
@@ -22,7 +21,7 @@ On Windows we only test against JDK11 as tool setup for JDK8 on Windows seemed o
 * Clojure v1.10.1.697 or above for `clojure` command
 ** Note that rewrite-clj v1 itself supports Clojure v1.9 and above
 * Babashka v0.3.2 or above
-* GraalVM v21.0.0 (if you want to run GraalVM native image tests)
+* GraalVM v21.1.0 JDK 11 (if you want to run GraalVM native image tests)
 
 === Windows Notes
 
@@ -53,7 +52,6 @@ Rename-Item $HOME\deps.clj\deps.exe clojure.exe
 
 ==== GraalVM
 You'll have your own preference, but I find it convenient to install GraalVM on Windows via scoop.
-Both `graalvm11` and `graalvm8` are available.
 
 You'll need to load the appropriate Visual C++ environment variables for GraalVM's native-image to do its work.
 I found it oddly cumbersome to load them from PowerShell, so I work from a cmd shell instead.
@@ -63,8 +61,6 @@ Here's what works on my Windows dev environment:
 ----
 call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
 ----
-
-And finally, I never did figure out how to get the Windows prerequisites setup for the JDK8 version of GraalVM, so I only test on the JDK11 version.
 
 == Setup
 After checking out this project from GitHub,

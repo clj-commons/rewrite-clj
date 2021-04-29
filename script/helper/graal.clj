@@ -22,7 +22,7 @@
         version-out (->> (shell/command [native-image-exe "--version"] {:out :string})
                          :out)
         actual-major (->> version-out
-                          (re-find #"(?i)version (\d+)\.")
+                          (re-find #"(?i)GraalVM (Version )?(\d+)\.")
                           last
                           Long/parseLong)]
     (when (< actual-major min-major)
@@ -87,7 +87,6 @@
                                "--initialize-at-build-time"
                                "-H:Log=registerResource:"
                                "-H:EnableURLProtocols=http,https,jar"
-                               "--enable-all-security-services"
                                "--verbose"
                                "-H:ServiceLoaderFeatureExcludeServices=javax.sound.sampled.spi.AudioFileReader"
                                "-H:ServiceLoaderFeatureExcludeServices=javax.sound.midi.spi.MidiFileReader"
