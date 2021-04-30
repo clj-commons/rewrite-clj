@@ -260,7 +260,7 @@ The CI server runs:
 ----
 bb ./script/lint.clj
 ----
-and you can too. The lint script will build the clj-kondo cache when it is missing.
+and you can too. The lint script will build the clj-kondo cache when it is missing or stale.
 If you want to force a rebuild of the cache run:
 ----
 bb ./script/lint.clj --rebuild-cache
