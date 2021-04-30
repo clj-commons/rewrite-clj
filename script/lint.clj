@@ -10,12 +10,14 @@
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
+(def clj-kondo-cache ".clj-kondo/.cache")
+
 (defn- cache-exists? []
-  (fs/exists? ".clj-kondo/.cache"))
+  (fs/exists? clj-kondo-cache))
 
 (defn- delete-cache []
   (when (cache-exists?)
-    (fs/delete-tree ".clj-kondo/.cache")))
+    (fs/delete-tree clj-kondo-cache)))
 
 (defn- build-cache []
   (status/line :head "clj-kondo: building cache")
@@ -26,8 +28,13 @@
                     "--lint" clj-cp bb-cp])))
 
 (defn- lint []
-  (when (not (cache-exists?))
-    (build-cache))
+  (if (not (cache-exists?))
+    (build-cache)
+    (let [updated-dep-files (fs/modified-since clj-kondo-cache ["deps.edn" "bb.edn"])]
+      (when (seq updated-dep-files)
+        (status/line :detail "Found deps files newer than lint cache: %s" (mapv str updated-dep-files))
+        (delete-cache)
+        (build-cache))))
   (status/line :head "clj-kondo: linting")
   (let [{:keys [exit]}
         (shell/command-no-exit ["clojure" "-M:clj-kondo"
