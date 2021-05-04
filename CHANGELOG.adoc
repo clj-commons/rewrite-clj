@@ -16,6 +16,8 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* rewrite-clj now exports clj-kondo config for its public API https://github.com/clj-commons/rewrite-clj/issues/146[#146]
+
 === v1.0.605-alpha
 
 * rewrite-clj now understands the `#!` comment, a construct often used in scripts https://github.com/clj-commons/rewrite-clj/issues/145[#145]
