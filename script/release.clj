@@ -153,67 +153,72 @@
     (when (not (zero? exit-code))
       (status/line :warn (str  "Informing cljdoc did not seem to work, exited with " exit-code)))))
 
+(def usage (string/join "\n"
+                        ["Valid args: <cmd>"
+                         ""
+                         "Where cmd can be:"
+                         " prep           update user guide, changelog and create jar"
+                         " deploy-remote  deploy jar to clojars"
+                         " commit         commit changes made back to repo, inform cljdoc of release"
+                         ""
+                         "These commands are expected to be run in order from CI."
+                         "Why the awkward separation?"
+                         "To restrict the exposure of our CLOJARS secrets during deploy workflow"
+                         ""
+                         "Additional commands:"
+                         " validate      verify that change log is good for release"
+                         " version       calculate and report version"
+                         " --help         show this help"]))
+
 
 (defn- validate-args [args]
   (let [cmd (first args)]
     (when (or (not= 1 (count args))
-              (not (some #{cmd} '("prep" "deploy-remote" "commit" "validate" "version"))))
-      (status/die 1 (string/join "\n"
-                                 ["Usage: release cmd"
-                                  ""
-                                  "Where cmd can be:"
-                                  " prep           - update user guide, changelog and create jar"
-                                  " deploy-remote  - deploy jar to clojars"
-                                  " commit         - commit changes made back to repo, inform cljdoc of release"
-                                  ""
-                                  "These commands are expected to be run in order from CI."
-                                  "Why the awkward separation?"
-                                  "To restrict the exposure of our CLOJARS secrets during deploy workflow"
-                                  ""
-                                  "Additional commands:"
-                                  " validate      - verify that change log is good for release"
-                                  " version       - calculate and report version"])))
+              (not (some #{cmd} '("prep" "deploy-remote" "commit" "validate" "version" "--help"))))
+      (status/die 1 usage))
     cmd))
 
 (defn -main [& args]
   (let [cmd (validate-args args)
         target-version-filename "target/target-version.txt"]
-    (status/line :head (str "Attempting release step: " cmd))
-    (case cmd
-      "prep"
-      (do (clean!)
-          (let [changelog-status (validate-changelog)
-                target-version (calculate-version)
-                last-version (last-release-tag)]
-            (status/line :detail (str "Last version released: " (or last-version "<none>")))
-            (status/line :detail (str "Target version:        " target-version))
-            (io/make-parents target-version-filename)
-            (spit target-version-filename target-version)
-            (update-user-guide! target-version)
-            (update-changelog! target-version last-version changelog-status)
-            (create-jar! target-version)))
+    (if (= "--help" cmd)
+      (status/line :detail usage)
+      (do
+        (status/line :head (str "Attempting release step: " cmd))
+        (case cmd
+          "prep"
+          (do (clean!)
+              (let [changelog-status (validate-changelog)
+                    target-version (calculate-version)
+                    last-version (last-release-tag)]
+                (status/line :detail (str "Last version released: " (or last-version "<none>")))
+                (status/line :detail (str "Target version:        " target-version))
+                (io/make-parents target-version-filename)
+                (spit target-version-filename target-version)
+                (update-user-guide! target-version)
+                (update-changelog! target-version last-version changelog-status)
+                (create-jar! target-version)))
 
-      "deploy-remote"
-      (deploy-jar!)
+          "deploy-remote"
+          (deploy-jar!)
 
-      "commit"
-      (if (not (.exists (io/file target-version-filename)))
-        (status/die 1
-                    "Target version file not found: %s\nWas prep step run?"
-                    target-version-filename)
-        (let [target-version (slurp target-version-filename)]
-          (commit-changes! target-version)
-          (inform-cljdoc! target-version)))
+          "commit"
+          (if (not (.exists (io/file target-version-filename)))
+            (status/die 1
+                        "Target version file not found: %s\nWas prep step run?"
+                        target-version-filename)
+            (let [target-version (slurp target-version-filename)]
+              (commit-changes! target-version)
+              (inform-cljdoc! target-version)))
 
-      "validate"
-      (do (validate-changelog)
-          nil)
+          "validate"
+          (do (validate-changelog)
+              nil)
 
-      "version"
-      (do (calculate-version)
-          nil))
-
-    (status/line :detail (str "Release step done:" cmd))))
+          "version"
+          (do (calculate-version)
+              nil))
+        (status/line :detail (str "Release step done:" cmd))))))
 
 (env/when-invoked-as-script
  (apply -main *command-line-args*))

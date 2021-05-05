@@ -3,6 +3,7 @@
 (ns outdated
   (:require [clojure.java.io :as io]
             [helper.env :as env]
+            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -21,11 +22,13 @@
       (status/line :detail "All Node.js dependencies seem up to date.")
       (status/line :detail "(warning: deps are only checked against installed ./node_modules)"))))
 
-(defn -main[]
-  (env/assert-min-versions)
-  (check-clojure)
-  (check-nodejs)
-  (status/line :detail "\nDone."))
+(defn -main[& args]
+  (main/run-argless-cmd
+   args
+   (fn []
+     (check-clojure)
+     (check-nodejs)))
+  nil)
 
 (env/when-invoked-as-script
- (-main))
+ (-main *command-line-args*))

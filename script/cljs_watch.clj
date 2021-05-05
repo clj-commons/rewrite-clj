@@ -2,13 +2,17 @@
 
 (ns cljs-watch
   (:require [helper.env :as env]
+            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
-(defn -main []
-  (env/assert-min-versions)
-  (status/line :detail "compiling code, then opening repl, afterwich your web browser will automatically open to figwheel test run summary")
-  (shell/command ["clojure" "-M:test-common:cljs:fig-test"]))
+
+(defn -main [& args]
+  (main/run-argless-cmd
+   args
+   (fn []
+     (status/line :detail "compiling code, then opening repl, afterwich your web browser will automatically open to figwheel test run summary")
+     (shell/command ["clojure" "-M:test-common:cljs:fig-test"]))))
 
 (env/when-invoked-as-script
- (-main))
+ (-main *command-line-args*))

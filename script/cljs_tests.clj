@@ -26,21 +26,28 @@
    ["-h" "--help"]])
 
 (defn usage [options-summary]
-  (->> ["Usage: cljs_test.clj <options>"
+  (->> ["Valid args: <options>"
         options-summary]
        (string/join "\n")))
 
-(defn error-msg [errors]
-  (string/join "\n" errors))
+(defn error-msg [summary errors]
+  (str (string/join "\n" errors)
+       "\n\n"
+       (usage summary)))
 
 (defn validate-args [args]
-  (let [{:keys [options errors summary]} (cli/parse-opts args cli-options)]
+  (let [{:keys [options arguments errors summary]} (cli/parse-opts args cli-options)]
     (cond
       (:help options)
       {:exit-message (usage summary) :exit-code 0}
 
+      (seq arguments)
+      {:exit-message (error-msg summary (map #(str "unexpected argument: " %) arguments))
+       :exit-code 1}
+
       errors
-      {:exit-message (error-msg errors) :exit-code 1}
+      {:exit-message (error-msg summary errors)
+       :exit-code 1}
 
       :else
       {:options options})))

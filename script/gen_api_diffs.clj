@@ -4,6 +4,7 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [helper.env :as env]
+            [helper.main :as main]
             [helper.fs :as fs]
             [helper.shell :as shell]
             [lread.status-line :as status]))
@@ -47,28 +48,30 @@
                           "--report-filename" (str  (io/file report-dir (str report-name ".adoc")))]
                          extra-args)))
 
-(defn -main []
-  (env/assert-min-versions)
-  (let [opts {:notes-dir "doc/diff-notes"
-              :report-dir "doc/generated/api-diffs"}
-        rewrite-clj-v0-lang-clj  {:coords "rewrite-clj/rewrite-clj" :version "0.6.1" :lang "clj"}
-        rewrite-cljs-lang-cljs   {:coords "rewrite-cljs/rewrite-cljs" :version "0.4.5" :lang "cljs"}
-        rewrite-clj-v1-lang-clj {:coords "rewrite-clj/rewrite-clj" :version "1.0.0-alpha" :lang "clj"}
-        rewrite-clj-v1-lang-cljs (assoc rewrite-clj-v1-lang-clj :lang "cljs")
-        existing-to-cljc-args ["--exclude-namespace" "rewrite-clj"
-                               "--exclude-namespace" "rewrite-clj.potemkin"
-                               "--exclude-namespace" "rewrite-clj.custom-zipper.switchable"
-                               "--exclude-namespace" "rewrite-clj.interop"]
-        to-self-args ["--exclude-namespace" "rewrite-clj.potemkin.clojure"]
-        documented-only-args ["--exclude-with" ":no-doc" "--exclude-with" ":skip-wiki"]]
-    (install-locally)
-    (clean opts rewrite-clj-v1-lang-clj)
-    (diff-apis opts rewrite-clj-v0-lang-clj    rewrite-cljs-lang-cljs    "rewrite-clj-v0-lang-clj-and-rewrite-cljs-lang-cljs"                   [])
-    (diff-apis opts rewrite-clj-v0-lang-clj    rewrite-clj-v1-lang-clj   "rewrite-clj-v0-lang-clj-and-rewrite-clj-v1-lang-clj"                  existing-to-cljc-args)
-    (diff-apis opts rewrite-cljs-lang-cljs     rewrite-clj-v1-lang-cljs  "rewrite-cljs-lang-cljs-and-rewrite-clj-v1-lang-cljs"                  existing-to-cljc-args)
-    (diff-apis opts rewrite-clj-v1-lang-cljs   rewrite-clj-v1-lang-clj   "rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj"                 to-self-args)
-    (diff-apis opts rewrite-clj-v1-lang-cljs   rewrite-clj-v1-lang-clj   "rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj-documented-only" (concat to-self-args documented-only-args)))
+(defn -main [& args]
+  (main/run-argless-cmd
+   args
+   (fn []
+     (let [opts {:notes-dir "doc/diff-notes"
+                 :report-dir "doc/generated/api-diffs"}
+           rewrite-clj-v0-lang-clj  {:coords "rewrite-clj/rewrite-clj" :version "0.6.1" :lang "clj"}
+           rewrite-cljs-lang-cljs   {:coords "rewrite-cljs/rewrite-cljs" :version "0.4.5" :lang "cljs"}
+           rewrite-clj-v1-lang-clj {:coords "rewrite-clj/rewrite-clj" :version "1.0.0-alpha" :lang "clj"}
+           rewrite-clj-v1-lang-cljs (assoc rewrite-clj-v1-lang-clj :lang "cljs")
+           existing-to-cljc-args ["--exclude-namespace" "rewrite-clj"
+                                  "--exclude-namespace" "rewrite-clj.potemkin"
+                                  "--exclude-namespace" "rewrite-clj.custom-zipper.switchable"
+                                  "--exclude-namespace" "rewrite-clj.interop"]
+           to-self-args ["--exclude-namespace" "rewrite-clj.potemkin.clojure"]
+           documented-only-args ["--exclude-with" ":no-doc" "--exclude-with" ":skip-wiki"]]
+       (install-locally)
+       (clean opts rewrite-clj-v1-lang-clj)
+       (diff-apis opts rewrite-clj-v0-lang-clj    rewrite-cljs-lang-cljs    "rewrite-clj-v0-lang-clj-and-rewrite-cljs-lang-cljs"                   [])
+       (diff-apis opts rewrite-clj-v0-lang-clj    rewrite-clj-v1-lang-clj   "rewrite-clj-v0-lang-clj-and-rewrite-clj-v1-lang-clj"                  existing-to-cljc-args)
+       (diff-apis opts rewrite-cljs-lang-cljs     rewrite-clj-v1-lang-cljs  "rewrite-cljs-lang-cljs-and-rewrite-clj-v1-lang-cljs"                  existing-to-cljc-args)
+       (diff-apis opts rewrite-clj-v1-lang-cljs   rewrite-clj-v1-lang-clj   "rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj"                 to-self-args)
+       (diff-apis opts rewrite-clj-v1-lang-cljs   rewrite-clj-v1-lang-clj   "rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj-documented-only" (concat to-self-args documented-only-args)))))
   nil)
 
 (env/when-invoked-as-script
- (-main))
+ (-main *command-line-args*))

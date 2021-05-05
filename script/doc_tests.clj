@@ -2,6 +2,7 @@
 
 (ns doc-tests
   (:require [helper.env :as env]
+            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -23,12 +24,15 @@
                   "--dir" "target/test-doc-blocks/test"
                   "--out" "target/cljsbuild/doc-tests"]))
 
-(defn -main []
-  (env/assert-min-versions)
-  (generate-doc-tests)
-  (run-clj-doc-tests)
-  (run-cljs-doc-tests)
+(defn -main [& args]
+  (main/run-argless-cmd
+   args
+   (fn []
+     (env/assert-min-versions)
+     (generate-doc-tests)
+     (run-clj-doc-tests)
+     (run-cljs-doc-tests)))
   nil)
 
 (env/when-invoked-as-script
- (-main))
+ (-main *command-line-args*))

@@ -3,6 +3,7 @@
 (ns ci-tests
   (:require [helper.env :as env]
             [helper.fs :as fs]
+            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -36,17 +37,20 @@
     (shell/command ["bb" "./script/cljs_tests.clj" "--env" "planck" "--optimizations" "none"])
     (status/line :warn "skipping planck tests, they can only be run on linux and macOS")) )
 
-(defn -main[]
-  (env/assert-min-versions)
-  (clean)
-  (check-import-vars)
-  (lint)
-  (doc-tests)
-  (clojure-tests)
-  (cljs-tests)
-  (shadow-cljs-tests)
-  (cljs-bootstrap-tests)
+(defn -main [& args]
+  (main/run-argless-cmd
+   args
+   (fn []
+     (env/assert-min-versions)
+     (clean)
+     (check-import-vars)
+     (lint)
+     (doc-tests)
+     (clojure-tests)
+     (cljs-tests)
+     (shadow-cljs-tests)
+     (cljs-bootstrap-tests)))
   nil)
 
 (env/when-invoked-as-script
- (-main))
+ (-main *command-line-args*))
