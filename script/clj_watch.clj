@@ -11,4 +11,4 @@
   (shell/command (concat ["clojure" "-M:test-common:kaocha" "--watch"] args)))
 
 (env/when-invoked-as-script
- (-main *command-line-args*))
+ (apply -main *command-line-args*))

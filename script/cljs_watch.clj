@@ -15,4 +15,4 @@
      (shell/command ["clojure" "-M:test-common:cljs:fig-test"]))))
 
 (env/when-invoked-as-script
- (-main *command-line-args*))
+ (apply -main *command-line-args*))

@@ -4,8 +4,8 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [helper.env :as env]
-            [helper.main :as main]
             [helper.fs :as fs]
+            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -74,4 +74,4 @@
   nil)
 
 (env/when-invoked-as-script
- (-main *command-line-args*))
+ (apply -main *command-line-args*))

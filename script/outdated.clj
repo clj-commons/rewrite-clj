@@ -31,4 +31,4 @@
   nil)
 
 (env/when-invoked-as-script
- (-main *command-line-args*))
+ (apply -main *command-line-args*))
