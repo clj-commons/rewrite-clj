@@ -8,7 +8,7 @@
             [lread.status-line :as status]))
 
 (defn clean []
-  (doseq [dir ["target" ".cpcache .shadow-cljs"]]
+  (doseq [dir ["target" ".cpcache" ".shadow-cljs"]]
     (fs/delete-file-recursively dir true)))
 
 (defn lint []
