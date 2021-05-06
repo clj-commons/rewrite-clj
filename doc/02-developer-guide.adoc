@@ -20,7 +20,7 @@ Automated testing is setup using GraalVM v21 JDK11.
 * NodeJs v12 or above
 * Clojure v1.10.1.697 or above for `clojure` command
 ** Note that rewrite-clj v1 itself supports Clojure v1.9 and above
-* Babashka v0.3.2 or above
+* Babashka v0.3.7 or above
 * GraalVM v21.1.0 JDK 11 (if you want to run GraalVM native image tests)
 
 === Windows Notes
@@ -77,8 +77,29 @@ npm install
 3. Initialize cache for clj-kondo so it can lint against your dependencies
 +
 ----
-bb ./script/lint.clj
+bb lint
 ----
+
+== Babashka Tasks
+
+We make use of babashka tasks for development related commands.
+
+To see all available tasks with a short description run:
+----
+bb tasks
+----
+
+To run a task, for example, the `lint` task:
+----
+bb lint
+----
+
+Usage help for a task is requested via `--help`, for example:
+----
+bb lint --help
+----
+
+Tasks are described throughout this document.
 
 == Code Generation
 Rewrite-clj v0 used a version of potemkin import-vars.
@@ -121,7 +142,7 @@ At this time, we don't handle destructuring in arglists, and will throw unless a
 To generate target source from templates run:
 [source,shell]
 ----
-bb script/apply_import_vars.clj gen-code
+bb apply-import-vars gen-code
 ----
 You are expected to review the generated changes and commit the generated source to version control.
 We don't link:#linting[lint] templates, but we do lint the generated code.
@@ -129,7 +150,7 @@ We don't link:#linting[lint] templates, but we do lint the generated code.
 To perform a read-only check, run:
 [source,shell]
 ----
-bb script/apply_import_vars.clj check
+bb apply-import-vars check
 ----
 The check command will exit with 0 if no changes are required, otherwise it will exit with 1.
 Our build script will run the check command and fail the build if there are any pending changes that have not been applied.
@@ -141,7 +162,7 @@ Your personal preference will likely be different, but during maintenance and re
 For Clojure, I open a shell terminal window and run:
 
 ----
-bb ./script/clj_watch.clj
+bb test-clj-watch
 ----
 
 This launches https://github.com/lambdaisland/kaocha[kaocha] in watch mode.
@@ -150,7 +171,7 @@ This launches https://github.com/lambdaisland/kaocha[kaocha] in watch mode.
 For ClojureScript, I open a shell terminal window and run:
 
 ----
-bb ./script/cljs_watch.clj
+bb test-cljs-watch
 ----
 
 This launches https://figwheel.org/[fighweel main].
@@ -169,7 +190,7 @@ At the time of this writing draw.io does not remember export settings, so you'll
 We use https://github.com/lread/test-doc-blocks[test-doc-blocks] to verify that code blocks in our documentation are in good working order.
 
 ----
-bb ./script/doc_tests.clj
+bb test-doc
 ----
 
 This generates tests for doc code blocks and then runs them under Clojure and ClojureScript.
@@ -180,7 +201,7 @@ Before pushing, you likely want to mimic what is run on each push via GitHub Act
 === Unit tests
 Unit tests are run via:
 ----
-bb ./script/ci_tests.clj
+bb ci-unit-tests
 ----
 
 === Native image tests
@@ -189,45 +210,49 @@ We also verify that rewrite-clj functions as expected when compiled via Graal's 
 1. Tests and library natively compiled:
 +
 ----
-bb ./script/pure_native_test.clj
+bb test-native
 ----
 2. Library natively compiled and tests interpreted via sci
 +
 ----
-bb ./script/sci_native_test.clj
+bb test-native-sci
 ----
 
 [#libs-test]
 === Libs test
 To try to ensure our changes to rewrite-clj do not inadvertently break existing popular libraries, we run their tests, or a portion thereof, against rewrite-clj.
-
 ----
-bb ./script/libs_tests.clj run
+bb test-libs run
 ----
 
 See link:../README.adoc#used-in[README] for current libs we test against.
 
 Additional libs are welcome.
 
+To see a list of available libs we currently test against:
+----
+bb test-libs list
+----
+
 If you are troubleshooting locally, and want to only run specific tests, you can specify which ones you'd like to run.
 For example:
 
 ----
-bb ./script/libs_tests.clj run cljfmt zprint
+bb test-libs run cljfmt zprint
 ----
 
-Running current versions of libs is recommended, but care must be taken when updating.
+Updating the test-libs script to run against current versions of libs is recommended, but care must be taken when updating.
 We want to make sure we are patching correctly to use rewrite-clj v1 and running a lib's tests as intended.
 
 To check for outdated libs:
 
 ----
-bb ./script/libs_test.clj outdated
+bb test-libs outdated
 ----
 
 Notes:
 
-* `libs_tests.clj` was developed on macOS and is run on CI under Linux only under JDK 11 only.
+* The `test-libs` task was developed on macOS and is run on CI under Linux only under JDK 11 only.
 We can expand variations at some later date if there is any value to it.
 * We test the current HEAD of rewrite-clj v1 against specific versions (latest at the time of this writing) of libs.
 * We patch lib deps and sometimes code (ex. `require` for `rewrite-cljc` becomes `rewrite-clj`).
@@ -238,7 +263,7 @@ We can expand variations at some later date if there is any value to it.
 
 To see what new dependencies are available, run:
 ----
-bb ./script/outdated.clj
+bb outdated
 ----
 
 We use https://github.com/liquidz/antq[antq] which also checks `pom.xml`.
@@ -258,12 +283,12 @@ We use https://github.com/borkdude/clj-kondo[clj-kondo] for linting rewrite-clj 
 We fail the build on any lint violations.
 The CI server runs:
 ----
-bb ./script/lint.clj
+bb lint
 ----
 and you can too. The lint script will build the clj-kondo cache when it is missing or stale.
 If you want to force a rebuild of the cache run:
 ----
-bb ./script/lint.clj --rebuild-cache
+bb lint --rebuild-cache
 ----
 
 https://github.com/borkdude/clj-kondo/blob/master/doc/editor-integration.md[Integrate clj-kondo into your editor] to catch mistakes as they happen.
@@ -275,8 +300,10 @@ To generate reports on differences between rewrite-clj v0, rewrite-cljs and
 rewrite-clj v1 APIs, run:
 
 ----
-bb ./script/gen_api_diffs.clj
+bb doc-api-diffs
 ----
+
+WARNING: This task currently needs love, see https://github.com/clj-commons/rewrite-clj/issues/132[#132].
 
 Run this script manually on an as-needed basis, and certainly before any official release.
 Generated reports are to be checked in to version control.
@@ -294,7 +321,7 @@ Before a release, it can be comforting to preview what docs will look like on ht
 
 Limitations
 
-* This script should be considered experimental, I have only tested running on macOS, but am fairly confident it will work on Linux.
+* This task should be considered experimental, I have only tested running on macOS, but am fairly confident it will work on Linux.
 Not sure about Windows at this time.
 * You have to push your changes to GitHub to preview them.
 This allows for a full preview that includes any links (source, images, etc) to GitHub.
@@ -304,7 +331,7 @@ This works fine from branches and forks - in case you don't want to affect your 
 
 To start the local cljdoc docker container:
 ----
-bb ./script/cljdoc_preview.clj start
+bb cljdoc-preview start
 ----
 
 The local cljdoc server allows your ingested docs to be viewed in your web browser.
@@ -315,7 +342,7 @@ The start command also automatically checks docker hub for any updates so that o
 
 To ingest rewrite-clj API and docs into the local cljdoc database:
 ----
-bb ./script/cljdoc_preview.clj ingest
+bb cljdoc-preview ingest
 ----
 
 The ingest command automatically publishes rewrite-clj to your local maven repository (cljdoc only works with published jars).
@@ -327,7 +354,7 @@ Repeat these steps any time you want to preview changes.
 
 To open a view to the ingested docs in your default web browser:
 ----
-bb ./script/cljdoc_preview.clj view
+bb cljdoc-preview view
 ----
 
 If you have just run the start command, be a bit patient, the cljdoc server can take a few moments to start up - especially on macOS due to poor file sharing performance.
@@ -336,7 +363,7 @@ If you have just run the start command, be a bit patient, the cljdoc server can 
 
 When you are done, you'll want to stop your docker container:
 ----
-bb ./script/cljdoc_preview.clj stop
+bb cljdoc-preview stop
 ----
 
 This will also delete temporary files created to support your preview session, most notably the local cljdoc database.
@@ -347,12 +374,16 @@ Note that NO cleanup is done for any rewrite-clj artifacts published to your loc
 
 If you forget where you are at with your docker containers, run:
 ----
-bb ./script/cljdoc_preview.clj status
+bb cljdoc-preview status
 ----
 
 == Code Coverage
 
-We use https://github.com/cloverage/cloverage[cloverage] via https://github.com/lambdaisland/kaocha[kaocha] to generate code coverage reports.
+We use https://github.com/cloverage/cloverage[cloverage] via https://github.com/lambdaisland/kaocha[kaocha] to generate code coverage reports via:
+----
+bb test-coverage
+----
+
 Our CI service is setup to automatically generate then upload reports to https://codecov.io[CodeCov].
 
 We have no specific goals for code coverage, but new code is generally expected to have tests.
@@ -365,5 +396,5 @@ We honor current and past contributors to rewrite-clj in our README file.
 To update contributors, update `doc/contributors.edn` then run:
 
 ----
-clojure -M:update-readme
+bb doc-update-readme
 ----

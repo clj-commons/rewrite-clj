@@ -41,14 +41,14 @@ To run the change log validation locally:
 
 [source,shell]
 ----
-bb script/release.clj validate
+bb ci-release validate
 ----
 
 If you so wish, you can also locally run all steps up to, but not including, deploy via:
 
 [source,shell]
 ----
-bb script/release.clj prep
+bb release prep
 ----
 Be aware though that you will NOT want to check in changes `prep` makes to `CHANGELOG.adoc`, `pom.xml` and `01-user-guide.adoc`.
 

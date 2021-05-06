@@ -25,7 +25,7 @@
          test-cljs-watch   {:task cljs-watch/-main        :doc "watch cljs test with fighweel main"}
          test-coverage     {:task coverage/-main          :doc "generate code coverage reports for Clojure tests"}
          test-doc          {:task doc-tests/-main         :doc "test doc code blocks"}
-         test-libs         {:task libs-tests/-main        :doc "(run|outdated) - verify taht libs using rewrite-clj* work with current rewrite-clj"}
+         test-libs         {:task libs-tests/-main        :doc "(list|run|outdated) - verify that libs using rewrite-clj* work with current rewrite-clj"}
          outdated          {:task outdated/-main          :doc "report on outdated Clojure and npm dependencies"}
          doc-api-diffs     {:task gen-api-diffs/-main     :doc "generate diff docs for rewrite-clj* APIs"}
          doc-update-readme {:task update-readme/-main     :doc "honour our contributors in README"}
