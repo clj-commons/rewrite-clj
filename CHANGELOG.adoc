@@ -17,6 +17,8 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 === Unreleased
 
 * rewrite-clj now exports clj-kondo config for its public API https://github.com/clj-commons/rewrite-clj/issues/146[#146]
+* Internal rewrite-clj developer facing:
+  * Switched from babashka scripts to babashka tasks, developer guide updated accordingly
 
 === v1.0.605-alpha
 
@@ -362,7 +364,7 @@ If you were using this internal namespace you can opt to switch to, the also int
 ** `prepend-space` in favour of `insert-space-left`
 ** `append-newline` in favour of `insert-newline-right`
 ** `prepend-newline` in favour of `insert-newline-left`
-* fix insertion of nodes in the presense of existing whitespace. (see #33, #34 -
+* fix insertion of nodes in the presence of existing whitespace. (see #33, #34 -
   thanks @eraserhd!)
 * `edn` and `edn*` now take a `:track-position?` option that activates a custom
   zipper implementation allowing `position` to be called on. (see #41, #45 -

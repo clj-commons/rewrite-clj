@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns cljs-watch
+(ns test-cljs-watch
   (:require [helper.env :as env]
             [helper.main :as main]
             [helper.shell :as shell]

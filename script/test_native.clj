@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns pure-native-test
+(ns test-native
   (:require [clojure.java.io :as io]
             [helper.env :as env]
             [helper.fs :as fs]

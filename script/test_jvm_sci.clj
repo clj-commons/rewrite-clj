@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns sci-jvm-test
+(ns test-jvm-sci
   (:require [helper.env :as env]
             [helper.main :as main]
             [helper.shell :as shell]

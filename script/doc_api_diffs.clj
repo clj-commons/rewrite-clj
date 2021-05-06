@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns gen-api-diffs
+(ns doc-api-diffs
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [helper.env :as env]

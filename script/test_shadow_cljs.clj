@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns shadow-cljs-test
+(ns test-shadow-cljs
   (:require [clojure.java.io :as io]
             [helper.env :as env]
             [helper.main :as main]

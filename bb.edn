@@ -9,26 +9,27 @@
         lread/status-line {:git/url "https://github.com/lread/status-line.git"
                            :sha "35ed39645038e81b42cb15ed6753b8462e60a06d"}}
  :tasks {;; setup
-         :requires ([lread.status-line :as status])
-         :enter (let [{:keys [name]} (current-task)] (status/line :head "TASK %s" name))
+         :requires ([clojure.string :as string]
+                    [lread.status-line :as status])
+         :enter (let [{:keys [name]} (current-task)] (status/line :head "TASK %s %s" name (string/join " " *command-line-args*)))
          :leave (let [{:keys [name]} (current-task)] (status/line :detail "\nTASK %s done." name))
          ;; commands
          apply-import-vars {:task apply-import-vars/-main :doc "(check|gen-code) - export APIs statically from templates"}
          lint              {:task lint/-main              :doc "[--rebuild-cache]"}
-         test-clj          {:task clj-tests/-main         :doc "[--clojure-version (1.9|1.10)]"}
-         test-cljs         {:task cljs-tests/-main        :doc "use --help for args"}
-         test-shadow-cljs  {:task shadow-cljs-test/-main}
-         test-native       {:task pure-native-test/-main  :doc "run rewrite-clj and tests after both compiled with GraalVM native-image"}
-         test-native-sci   {:task sci-native-test/-main   :doc "interpret rewrite-clj tests via sci from rewrite-clj native image"}
-         test-jvm-sci      {:task sci-jvm-test/-main      :doc "JVM only sanity test for test-native-sci"}
-         test-clj-watch    {:task clj-watch/-main         :doc "[kaocha args]"}
-         test-cljs-watch   {:task cljs-watch/-main        :doc "watch cljs test with fighweel main"}
-         test-coverage     {:task coverage/-main          :doc "generate code coverage reports for Clojure tests"}
-         test-doc          {:task doc-tests/-main         :doc "test doc code blocks"}
-         test-libs         {:task libs-tests/-main        :doc "(list|run|outdated) - verify that libs using rewrite-clj* work with current rewrite-clj"}
+         test-clj          {:task test-clj/-main          :doc "[--clojure-version (1.9|1.10)]"}
+         test-cljs         {:task test-cljs/-main         :doc "use --help for args"}
+         test-shadow-cljs  {:task test-shadow-cljs/-main}
+         test-native       {:task test-native/-main       :doc "run rewrite-clj and tests after both compiled with GraalVM native-image"}
+         test-native-sci   {:task test-native-sci/-main   :doc "interpret rewrite-clj tests via sci from rewrite-clj native image"}
+         test-jvm-sci      {:task test-jvm-sci/-main      :doc "JVM only sanity test for test-native-sci"}
+         test-clj-watch    {:task test-clj-watch/-main    :doc "[kaocha args]"}
+         test-cljs-watch   {:task test-cljs-watch/-main   :doc "watch cljs test with fighweel main"}
+         test-coverage     {:task test-coverage/-main     :doc "generate code coverage reports for Clojure tests"}
+         test-doc          {:task test-doc/-main          :doc "test doc code blocks"}
+         test-libs         {:task test-libs/-main         :doc "(list|run|outdated) - verify that libs using rewrite-clj* work with current rewrite-clj"}
          outdated          {:task outdated/-main          :doc "report on outdated Clojure and npm dependencies"}
-         doc-api-diffs     {:task gen-api-diffs/-main     :doc "generate diff docs for rewrite-clj* APIs"}
-         doc-update-readme {:task update-readme/-main     :doc "honour our contributors in README"}
+         doc-api-diffs     {:task doc-api-diffs/-main     :doc "generate diff docs for rewrite-clj* APIs"}
+         doc-update-readme {:task doc-update-readme/-main :doc "honour our contributors in README"}
          cljdoc-preview    {:task cljdoc-preview/-main    :doc "preview what docs will look like on cljdoc, use --help for args"}
-         ci-unit-tests     {:task ci-tests/-main}
-         ci-release        {:task release/-main           :doc "release tasks, use --help for args"}}}
+         ci-unit-tests     {:task ci-unit-tests/-main}
+         ci-release        {:task ci-release/-main        :doc "release tasks, use --help for args"}}}

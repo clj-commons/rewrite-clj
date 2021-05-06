@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns update-readme
+(ns doc-update-readme
   "Script to update README.adoc to credit contributors
   Run manually as needed."
   (:require [clojure.edn :as edn]

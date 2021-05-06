@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns cljs-tests
+(ns test-cljs
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.tools.cli :as cli]

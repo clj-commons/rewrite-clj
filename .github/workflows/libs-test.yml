@@ -18,7 +18,7 @@ jobs:
           ~/.m2/repository
           ~/.gitlibs
         # base cache on libs_test.clj script for now... lib deps are embedded in it
-        key: $${ runner.os }}-clj-libs-deps-${{ hashFiles('script/libs_tests.clj') }}
+        key: $${ runner.os }}-clj-libs-deps-${{ hashFiles('script/test_libs.clj') }}
         restore-keys: $${ runner.os }}-clj-libs-deps-
 
     - name: Setup Java
@@ -53,4 +53,4 @@ jobs:
         planck --version
 
     - name: Run Libs Tests
-      run: bb ./script/libs_tests.clj run
+      run: bb test-libs run

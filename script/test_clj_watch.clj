@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns clj-watch
+(ns test-clj-watch
   (:require [helper.env :as env]
             [helper.shell :as shell]
             [lread.status-line :as status]))

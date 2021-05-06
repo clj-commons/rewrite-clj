@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns sci-native-test
+(ns test-native-sci
   (:require [clojure.java.io :as io]
             [helper.env :as env]
             [helper.graal :as graal]

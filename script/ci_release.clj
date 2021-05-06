@@ -4,7 +4,7 @@
 ;; This script is ultimately run from GitHub Actions
 ;;
 
-(ns release
+(ns ci-release
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [helper.env :as env]

@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns libs-tests
+(ns test-libs
   "Test 3rd party libs against rewrite-clj head"
   (:require [babashka.curl :as curl]
             [babashka.fs :as fs]
