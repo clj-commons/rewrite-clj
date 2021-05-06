@@ -136,7 +136,7 @@
   (status/line :head "Waiting for %s to become available" (:name container))
   (when (= "down" (status-server container))
     (status/die 1
-                "%s does not seem to be running.\nDid you run this script with the start command yet?"
+                "%s does not seem to be running.\nDid you run the start command yet?"
                 (:name container)))
   (status/line :detail "%s container is running" (:name container))
   (let [url (str "http://localhost:" (:port container))]
@@ -195,7 +195,7 @@
 (defn view-in-browser [url]
   (status/line :head "opening %s in browser" url)
   (when (not= 200 (:status (curl/get url {:throw false})))
-    (status/die 1 "Could not reach:\n%s\nDid you run this script with ingest command yet?" url))
+    (status/die 1 "Could not reach:\n%s\nDid you run the ingest command yet?" url))
   (browse/browse-url url))
 
 
@@ -215,12 +215,28 @@
 (defn cleanup-resources []
   (fs/delete-file-recursively cljdoc-db-dir true))
 
+(def usage (string/join "\n"
+                        ["Valid args: [start|ingest|view|stop|status]"
+                         ""
+                         " start  - start docker containers supporting cljdoc preview"
+                         " ingest - locally publishes your project for cljdoc preview"
+                         " view   - opens cljdoc preview in your default browser"
+                         " stop   - stops docker containers supporting cljdoc preview"
+                         " status - status of docker containers supporting cljdoc preview"
+                         ""
+                         " --help - show this help"
+                         ""
+                         "Must be run from project root directory."]))
+
 (defn -main [& args]
 
   (check-prerequisites)
 
   (let [command (first args)]
     (case command
+      "--help"
+      (status/line :detail usage)
+
       "start"
       (do
         (start-cljdoc-server cljdoc-container)
@@ -249,16 +265,7 @@
         nil)
 
       ;; else
-      (do (println "Usage: bb script/cljdoc_preview.clj [start|ingest|view|stop|status]")
-          (println "")
-          (println " start  - start docker containers supporting cljdoc preview")
-          (println " ingest - locally publishes your project for cljdoc preview")
-          (println " view   - opens cljdoc preview in your default browser")
-          (println " stop   - stops docker containers supporting cljdoc preview")
-          (println " status - status of docker containers supporting cljdoc preview")
-          (println "")
-          (println "Must be run from project root directory.")
-          (System/exit 1)))))
+      (status/die 1 usage))))
 
 (env/when-invoked-as-script
  (apply -main *command-line-args*))

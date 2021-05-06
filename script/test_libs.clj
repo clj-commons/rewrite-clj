@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 
-(ns libs-tests
+(ns test-libs
   "Test 3rd party libs against rewrite-clj head"
   (:require [babashka.curl :as curl]
             [babashka.fs :as fs]
@@ -493,8 +493,7 @@
   (status/line :head "Prep target")
   (status/line :detail "(re)creating: %s" target-root-dir)
   (when (fs/exists? target-root-dir) (fs/delete-tree target-root-dir))
-  (.mkdirs (fs/file target-root-dir))
- )
+  (.mkdirs (fs/file target-root-dir)))
 
 ;;
 ;; cmds
@@ -537,38 +536,65 @@
                             (every? zero?))
                      0 1)))))
 
+
 (def docopt-usage "Libs Tests
 
 Usage:
-  libs_tests.clj run [<lib-name>...]
-  libs_tests.clj outdated [<lib-name>...]
+  foo list
+  foo run [<lib-name>...]
+  foo outdated [<lib-name>...]
+  foo --help
+
+Commands:
+  list     List libs we can test against
+  run      Run tests for specified libs
+  outdated Check specified libs for newer versions
 
 Options:
-  -h --help     Show this screen.
+  --help  Show this help
 
 Specifying no lib-names selects all libraries.")
 
+;; our usage advice is focused on args, not the executable
+(def our-usage
+  (-> docopt-usage
+      (string/replace-first "Usage:" "Valid Args:")
+      (string/replace #"(?m)^  foo " " ")))
+
 (defn -main [& args]
   (env/assert-min-versions)
-  (if-let [opts (-> docopt-usage docopt/parse (docopt-match/match-argv args))]
-    (let [lib-names (get opts "<lib-name>")
-          requested-libs (if (zero? (count lib-names))
-                           libs
-                           (reduce (fn [ls a]
-                                     (if-let [l (first (filter #(= a (:name %)) libs))]
-                                       (conj ls l)
-                                       ls))
-                                   []
-                                   lib-names))]
-      (cond
-        (get opts "outdated")
-        (report-outdated requested-libs)
+  (if-let [opts (-> docopt-usage
+                    docopt/parse
+                    (docopt-match/match-argv args))]
+    (cond
+      (get opts "--help")
+      (status/line :detail our-usage)
 
-        (get opts "run")
-        (run-tests requested-libs))
+      (get opts "list")
+      (status/line :detail (str "available libs: " (string/join " " (map :name libs))))
 
-      nil)
-    (status/die 1 docopt-usage)))
+      :else
+      (let [lib-names (get opts "<lib-name>")
+            requested-libs (if (zero? (count lib-names))
+                             libs
+                             (reduce (fn [ls a]
+                                       (if-let [l (first (filter #(= a (:name %)) libs))]
+                                         (conj ls l)
+                                         ls))
+                                     []
+                                     lib-names))]
+        (cond
+          (not (seq requested-libs))
+          (status/die 1 "no specified lib-names found")
+
+          (get opts "outdated")
+          (report-outdated requested-libs)
+
+          (get opts "run")
+          (run-tests requested-libs))
+
+        nil))
+    (status/die 1 our-usage)))
 
 (env/when-invoked-as-script
  (apply -main *command-line-args*))

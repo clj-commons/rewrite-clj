@@ -1,7 +1,8 @@
 #!/usr/bin/env bb
 
-(ns coverage
+(ns test-coverage
   (:require [helper.env :as env]
+            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -17,11 +18,13 @@
                   "--no-randomize"
                   "--reporter" "documentation"]))
 
-(defn -main []
-  (env/assert-min-versions)
-  (generate-doc-tests)
-  (run-clj-doc-tests)
+(defn -main [& args]
+  (main/run-argless-cmd
+   args
+   (fn []
+     (generate-doc-tests)
+     (run-clj-doc-tests)))
   nil)
 
 (env/when-invoked-as-script
- (-main))
+ (apply -main *command-line-args*))

@@ -146,4 +146,4 @@ jobs:
     # Run tests
     #
     - name: Run CI tests
-      run: bb ./script/ci_tests.clj
+      run: bb ci-unit-tests

@@ -9,7 +9,7 @@ jobs:
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
         graal-java: [ java11 ]
-        test: [ pure, sci ]
+        test: [ test-native, test-native-sci ]
 
     name: ${{ matrix.os }},${{ matrix.graal-java }},${{ matrix.test }}
 
@@ -109,9 +109,9 @@ jobs:
       run: |
         # it is overly awkward to get vcvars64.bat loaded into powershell, so we use cmd shell instead
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-        bb script\${{ matrix.test }}_native_test.clj
+        bb ${{ matrix.test }}
       shell: cmd
       if: matrix.os == 'windows-latest'
     - name: Execute ${{ matrix.test }} native test (macos, linux)
-      run: bb script/${{ matrix.test }}_native_test.clj
+      run: bb ${{ matrix.test }}
       if: matrix.os != 'windows-latest'

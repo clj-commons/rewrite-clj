@@ -21,7 +21,7 @@
 
 (defn- build-cache []
   (status/line :head "clj-kondo: building cache")
-  (let [clj-cp (-> (shell/command ["clojure" "-A:test" "-Spath"] {:out :string}) :out string/trim)
+  (let [clj-cp (-> (shell/command ["clojure" "-A:test:lint-cache" "-Spath"] {:out :string}) :out string/trim)
         bb-cp (bbcp/get-classpath)]
     (shell/command ["clojure" "-M:clj-kondo"
                     "--dependencies" "--copy-configs"
@@ -39,11 +39,12 @@
   (let [{:keys [exit]}
         (shell/command-no-exit ["clojure" "-M:clj-kondo"
                                 "--lint" "src" "test" "script" "deps.edn"])]
-    (if (not (some #{exit} '(0 2 3)))
-      (status/die exit "clj-kondo existed with unexpected exit code: %d" exit)
-      (System/exit exit))))
+    (cond
+      (= 2 exit) (status/die exit "clj-kondo found one or more lint errors")
+      (= 3 exit) (status/die exit "clj-kondo found one or more lint warnings")
+      (> exit 0) (status/die exit "clj-kondo returned unexpected exit code"))))
 
-(def docopt-usage "Usage: lint.clj [options]
+(def docopt-usage "Valid args: [options]
 
 Options:
   --help           Show this screen.
@@ -51,10 +52,13 @@ Options:
 
 (defn -main [& args]
   (env/assert-min-versions)
-  (if-let [opts (-> docopt-usage docopt/parse (docopt-match/match-argv args))]
+  (if-let [opts (-> docopt-usage
+                    (string/replace-first "Valid args:" "Usage: foo") ;; conform to what docopt expects
+                    docopt/parse
+                    (docopt-match/match-argv args))]
     (cond
       (get opts "--help")
-      (println docopt-usage)
+      (status/line :detail docopt-usage)
 
       (get opts "--rebuild-cache")
       (do (delete-cache) (lint))
