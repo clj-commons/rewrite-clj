@@ -21,7 +21,7 @@
 
 (defn- build-cache []
   (status/line :head "clj-kondo: building cache")
-  (let [clj-cp (-> (shell/command ["clojure" "-A:test" "-Spath"] {:out :string}) :out string/trim)
+  (let [clj-cp (-> (shell/command ["clojure" "-A:test:lint-cache" "-Spath"] {:out :string}) :out string/trim)
         bb-cp (bbcp/get-classpath)]
     (shell/command ["clojure" "-M:clj-kondo"
                     "--dependencies" "--copy-configs"
