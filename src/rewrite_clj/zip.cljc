@@ -134,7 +134,7 @@
   [[postwalk]]
   [[subedit->]]
   [[subedit->>]]
- 
+
   **Sequence operations**
   [[map]]
   [[map-keys]]
@@ -737,7 +737,7 @@
 
    Pre-order traversal visits root before children.
    For example, traversal order of `(1 (2 3 (4 5) 6 (7 8)) 9)` is:
-  
+
    1. `(1 (2 3 (4 5) 6 (7 8)) 9)`
    2. `1`
    3. `(2 3 (4 5) 6 (7 8))`
@@ -780,16 +780,16 @@
 
    Pre-order traversal visits children before root.
    For example, traversal order of `(1 (2 3 (4 5) 6 (7 8)) 9)` is:
-  
+
    1. `1`
    2. `2`
-   3. `3` 
+   3. `3`
    4. `4`
    5. `5`
    6. `(4 5)`
    7. `6`
    8. `7`
-   9. `8` 
+   9. `8`
    10. `(7 8)`
    11. `(2 3 (4 5) 6 (7 8))`
    12. `9`
@@ -904,7 +904,7 @@
   ([zloc n] (rewrite-clj.zip.whitespace/append-newline zloc n))
   ([zloc] (rewrite-clj.zip.whitespace/append-newline zloc)))
 ;; TODO: clj-kondo barfs on an empty reader cond
-#?(:clj 
+#?(:clj
    
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
 (defn of-file

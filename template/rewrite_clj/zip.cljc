@@ -133,7 +133,7 @@
   [[postwalk]]
   [[subedit->]]
   [[subedit->>]]
- 
+
   **Sequence operations**
   [[map]]
   [[map-keys]]
@@ -173,14 +173,16 @@
             node position position-span root]
 
            [rewrite-clj.zip.base
-            child-sexprs
+            ^{:added "0.4.4"} child-sexprs
             edn* edn
             tag sexpr sexpr-able?
             length
-            value
+            ^{:deprecated "0.4.0"} value
             of-string
-            string ->string
-            root-string ->root-string
+            ^{:added "0.4.0"} string
+            ^{:deprecated "0.4.0"} ->string
+            ^{:added "0.4.0"} root-string
+            ^{:deprecated "0.4.0"} ->root-string
             print print-root]
 
            [rewrite-clj.zip.editz
@@ -227,20 +229,24 @@
 
            [rewrite-clj.zip.walk
             prewalk
-            postwalk]
+            ^{:added "0.4.9"} postwalk]
 
            [rewrite-clj.zip.whitespace
             whitespace? linebreak?
             whitespace-or-comment?
             skip skip-whitespace
             skip-whitespace-left
-            insert-space-left insert-space-right
-            insert-newline-left insert-newline-right
-            prepend-space append-space
-            prepend-newline append-newline]]}}
+            ^{:added "0.5.0"} insert-space-left
+            ^{:added "0.5.0"} insert-space-right
+            ^{:added "0.5.0"} insert-newline-left
+            ^{:added "0.5.0"} insert-newline-right
+            ^{:deprecated "0.5.0"} prepend-space
+            ^{:deprecated "0.5.0"} append-space
+            ^{:deprecated "0.5.0"} prepend-newline
+            ^{:deprecated "0.5.0"} append-newline]]}}
 
 ;; TODO: clj-kondo barfs on an empty reader cond
-#?(:clj 
+#?(:clj
    #_{:import-vars/import
       {:from [[rewrite-clj.zip.base
                of-file]]}})

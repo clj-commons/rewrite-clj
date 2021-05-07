@@ -62,7 +62,7 @@
 
 ;; ## Insertion
 
-(defn ^{:added "0.5.0"} insert-space-left
+(defn insert-space-left
   "Return zipper with `n` space whitespace node inserted to the left of the current node in `zloc`, without moving location.
    `n` defaults to 1."
   ([zloc] (insert-space-left zloc 1))
@@ -72,7 +72,7 @@
      (zraw/insert-left zloc (nwhitespace/spaces n))
      zloc)))
 
-(defn ^{:added "0.5.0"} insert-space-right
+(defn insert-space-right
   "Return zipper with `n` space whitespace node inserted to the right of the current node in `zloc`, without moving location.
    `n` defaults to 1."
   ([zloc] (insert-space-right zloc 1))
@@ -82,14 +82,14 @@
      (zraw/insert-right zloc (nwhitespace/spaces n))
      zloc)))
 
-(defn ^{:added "0.5.0"} insert-newline-left
+(defn insert-newline-left
   "Return zipper with `n` newlines node inserted to the left of the current node in `zloc`, without moving location.
    `n` defaults to 1."
   ([zloc] (insert-newline-left zloc 1))
   ([zloc n]
    (zraw/insert-left zloc (nwhitespace/newlines n))))
 
-(defn ^{:added "0.5.0"} insert-newline-right
+(defn insert-newline-right
   "Return zipper with `n` newlines node inserted to the right of the current node in `zloc`, without moving location.
    `n` defaults to 1."
   ([zloc] (insert-newline-right zloc 1))
@@ -98,28 +98,28 @@
 
 ;; ## Deprecated Functions
 
-(defn ^{:deprecated "0.5.0"} prepend-space
+(defn prepend-space
    "DEPRECATED: renamed to [[insert-space-left]]."
   ([zloc n]
    (insert-space-left zloc (or n 1)))
   ([zloc]
    (prepend-space zloc nil)))
 
-(defn ^{:deprecated "0.5.0"} append-space
+(defn append-space
    "DEPRECATED: renamed to [[insert-space-right]]."
   ([zloc n]
    (insert-space-right zloc (or n 1)))
   ([zloc]
    (append-space zloc nil)))
 
-(defn ^{:deprecated "0.5.0"} prepend-newline
+(defn prepend-newline
    "DEPRECATED: renamed to [[insert-newline-left]]."
   ([zloc n]
    (insert-newline-left zloc (or n 1)))
   ([zloc]
    (prepend-newline zloc nil)))
 
-(defn ^{:deprecated "0.5.0"} append-newline
+(defn append-newline
    "DEPRECATED: renamed to [[insert-newline-right]]."
   ([zloc n]
    (insert-newline-right zloc (or n 1)))

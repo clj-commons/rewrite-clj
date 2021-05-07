@@ -3,12 +3,12 @@
   "Create, update, convert and integorate nodes.
 
   All nodes represent Clojure/ClojureScript/EDN.
-   
+
   Because this API contains many functions, we offer the following categorized listing:
-   
+
   **Node creation**
   [[comma-node]]
-  [[comment-node]] 
+  [[comment-node]]
   [[deref-node]]
   [[eval-node]]
   [[fn-node]]
@@ -38,7 +38,7 @@
   **Whitespace creation convenience**
   [[spaces]]
   [[newlines]]
-  [[comma-separated]]  
+  [[comma-separated]]
   [[line-separated]]
   [[whitespace-nodes]]
 
@@ -52,7 +52,7 @@
   [[child-sexprs]]
 
   **Convert node to string**
-  [[string]]   
+  [[string]]
 
   **Node interogation**
   [[tag]]
@@ -63,13 +63,13 @@
   [[printable-only?]]
 
   **Update node**
-  [[replace-children]]  
-  
+  [[replace-children]]
+
   **Namespaced map element support**
   [[map-context-apply]]
   [[map-context-clear]]
 
-  **Test type** 
+  **Test type**
   [[node?]]
   [[comment?]]
   [[whitespace-or-comment?]]
@@ -158,7 +158,7 @@
 
   Optional `opts` can specify:
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)
-   
+
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([node] (rewrite-clj.node.protocols/sexpr node))
   ([node opts] (rewrite-clj.node.protocols/sexpr node opts)))
@@ -174,7 +174,7 @@
 
   Optional `opts` can specify:
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)
-   
+
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([nodes] (rewrite-clj.node.protocols/sexprs nodes))
   ([nodes opts] (rewrite-clj.node.protocols/sexprs nodes opts)))

@@ -626,7 +626,9 @@ We'll start `./src` using, otherwise using same template filename.
 Extension will match template (clj vs cljc for us).
 
 Ok, so what code should we be generating?
-We want to definitely bring over the docstring (sometimes altered) and some metadata (`:added` `:deprecated`).
+We want to definitely bring over the docstring (sometimes altered).
+We'll have the import definition specify `:added` and `:deprecated` metadata.
+(Original version had this metadata specified on internal source var, cljs compiler warned about calls to internal deprecated fns from public API, which was not nice for folks using rewrite-clj under cljs).
 For the var itself we have choices.
 
 . We could simply point to the source var.

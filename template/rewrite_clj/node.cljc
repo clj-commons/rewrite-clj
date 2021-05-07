@@ -2,12 +2,12 @@
   "Create, update, convert and integorate nodes.
 
   All nodes represent Clojure/ClojureScript/EDN.
-   
+
   Because this API contains many functions, we offer the following categorized listing:
-   
+
   **Node creation**
   [[comma-node]]
-  [[comment-node]] 
+  [[comment-node]]
   [[deref-node]]
   [[eval-node]]
   [[fn-node]]
@@ -37,7 +37,7 @@
   **Whitespace creation convenience**
   [[spaces]]
   [[newlines]]
-  [[comma-separated]]  
+  [[comma-separated]]
   [[line-separated]]
   [[whitespace-nodes]]
 
@@ -51,7 +51,7 @@
   [[child-sexprs]]
 
   **Convert node to string**
-  [[string]]   
+  [[string]]
 
   **Node interogation**
   [[tag]]
@@ -62,13 +62,13 @@
   [[printable-only?]]
 
   **Update node**
-  [[replace-children]]  
-  
+  [[replace-children]]
+
   **Namespaced map element support**
   [[map-context-apply]]
   [[map-context-clear]]
 
-  **Test type** 
+  **Test type**
   [[node?]]
   [[comment?]]
   [[whitespace-or-comment?]]
@@ -119,7 +119,7 @@
             map-context-clear
             string
             tag
-            value]
+            ^{:deprecated "0.4.0"} value]
 
            [rewrite-clj.node.comment
             comment-node

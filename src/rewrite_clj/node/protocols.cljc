@@ -41,7 +41,7 @@
 
   Optional `opts` can specify:
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)
-   
+
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([node] (sexpr node {}))
   ([node opts] (sexpr* node opts)))
@@ -51,7 +51,7 @@
 
   Optional `opts` can specify:
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)
-   
+
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([nodes]
    (sexprs nodes {}))
@@ -222,7 +222,7 @@
   [form]
   (apply dissoc (meta form) [:line :column :end-line :end-column]))
 
-(defn ^{:deprecated "0.4.0"} value
+(defn value
   "DEPRECATED: Get first child as a pair of tag/sexpr (if inner node),
    or just the node's own sexpr. (use explicit analysis of `children`
    `child-sexprs` instead) "
@@ -232,4 +232,4 @@
             (first)
             ((juxt tag sexpr)))
     (sexpr node)))
- 
+

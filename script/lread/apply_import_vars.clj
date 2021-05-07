@@ -79,7 +79,8 @@
 (defn- syms-to-import [import-vecs]
   (for [[ns-sym & ns-vars] import-vecs
         ns-var ns-vars]
-    (symbol (str ns-sym) (str ns-var))))
+    (with-meta (symbol (str ns-sym) (str ns-var))
+               (meta ns-var))))
 
 (defn- imported-var-name [var-metadata opts]
   (if-let [sym-pattern (:sym-to-pattern opts)]
@@ -123,7 +124,7 @@
 (defn- assert-sym-meta [ctx var-meta]
   (doseq [al (:arglists var-meta)]
     (when (not (every? symbol? al))
-      (throw (ex-info (format "appply-import-vars: args expected to be symbols only (no destructuring), found: %s\nfor var: %s\nin ns: %s\n%s" 
+      (throw (ex-info (format "appply-import-vars: args expected to be symbols only (no destructuring), found: %s\nfor var: %s\nin ns: %s\n%s"
                               al (:name var-meta) (:ns var-meta) ctx) {})))))
 
 (defn- delegator-nodes [var-meta]
@@ -153,18 +154,18 @@
                          (zraw/insert-left (nseq/list-node
                                             (concat (list (if (:macro vm) 'defmacro 'defn)
                                                           (nws/spaces 1)
-                                                          (let [target-meta (select-keys vm [:deprecated :added])
+                                                          (let [target-meta (meta import-sym)
                                                                 name (imported-var-name vm opts)]
                                                             (if (seq target-meta)
                                                               (nmeta/meta-node target-meta name)
                                                               name))
                                                           (nws/newlines 1)
                                                           (nws/spaces 2)
-                                                          ;; mimic what parser does 
+                                                          ;; mimic what parser does
                                                           (nstring/string-node (some->> (imported-docstring vm opts)
                                                                                         string/split-lines
                                                                                         ;; TODO: this escaping seems too awkward
-                                                                                        (map #(-> % 
+                                                                                        (map #(-> %
                                                                                                   (string/replace "\\" "\\\\")
                                                                                                   (string/replace "\"" "\\\"")))
                                                                                         (into []))))
@@ -213,8 +214,8 @@
         stale-cnt (->> (process-templates)
                        (reduce (fn [stale-cnt {:keys [template-filename target-filename changed?]}]
                                  (println "Template:" template-filename)
-                                 (println (if changed? "X" " ") "Target:" target-filename (if changed? 
-                                                                                            (-> "STALE" ansi/bold-red-bg ansi/black) 
+                                 (println (if changed? "X" " ") "Target:" target-filename (if changed?
+                                                                                            (-> "STALE" ansi/bold-red-bg ansi/black)
                                                                                             "(no changes)"))
                                  (if changed? (inc stale-cnt) stale-cnt))
                                0))]
@@ -226,10 +227,10 @@
         update-cnt (->> templates
                         (reduce (fn [update-cnt {:keys [template-filename target-filename changed? target-clj]}]
                                   (println "Template:" template-filename)
-                                  (println "  Target:" target-filename (if changed? 
+                                  (println "  Target:" target-filename (if changed?
                                                                          (-> "UPDATE"
                                                                              ansi/bold-green-bg
-                                                                             ansi/black) 
+                                                                             ansi/black)
                                                                          "(no changes detected)"))
                                   (if changed?
                                     (do

@@ -69,7 +69,7 @@
   ([zloc]
    (some-> zloc zraw/node (node/sexpr (get-opts zloc)))))
 
-(defn ^{:added "0.4.4"} child-sexprs
+(defn child-sexprs
   "Return s-expression (the Clojure forms) of children of current node in `zloc`.
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
@@ -81,7 +81,7 @@
   [zloc]
   (or (some-> zloc zraw/node node/length) 0))
 
-(defn ^{:deprecated "0.4.0"} value
+(defn value
   "DEPRECATED. Return a tag/s-expression pair for inner nodes, or
    the s-expression itself for leaves."
   [zloc]
@@ -111,22 +111,22 @@
 
 ;; ## Write
 
-(defn ^{:added "0.4.0"} string
+(defn string
   "Return string representing the current node in `zloc`."
   [zloc]
   (some-> zloc zraw/node node/string))
 
-(defn ^{:deprecated "0.4.0"} ->string
+(defn ->string
   "DEPRECATED. Renamed to [[string]]."
   [zloc]
   (string zloc))
 
-(defn ^{:added "0.4.0"} root-string
+(defn root-string
   "Return string representing the zipped-up `zloc` zipper."
   [zloc]
   (some-> zloc zraw/root node/string))
 
-(defn ^{:deprecated "0.4.0"} ->root-string
+(defn ->root-string
   "DEPRECATED. Renamed to [[root-string]]."
   [zloc]
   (root-string zloc))

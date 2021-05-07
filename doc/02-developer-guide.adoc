@@ -130,6 +130,18 @@ Is expressed in our templates as:
            [my.ns2 my-var4 my-var5]]}}
 ----
 
+Any `:added` and `:deprecated` metadata should be defined in the template and not on the reference var.
+This keeps the metadata on the public API vars only and avoids having the ClojureScript compiler warn about deprecated calls on internal sources within rewrite-clj:
+
+//:test-doc-blocks/skip
+[source,clojure]
+----
+#_{:import-vars/import
+   {:from [[my.ns1
+            ^{:deprecated "1.2.3"} obsolete-fn
+            ^{:added "1.2.4"} new-fn]]}}
+----
+
 We also carry over rewrite-cljc support for `:import-vars/import-with-mods`, via an optional `:opts`.
 See `template/rewrite_clj/zip.cljc` for example usage.
 

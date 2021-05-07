@@ -28,7 +28,7 @@
 
    Pre-order traversal visits root before children.
    For example, traversal order of `(1 (2 3 (4 5) 6 (7 8)) 9)` is:
-  
+
    1. `(1 (2 3 (4 5) 6 (7 8)) 9)`
    2. `1`
    3. `(2 3 (4 5) 6 (7 8))`
@@ -80,21 +80,21 @@
             :else
             loc))))
 
-(defn ^{:added "0.4.9"} postwalk
+(defn postwalk
   "Return zipper modified by an isolated depth-first post-order traversal.
 
    Pre-order traversal visits children before root.
    For example, traversal order of `(1 (2 3 (4 5) 6 (7 8)) 9)` is:
-  
+
    1. `1`
    2. `2`
-   3. `3` 
+   3. `3`
    4. `4`
    5. `5`
    6. `(4 5)`
    7. `6`
    8. `7`
-   9. `8` 
+   9. `8`
    10. `(7 8)`
    11. `(2 3 (4 5) 6 (7 8))`
    12. `9`
