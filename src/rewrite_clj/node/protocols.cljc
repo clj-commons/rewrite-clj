@@ -32,7 +32,9 @@
   (string [this] (pr-str this)))
 
 (defn sexpr-able?
-  "Return true if [[sexpr]] is supported for `node`."
+  "Return true if [[sexpr]] is supported for `node`'s element type.
+
+   See [related docs in user guide](/doc/01-user-guide.adoc#not-all-clojure-is-sexpr-able)"
   [node]
   (not (printable-only? node)))
 

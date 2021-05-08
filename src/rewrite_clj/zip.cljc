@@ -238,7 +238,9 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
 (defn sexpr-able?
-  "Return true if current node in `zloc` can be [[sexpr]]-ed."
+  "Return true if current node's element type in `zloc` can be [[sexpr]]-ed.
+
+   See [related docs in user guide](/doc/01-user-guide.adoc#not-all-clojure-is-sexpr-able)"
   [zloc] (rewrite-clj.zip.base/sexpr-able? zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
