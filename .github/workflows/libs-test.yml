@@ -1,6 +1,6 @@
 name: Libs Test
 
-on: push
+on: [push, pull_request]
 
 jobs:
   libs-test:
