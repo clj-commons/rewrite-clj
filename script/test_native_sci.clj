@@ -28,32 +28,30 @@
     (shell/command [exe-fname "--file" "script/sci_test_runner.clj" "--classpath" "test"])))
 
 (defn -main [& args]
-  (main/run-argless-cmd
-   args
-   (fn []
-     (let [native-image-xmx "6g"
-           graal-reflection-fname "target/native-image/reflection.json"
-           target-exe "target/sci-test-rewrite-clj"]
-       (status/line :head "Creating native image for testing via sci")
-       (status/line :detail "java -version")
-       (shell/command ["java" "-version"])
-       (status/line :detail (str "\nnative-image max memory: " native-image-xmx))
-       (let [graal-native-image (graal/find-graal-native-image)]
-         (graal/clean)
-         (expose-api-to-sci)
-         (let [classpath (graal/compute-classpath "sci-test")]
-           (graal/aot-compile-sources classpath "sci-test.main")
-           (generate-reflection-file graal-reflection-fname)
-           (graal/run-native-image {:graal-native-image graal-native-image
-                                    :graal-reflection-fname graal-reflection-fname
-                                    :target-exe target-exe
-                                    :classpath classpath
-                                    :native-image-xmx native-image-xmx
-                                    :entry-class "sci_test.main"})))
-       (status/line :head "build done")
-       (status/line :detail "built: %s, %d bytes" target-exe (.length (io/file target-exe)))
-       (interpret-tests))))
+  (when (main/doc-arg-opt args)
+    (let [native-image-xmx "6g"
+          graal-reflection-fname "target/native-image/reflection.json"
+          target-exe "target/sci-test-rewrite-clj"]
+      (status/line :head "Creating native image for testing via sci")
+      (status/line :detail "java -version")
+      (shell/command ["java" "-version"])
+      (status/line :detail (str "\nnative-image max memory: " native-image-xmx))
+      (let [graal-native-image (graal/find-graal-native-image)]
+        (graal/clean)
+        (expose-api-to-sci)
+        (let [classpath (graal/compute-classpath "sci-test")]
+          (graal/aot-compile-sources classpath "sci-test.main")
+          (generate-reflection-file graal-reflection-fname)
+          (graal/run-native-image {:graal-native-image graal-native-image
+                                   :graal-reflection-fname graal-reflection-fname
+                                   :target-exe target-exe
+                                   :classpath classpath
+                                   :native-image-xmx native-image-xmx
+                                   :entry-class "sci_test.main"})))
+      (status/line :head "build done")
+      (status/line :detail "built: %s, %d bytes" target-exe (.length (io/file target-exe)))
+      (interpret-tests)))
   nil)
 
-(env/when-invoked-as-script
+(main/when-invoked-as-script
  (apply -main *command-line-args*))

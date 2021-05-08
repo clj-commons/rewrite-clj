@@ -6,7 +6,6 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as string]
-            [helper.env :as env]
             [helper.fs :as fs]
             [helper.main :as main]
             [helper.shell :as shell]
@@ -191,25 +190,23 @@
     chrome-info))
 
 (defn -main [& args]
-  (main/run-argless-cmd
-   args
-   (fn []
-     (let [readme-filename "README.adoc"
-           contributors-source "doc/contributors.edn"
-           image-opts {:image-width 310
-                       :images-dir "./doc/generated/contributors"}
-           contributors (->> (slurp contributors-source)
-                             edn/read-string
-                             sort-contributors)]
-       (status/line :head "updating docs to honor those who contributed")
-       (when (not (check-prerequesites))
-         (status/die 1 "pre-requisites not met"))
-       (status/line :detail (str  "contributors source: " contributors-source))
-       (generate-contributor-images! contributors image-opts)
-       (update-readme-file! contributors readme-filename image-opts)
-       (status/line :detail "SUCCESS"))))
+  (when (main/doc-arg-opt args)
+    (let [readme-filename "README.adoc"
+          contributors-source "doc/contributors.edn"
+          image-opts {:image-width 310
+                      :images-dir "./doc/generated/contributors"}
+          contributors (->> (slurp contributors-source)
+                            edn/read-string
+                            sort-contributors)]
+      (status/line :head "updating docs to honor those who contributed")
+      (when (not (check-prerequesites))
+        (status/die 1 "pre-requisites not met"))
+      (status/line :detail (str  "contributors source: " contributors-source))
+      (generate-contributor-images! contributors image-opts)
+      (update-readme-file! contributors readme-filename image-opts)
+      (status/line :detail "SUCCESS")))
   (shutdown-agents))
 
-(env/when-invoked-as-script
+(main/when-invoked-as-script
  (apply -main *command-line-args*))
 

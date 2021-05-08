@@ -7,11 +7,9 @@
             [cheshire.core :as json]
             [clojure.java.io :as io]
             [clojure.string :as string]
-            [docopt.core :as docopt]
-            [docopt.match :as docopt-match]
             [doric.core :as doric]
             [helper.deps-patcher :as deps-patcher]
-            [helper.env :as env]
+            [helper.main :as main]
             [helper.shell :as shell]
             [io.aviso.ansi :as ansi]
             [lread.status-line :as status]
@@ -537,13 +535,11 @@
                      0 1)))))
 
 
-(def docopt-usage "Libs Tests
-
-Usage:
-  foo list
-  foo run [<lib-name>...]
-  foo outdated [<lib-name>...]
-  foo --help
+(def args-usage "Valid args:
+  list
+  run [<lib-name>...]
+  outdated [<lib-name>...]
+  --help
 
 Commands:
   list     List libs we can test against
@@ -555,21 +551,9 @@ Options:
 
 Specifying no lib-names selects all libraries.")
 
-;; our usage advice is focused on args, not the executable
-(def our-usage
-  (-> docopt-usage
-      (string/replace-first "Usage:" "Valid Args:")
-      (string/replace #"(?m)^  foo " " ")))
-
 (defn -main [& args]
-  (env/assert-min-versions)
-  (if-let [opts (-> docopt-usage
-                    docopt/parse
-                    (docopt-match/match-argv args))]
+  (when-let [opts (main/doc-arg-opt args-usage args)]
     (cond
-      (get opts "--help")
-      (status/line :detail our-usage)
-
       (get opts "list")
       (status/line :detail (str "available libs: " (string/join " " (map :name libs))))
 
@@ -585,16 +569,13 @@ Specifying no lib-names selects all libraries.")
                                      lib-names))]
         (cond
           (not (seq requested-libs))
-          (status/die 1 "no specified lib-names found")
+          (status/die 0 "no specified lib-names found")
 
           (get opts "outdated")
           (report-outdated requested-libs)
 
           (get opts "run")
-          (run-tests requested-libs))
+          (run-tests requested-libs))))))
 
-        nil))
-    (status/die 1 our-usage)))
-
-(env/when-invoked-as-script
+(main/when-invoked-as-script
  (apply -main *command-line-args*))

@@ -68,7 +68,7 @@
                                  cli-matic/cli-matic {:mvn/version "0.4.3"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.4.0"}
+                               :extra-deps {metosin/malli {:mvn/version "0.5.1"}
                                             io.aviso/pretty {:mvn/version "0.1.37"}}
                                :ns-default lread.apply-import-vars}
 

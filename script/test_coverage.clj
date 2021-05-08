@@ -1,8 +1,7 @@
 #!/usr/bin/env bb
 
 (ns test-coverage
-  (:require [helper.env :as env]
-            [helper.main :as main]
+  (:require [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -19,12 +18,10 @@
                   "--reporter" "documentation"]))
 
 (defn -main [& args]
-  (main/run-argless-cmd
-   args
-   (fn []
-     (generate-doc-tests)
-     (run-clj-doc-tests)))
+  (when (main/doc-arg-opt args)
+    (generate-doc-tests)
+    (run-clj-doc-tests))
   nil)
 
-(env/when-invoked-as-script
+(main/when-invoked-as-script
  (apply -main *command-line-args*))

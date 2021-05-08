@@ -2,7 +2,6 @@
 
 (ns outdated
   (:require [clojure.java.io :as io]
-            [helper.env :as env]
             [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
@@ -23,12 +22,10 @@
       (status/line :detail "(warning: deps are only checked against installed ./node_modules)"))))
 
 (defn -main[& args]
-  (main/run-argless-cmd
-   args
-   (fn []
-     (check-clojure)
-     (check-nodejs)))
+  (when (main/doc-arg-opt args)
+    (check-clojure)
+    (check-nodejs))
   nil)
 
-(env/when-invoked-as-script
+(main/when-invoked-as-script
  (apply -main *command-line-args*))

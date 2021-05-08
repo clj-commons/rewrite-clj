@@ -1,74 +1,41 @@
+
+
 #!/usr/bin/env bb
 
 (ns test-clj
-  (:require [clojure.string :as string]
-            [clojure.tools.cli :as cli]
-            [helper.env :as env]
+  (:require [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
 (def allowed-clojure-versions '("1.9" "1.10"))
-(def default-clojure-version "1.10")
 
-(def cli-options
-  [["-v" "--clojure-version VERSION" (str "Clojure version" " [" (string/join ", " allowed-clojure-versions) "]")
-    :default default-clojure-version
-    :validate [#(some #{%} allowed-clojure-versions)
-               (str "Must be one of: " (string/join ", " allowed-clojure-versions))]]
-   ["-h" "--help"]])
-
-(defn usage [options-summary]
-  (->> ["Valid args: <options>"
-        options-summary]
-       (string/join "\n")))
-
-(defn error-msg [summary errors]
-  (str (string/join "\n" errors)
-       "\n\n"
-       (usage summary)))
-
-(defn validate-args [args]
-  (let [{:keys [options arguments errors summary]} (cli/parse-opts args cli-options)]
-    (cond
-      (:help options)
-      {:exit-message (usage summary) :exit-code 0}
-
-      (seq arguments)
-      {:exit-message (error-msg summary (map #(str "unexpected argument: " %) arguments))
-       :exit-code 1}
-
-      errors
-      {:exit-message (error-msg summary errors)
-       :exit-code 1}
-
-      :else
-      {:options options})))
-
-(defn exit [code msg]
-  (if (zero? code)
-    (status/line :detail msg)
-    (status/die code msg)))
-
-(defn run-unit-tests [{:keys [:clojure-version]}]
+(defn run-unit-tests [clojure-version]
   (status/line :head (str "testing clojure source against clojure v" clojure-version))
   (shell/command ["clojure"
                   (str "-M:test-common:kaocha:" clojure-version)
                   "--reporter" "documentation"]))
 
-(defn run-isolated-tests[{:keys [:clojure-version]}]
+(defn run-isolated-tests[clojure-version]
   (status/line :head (str "running isolated tests against clojure v" clojure-version))
   (shell/command ["clojure" (str "-M:kaocha:" clojure-version)
                   "--profile" "test-isolated"
                   "--reporter" "documentation"]))
 
+(def args-usage "Valid args: [options]
+
+Options:
+  -v, --clojure-version VERSION  Test with Clojure [1.9, 1.10] [default: 1.10]
+  --help                         Show this help")
+
 (defn -main [& args]
-  (env/assert-min-versions)
-  (let [{:keys [options exit-message exit-code]} (validate-args args)]
-    (if exit-message
-      (exit exit-code exit-message)
-      (do (run-unit-tests options)
-          (run-isolated-tests options))))
+  (when-let [opts (main/doc-arg-opt args-usage args)]
+    (let [clojure-version (get opts "--clojure-version")]
+      (if (not (some #{clojure-version} allowed-clojure-versions))
+        (status/die 1 args-usage)
+        (do
+          (run-unit-tests clojure-version)
+          (run-isolated-tests clojure-version)))))
   nil)
 
-(env/when-invoked-as-script
+(main/when-invoked-as-script
  (apply -main *command-line-args*))

@@ -4,9 +4,7 @@
   (:require [babashka.classpath :as bbcp]
             [babashka.fs :as fs]
             [clojure.string :as string]
-            [docopt.core :as docopt]
-            [docopt.match :as docopt-match]
-            [helper.env :as env]
+            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -44,28 +42,20 @@
       (= 3 exit) (status/die exit "clj-kondo found one or more lint warnings")
       (> exit 0) (status/die exit "clj-kondo returned unexpected exit code"))))
 
-(def docopt-usage "Valid args: [options]
+(def args-usage "Valid args: [options]
 
 Options:
-  --help           Show this screen.
-  --rebuild-cache  Force rebuild of lint cache.")
+  --rebuild-cache  Force rebuild of lint cache.
+  --help           Show this help.")
 
 (defn -main [& args]
-  (env/assert-min-versions)
-  (if-let [opts (-> docopt-usage
-                    (string/replace-first "Valid args:" "Usage: foo") ;; conform to what docopt expects
-                    docopt/parse
-                    (docopt-match/match-argv args))]
+  (when-let [opts (main/doc-arg-opt args-usage args)]
     (cond
-      (get opts "--help")
-      (status/line :detail docopt-usage)
-
       (get opts "--rebuild-cache")
       (do (delete-cache) (lint))
 
       :else
-      (lint))
-    (status/die 1 docopt-usage)))
+      (lint))))
 
-(env/when-invoked-as-script
+(main/when-invoked-as-script
  (apply -main *command-line-args*))

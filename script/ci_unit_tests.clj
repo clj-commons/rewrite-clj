@@ -38,19 +38,16 @@
     (status/line :warn "skipping planck tests, they can only be run on linux and macOS")) )
 
 (defn -main [& args]
-  (main/run-argless-cmd
-   args
-   (fn []
-     (env/assert-min-versions)
-     (clean)
-     (check-import-vars)
-     (lint)
-     (doc-tests)
-     (clojure-tests)
-     (cljs-tests)
-     (shadow-cljs-tests)
-     (cljs-bootstrap-tests)))
+  (when (main/doc-arg-opt args)
+    (clean)
+    (check-import-vars)
+    (lint)
+    (doc-tests)
+    (clojure-tests)
+    (cljs-tests)
+    (shadow-cljs-tests)
+    (cljs-bootstrap-tests))
   nil)
 
-(env/when-invoked-as-script
+(main/when-invoked-as-script
  (apply -main *command-line-args*))

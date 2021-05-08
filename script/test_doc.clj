@@ -1,8 +1,7 @@
 #!/usr/bin/env bb
 
 (ns test-doc
-  (:require [helper.env :as env]
-            [helper.main :as main]
+  (:require [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -25,14 +24,11 @@
                   "--out" "target/cljsbuild/doc-tests"]))
 
 (defn -main [& args]
-  (main/run-argless-cmd
-   args
-   (fn []
-     (env/assert-min-versions)
-     (generate-doc-tests)
-     (run-clj-doc-tests)
-     (run-cljs-doc-tests)))
+  (when (main/doc-arg-opt args)
+    (generate-doc-tests)
+    (run-clj-doc-tests)
+    (run-cljs-doc-tests))
   nil)
 
-(env/when-invoked-as-script
+(main/when-invoked-as-script
  (apply -main *command-line-args*))

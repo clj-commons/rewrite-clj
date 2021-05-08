@@ -7,8 +7,8 @@
             [clojure.java.browse :as browse]
             [clojure.string :as string]
             [clojure.zip :as zip]
-            [helper.env :as env]
             [helper.fs :as fs]
+            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -215,57 +215,50 @@
 (defn cleanup-resources []
   (fs/delete-file-recursively cljdoc-db-dir true))
 
-(def usage (string/join "\n"
-                        ["Valid args: [start|ingest|view|stop|status]"
-                         ""
-                         " start  - start docker containers supporting cljdoc preview"
-                         " ingest - locally publishes your project for cljdoc preview"
-                         " view   - opens cljdoc preview in your default browser"
-                         " stop   - stops docker containers supporting cljdoc preview"
-                         " status - status of docker containers supporting cljdoc preview"
-                         ""
-                         " --help - show this help"
-                         ""
-                         "Must be run from project root directory."]))
+(def args-usage "Valid args: (start|ingest|view|stop|status|--help)
+
+Commands:
+  start   Start docker containers supporting cljdoc preview
+  ingest  Locally publishes your project for cljdoc preview
+  view    Opens cljdoc preview in your default browser
+  stop    Stops docker containers supporting cljdoc preview
+  status  Status of docker containers supporting cljdoc preview
+
+Options:
+  --help  Show this help
+
+Must be run from project root directory.")
 
 (defn -main [& args]
-
   (check-prerequisites)
-
-  (let [command (first args)]
-    (case command
-      "--help"
-      (status/line :detail usage)
-
-      "start"
+  (when-let [opts (main/doc-arg-opt args-usage args)]
+    (cond
+      (get opts "start")
       (do
         (start-cljdoc-server cljdoc-container)
         nil)
 
-      "ingest"
+      (get opts "ingest")
       (do
         (git-warnings)
         (local-install)
         (cljdoc-ingest cljdoc-container (get-project) (get-version))
         nil)
 
-      "view"
+      (get opts "view")
       (do
         (wait-for-server cljdoc-container)
         (view-in-browser (str "http://localhost:" (:port cljdoc-container) "/d/" (get-project) "/" (get-version)))
         nil)
 
-      "status"
+      (get opts "status")
       (status-server-print cljdoc-container)
 
-      "stop"
+      (get opts "stop")
       (do
         (stop-server cljdoc-container)
         (cleanup-resources)
-        nil)
+        nil))))
 
-      ;; else
-      (status/die 1 usage))))
-
-(env/when-invoked-as-script
+(main/when-invoked-as-script
  (apply -main *command-line-args*))

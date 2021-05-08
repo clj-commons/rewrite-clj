@@ -3,59 +3,14 @@
 (ns test-cljs
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
-            [clojure.tools.cli :as cli]
-            [helper.env :as env]
             [helper.fs :as fs]
+            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
 (def valid-envs '("node" "chrome-headless" "planck"))
 (def valid-optimizations '("none" "advanced"))
 (def valid-granularities '("all" "namespace"))
-
-(defn enum-opt [short long desc valid-values]
-  [short long (str desc " [" (string/join ", " valid-values) "]")
-   :default (first valid-values)
-   :validate [#(some #{%} valid-values)
-              (str "Must be one of: " (string/join ", " valid-values))]])
-
-(def cli-options
-  [(enum-opt "-e" "--env ENV" "JavaScript Environment" valid-envs)
-   (enum-opt "-o" "--optimizations OPTIMIZATIONS" "ClojureScript Optimizations" valid-optimizations)
-   (enum-opt "-g" "--run-granularity GRANULARITY" "Run Granularity" valid-granularities)
-   ["-h" "--help"]])
-
-(defn usage [options-summary]
-  (->> ["Valid args: <options>"
-        options-summary]
-       (string/join "\n")))
-
-(defn error-msg [summary errors]
-  (str (string/join "\n" errors)
-       "\n\n"
-       (usage summary)))
-
-(defn validate-args [args]
-  (let [{:keys [options arguments errors summary]} (cli/parse-opts args cli-options)]
-    (cond
-      (:help options)
-      {:exit-message (usage summary) :exit-code 0}
-
-      (seq arguments)
-      {:exit-message (error-msg summary (map #(str "unexpected argument: " %) arguments))
-       :exit-code 1}
-
-      errors
-      {:exit-message (error-msg summary errors)
-       :exit-code 1}
-
-      :else
-      {:options options})))
-
-(defn exit [code msg]
-  (if (zero? code)
-    (status/line :detail msg)
-    (status/die code msg)))
 
 (defn compile-opts [out-dir {:keys [:env :optimizations]}]
   {:warnings {:fn-deprecated false}
@@ -117,13 +72,30 @@
                                 (shell/command (concat cmd ["--namespace" ns])))
                               nses)))))))
 
+(defn valid-opts? [opts]
+ (and (some #{(get opts "--env")} valid-envs)
+      (some #{(get opts "--optimizations")} valid-optimizations)
+      (some #{(get opts "--run-granularity")} valid-granularities)))
+
+(def args-usage "Valid args: [options]
+
+Options:
+  -e, --env ENV                      JavaScript Environment [node, chrome-headless, planck] [default: node]
+  -o, --optimizations OPTIMIZATIONS  ClojureScript Optimizations [none, advanced] [default: none]
+  -g, --run-granularity GRANULARITY  Run Granularity [all, namespace] [default: all]
+  --help")
+
 (defn -main [& args]
-  (env/assert-min-versions)
-  (let [{:keys [options exit-message exit-code]} (validate-args args)]
-    (if exit-message
-      (exit exit-code exit-message)
-      (run-tests options)))
+  (when-let [opts (main/doc-arg-opt args-usage args)]
+    (cond
+      (not (valid-opts? opts))
+      (status/die 1 args-usage)
+
+      :else
+      (run-tests {:env (get opts "--env")
+                  :optimizations (get opts "--optimizations")
+                  :run-granularity (get opts "--run-granularity")})))
   nil)
 
-(env/when-invoked-as-script
+(main/when-invoked-as-script
  (apply -main *command-line-args*))
