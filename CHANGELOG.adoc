@@ -16,6 +16,7 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* user guide and docstrings better explain `sexpr-able?` and what invalid code elements rewrite-clj parses https://github.com/clj-commons/rewrite-clj/issues/150[#150] https://github.com/clj-commons/rewrite-clj/issues/151[#151]
 * rewrite-clj now exports clj-kondo config for its public API https://github.com/clj-commons/rewrite-clj/issues/146[#146]
 * ClojureScript compiler should no longer emit invalid deprecated warnings https://github.com/clj-commons/rewrite-clj/issues/153[#153]
 * Internal rewrite-clj developer facing:
