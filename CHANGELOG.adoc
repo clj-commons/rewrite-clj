@@ -20,7 +20,7 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 * rewrite-clj now exports clj-kondo config for its public API https://github.com/clj-commons/rewrite-clj/issues/146[#146]
 * ClojureScript compiler should no longer emit invalid deprecated warnings https://github.com/clj-commons/rewrite-clj/issues/153[#153]
 * Internal rewrite-clj developer facing:
-  * Switched from babashka scripts to babashka tasks, developer guide updated accordingly
+** Switched from babashka scripts to babashka tasks, developer guide updated accordingly
 
 === v1.0.605-alpha
 
