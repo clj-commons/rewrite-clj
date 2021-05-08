@@ -352,7 +352,7 @@
                         ["lein" "test"]]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.04.27-20.17.45"
+            :version "2021.05.06-19.44.00"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn cli-deps-tree
