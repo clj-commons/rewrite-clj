@@ -698,6 +698,85 @@ image::map-nodes.png[map nodes]
 
 This is convenient when navigating through the source, but when we want to logically treat any map as a map the difference is admittedly bit awkward.
 
+== Parsing Peculiarities
+
+Rewrite-clj can, in some specific cases, parse technically invalid Clojure.
+Some folks have come to rely on this over the years, so these are behaviours we will preserve.
+
+[[unbalanced-maps]]
+=== Unbalanced Maps
+An unbalanced map is one where there is a key with no value.
+
+Rewrite-clj can parse and emit unbalanced maps:
+[source,clojure]
+----
+(require '[rewrite-clj.zip :as z])
+
+(-> "{:a 1 :b 2 :c}"
+    z/of-string
+    z/root-string)
+;; => "{:a 1 :b 2 :c}"
+----
+
+An attempt to convert an unbalanced map to a Clojure form will throw:
+//#:test-doc-blocks {:reader-cond :clj}
+[source,clojure]
+----
+(try
+  (-> "{:a 1 :b 2 :c}"
+      z/of-string
+      z/sexpr)
+  (catch Throwable e
+    (.getMessage e)))
+;; => "No value supplied for key: :c"
+----
+
+NOTE: `sexpr-able?` considers the current node element type only and will return `true` for all maps, balanced or not.
+
+[[maps-with-duplicate-keys]]
+=== Maps with Duplicate keys
+Rewrite-clj can parse and emit maps with duplicate keys:
+
+[source,clojure]
+----
+(-> "{:a 1 :b 2 :a 3 :a 4 :a 5 :a 6}"
+    z/of-string
+    z/root-string)
+;; => "{:a 1 :b 2 :a 3 :a 4 :a 5 :a 6}"
+----
+
+But when converting to a Clojure form, duplicate keys are not valid in a map, so only the last key/value pair for duplicate keys will be included:
+[source,clojure]
+----
+(-> "{:a 1 :b 2 :a 3 :a 4 :a 5 :a 6}"
+    z/of-string
+    z/sexpr)
+;; => {:b 2, :a 6}
+----
+
+[[sets-with-duplicate-values]]
+=== Sets with Duplicate values
+
+Rewrite-clj can parse and emit sets with duplicate values:
+
+[source,clojure]
+----
+(-> "#{:a :b :a :a :a}"
+    z/of-string
+    z/root-string)
+;; => "#{:a :b :a :a :a}"
+----
+
+But when converting to a Clojure form, duplicate values in a set are not valid Clojure, so the duplicates are omitted:
+
+[source,clojure]
+----
+(-> "#{:a :b :a :a :a}"
+    z/of-string
+    z/sexpr)
+;; => #{:b :a}
+----
+
 [#sexpr-nuances]
 == Sexpr Nuances
 
@@ -754,15 +833,24 @@ The whitespace that a rewrite-clj so carefully preserves is lost when converting
 ; {:b 2, :a 1}
 ----
 
-=== Not all Source is Sexpr-able
+[[not-all-clojure-is-sexpr-able]]
+=== Not all Clojure Elements are Sexpr-able
 
-Some source code elements are not sexpr-able:
+Some source code element types are not sexpr-able:
 
 * Reader ignore/discard `#_` (also known as "uneval" in rewrite-clj)
 * Comments
 * Clojure whitespace (which includes commas)
 
-Both the zip and node APIs include `sexpr-able?` to check if sexpr is supported for a node.
+Both the zip and node APIs include `sexpr-able?` to check if sexpr is supported for the current node element type.
+
+[NOTE]
+====
+`sexpr-able?` only looks at the current node element type. This means that `sexpr` will still throw when:
+
+1. called on a node with an element type that is `sepxr-able?` but, for whatever reason, has a child node that fails to `sexpr`, see link:#unbalanced-maps[unbalanced maps].
+2. called directly on an link:#unbalanced-maps[unbalanced maps].
+====
 
 [source, clojure]
 ----
@@ -822,6 +910,19 @@ Both the zip and node APIs include `sexpr-able?` to check if sexpr is supported 
 ;; => "unsupported operation"
 ----
 <1> Notice the use of `next*` to include normally skipped nodes.
+
+Remember that child nodes with element types that are not `sexpr-able?` are skipped for `sexpr`:
+
+[source,clojure]
+----
+(-> (str "[1 #_:child-discard-will-be-skipped\n"
+         " ;; comment will be skipped\n"
+         " ,,, ,,, ,,, \n"
+         " 2]")
+    z/of-string
+    z/sexpr)
+;; => [1 2]
+----
 
 === Differences in Clojure Platforms
 

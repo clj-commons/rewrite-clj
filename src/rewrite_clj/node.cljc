@@ -165,7 +165,9 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.protocols
 (defn sexpr-able?
-  "Return true if [[sexpr]] is supported for `node`."
+  "Return true if [[sexpr]] is supported for `node`'s element type.
+
+   See [related docs in user guide](/doc/01-user-guide.adoc#not-all-clojure-is-sexpr-able)"
   [node] (rewrite-clj.node.protocols/sexpr-able? node))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.protocols
@@ -551,7 +553,7 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.seq
 (defn list-node
   "Create a node representing a list with `children`.
-   
+
    ```Clojure
    (require '[rewrite-clj.node :as n])
 
@@ -569,7 +571,7 @@
 (defn map-node
   "Create a node representing a map with `children`.
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/map-node [(n/keyword-node :a)
                     (n/spaces 1)
@@ -579,33 +581,58 @@
                     (n/spaces 1)
                     (n/token-node 2)])
        (n/string))
-   ;; => \"{:a 1 :b 2}\" 
+   ;; => \"{:a 1 :b 2}\"
    ```
 
-   Note that rewrite-clj allows unbalanced maps:
+   Note that rewrite-clj allows the, technically illegal, unbalanced map:
    ```Clojure
    (-> (n/map-node [(n/keyword-node :a)])
        (n/string))
    ;; => \"{:a}\"
    ```
-   Note also that [[sexpr]] will fail on an unbalanced map."
+   See [docs on unbalanced maps](/doc/01-user-guide.adoc#unbalanced-maps).
+
+   Rewrite-clj also allows the, also technically illegal, map with duplicate keys:
+   ```Clojure
+   (-> (n/map-node [(n/keyword-node :a)
+                    (n/spaces 1)
+                    (n/token-node 1)
+                    (n/spaces 1)
+                    (n/keyword-node :a)
+                    (n/spaces 1)
+                    (n/token-node 2)])
+       (n/string))
+   ;; => \"{:a 1 :a 2}\"
+   ```
+   See [docs on maps with duplicate keys](/doc/01-user-guide.adoc#maps-with-duplicate-keys)."
   [children] (rewrite-clj.node.seq/map-node children))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.seq
 (defn set-node
   "Create a node representing a set with `children`.
-   
+
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/set-node [(n/token-node 1)
                     (n/spaces 1)
                     (n/token-node 2)
                     (n/spaces 1)
                     (n/token-node 3)])
-       n/string) 
+       n/string)
    ;; => \"#{1 2 3}\"
-   ```"
+   ```
+
+   Note that rewrite-clj allows the, technically illegal, set with duplicate values:
+   ```Clojure
+   (-> (n/set-node [(n/token-node 1)
+                    (n/spaces 1)
+                    (n/token-node 1)])
+       (n/string))
+   ;; => \"#{1 1}\"
+   ```
+
+   See [docs on sets with duplicate values](/doc/01-user-guide.adoc#sets-with-duplicate-values)."
   [children] (rewrite-clj.node.seq/set-node children))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.seq
@@ -613,7 +640,7 @@
   "Create a node representing a vector with `children`.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/vector-node [(n/token-node 1)
                        (n/spaces 1)
