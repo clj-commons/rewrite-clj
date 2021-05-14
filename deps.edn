@@ -122,7 +122,10 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "0.13.0"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "0.14.0"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.30"} ;; to rid ourselves of logger warnings
                                    }
-                      :main-opts ["-m" "antq.core"]}}}
+                      :main-opts ["-m" "antq.core"
+                                  "--reporter=edn"
+                                  "--exclude=lambdaisland/kaocha@1.0.829" ;; https://github.com/lambdaisland/kaocha/issues/208
+                                  ]}}}
