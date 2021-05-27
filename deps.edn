@@ -12,7 +12,7 @@
            ;;
            ;; ClojureScript version we test with (and support)
            ;;
-           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.844"}}}
+           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.866"}}}
 
            ;;
            ;; Test support
@@ -43,7 +43,7 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for clojure testing
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.732"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.861"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}
@@ -69,7 +69,7 @@
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
                                :extra-deps {metosin/malli {:mvn/version "0.5.1"}
-                                            io.aviso/pretty {:mvn/version "0.1.37"}}
+                                            io.aviso/pretty {:mvn/version "1.1"}}
                                :ns-default lread.apply-import-vars}
 
            ;;
@@ -122,7 +122,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "0.14.0"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "0.14.1"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.30"} ;; to rid ourselves of logger warnings
                                    }
                       :main-opts ["-m" "antq.core"
