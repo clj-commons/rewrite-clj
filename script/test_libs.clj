@@ -318,7 +318,7 @@
 ;;
 
 (def libs [{:name "antq"
-            :version "0.13.0"
+            :version "0.14.1"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -352,7 +352,7 @@
                         ["lein" "test"]]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.05.06-19.44.00"
+            :version "2021.05.27-17.42.34"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn cli-deps-tree
@@ -433,7 +433,7 @@
            {:name "zprint"
             :version "1.1.1"
             :platforms [:clj :cljs]
-            :note "1 minor hack to pass with rewrite-clj v1"
+            :note "1 minor hack to pass with rewrite-clj v1, we'll skip version 1.1.2"
             :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch
             :prep-fn zprint-prep
