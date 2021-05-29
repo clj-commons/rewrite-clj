@@ -10,7 +10,7 @@
 
 (defn install-locally []
   (status/line :head "installing rewrite-clj v1 locally from dev")
-  (shell/command ["mvn" "install"]))
+  (shell/command "mvn install"))
 
 (defn wipe-rewrite-clj-diff-cache [ {:keys [coords version]}]
   (let [cache-dir (io/file "./.diff-apis/.cache")
@@ -38,14 +38,16 @@
 
 (defn diff-apis [{:keys [:notes-dir :report-dir]} projecta projectb report-name extra-args]
   (status/line :head "Diffing %s and %s" (describe-proj projecta) (describe-proj projectb))
-  (shell/command (concat ["clojure" "-M:diff-apis"]
-                         (map projecta [:coords :version :lang])
-                         (map projectb [:coords :version :lang])
-                         ["--arglists-by" ":arity-only"
-                          "--notes" (str (io/file notes-dir (str report-name ".adoc")))
-                          "--report-format" ":asciidoc"
-                          "--report-filename" (str  (io/file report-dir (str report-name ".adoc")))]
-                         extra-args)))
+  (apply shell/command 
+         (concat
+          ["clojure" "-M:diff-apis"]
+          (map projecta [:coords :version :lang])
+          (map projectb [:coords :version :lang])
+          ["--arglists-by" ":arity-only"
+           "--notes" (str (io/file notes-dir (str report-name ".adoc")))
+           "--report-format" ":asciidoc"
+           "--report-filename" (str  (io/file report-dir (str report-name ".adoc")))]
+          extra-args)))
 
 (defn -main [& args]
   (when (main/doc-arg-opt args)

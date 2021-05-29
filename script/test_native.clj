@@ -12,9 +12,9 @@
   (status/line :head "Generate test runner")
   (fs/delete-file-recursively dir true)
   (io/make-parents dir)
-  (shell/command ["clojure" "-M:script:test-common"
-                  "-m" "clj-graal.gen-test-runner"
-                  "--dest-dir" dir "test-by-namespace"]))
+  (shell/command "clojure" "-M:script:test-common"
+                 "-m" "clj-graal.gen-test-runner"
+                 "--dest-dir" dir "test-by-namespace"))
 
 (defn -main [& args]
   (when (main/doc-arg-opt args)
@@ -22,7 +22,7 @@
           target-exe "target/rewrite-clj-test"]
       (status/line :head "Creating native image for test")
       (status/line :detail "java -version")
-      (shell/command ["java" "-version"])
+      (shell/command "java -version")
       (status/line :detail (str "\nnative-image max memory: " native-image-xmx))
       (let [graal-native-image (graal/find-graal-native-image)
             test-runner-dir "target/generated/graal"]
@@ -38,7 +38,7 @@
       (status/line :head "Native image built")
       (status/line :detail "built: %s, %d bytes" target-exe (.length (io/file target-exe)))
       (status/line :head "Running tests natively")
-      (shell/command [target-exe])))
+      (shell/command target-exe)))
   nil)
 
 (main/when-invoked-as-script

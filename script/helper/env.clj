@@ -19,7 +19,7 @@
   []
   (let [min-version "1.10.1.697"
         version
-        (->> (shell/command ["clojure" "-Sdescribe"] {:out :string})
+        (->> (shell/command {:out :string} "clojure -Sdescribe")
              :out
              edn/read-string
              :version)]

@@ -11,15 +11,15 @@
 
 (defn run-unit-tests [clojure-version]
   (status/line :head (str "testing clojure source against clojure v" clojure-version))
-  (shell/command ["clojure"
+  (shell/command "clojure"
                   (str "-M:test-common:kaocha:" clojure-version)
-                  "--reporter" "documentation"]))
+                  "--reporter" "documentation"))
 
 (defn run-isolated-tests[clojure-version]
   (status/line :head (str "running isolated tests against clojure v" clojure-version))
-  (shell/command ["clojure" (str "-M:kaocha:" clojure-version)
-                  "--profile" "test-isolated"
-                  "--reporter" "documentation"]))
+  (shell/command "clojure" (str "-M:kaocha:" clojure-version)
+                 "--profile" "test-isolated"
+                 "--reporter" "documentation"))
 
 (def args-usage "Valid args: [options]
 

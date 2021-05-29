@@ -18,7 +18,8 @@
     (fs/delete-file-recursively dir true)))
 
 (defn- last-release-tag []
-  (->  (shell/command ["git" "describe" "--abbrev=0" "--match" "v[0-9]*"] {:out :string})
+  (->  (shell/command {:out :string} 
+                      "git describe --abbrev=0 --match v[0-9]*")
        :out
        string/trim))
 
@@ -107,9 +108,9 @@
 (defn- create-jar! [version]
   (status/line :head (str "Creating jar for version " version))
   (status/line :detail "Reflecting deps in deps.edn to pom.xml")
-  (shell/command ["clojure" "-Spom"])
+  (shell/command "clojure -Spom")
   (status/line :detail "Updating pom.xml version and creating thin jar")
-  (shell/command ["clojure" "-X:jar" ":version" (pr-str version)])
+  (shell/command "clojure -X:jar :version" (pr-str version))
   nil)
 
 (defn- assert-on-ci
@@ -123,7 +124,7 @@
   []
   (status/line :head "Deploying jar to clojars")
   (assert-on-ci "deploy a jar")
-  (shell/command ["clojure" "-X:deploy:remote"])
+  (shell/command "clojure -X:deploy:remote")
   nil)
 
 (defn- commit-changes! [version]
@@ -131,24 +132,25 @@
     (status/line :head (str  "Committing and pushing changes made for " tag-version))
     (assert-on-ci "commit changes")
     (status/line :detail "Adding changes")
-    (shell/command ["git" "add" "doc/01-user-guide.adoc" "CHANGELOG.adoc" "pom.xml"])
+    (shell/command "git add doc/01-user-guide.adoc CHANGELOG.adoc pom.xml")
     (status/line :detail "Committing")
-    (shell/command ["git" "commit" "-m" (str  "Release job: updates for version " tag-version)])
+    (shell/command "git commit -m" (str  "Release job: updates for version " tag-version))
     (status/line :detail "Version tagging")
-    (shell/command ["git" "tag" "-a" tag-version "-m" (str  "Release " tag-version)])
+    (shell/command "git" "tag" "-a" tag-version "-m" (str  "Release " tag-version))
     (status/line :detail "Pushing commit")
-    (shell/command ["git" "push"])
+    (shell/command "git push")
     (status/line :detail "Pushing version tag")
-    (shell/command ["git" "push" "origin" tag-version])
+    (shell/command "git push origin" tag-version)
     nil))
 
 (defn- inform-cljdoc! [version]
   (status/line :head (str "Informing cljdoc of new version " version))
   (assert-on-ci "inform cljdoc")
-  (let [exit-code (->  (shell/command-no-exit ["curl" "-X" "POST"
-                                               "-d" "project=rewrite-clj/rewrite-clj"
-                                               "-d" (str  "version=" version)
-                                               "https://cljdoc.org/api/request-build2"])
+  (let [exit-code (->  (shell/command {:continue true}
+                                      "curl" "-X" "POST"
+                                      "-d" "project=rewrite-clj/rewrite-clj"
+                                      "-d" (str  "version=" version)
+                                      "https://cljdoc.org/api/request-build2")
                        :exit)]
     (when (not (zero? exit-code))
       (status/line :warn (str  "Informing cljdoc did not seem to work, exited with " exit-code)))))
@@ -210,3 +212,4 @@ Options
 
 (main/when-invoked-as-script
  (apply -main *command-line-args*))
+

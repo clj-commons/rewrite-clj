@@ -14,7 +14,8 @@
 
 (defn check-clojure []
   (status/line :head "Checking Clojure deps")
-  (if-let [outdated (->> (shell/command-no-exit ["clojure" "-M:outdated"] {:out :string})
+  (if-let [outdated (->> (shell/command {:continue true :out :string} 
+                                        "clojure -M:outdated")
                          :out
                          string/trim
                          edn/read-string
@@ -30,9 +31,10 @@
   (status/line :head "Checking Node.js deps")
   (when (not (.exists (io/file "node_modules")))
     (status/line :detail "node_modules, not found, installing.")
-    (shell/command ["npm" "install"]))
+    (shell/command "npm install"))
 
-  (let [{:keys [:exit]} (shell/command-no-exit ["npm" "outdated"])]
+  (let [{:keys [:exit]} (shell/command {:continue true}
+                                       "npm outdated")]
     (when (zero? exit)
       (status/line :detail "All Node.js dependencies seem up to date.")
       (status/line :detail "(warning: deps are only checked against installed ./node_modules)"))))

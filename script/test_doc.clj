@@ -7,21 +7,21 @@
 
 (defn generate-doc-tests []
   (status/line :head "Generating tests for code blocks in documents")
-  (shell/command ["clojure" "-X:test-doc-blocks" "gen-tests"]))
+  (shell/command "clojure -X:test-doc-blocks gen-tests"))
 
 (defn run-clj-doc-tests []
   (status/line :head "Running code block tests under Clojure")
-  (shell/command ["clojure" "-M:test-common:test-docs:kaocha"
-                  "--profile" "test-docs"
-                  "--no-randomize"
-                  "--reporter" "documentation"]))
+  (shell/command "clojure" "-M:test-common:test-docs:kaocha"
+                 "--profile" "test-docs"
+                 "--no-randomize"
+                 "--reporter" "documentation"))
 
 (defn run-cljs-doc-tests []
   (status/line :head "Running code block tests under ClojureScript")
-  (shell/command ["clojure" "-M:test-common:test-docs:cljs-test"
-                  "--compile-opts" "{:warnings {:fn-deprecated false :single-segment-namespace false}}"
-                  "--dir" "target/test-doc-blocks/test"
-                  "--out" "target/cljsbuild/doc-tests"]))
+  (shell/command "clojure" "-M:test-common:test-docs:cljs-test"
+                 "--compile-opts" "{:warnings {:fn-deprecated false :single-segment-namespace false}}"
+                 "--dir" "target/test-doc-blocks/test"
+                 "--out" "target/cljsbuild/doc-tests"))
 
 (defn -main [& args]
   (when (main/doc-arg-opt args)

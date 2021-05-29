@@ -16,6 +16,8 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* Internal rewrite-clj developer facing changes only
+
 === v1.0.644-alpha
 
 * user guide and docstrings better explain `sexpr-able?` and what invalid code elements rewrite-clj parses https://github.com/clj-commons/rewrite-clj/issues/150[#150] https://github.com/clj-commons/rewrite-clj/issues/151[#151]

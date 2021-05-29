@@ -130,7 +130,7 @@
   (try
     (let [chrome (chrome)]
       {:exe chrome
-       :version (-> (shell/command [chrome "--version"] {:out :string})
+       :version (-> (shell/command {:out :string} chrome "--version")
                     :out
                     string/trim)})
     (catch Exception _e)))
@@ -139,14 +139,14 @@
   (let [html-file (str target-dir "/temp.html")]
     (try
       (spit html-file (generate-contributor-html github-id contributions))
-      (shell/command [(chrome)
-                      "--headless"
-                      (str "--screenshot=" target-dir "/" github-id ".png")
-                      (str "--window-size=" (:image-width image-opts) ",125")
-                      "--default-background-color=0"
-                      "--hide-scrollbars"
-                      html-file]
-                     {:out :string :err :string})
+      (shell/command {:out :string :err :string}
+                     (chrome)
+                     "--headless"
+                     (str "--screenshot=" target-dir "/" github-id ".png")
+                     (str "--window-size=" (:image-width image-opts) ",125")
+                     "--default-background-color=0"
+                     "--hide-scrollbars"
+                     html-file)
       (finally
         (fs/delete-file-recursively (io/file html-file) true)))))
 

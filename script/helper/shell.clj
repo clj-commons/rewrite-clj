@@ -1,25 +1,20 @@
 (ns helper.shell
-  (:require [babashka.process :as process]
+  (:require [babashka.tasks :as tasks]
             [clojure.pprint :as pprint]
             [lread.status-line :as status]))
 
-(defn command-no-exit
-  "Thin wrapper on babashka.process/process that does not exit on error."
-  ([cmd] (command-no-exit cmd {}))
-  ([cmd opts]
-   (binding [process/*defaults* (merge process/*defaults* {:in :inherit
-                                                           :out :inherit
-                                                           :err :inherit})]
-     @(process/process cmd opts))))
+(def default-opts {:error-fn 
+                   (fn die-on-error [{{:keys [exit cmd]} :proc}]
+                               (status/die exit
+                                           "shell exited with %d for: %s"
+                                           exit
+                                           (with-out-str (pprint/pprint cmd))))})
 
 (defn command
-  "Thin wrapper on babashka.process/process that prints error message and exits on error."
-  ([cmd] (command cmd {}))
-  ([cmd opts]
-   (let [{:keys [exit] :as res} (command-no-exit cmd opts)]
-     (if (not (zero? exit))
-       (status/die exit
-                   "shell exited with %d for:\n %s"
-                   exit
-                   (with-out-str (pprint/pprint cmd)))
-       res))))
+  "Thin wrapper on babashka.tasks/shell that on error, prints status error message and exits."
+  [cmd & args]
+  (let [[opts cmd args] (if (map? cmd)
+                          [cmd (first args) (rest args)]
+                          [nil cmd args])
+        opts (merge opts default-opts)]
+    (apply tasks/shell opts cmd args)))

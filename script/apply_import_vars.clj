@@ -18,7 +18,7 @@ Options:
   (when-let [opts (main/doc-arg-opt args-usage args)]
     (let [cmd (if (get opts "check") "check" "gen-code")]
       (status/line :head (str "Running apply import vars " cmd))
-      (shell/command ["clojure" "-X:apply-import-vars:script" cmd])))
+      (shell/command "clojure -X:apply-import-vars:script" cmd)))
     nil)
 
 (main/when-invoked-as-script

@@ -32,10 +32,11 @@
              "junitReporter" {"outputDir" (str "target/out/test-results/cljs-" test-combo)}}}})
 
 (defn find-test-namespaces []
-  (-> (shell/command ["clojure"
-                      "-M:test-common:script"
-                      "-m" "code-info.ns-lister" "--lang" "cljs"
-                      "find-all-namespaces"] {:out :string})
+  (-> (shell/command {:out :string}
+                     "clojure"
+                     "-M:test-common:script"
+                     "-m" "code-info.ns-lister" "--lang" "cljs"
+                     "find-all-namespaces")
       :out
       (string/split #" ")))
 
@@ -60,7 +61,7 @@
     (spit compile-opts-fname (compile-opts out-dir opts))
     (spit doo-opts-fname (doo-opts test-combo))
     (case run-granularity
-      "all" (shell/command cmd)
+      "all" (apply shell/command cmd)
       ;; I sometimes use namespace granularity to figure out which tests are affecting graal testing
       "namespace" (do
                     (status/line :head "+ one run for each namespace")
@@ -69,7 +70,7 @@
                       (doall (map-indexed
                               (fn [ndx ns]
                                 (status/line :head "%d of %d) running tests for namespace: %s" (inc ndx) total-nses ns)
-                                (shell/command (concat cmd ["--namespace" ns])))
+                                (apply shell/command (concat cmd ["--namespace" ns])))
                               nses)))))))
 
 (defn valid-opts? [opts]

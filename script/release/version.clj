@@ -6,7 +6,7 @@
 (defn- repo-commit-count
   "Number of commits in the repo"
   []
-  (->  (shell/command ["git" "rev-list" "HEAD" "--count"] {:out :string})
+  (->  (shell/command {:out :string} "git rev-list HEAD --count")
        :out
        string/trim
        Long/parseLong))

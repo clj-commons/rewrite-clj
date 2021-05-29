@@ -19,7 +19,7 @@
 
 (defn- assert-min-native-image-version [native-image-exe]
   (let [min-major 21
-        version-out (->> (shell/command [native-image-exe "--version"] {:out :string})
+        version-out (->> (shell/command {:out :string} native-image-exe "--version")
                          :out)
         actual-major (->> version-out
                           (re-find #"(?i)GraalVM (Version )?(\d+)\.")
@@ -34,7 +34,7 @@
   (status/line :head "Locate GraalVM native-image")
   (if-let [gu (find-gu-prog)]
     ;; its ok (and simpler and safer) to request an install of native-image when it is already installed
-    (do (shell/command [gu "install" "native-image"])
+    (do (shell/command gu "install" "native-image")
         (let [native-image (or (find-native-image-prog)
                                (status/die 1 "failed to install GraalVM native-image, check your GraalVM installation"))]
           (status/line :detail (str "found: " native-image))
@@ -54,22 +54,22 @@
 
 (defn aot-compile-sources [classpath ns]
   (status/line :head "AOT compile sources")
-  (shell/command ["java"
-                  "-Dclojure.compiler.direct-linking=true"
-                  "-cp" classpath
-                  "clojure.main"
-                  "-e" (str "(compile '" ns ")")]))
+  (shell/command "java"
+                 "-Dclojure.compiler.direct-linking=true"
+                 "-cp" classpath
+                 "clojure.main"
+                 "-e" (str "(compile '" ns ")")))
 
 (defn compute-classpath [base-alias]
   (status/line :head "Compute classpath")
   (let [alias-opt (str "-A:" base-alias)
-        classpath (-> (shell/command ["clojure" alias-opt "-Spath"] {:out :string})
+        classpath (-> (shell/command {:out :string} "clojure" alias-opt "-Spath")
                       :out
                       string/trim)]
     (println "\nClasspath:")
     (println (str "- " (string/join "\n- " (fs/split-path-list classpath))))
     (println "\nDeps tree:")
-    (shell/command ["clojure" alias-opt "-Stree"])
+    (shell/command "clojure" alias-opt "-Stree")
     classpath))
 
 (defn run-native-image [{:keys [:graal-native-image :graal-reflection-fname
@@ -109,4 +109,4 @@
                         :unix ["/usr/bin/time" "-v"]
                         (status/line :warn (str "I don't know how to get run stats (user/real/sys CPU, RAM use, etc) for a command on " os))))]
 
-    (shell/command (concat time-cmd native-image-cmd))))
+    (apply shell/command (concat time-cmd native-image-cmd))))

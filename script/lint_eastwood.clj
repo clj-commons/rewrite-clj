@@ -7,7 +7,7 @@
 
 (defn- lint []
   (status/line :head "eastwood: linting")
-  (shell/command ["clojure" "-M:test-common:eastwood"]))
+  (shell/command "clojure -M:test-common:eastwood"))
 
 (defn -main [& args]
   (when (main/doc-arg-opt args)

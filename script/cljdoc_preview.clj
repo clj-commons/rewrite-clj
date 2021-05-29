@@ -52,9 +52,9 @@
 
 (defn local-install []
   (status/line :head "building thin jar")
-  (shell/command ["clojure" "-X:jar"])
+  (shell/command "clojure -X:jar")
   (status/line :head "installing project to local maven repo")
-  (shell/command ["clojure" "-X:deploy:local"]))
+  (shell/command "clojure -X:deploy:local"))
 
 (defn get-project []
   (str (get-from-pom :project :groupId) "/" (get-from-pom :project :artifactId) ))
@@ -67,8 +67,8 @@
 ;;
 
 (defn git-sha []
-  (-> (shell/command ["git" "rev-parse" "HEAD"]
-                     {:out :string})
+  (-> (shell/command {:out :string}
+                     "git rev-parse HEAD")
       :out
       string/trim))
 
@@ -89,22 +89,22 @@
         (string/replace #"^(ssh///)*git@" "https://"))))
 
 (defn git-origin-url-as-https []
-  (-> (shell/command ["git" "config" "--get" "remote.origin.url"]
-                     {:out :string})
+  (-> (shell/command {:out :string}
+                     "git config --get remote.origin.url")
       :out
       string/trim
       https-uri))
 
 (defn uncommitted-code? []
-  (-> (shell/command ["git" "status" "--porcelain"]
-                     {:out :string})
+  (-> (shell/command {:out :string}
+                     "git status --porcelain")
       :out
       string/trim
       seq))
 
 (defn unpushed-commits? []
-  (let [{:keys [:exit :out]} (shell/command-no-exit ["git" "cherry" "-v"]
-                                                    {:out :string})]
+  (let [{:keys [:exit :out]} (shell/command {:continue true :out :string}
+                                            "git cherry -v")]
     (if (zero? exit)
       (-> out string/trim seq)
       (status/die 1 "Failed to check for unpushed commits to branch, is your branch pushed?"))))
@@ -114,21 +114,21 @@
 ;;
 
 (defn status-server [ container ]
-  (let [container-id (-> ["docker" "ps" "-q" "-f" (str "name=" (:name container))]
-                         (shell/command {:out :string})
+  (let [container-id (-> (shell/command {:out :string}
+                                        "docker ps -q -f" (str "name=" (:name container)))
                          :out
                          string/trim)]
     (if (string/blank? container-id) "down" "up")))
 
 (defn docker-pull-latest [ container ]
-  (shell/command ["docker" "pull" (:image container)]))
+  (shell/command "docker pull" (:image container)))
 
 (defn stop-server [ container ]
   (when (= "down" (status-server container))
     (status/die 1
                 "%s does not appear to be running"
                 (:name container)))
-  (shell/command ["docker" "stop" (:name container) "--time" "0"]))
+  (shell/command "docker" "stop" (:name container) "--time" "0"))
 
 (defn wait-for-server
   "Wait for container's http server to become available, assumes server has valid root page"
@@ -158,21 +158,21 @@
 
 (defn cljdoc-ingest [container project version]
   (status/line :head "Ingesting project %s %s\ninto local cljdoc database" project version)
-  (shell/command ["docker"
-                  "run" "--rm"
-                  "-v" (str cljdoc-db-dir ":/app/data")
-                  "-v" (str (home-dir) "/.m2:/root/.m2")
-                  "-v" (str (cwd) ":" (cwd) ":ro")
-                  "--entrypoint" "clojure"
-                  (:image container)
-                  "-A:cli"
-                  "ingest"
+  (shell/command "docker"
+                 "run" "--rm"
+                 "-v" (str cljdoc-db-dir ":/app/data")
+                 "-v" (str (home-dir) "/.m2:/root/.m2")
+                 "-v" (str (cwd) ":" (cwd) ":ro")
+                 "--entrypoint" "clojure"
+                 (:image container)
+                 "-A:cli"
+                 "ingest"
                   ;; project and version are used to locate the maven artifact (presumably locally)
-                  "--project" project "--version" version
+                 "--project" project "--version" version
                   ;; use git origin to support folks working from forks/PRs
-                  "--git" (git-origin-url-as-https)
+                 "--git" (git-origin-url-as-https)
                   ;; specify revision to allow for previewing when working from branch
-                  "--rev" (git-sha)]))
+                 "--rev" (git-sha)))
 
 (defn start-cljdoc-server [container]
   (when (= "up" (status-server container))
@@ -182,15 +182,15 @@
   (status/line :head "Checking for updates")
   (docker-pull-latest container)
   (status/line :head "Starting %s on port %d" (:name container) (:port container))
-  (shell/command ["docker"
-                  "run" "--rm"
-                  "--name" (:name container)
-                  "-d"
-                  "-p" (str (:port container) ":8000")
-                  "-v" (str cljdoc-db-dir ":/app/data")
-                  "-v" (str (home-dir) "/.m2:/root/.m2")
-                  "-v" (str (cwd) ":" (cwd) ":ro")
-                  (:image container)]))
+  (shell/command "docker"
+                 "run" "--rm"
+                 "--name" (:name container)
+                 "-d"
+                 "-p" (str (:port container) ":8000")
+                 "-v" (str cljdoc-db-dir ":/app/data")
+                 "-v" (str (home-dir) "/.m2:/root/.m2")
+                 "-v" (str (cwd) ":" (cwd) ":ro")
+                 (:image container)))
 
 (defn view-in-browser [url]
   (status/line :head "opening %s in browser" url)
