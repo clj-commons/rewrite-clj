@@ -15,7 +15,9 @@
          :leave (let [{:keys [name]} (current-task)] (status/line :detail "\nTASK %s done." name))
          ;; commands
          apply-import-vars {:task apply-import-vars/-main :doc "(check|gen-code) - export APIs statically from templates"}
-         lint              {:task lint/-main              :doc "[--rebuild-cache]"}
+         lint              {:task lint/-main              :doc "[--rebuild-cache] lint source code with clj-kondo and eastwood"}
+         -lint-kondo       {:task lint-kondo/-main        :doc "[--rebuild-cache]"}
+         -lint-eastwood    {:task lint-eastwood/-main}
          test-clj          {:task test-clj/-main          :doc "[--clojure-version (1.9|1.10)]"}
          test-cljs         {:task test-cljs/-main         :doc "use --help for args"}
          test-shadow-cljs  {:task test-shadow-cljs/-main}

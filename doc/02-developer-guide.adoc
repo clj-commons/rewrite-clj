@@ -290,7 +290,7 @@ Note that checks are only done against installed `./node_modules`, so you may wa
 
 [#linting]
 == Linting
-We use https://github.com/borkdude/clj-kondo[clj-kondo] for linting rewrite-clj source code.
+We use https://github.com/borkdude/clj-kondo[clj-kondo] and https://github.com/jonase/eastwood[eastwood] to lint rewrite-clj source code.
 
 We fail the build on any lint violations.
 The CI server runs:
@@ -304,6 +304,11 @@ bb lint --rebuild-cache
 ----
 
 https://github.com/borkdude/clj-kondo/blob/master/doc/editor-integration.md[Integrate clj-kondo into your editor] to catch mistakes as they happen.
+
+You can optionally:
+
+* `bb -lint-kondo` to only run clj-kondo linter
+* `bb -lint-eastwood` to only run eastwood linter
 
 == API diffs
 Rewrite-clj v1's primary goals include remaining compatible with rewrite-clj v0 and rewrite-cljs and avoiding breaking changes.
