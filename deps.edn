@@ -24,7 +24,9 @@
            :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.04.23"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
-
+           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "0.6.0"}}
+                      :main-opts ["-m" "eastwood.lint" {:ignored-faults {:deprecations {rewrite-clj.regression-test true
+                                                                                        rewrite-clj.zip.whitespace-test true}}}]}
 
            :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}
                          :extra-paths ["test"]}

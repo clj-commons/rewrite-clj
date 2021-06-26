@@ -64,7 +64,7 @@
 (defn- handle-reader-macro
   "Handle a reader macro node by either removing it completely or only the macro part."
   [active-profiles zloc]
-  {:pre (= (z/tag zloc) :reader-macro)}
+  {:pre [(= (z/tag zloc) :reader-macro)]}
   (let [profile (-> zloc z/down z/sexpr name)
         active? (contains? active-profiles (subs profile 1))
         print? (.startsWith profile "+")]
