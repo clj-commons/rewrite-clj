@@ -49,7 +49,7 @@ Some projects using rewrite-clj v1
 
 * https://github.com/liquidz/antq[antq] ^🐥^
 * https://github.com/borkdude/carve[carve] ^🐥^ (in dev)
-* https://github.com/weavejester/cljfmt[cljfmt] ^🐥^ (in dev)
+* https://github.com/weavejester/cljfmt[cljfmt] ^🐥^ 
 * https://github.com/greglook/cljstyle[cljstyle] ^🐥^
 * https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] ^🐥^
 * https://github.com/borkdude/rewrite-edn[rewrite-edn] ^🐥^

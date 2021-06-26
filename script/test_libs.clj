@@ -144,6 +144,11 @@
                :removals #{'rewrite-clj 'rewrite-clj/rewrite-clj}
                :additions [['rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}]]}))
 
+(defn- project-clj-v1-patch [{:keys [home-dir rewrite-clj-version]}]
+  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
+               :removals #{'rewrite-clj}
+               :additions [['rewrite-clj rewrite-clj-version]]}))
+
 (defn- replace-in-file [fname match replacement]
   (let [orig-filename (str fname ".orig")
         content (slurp fname)]
@@ -167,16 +172,6 @@
   (patch-rewrite-cljc-sources home-dir))
 
 ;;
-;; cljfmt
-;;
-
-(defn- cljfmt-patch [{:keys [home-dir rewrite-clj-version]}]
-  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
-               :removals #{'rewrite-clj 'rewrite-cljs}
-               :additions [['rewrite-clj rewrite-clj-version]
-                           ['org.clojure/clojure "1.9.0"]]}))
-
-;;
 ;; clojure-lsp
 ;;
 (defn- clojure-lsp-patch [{:keys [home-dir rewrite-clj-version]}]
@@ -184,14 +179,6 @@
                   :removals #{'rewrite-clj/rewrite-clj}
                   :additions [['rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}]]}))
 
-;;
-;; cljstyle
-;;
-
-(defn- cljstyle-patch [{:keys [home-dir rewrite-clj-version]}]
-  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
-               :removals #{'rewrite-clj}
-               :additions [['rewrite-clj rewrite-clj-version]]}))
 
 ;;
 ;; depot
@@ -318,7 +305,7 @@
 ;;
 
 (def libs [{:name "antq"
-            :version "0.14.1"
+            :version "0.15.3"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -333,12 +320,12 @@
             :show-deps-fn cli-deps-tree
             :test-cmds [["clojure" "-M:test"]]}
            {:name "cljfmt"
-            :version "0.7.0"
+            :version "0.8.0"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
                              :via :tag}
-            :patch-fn cljfmt-patch
+            :patch-fn project-clj-v1-patch 
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "test"]]}
            {:name "cljstyle"
@@ -346,13 +333,13 @@
             :platforms [:clj]
             :github-release {:repo "greglook/cljstyle"
                              :via :tag}
-            :patch-fn cljstyle-patch
+            :patch-fn project-clj-v1-patch 
             :show-deps-fn lein-deps-tree
             :test-cmds [["lein" "check"]
                         ["lein" "test"]]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.05.27-17.42.34"
+            :version "2021.06.24-14.24.11"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn cli-deps-tree
@@ -505,7 +492,7 @@
                                         :version (str (-> % :github-release :version-prefix) (:version %))))
                            (filter #(not= (:available-version %) (:version %))))]
     (if (seq outdated-libs)
-      (-> (doric/table [:name :version :available-version] outdated-libs) println)
+      (-> (doric/table [:name :version :available-version :note] outdated-libs) println)
       (status/line :detail "=> All libs seems up to date"))))
 
 (defn- print-results [results]
