@@ -147,3 +147,8 @@ jobs:
     #
     - name: Run CI tests
       run: bb ci-unit-tests
+
+    # Runs after ci-unit-tests (which runs clj-kondo), for fail-fast behavior (as Eastwood is slower)
+    - name: Lint with Eastwood
+      run: clojure -A:test-common:eastwood
+       
