@@ -2,6 +2,7 @@
 /.clj-kondo/.cache
 /.cpcache
 /.diff-apis
+/.eastwood
 /.lsp
 .nrepl-port
 /.shadow-cljs
