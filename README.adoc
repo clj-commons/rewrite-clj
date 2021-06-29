@@ -54,6 +54,7 @@ Some projects using rewrite-clj v1
 * https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] ^🐥^
 * https://github.com/borkdude/rewrite-edn[rewrite-edn] ^🐥^
 * https://github.com/lread/test-doc-blocks[test-doc-blocks] ^🐥^
+* https://github.com/nubank/umschreiben-clj[umschreiben-clj] ^🐥^
 
 Some projects using rewrite-clj v0 and/or rewrite-cljs
 

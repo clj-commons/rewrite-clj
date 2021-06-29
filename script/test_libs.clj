@@ -413,6 +413,14 @@
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb ./script/ci_tests.clj"]}
+           {:name "umschreiben-clj"
+            :version "0.1.0"
+            :platforms [:clj]
+            :github-release {:repo "nubank/umschreiben-clj"
+                             :via :tag}
+            :patch-fn project-clj-v1-patch
+            :show-deps-fn lein-deps-tree
+            :test-cmds ["lein test"]}
            {:name "zprint"
             :version "1.1.1"
             :platforms [:clj :cljs]
