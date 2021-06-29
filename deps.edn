@@ -86,7 +86,7 @@
            :sci-test {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
                       :extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                   :sha "dac1979c96c51a6bb53108b65c8270d8f30c67fa"}}}
+                                                   :sha "13830cb6b2d25898c65a8188ee335ab87c9c17ef"}}}
 
            :native-test {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
                          :extra-paths ["target/generated/graal"]}
