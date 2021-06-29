@@ -4,6 +4,9 @@
 :project-src-coords: clj-commons/rewrite-clj
 :project-mvn-coords: rewrite-clj/rewrite-clj
 :workflow-url: https://github.com/{project-src-coords}/actions/workflows
+:canary-tested: 🐥
+:canary-needed-patch: 🩹 
+:not-canary-tested: 📍
 
 image:rewrite-clj-logo.png[rewrite-clj,270,60]
 
@@ -47,34 +50,34 @@ See https://github.com/clj-commons/rewrite-clj/projects/1[project page for curre
 
 Some projects using rewrite-clj v1
 
-* https://github.com/liquidz/antq[antq] ^🐥^
-* https://github.com/borkdude/carve[carve] ^🐥^ (in dev)
-* https://github.com/weavejester/cljfmt[cljfmt] ^🐥^ 
-* https://github.com/greglook/cljstyle[cljstyle] ^🐥^
-* https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] ^🐥^
-* https://github.com/borkdude/rewrite-edn[rewrite-edn] ^🐥^
-* https://github.com/lread/test-doc-blocks[test-doc-blocks] ^🐥^
-* https://github.com/nubank/umschreiben-clj[umschreiben-clj] ^🐥^
+* https://github.com/liquidz/antq[antq] {canary-tested}
+* https://github.com/borkdude/carve[carve] {canary-tested} (in dev)
+* https://github.com/weavejester/cljfmt[cljfmt] {canary-tested} 
+* https://github.com/greglook/cljstyle[cljstyle] {canary-tested} 
+* https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] {canary-tested}
+* https://github.com/borkdude/rewrite-edn[rewrite-edn] {canary-tested}
+* https://github.com/lread/test-doc-blocks[test-doc-blocks] {canary-tested}
+* https://github.com/nubank/umschreiben-clj[umschreiben-clj] {canary-tested} 
 
 Some projects using rewrite-clj v0 and/or rewrite-cljs
 
-* https://github.com/mauricioszabo/atom-chlorine[atom-chlorine] ^📍^
-* https://github.com/Olical/depot[depot] ^🐥^ ^🩹^
-* https://github.com/jonase/kibit[kibit] ^🐥^
-* https://github.com/xsc/lein-ancient[lein-ancient] ^🐥^
-* https://github.com/benedekfazekas/mranderson[mranderson] ^🐥^
-* https://github.com/jstepien/mutant[mutant] ^🐥^
-* https://github.com/juxt/pack.alpha[pack (alpha)] ^📍^
-* https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl] ^🐥^
-* https://github.com/mauricioszabo/repl-tooling[repl-tooling] ^📍^
-* https://github.com/atomist-skills/update-leiningen-dependencies-skill[update-leiningen-dependencies-skill] ^📍^
-* https://github.com/kkinnear/zprint[zprint] ^🐥^ ^🩹^
+* https://github.com/mauricioszabo/atom-chlorine[atom-chlorine] {not-canary-tested}
+* https://github.com/Olical/depot[depot] {canary-tested} {canary-needed-patch}
+* https://github.com/jonase/kibit[kibit] {canary-tested}
+* https://github.com/xsc/lein-ancient[lein-ancient] {canary-tested}
+* https://github.com/benedekfazekas/mranderson[mranderson] {canary-tested}
+* https://github.com/jstepien/mutant[mutant] {canary-tested}
+* https://github.com/juxt/pack.alpha[pack (alpha)] {not-canary-tested}
+* https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl] {canary-tested} 
+* https://github.com/mauricioszabo/repl-tooling[repl-tooling] {not-canary-tested} 
+* https://github.com/atomist-skills/update-leiningen-dependencies-skill[update-leiningen-dependencies-skill] {not-canary-tested}
+* https://github.com/kkinnear/zprint[zprint] {canary-tested} {canary-needed-patch}
 
 Have an update? Let us know!
 
-^🐥^ [.small]#canary tested against rewrite-clj v1 link:doc/02-developer-guide.adoc#libs-test[lib test suite]# +
-^🩹^ [.small]#source required minor change to work with rewrite-clj v1# +
-^📍^ [.small]#no easy to run automated unit tests found for this project#
+{canary-tested} [.small]#canary tested against rewrite-clj v1 link:doc/02-developer-guide.adoc#libs-test[lib test suite]# +
+{canary-needed-patch} [.small]#source required minor change to work with rewrite-clj v1# +
+{not-canary-tested} [.small]#no easy to run automated unit tests found for this project#
 
 == Versioning
 
