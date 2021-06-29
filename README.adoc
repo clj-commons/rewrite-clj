@@ -51,6 +51,7 @@ See https://github.com/clj-commons/rewrite-clj/projects/1[project page for curre
 Some projects using rewrite-clj v1
 
 * https://github.com/liquidz/antq[antq] {canary-tested}
+* https://github.com/babashka/babashka[babashka] {not-canary-tested}
 * https://github.com/borkdude/carve[carve] {canary-tested} (in dev)
 * https://github.com/weavejester/cljfmt[cljfmt] {canary-tested} 
 * https://github.com/greglook/cljstyle[cljstyle] {canary-tested} 
@@ -77,7 +78,7 @@ Have an update? Let us know!
 
 {canary-tested} [.small]#canary tested against rewrite-clj v1 link:doc/02-developer-guide.adoc#libs-test[lib test suite]# +
 {canary-needed-patch} [.small]#source required minor change to work with rewrite-clj v1# +
-{not-canary-tested} [.small]#no easy to run automated unit tests found for this project#
+{not-canary-tested} [.small]#no easy-peasy way to run automated unit tests found for this project#
 
 == Versioning
 
