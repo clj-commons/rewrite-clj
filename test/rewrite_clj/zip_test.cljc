@@ -170,3 +170,74 @@
   ;; spot check, more thorough testing done on node tests
   (is (= false (-> "," z/of-string z/next* z/sexpr-able?)))
   (is (= true (-> "heyy" z/of-string z/sexpr-able?))))
+
+
+(deftest t-zipper-options-are-retained-after-operations
+  ;; use a custom auto-resolve to verify that options are still in effect on returned zippers
+  ;; test with both track-position true (rewrite-clj.custom-zipper.core) and false (clojure.zip)
+  (let [opts {:track-position? true
+              :auto-resolve (constantly 'testing123)}]
+    (doseq [opts [(assoc opts :track-position? false)
+                  opts]]
+      (let [zloc (z/of-string "[::kw1 ::kw2 ::kw3]" opts)
+            msg (fn [desc] (str desc " " (select-keys opts [:track-position?])))]
+        (is (= [:testing123/kw1 :testing123/kw2 :testing123/kw3] (z/sexpr zloc))
+            (msg "of-string"))
+        (is (= :testing123/kw1 (-> zloc z/down z/sexpr))
+            (msg "down"))
+        (is (= [:testing123/kw1 :testing123/kw2 :testing123/kw3] (-> zloc z/down z/up z/sexpr))
+            (msg "up"))
+        (is (= :testing123/kw2 (-> zloc z/down z/right z/sexpr))
+            (msg "right"))
+        (is (= :testing123/kw1 (-> zloc z/down z/right z/left z/sexpr))
+            (msg "left"))
+        (is (= :testing123/kw3 (-> zloc z/down z/rightmost z/sexpr))
+            (msg "rightmost"))
+        (is (= :testing123/kw1 (-> zloc z/down z/rightmost z/leftmost z/sexpr))
+            (msg "leftmost"))
+        (is (= :testing123/kw1 (-> zloc z/next z/sexpr))
+            (msg "next"))
+        (is (= :testing123/kw1 (-> zloc z/next z/next z/prev z/sexpr))
+            (msg "prev"))
+        (is (= ["child" :testing123/kw1 :testing123/kw2 :testing123/kw3]
+               (-> zloc (z/insert-child "child") z/sexpr))
+            (msg "append-child"))
+        (is (= [:testing123/kw1 :testing123/kw2 :testing123/kw3 "child"]
+               (-> zloc (z/append-child "child") z/sexpr))
+            (msg "append-child"))
+        (is (= [:testing123/kw1 ":testing123/kw2-edited" :testing123/kw3]
+               (-> zloc z/down z/right (z/edit str "-edited") z/up z/sexpr))
+            (msg "edit"))
+        (is (= ["inserted" :testing123/kw1 :testing123/kw2 :testing123/kw3]
+               (-> zloc z/down (z/insert-left "inserted") z/up z/sexpr))
+            (msg "insert-left"))
+        (is (= [:testing123/kw1 "inserted" :testing123/kw2 :testing123/kw3]
+               (-> zloc z/down (z/insert-right "inserted") z/up z/sexpr))
+            (msg "insert-right"))
+        (is (= ["replaced" :testing123/kw2 :testing123/kw3]
+               (-> zloc z/down (z/replace "replaced") z/up z/sexpr))
+            (msg "replace"))
+        (is (= ["inserted" :testing123/kw1 :testing123/kw2 :testing123/kw3]
+               (-> zloc (z/insert-child "inserted") z/sexpr))
+            (msg "insert-child"))
+        (is (= [:testing123/kw2 :testing123/kw3]
+               (-> zloc z/down z/remove z/sexpr))
+            (msg "remove"))
+        (is (= ["insert-left" "insert-child" "insert-right" "replace" :testing123/kw2 "append-child-edited"]
+               (-> zloc z/down* z/up*
+                   z/down* z/rightmost* z/leftmost* z/up*
+                   z/next* z/prev*
+                   (z/insert-child* (n/spaces 1))
+                   (z/insert-child* (n/string-node "insert-child"))
+                   (z/append-child* (n/spaces 1))
+                   (z/append-child* (n/string-node "append-child"))
+                   z/down*  (z/insert-left* (n/string-node "insert-left")) (z/insert-left* (n/spaces 1))
+                            (z/insert-right* (n/string-node "insert-right")) (z/insert-right* (n/spaces 1)) z/up*
+                   z/down* z/rightmost* (z/edit* (fn [n] (n/string-node
+                                                          (str (n/sexpr n) "-edited")))) z/up*
+                   z/down* z/right* z/right* z/right* z/right* z/right* z/right* 
+                           (z/replace* (n/string-node "replace")) z/up*
+                   z/down* z/rightmost* z/left* z/left* z/remove* z/up*
+                   z/sexpr))
+            (msg "raw ops sanity test"))))))
+      

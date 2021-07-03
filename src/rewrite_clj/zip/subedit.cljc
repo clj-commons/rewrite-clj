@@ -1,6 +1,7 @@
 (ns ^:no-doc rewrite-clj.zip.subedit
   (:require [rewrite-clj.custom-zipper.core :as zraw]
-            [rewrite-clj.zip.base :as base])
+            [rewrite-clj.zip.base :as base]
+            [rewrite-clj.zip.options :as options])
   #?(:cljs (:require-macros [rewrite-clj.zip.subedit])) )
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -30,7 +31,7 @@
   [zloc path]
   (let [root (-> zloc 
                  zraw/root 
-                 (base/edn* (base/get-opts zloc)))]
+                 (base/edn* (options/get-opts zloc)))]
     (reduce move-step root path)))
 
 (defn edit-node
@@ -71,7 +72,7 @@
   [zloc]
   (let [zloc' (some-> zloc 
                       zraw/node 
-                      (base/edn* (base/get-opts zloc)))]
+                      (base/edn* (options/get-opts zloc)))]
     (assert zloc' "could not create subzipper.")
     zloc'))
  

@@ -1,7 +1,7 @@
 (ns rewrite-clj.zip.subedit-test
   (:require [clojure.test :refer [deftest testing is]]
             [rewrite-clj.zip :as z]
-            [rewrite-clj.zip.base :as zbase]))
+            [rewrite-clj.zip.options :as options]))
 
 (deftest t-trees
   (let [root (z/of-string "[1 #{2 [3 4] 5} 6]")]
@@ -23,7 +23,7 @@
 
 (deftest zipper-retains-options
   (let [zloc (z/of-string "(1 (2 (3 4 ::my-kw)))" {:auto-resolve (fn [_x] 'custom-resolved)})
-        orig-opts (zbase/get-opts zloc)]
+        orig-opts (options/get-opts zloc)]
     (testing "sanity - without subzip"
       (is (= :custom-resolved/my-kw (-> zloc
                                         z/down z/right
@@ -31,7 +31,7 @@
                                         z/down z/rightmost z/sexpr))))
     (testing "subzip"
       (let [sub-zloc (-> zloc z/up* z/subzip z/down*)]
-        (is (= orig-opts (zbase/get-opts sub-zloc)))
+        (is (= orig-opts (options/get-opts sub-zloc)))
         (is (= :custom-resolved/my-kw (-> sub-zloc
                                           z/down z/right
                                           z/down z/right
@@ -43,7 +43,7 @@
                                         z/down z/right
                                         z/down (z/replace* 'x)))))]
         (is (= 'x (-> edited-zloc z/down z/right z/down z/sexpr)))
-        (is (= orig-opts (zbase/get-opts edited-zloc)))
+        (is (= orig-opts (options/get-opts edited-zloc)))
         (is (= :custom-resolved/my-kw (-> edited-zloc
                                           z/down z/right
                                           z/down z/right

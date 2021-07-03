@@ -4,18 +4,10 @@
             [rewrite-clj.node.forms :as nforms]
             [rewrite-clj.node.protocols :as node]
             [rewrite-clj.parser :as p]
+            [rewrite-clj.zip.options :as options]
             [rewrite-clj.zip.whitespace :as ws]))
 
 #?(:clj (set! *warn-on-reflection* true))
-
-(defn get-opts [zloc]
-  (:rewrite-clj.zip/opts (meta zloc)))
-
-(defn set-opts [zloc opts]
-  (with-meta zloc
-    (merge (meta zloc)
-           {:rewrite-clj.zip/opts (merge {:auto-resolve node/default-auto-resolve}
-                                         opts)})))
 
 ;; ## Zipper
 
@@ -31,7 +23,7 @@
    (-> (if (:track-position? opts)
          (zraw/custom-zipper node)
          (zraw/zipper node))
-       (set-opts opts))))
+       (options/set-opts opts))))
 
 (defn edn
   "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj.parse]]),
@@ -69,14 +61,14 @@
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([zloc]
-   (some-> zloc zraw/node (node/sexpr (get-opts zloc)))))
+   (some-> zloc zraw/node (node/sexpr (options/get-opts zloc)))))
 
 (defn child-sexprs
   "Return s-expression (the Clojure forms) of children of current node in `zloc`.
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([zloc]
-   (some-> zloc zraw/node (node/child-sexprs (get-opts zloc)))))
+   (some-> zloc zraw/node (node/child-sexprs (options/get-opts zloc)))))
 
 (defn length
   "Return length of printable [[string]] of current node in `zloc`."

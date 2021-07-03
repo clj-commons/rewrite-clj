@@ -6,6 +6,7 @@
             [rewrite-clj.node.token :as ntoken]
             [rewrite-clj.node.whitespace :as nwhitespace]
             [rewrite-clj.zip.base :as base]
+            [rewrite-clj.zip.options :as options]
             [rewrite-clj.zip.removez :as r]
             [rewrite-clj.zip.whitespace :as ws]))
 
@@ -37,7 +38,7 @@
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   [zloc f & args]
-  (zraw/edit zloc (node-editor (base/get-opts zloc)) #(apply f % args)))
+  (zraw/edit zloc (node-editor (options/get-opts zloc)) #(apply f % args)))
 
 ;; ## Splice
 

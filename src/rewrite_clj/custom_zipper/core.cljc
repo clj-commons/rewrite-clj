@@ -1,3 +1,5 @@
+; Interface and algorithms based on code in clojure.zip with is bundled with Clojure itself:
+
 ;   Copyright (c) Rich Hickey. All rights reserved.
 ;   The use and distribution terms for this software are covered by the
 ;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
@@ -9,11 +11,14 @@
 ;functional hierarchical zipper, with navigation, editing and enumeration
 ;see Huet
 
-(ns ^:no-doc ^{:doc "Functional hierarchical zipper, with navigation, editing,
-  and enumeration.  See Huet.
-  Modified to optionally support row col position tracking."
-       :author "Rich Hickey"}
-  rewrite-clj.custom-zipper.core
+(ns ^:no-doc rewrite-clj.custom-zipper.core
+  "This is the underlying zipper that rewrite-clj uses.
+
+   It delegates to two different zipper implementations:
+   1. the code herein under defn-switchable bodies when the user has created a `:position-tracking` zipper
+   2. otherwise clojure.zip, with some small exceptions:
+      - `edit` explicitly handles the delegation - I assume because defn-switchable could not handle the argument delegation
+      - there are fns exclusive to the position trakcing zipper, `position`, `position-span`"
   (:refer-clojure :exclude (replace remove next))
   (:require [clojure.zip :as clj-zip]
             [rewrite-clj.custom-zipper.switchable :refer [defn-switchable]]
@@ -22,10 +27,7 @@
 
 #?(:clj (set! *warn-on-reflection* true))
 
-;; ## Switch
-;;
-;; To not force users into using this custom zipper, the following flag
-;; is used to dispatch to `clojure.zip` when set to `false`.
+;; the custom zipper is used to support position-tracking, otherwise clojure.zip is used
 
 (defn custom-zipper
   [root]
@@ -107,12 +109,14 @@
     (let [{:keys [node] [row col] :position} zloc
           [c & cnext :as cs] (children zloc)]
       (when cs
-        {::custom? true
-         :node     c
-         :position [row (+ col (node/leader-length node))]
-         :parent   zloc
-         :left     []
-         :right    cnext}))))
+        (with-meta
+          {::custom? true
+           :node     c
+           :position [row (+ col (node/leader-length node))]
+           :parent   zloc
+           :left     []
+           :right    cnext}
+          (meta zloc))))))
 
 (defn-switchable up
   "Returns zipper with the location at the parent of current node in `zloc`, or nil if at
