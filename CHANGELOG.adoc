@@ -16,7 +16,7 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
-* position tracking zippers now retain zipper options correctly https://github.com/clj-commons/rewrite-clj/issues/159[#159]
+* a zipper created with both a custom `:auto-resolve` option and the `:track-position?` `true` option will now acknowledge and use the custom `:auto-resolve` https://github.com/clj-commons/rewrite-clj/issues/159[#159] 
 
 === v1.0.644-alpha
 
