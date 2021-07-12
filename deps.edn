@@ -24,7 +24,7 @@
            :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.06.18"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
-           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "0.6.0"}}
+           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "0.8.1"}}
                       :main-opts ["-m" "eastwood.lint" {:source-paths ["src"]
                                                         :test-paths ["test"]
                                                         :ignored-faults {:deprecations {rewrite-clj.regression-test true
