@@ -105,7 +105,7 @@
            ;;
            ;; Deployment
            ;;
-           :jar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.216"}}
+           :jar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.253"}}
                  :exec-fn hf.depstar/jar
                  :exec-args {:jar "target/rewrite-clj.jar"
                              :paths-only true
