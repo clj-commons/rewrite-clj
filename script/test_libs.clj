@@ -208,6 +208,8 @@
         ;; done with exercising my rewrite-clj skills for now! :-)
         (string/replace #"rewrite-clj \"[0-9.]+\""
                         (format "rewrite-clj \"%s\"" rewrite-clj-version))
+        (string/replace #"org.clojure/tools.reader \"[0-9.]+\""
+                        "org.clojure/tools.reader \"1.3.6\"")
         (->> (spit p)))))
 
 ;;
