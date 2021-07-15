@@ -303,7 +303,7 @@
 ;;
 
 (def libs [{:name "antq"
-            :version "0.15.3"
+            :version "0.16.0"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
