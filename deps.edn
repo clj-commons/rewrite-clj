@@ -126,7 +126,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "0.15.3"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "0.16.0"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.31"} ;; to rid ourselves of logger warnings
                                    }
                       :main-opts ["-m" "antq.core"
