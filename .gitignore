@@ -1,5 +1,6 @@
 /.calva
 /.clj-kondo/.cache
+/.clj-kondo/rewrite-clj
 /.cpcache
 /.diff-apis
 /.eastwood
