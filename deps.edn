@@ -12,7 +12,7 @@
            ;;
            ;; ClojureScript version we test with (and support)
            ;;
-           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.866"}}}
+           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.879"}}}
 
            ;;
            ;; Test support
@@ -24,7 +24,7 @@
            :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.06.18"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
-           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "0.8.1"}}
+           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "0.9.4"}}
                       :main-opts ["-m" "eastwood.lint" {:source-paths ["src"]
                                                         :test-paths ["test"]
                                                         :ignored-faults {:deprecations {rewrite-clj.regression-test true
@@ -105,7 +105,7 @@
            ;;
            ;; Deployment
            ;;
-           :jar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.253"}}
+           :jar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.267"}}
                  :exec-fn hf.depstar/jar
                  :exec-args {:jar "target/rewrite-clj.jar"
                              :paths-only true
@@ -127,7 +127,7 @@
            ;; Maintenance support
            ;;
            :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "0.16.0"}
-                                   org.slf4j/slf4j-simple {:mvn/version "1.7.31"} ;; to rid ourselves of logger warnings
+                                   org.slf4j/slf4j-simple {:mvn/version "1.7.32"} ;; to rid ourselves of logger warnings
                                    }
                       :main-opts ["-m" "antq.core"
                                   "--reporter=edn"
