@@ -21,7 +21,7 @@
            ;; linting
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.06.18"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.07.28"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :eastwood {:extra-deps {jonase/eastwood {:mvn/version "0.9.4"}}
