@@ -98,7 +98,7 @@ jobs:
       run: brew install clojure/tools/clojure
       if: matrix.os == 'macos-latest'
     - name: Install clojure (linux)
-      run: curl -s https://download.clojure.org/install/linux-install-1.10.3.814.sh | sudo bash
+      run: curl -s https://download.clojure.org/install/linux-install-1.10.3.933.sh | sudo bash
       if: matrix.os == 'ubuntu-latest'
 
     - name: Bring down ClojureTools early
