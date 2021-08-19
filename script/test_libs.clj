@@ -15,7 +15,7 @@
             [lread.status-line :as status]
             [release.version :as version]))
 
-(defn shcmd [cmd & args] 
+(defn shcmd [cmd & args]
   (let [[opts cmd args] (if (map? cmd)
                           [cmd (first args) (rest args)]
                           [{} cmd args])]
@@ -101,7 +101,7 @@
 (defn- deps-tree [{:keys [home-dir]} cmd]
   (let [{:keys [out err]} (shcmd {:dir home-dir
                                   :out :string
-                                  :err :string} 
+                                  :err :string}
                                  cmd)]
     (->  (format "stderr->:\n%s\nstdout->:\n%s" err out)
          print-deps)))
@@ -303,7 +303,7 @@
 ;;
 
 (def libs [{:name "antq"
-            :version "0.16.1"
+            :version "0.16.3"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -323,7 +323,7 @@
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
                              :via :tag}
-            :patch-fn project-clj-v1-patch 
+            :patch-fn project-clj-v1-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "cljstyle"
@@ -331,13 +331,13 @@
             :platforms [:clj]
             :github-release {:repo "greglook/cljstyle"
                              :via :tag}
-            :patch-fn project-clj-v1-patch 
+            :patch-fn project-clj-v1-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein check"
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.07.28-14.24.06"
+            :version "2021.08.16-19.02.30"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn cli-deps-tree
