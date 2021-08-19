@@ -5,7 +5,7 @@
 :project-mvn-coords: rewrite-clj/rewrite-clj
 :workflow-url: https://github.com/{project-src-coords}/actions/workflows
 :canary-tested: 🐥
-:canary-needed-patch: 🩹 
+:canary-needed-patch: 🩹
 :not-canary-tested: 📍
 
 image:rewrite-clj-logo.png[rewrite-clj,270,60]
@@ -33,7 +33,7 @@ No major issues have been found.
 * I am very conservative on making any further v0->v1 breaking changes, but am open to breaking changes to any of the new v1 work.
 
 We'll move out of alpha after folks have had a chance to give rewrite-clj v1 alpha a good shake.
-Things look solid but I would be very surprised if there are no issues and/or feedback.
+Things look very solid at this point.
 
 See https://github.com/clj-commons/rewrite-clj/projects/1[project page for current priorities].
 
@@ -53,12 +53,12 @@ Some projects using rewrite-clj v1
 * https://github.com/liquidz/antq[antq] {canary-tested}
 * https://github.com/babashka/babashka[babashka] {not-canary-tested}
 * https://github.com/borkdude/carve[carve] {canary-tested} (in dev)
-* https://github.com/weavejester/cljfmt[cljfmt] {canary-tested} 
-* https://github.com/greglook/cljstyle[cljstyle] {canary-tested} 
+* https://github.com/weavejester/cljfmt[cljfmt] {canary-tested}
+* https://github.com/greglook/cljstyle[cljstyle] {canary-tested}
 * https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] {canary-tested}
 * https://github.com/borkdude/rewrite-edn[rewrite-edn] {canary-tested}
 * https://github.com/lread/test-doc-blocks[test-doc-blocks] {canary-tested}
-* https://github.com/nubank/umschreiben-clj[umschreiben-clj] {canary-tested} 
+* https://github.com/nubank/umschreiben-clj[umschreiben-clj] {canary-tested}
 
 Some projects using rewrite-clj v0 and/or rewrite-cljs
 
@@ -69,8 +69,8 @@ Some projects using rewrite-clj v0 and/or rewrite-cljs
 * https://github.com/benedekfazekas/mranderson[mranderson] {canary-tested}
 * https://github.com/jstepien/mutant[mutant] {canary-tested}
 * https://github.com/juxt/pack.alpha[pack (alpha)] {not-canary-tested}
-* https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl] {canary-tested} 
-* https://github.com/mauricioszabo/repl-tooling[repl-tooling] {not-canary-tested} 
+* https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl] {canary-tested}
+* https://github.com/mauricioszabo/repl-tooling[repl-tooling] {not-canary-tested}
 * https://github.com/atomist-skills/update-leiningen-dependencies-skill[update-leiningen-dependencies-skill] {not-canary-tested}
 * https://github.com/kkinnear/zprint[zprint] {canary-tested} {canary-needed-patch}
 
