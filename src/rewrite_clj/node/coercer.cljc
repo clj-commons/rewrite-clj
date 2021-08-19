@@ -199,6 +199,9 @@
   #?(:clj clojure.lang.IPersistentList :cljs List)
   (coerce [sq]
     (seq-node list-node sq))
+  #?(:clj clojure.lang.Cons :cljs Cons)
+  (coerce [sq]
+    (seq-node list-node sq))
   #?(:clj clojure.lang.IPersistentSet :cljs PersistentHashSet)
   (coerce [sq]
     (seq-node set-node sq)))
