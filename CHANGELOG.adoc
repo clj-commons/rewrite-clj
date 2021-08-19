@@ -16,8 +16,11 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
-* update clojure tools.reader dependency to current v1.3.6
-* a zipper created with both a custom `:auto-resolve` option and the `:track-position?` `true` option will now acknowledge and use the custom `:auto-resolve` https://github.com/clj-commons/rewrite-clj/issues/159[#159] 
+* update clojure tools.reader dependency to v1.3.6
+* a zipper created with both a custom `:auto-resolve` option and the `:track-position?` `true` option will now acknowledge and use the custom `:auto-resolve` https://github.com/clj-commons/rewrite-clj/issues/159[#159]
+* a Cons now coerces to a rewrite-clj list node https://github.com/clj-commons/rewrite-clj/issues/161[#161] (thanks @borkdude!)
+* internal rewrite-clj developer facing:
+** Now also linting rewrite-clj sources with Eastwood https://github.com/clj-commons/rewrite-clj/pull/158[#158] (thanks @vemv!)
 
 === v1.0.644-alpha
 
