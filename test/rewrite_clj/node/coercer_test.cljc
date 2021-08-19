@@ -15,7 +15,9 @@
            (is (= expected-tag (node/tag n)) "tag")
            (is (= expected-type (protocols/node-type n)) "node-type")
            (is (not (meta n)))
-           (is (= (type ?sexpr) (type (node/sexpr n)))))
+           (if (seq? ?sexpr)
+             (is (seq? (node/sexpr n)))
+             (is (= (type (node/sexpr n)) (type ?sexpr) ))))
 
       ;; numbers
 
@@ -55,6 +57,7 @@
       (list 1 2 3)           :list       :seq
       #{}                    :set        :seq
       #{1 2 3}               :set        :seq
+      (cons 1 [2 3])         :list       :seq
 
       ;; date
       #inst "2014-11-26T00:05:23" :token :token))
