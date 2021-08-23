@@ -407,14 +407,14 @@
             :prep-fn refactor-nrepl-prep
             :test-cmds ["lein with-profile +1.10,+plugin.mranderson/config test"]}
            {:name "test-doc-blocks"
-            :version "1.0.129-alpha"
+            :version "1.0.137-alpha"
             :platforms [:clj :cljs]
             :note "generates tests under clj, but can also be run under cljs"
             :github-release {:repo "lread/test-doc-blocks"
                              :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
-            :test-cmds ["bb ./script/ci_tests.clj"]}
+            :test-cmds ["bb ci-test"]}
            {:name "umschreiben-clj"
             :version "0.1.0"
             :platforms [:clj]
