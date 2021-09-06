@@ -303,7 +303,7 @@
 ;;
 
 (def libs [{:name "antq"
-            :version "0.16.3"
+            :version "1.0.0"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -337,7 +337,7 @@
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.08.16-19.02.30"
+            :version "2021.09.04-17.11.44"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn cli-deps-tree
@@ -407,7 +407,7 @@
             :prep-fn refactor-nrepl-prep
             :test-cmds ["lein with-profile +1.10,+plugin.mranderson/config test"]}
            {:name "test-doc-blocks"
-            :version "1.0.137-alpha"
+            :version "1.0.146-alpha"
             :platforms [:clj :cljs]
             :note "generates tests under clj, but can also be run under cljs"
             :github-release {:repo "lread/test-doc-blocks"

@@ -24,9 +24,10 @@
            :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.08.06"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
-           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "0.9.6"}}
+           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "0.9.9"}}
                       :main-opts ["-m" "eastwood.lint" {:source-paths ["src"]
                                                         :test-paths ["test"]
+                                                        :add-linters [:performance]
                                                         :ignored-faults {:deprecations {rewrite-clj.regression-test true
                                                                                         rewrite-clj.zip.whitespace-test true}}}]}
 
@@ -35,7 +36,7 @@
 
            ;; document block testing
            :test-doc-blocks {:replace-deps {org.clojure/clojure {:mvn/version "1.10.3"}
-                                            com.github.lread/test-doc-blocks {:mvn/version "1.0.137-alpha"}}
+                                            com.github.lread/test-doc-blocks {:mvn/version "1.0.146-alpha"}}
                              :replace-paths []
                              :ns-default lread.test-doc-blocks
                              :exec-args {:docs ["doc/01-user-guide.adoc"
@@ -47,7 +48,7 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for clojure testing
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.861"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.887"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}
@@ -105,7 +106,7 @@
            ;;
            ;; Deployment
            ;;
-           :jar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.278"}}
+           :jar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.297"}}
                  :exec-fn hf.depstar/jar
                  :exec-args {:jar "target/rewrite-clj.jar"
                              :paths-only true
@@ -126,7 +127,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "0.16.3"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.0.0"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.32"} ;; to rid ourselves of logger warnings
                                    }
                       :main-opts ["-m" "antq.core"
