@@ -50,6 +50,7 @@ See https://github.com/clj-commons/rewrite-clj/projects/1[project page for curre
 
 Some projects using rewrite-clj v1
 
+* https://github.com/xsc/ancient-clj[ancient-clj] {canary-tested}
 * https://github.com/liquidz/antq[antq] {canary-tested}
 * https://github.com/babashka/babashka[babashka] {not-canary-tested}
 * https://github.com/borkdude/carve[carve] {canary-tested} (in dev)

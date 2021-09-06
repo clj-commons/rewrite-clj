@@ -158,6 +158,16 @@
          "git --no-pager diff"))
 
 ;;
+;; ancient-clj
+;;
+(defn ancient-clj-patch [{:keys [home-dir rewrite-clj-version]}]
+  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
+               ;; we remove and add tools.reader because project.clj has pedantic? :abort enabled
+               :removals #{'rewrite-clj 'org.clojure/tools.reader}
+               :additions [['org.clojure/tools.reader "1.3.6"]
+                           ['rewrite-clj rewrite-clj-version]]}))
+
+;;
 ;; carve
 ;;
 (defn carve-patch [{:keys [home-dir rewrite-clj-version]}]
@@ -302,7 +312,15 @@
 ;; lib defs
 ;;
 
-(def libs [{:name "antq"
+(def libs [{:name "ancient-clj"
+            :version "2.0.0"
+            :platforms [:clj]
+            :github-release {:repo "xsc/ancient-clj"
+                             :version-prefix "v"}
+            :patch-fn ancient-clj-patch
+            :show-deps-fn lein-deps-tree
+            :test-cmds ["lein kaocha"]}
+           {:name "antq"
             :version "1.0.0"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
