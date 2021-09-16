@@ -21,7 +21,7 @@
            ;; linting
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.08.06"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.09.15"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :eastwood {:extra-deps {jonase/eastwood {:mvn/version "0.9.9"}}
@@ -127,7 +127,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.0.0"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.0.1"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.32"} ;; to rid ourselves of logger warnings
                                    }
                       :main-opts ["-m" "antq.core"
