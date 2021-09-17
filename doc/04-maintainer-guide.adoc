@@ -12,13 +12,12 @@ The released workflow is handled by our https://github.com/clj-commons/rewrite-c
 
 The release workflow:
 
-. Calculates a version using our versioning scheme and applies it to:
-.. `deps.edn` usage example in the user guide
-.. "unreleased" and "unreleased breaking changes" headings in the change log
-.. ``pom.xml``'s `version` and `scm`->`tag`
-. Create a thin jar
+. Create a thin jar using our version scheme
+. Apply jar version to following docs:
+.. user guide docs `deps.edn` usage example
+.. change log "unreleased" and "unreleased breaking changes" headings
 . Deploy the jar to clojars
-. Commit and push updates made to `CHANGELOG.adoc`, `pom.xml` and `01-user-guide.adoc` back to the project
+. Commit and push updates made to `CHANGELOG.adoc` and `01-user-guide.adoc` back to the project
 . Create and push a release tag back to the project repo
 . Inform cljdoc of the new release
 
@@ -48,9 +47,9 @@ If you so wish, you can also locally run all steps up to, but not including, dep
 
 [source,shell]
 ----
-bb release prep
+bb ci-release prep
 ----
-Be aware though that you will NOT want to check in changes `prep` makes to `CHANGELOG.adoc`, `pom.xml` and `01-user-guide.adoc`.
+Be aware though that you will NOT want to check in changes `prep` makes to `CHANGELOG.adoc` and `01-user-guide.adoc`.
 
 === Invoking
 

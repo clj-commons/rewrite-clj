@@ -12,8 +12,7 @@
             [helper.main :as main]
             [helper.shell :as shell]
             [io.aviso.ansi :as ansi]
-            [lread.status-line :as status]
-            [release.version :as version]))
+            [lread.status-line :as status]))
 
 (defn shcmd [cmd & args]
   (let [[opts cmd args] (if (map? cmd)
@@ -22,16 +21,19 @@
     (status/line :detail (str "Running: " cmd " " (string/join " " args)))
     (apply shell/command opts cmd args)))
 
-(defn- install-local [version]
-  (status/line :head "Installing rewrite-clj %s locally" version)
-  (let [pom-bak-filename  "pom.xml.canary.bak"]
-    (try
-      (fs/copy "pom.xml" pom-bak-filename {:replace-existing true :copy-attributes true})
-      (shcmd "clojure -X:jar :version" (pr-str version))
-      (shcmd "clojure -X:deploy:local")
-      (finally
-        (fs/move pom-bak-filename "pom.xml" {:replace-existing true}))))
-  nil)
+(defn- built-version []
+  (-> (shell/command {:out :string}
+                     "clojure -T:build built-version")
+      :out
+      string/trim))
+
+(defn- install-local []
+  (status/line :head "Installing canary rewrite-clj locally")
+  (shcmd "clojure -T:build jar :version-suffix canary")
+  (shcmd "clojure -T:build install")
+  (let [canary-version (built-version)]
+    (status/line :detail "Installed %s to local maven repo" canary-version)
+    canary-version))
 
 (defn- get-current-version
   "Get current available version of lib via GitHub API.
@@ -529,22 +531,20 @@
 (defn run-tests [requested-libs]
   (status/line :head "Testing 3rd party libs")
   (status/line :detail "Test popular 3rd party libs against current rewrite-clj.")
-  (let [target-root-dir "target/libs-test"
-        rewrite-clj-version (str (version/calc) "-canary")]
+  (let [target-root-dir "target/libs-test"]
     (status/line :detail "Requested libs: %s" (into [] (map :name requested-libs)))
-    (install-local rewrite-clj-version)
-    (prep-target target-root-dir)
-    (let [results (doall (map #(test-lib (assoc %
-                                                :target-root-dir target-root-dir
-                                                :rewrite-clj-version rewrite-clj-version))
-                              requested-libs))]
-      (print-results results)
-      (System/exit (if (->> results
-                            (map :exit-codes)
-                            flatten
-                            (every? zero?))
-                     0 1)))))
-
+    (let [canary-version (install-local)]
+      (prep-target target-root-dir)
+      (let [results (doall (map #(test-lib (assoc %
+                                                  :target-root-dir target-root-dir
+                                                  :rewrite-clj-version canary-version))
+                                requested-libs))]
+        (print-results results)
+        (System/exit (if (->> results
+                              (map :exit-codes)
+                              flatten
+                              (every? zero?))
+                       0 1))))))
 
 (def args-usage "Valid args:
   list

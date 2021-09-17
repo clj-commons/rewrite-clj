@@ -106,23 +106,9 @@
            ;;
            ;; Deployment
            ;;
-           :jar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.297"}}
-                 :exec-fn hf.depstar/jar
-                 :exec-args {:jar "target/rewrite-clj.jar"
-                             :paths-only true
-                             :verbose true
-                             :jar-type :thin}}
-
-           :deploy {:replace-deps {slipset/deps-deploy {:mvn/version "0.1.5"}}
-                    :exec-fn deps-deploy.deps-deploy/deploy}
-
-           ;; usage: :deploy:remote - for Clojars
-           :remote {:exec-args {:installer :remote
-                                :artifact "target/rewrite-clj.jar"}}
-
-           ;; usage: :deploy:local - for local maven repo
-           :local {:exec-args {:installer :local
-                               :artifact "target/rewrite-clj.jar"}}
+           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.5.0" :git/sha "7d77952"}
+                          io.github.slipset/deps-deploy {:sha "3d20d0ee86c35c431e4fcf5b0830a3785e8116c0"}}
+                   :ns-default build}
 
            ;;
            ;; Maintenance support
@@ -131,6 +117,5 @@
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.32"} ;; to rid ourselves of logger warnings
                                    }
                       :main-opts ["-m" "antq.core"
-                                  "--reporter=edn"
                                   "--exclude=lambdaisland/kaocha@1.0.829" ;; https://github.com/lambdaisland/kaocha/issues/208
                                   ]}}}

@@ -16,6 +16,9 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* internal rewrite-clj developer facing:
+** Migrate from `depstar` to `tools.build`
+
 === v1.0.682-alpha
 
 * update clojure tools.reader dependency to v1.3.6

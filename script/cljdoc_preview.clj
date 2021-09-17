@@ -2,11 +2,8 @@
 
 (ns cljdoc-preview
   (:require [babashka.curl :as curl]
-            [clojure.data.xml :as xml]
-            [clojure.data.zip.xml :as zxml]
             [clojure.java.browse :as browse]
             [clojure.string :as string]
-            [clojure.zip :as zip]
             [helper.fs :as fs]
             [helper.main :as main]
             [helper.shell :as shell]
@@ -41,27 +38,26 @@
   (System/getProperty "user.home"))
 
 ;;
-;; maven/pom
+;; project build info
 ;;
-(defn get-from-pom [& tag-path]
-  (let  [xml (-> "./pom.xml"
-                 slurp
-                 (xml/parse-str :namespace-aware false)
-                 zip/xml-zip)]
-    (apply zxml/xml1-> (concat  [xml] tag-path [zxml/text]))))
 
 (defn local-install []
   (status/line :head "building thin jar")
-  (shell/command "clojure -X:jar")
+  (shell/command "clojure -T:build jar :version-suffix cljdoc-preview")
   (status/line :head "installing project to local maven repo")
-  (shell/command "clojure -X:deploy:local"))
+  (shell/command "clojure -T:build install"))
 
 (defn get-project []
-  (str (get-from-pom :project :groupId) "/" (get-from-pom :project :artifactId) ))
+  (-> (shell/command {:out :string}
+                     "clojure -T:build project-lib")
+      :out
+      string/trim))
 
-(defn get-version []
-  (get-from-pom :project :version))
-
+(defn built-version []
+  (-> (shell/command {:out :string}
+                     "clojure -T:build built-version")
+      :out
+      string/trim))
 ;;
 ;; git
 ;;
@@ -165,7 +161,7 @@
                  "-v" (str (cwd) ":" (cwd) ":ro")
                  "--entrypoint" "clojure"
                  (:image container)
-                 "-A:cli"
+                 "-M:cli"
                  "ingest"
                   ;; project and version are used to locate the maven artifact (presumably locally)
                  "--project" project "--version" version
@@ -242,13 +238,13 @@ Must be run from project root directory.")
       (do
         (git-warnings)
         (local-install)
-        (cljdoc-ingest cljdoc-container (get-project) (get-version))
+        (cljdoc-ingest cljdoc-container (get-project) (built-version))
         nil)
 
       (get opts "view")
       (do
         (wait-for-server cljdoc-container)
-        (view-in-browser (str "http://localhost:" (:port cljdoc-container) "/d/" (get-project) "/" (get-version)))
+        (view-in-browser (str "http://localhost:" (:port cljdoc-container) "/d/" (get-project) "/" (built-version)))
         nil)
 
       (get opts "status")

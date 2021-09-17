@@ -278,15 +278,11 @@ To see what new dependencies are available, run:
 bb outdated
 ----
 
-We use https://github.com/liquidz/antq[antq] which also checks `pom.xml`.
-If you see an outdated dependency reported for `pom.xml` after updating `deps.edn`, run the following:
+This task uses:
 
-----
-clojure -Spom
-----
-
-This script also checks for outdated Node.js dependencies.
-Note that checks are only done against installed `./node_modules`, so you may want to run `npm install` first.
+* https://github.com/liquidz/antq[antq] for Clojure.
+* npm for JavaScript.
+It only checks against installed `./node_modules`, so you may want to run `npm install` first.
 
 [#linting]
 == Linting
@@ -363,6 +359,10 @@ bb cljdoc-preview ingest
 ----
 
 The ingest command automatically publishes rewrite-clj to your local maven repository (cljdoc only works with published jars).
+
+The locally published version will include a `-cljdoc-preview` suffix.
+I find this distinction helps to reduce confusion around locally vs remotely installed artifacts.
+
 You'll have to remember to git commit and git push your changes before ingesting.
 
 Repeat these steps any time you want to preview changes.

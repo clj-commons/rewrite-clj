@@ -10,24 +10,17 @@
             [helper.fs :as fs]
             [helper.main :as main]
             [helper.shell :as shell]
-            [lread.status-line :as status]
-            [release.version :as version]))
+            [lread.status-line :as status]))
 
 (defn clean! []
   (doseq [dir ["target" ".cpcache"]]
     (fs/delete-file-recursively dir true)))
 
 (defn- last-release-tag []
-  (->  (shell/command {:out :string} 
+  (->  (shell/command {:out :string}
                       "git describe --abbrev=0 --match v[0-9]*")
        :out
        string/trim))
-
-(defn- calculate-version []
-  (status/line :head "Calculating release version")
-  (let [version (version/calc)]
-    (status/line :detail (str "version: " version))
-    version))
 
 (defn- update-file! [fname match-replacements]
   (let [old-content (slurp fname)
@@ -105,13 +98,16 @@
                          #"(?im)(=+) +unreleased breaking changes *$"
                          (str "$1 v" version)]))))
 
-(defn- create-jar! [version]
-  (status/line :head (str "Creating jar for version " version))
-  (status/line :detail "Reflecting deps in deps.edn to pom.xml")
-  (shell/command "clojure -Spom")
-  (status/line :detail "Updating pom.xml version and creating thin jar")
-  (shell/command "clojure -X:jar :version" (pr-str version))
+(defn- create-jar! []
+  (status/line :head "Creating jar for release")
+  (shell/command "clojure -T:build jar")
   nil)
+
+(defn- built-version []
+  (-> (shell/command {:out :string}
+                     "clojure -T:build built-version")
+      :out
+      string/trim))
 
 (defn- assert-on-ci
   "Little blocker to save myself from myself when testing."
@@ -124,7 +120,7 @@
   []
   (status/line :head "Deploying jar to clojars")
   (assert-on-ci "deploy a jar")
-  (shell/command "clojure -X:deploy:remote")
+  (shell/command "clojure -T:build deploy")
   nil)
 
 (defn- commit-changes! [version]
@@ -132,7 +128,7 @@
     (status/line :head (str  "Committing and pushing changes made for " tag-version))
     (assert-on-ci "commit changes")
     (status/line :detail "Adding changes")
-    (shell/command "git add doc/01-user-guide.adoc CHANGELOG.adoc pom.xml")
+    (shell/command "git add doc/01-user-guide.adoc CHANGELOG.adoc")
     (status/line :detail "Committing")
     (shell/command "git commit -m" (str  "Release job: updates for version " tag-version))
     (status/line :detail "Version tagging")
@@ -155,7 +151,7 @@
     (when (not (zero? exit-code))
       (status/line :warn (str  "Informing cljdoc did not seem to work, exited with " exit-code)))))
 
-(def args-usage "Valid args: (prep|deploy-remote|commit|validate|version|--help)
+(def args-usage "Valid args: (prep|deploy-remote|commit|validate|--help)
 
 Commands:
   prep           Update user guide, changelog and create jar
@@ -168,48 +164,36 @@ To restrict the exposure of our CLOJARS secrets during deploy workflow
 
 Additional commands:
   validate      Verify that change log is good for release
-  version       Calculate and report version
 
 Options
   --help        Show this help")
 
 (defn -main [& args]
   (when-let [opts (main/doc-arg-opt args-usage args)]
-    (let [target-version-filename "target/target-version.txt"]
-      (cond
-        (get opts "prep")
-        (do (clean!)
-            (let [changelog-status (validate-changelog)
-                  target-version (calculate-version)
-                  last-version (last-release-tag)]
-              (status/line :detail (str "Last version released: " (or last-version "<none>")))
-              (status/line :detail (str "Target version:        " target-version))
-              (io/make-parents target-version-filename)
-              (spit target-version-filename target-version)
-              (update-user-guide! target-version)
-              (update-changelog! target-version last-version changelog-status)
-              (create-jar! target-version)))
+    (cond
+      (get opts "prep")
+      (do (clean!)
+          (let [changelog-status (validate-changelog)
+                last-version (last-release-tag)]
+            (status/line :detail (str "Last version released: " (or last-version "<none>")))
+            (io/make-parents "target")
+            (create-jar!)
+            (let [version (built-version)]
+              (status/line :detail (str "Built version: " version))
+              (update-user-guide! version)
+              (update-changelog! version last-version changelog-status))))
 
-        (get opts "deploy-remote")
-        (deploy-jar!)
+      (get opts "deploy-remote")
+      (deploy-jar!)
 
-        (get opts "commit")
-        (if (not (.exists (io/file target-version-filename)))
-          (status/die 1
-                      "Target version file not found: %s\nWas prep step run?"
-                      target-version-filename)
-          (let [target-version (slurp target-version-filename)]
-            (commit-changes! target-version)
-            (inform-cljdoc! target-version)))
+      (get opts "commit")
+      (let [version (built-version)]
+        (commit-changes! version)
+        (inform-cljdoc! version))
 
-        (get opts "validate")
-        (do (validate-changelog)
-            nil)
-
-        (get opts "version")
-        (do (calculate-version)
-            nil)))))
+      (get opts "validate")
+      (do (validate-changelog)
+          nil))))
 
 (main/when-invoked-as-script
  (apply -main *command-line-args*))
-
