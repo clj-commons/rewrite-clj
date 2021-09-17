@@ -39,7 +39,7 @@
       (let [graal-native-image (graal/find-graal-native-image)]
         (graal/clean)
         (expose-api-to-sci)
-        (let [classpath (graal/compute-classpath "sci-test")]
+        (let [classpath (graal/compute-classpath "graal:sci-test")]
           (graal/aot-compile-sources classpath "sci-test.main")
           (generate-reflection-file graal-reflection-fname)
           (graal/run-native-image {:graal-native-image graal-native-image

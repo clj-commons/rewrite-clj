@@ -81,16 +81,17 @@
            ;; Running tests under Graal
            ;;
            ;; We have two main Graal scenarios:
-           ;; sci-test - interpret tests via sci over natively compiled rewrite-clj
-           ;; native-test - natively compile src and tests and run
+           ;; graal:sci-test - interpret tests via sci over natively compiled rewrite-clj
+           ;; graal:native-test - natively compile src and tests and run
 
-           :sci-test {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
-                      :extra-paths ["target/generated/sci-test/src"]
+           :graal {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
+                   :extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "0.1.0"}}}
+
+           :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
                                                    :sha "9fbac1d8d7ef73a35b03446fdf3844c0872d178e"}}}
 
-           :native-test {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
-                         :extra-paths ["target/generated/graal"]}
+           :native-test {:extra-paths ["target/generated/graal"]}
 
            ;; usage -M:sci-test:gen-reflection
            :gen-reflection {:main-opts ["-m" "sci-test.generate-reflection-file"]}
