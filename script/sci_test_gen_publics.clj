@@ -56,7 +56,7 @@
               :exclude-ns-regexes ["rewrite-clj\\.node\\.coercer" ]
               :exclude-var-regexes [".*Node.*"]
               :fn-wrappers {'import/fn-out-to-sci-out [".*/print" ".*/print-root"]}}
-        ns-name "lib-under-sci-test"
+        ns-name "lib-under-sci-test.defs"
         pubs (-> (find-nses opts)
                  (find-pubs opts))
         nses (->> (keys pubs)
@@ -72,7 +72,7 @@
               (list (list 'def 'namespaces (gen-sci-ns-map-code pubs opts))))]
     (binding [pprint/*print-right-margin* 130
               pprint/*print-miser-width* 130]
-      (let [out-file (io/file "target/generated/sci-test/src" (str (.replace ns-name "-" "_") ".clj"))]
+      (let [out-file (io/file "target/generated/sci-test/src" (str (string/escape ns-name {\- "_" \. "/"}) ".clj"))]
         (io/make-parents out-file)
         (io/delete-file out-file true)
         (run! #(pprint/pprint % (io/writer out-file :append true)) code)
