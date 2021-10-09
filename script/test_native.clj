@@ -28,7 +28,7 @@
             test-runner-dir "target/generated/graal"]
         (graal/clean)
         (generate-test-runner test-runner-dir)
-        (let [classpath (graal/compute-classpath "test-common:graal:native-test")]
+        (let [classpath (graal/compute-classpath "test-common:native-test")]
           (graal/aot-compile-sources classpath "clj-graal.test-runner")
           (graal/run-native-image {:graal-native-image graal-native-image
                                    :target-exe target-exe

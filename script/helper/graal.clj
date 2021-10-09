@@ -84,6 +84,7 @@
                                "-J-Dclojure.compiler.direct-linking=true"
                                (when graal-reflection-fname
                                  (str "-H:ReflectionConfigurationFiles=" graal-reflection-fname))
+                               "--initialize-at-build-time"
                                "-H:Log=registerResource:"
                                "-H:EnableURLProtocols=http,https,jar"
                                "--verbose"
