@@ -41,7 +41,7 @@ jobs:
     # Install GraalVM
     #
     - name: Install GraalVM
-      uses: DeLaGuardo/setup-graalvm@4.0
+      uses: DeLaGuardo/setup-graalvm@5.0
       with:
         graalvm: '21.2.0'
         java: ${{ matrix.graal-java }}
@@ -78,7 +78,7 @@ jobs:
       run: brew install clojure/tools/clojure
       if: matrix.os == 'macos-latest'
     - name: Install clojure (linux)
-      run: curl -s https://download.clojure.org/install/linux-install-1.10.3.967.sh | sudo bash
+      run: curl -s https://download.clojure.org/install/linux-install-1.10.3.986.sh | sudo bash
       if: matrix.os == 'ubuntu-latest'
 
     - name: Bring down ClojureTools early

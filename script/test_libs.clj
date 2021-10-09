@@ -323,7 +323,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "1.0.1"
+            :version "1.1.0"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -357,7 +357,7 @@
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.09.13-22.25.35"
+            :version "2021.09.30-15.28.01"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn cli-deps-tree
@@ -419,6 +419,7 @@
            {:name "refactor-nrepl"
             :version "2.5.1"
             :platforms [:clj]
+            :note "Skip v3.0.0-alpha* and wait for official release"
             :github-release {:repo "clojure-emacs/refactor-nrepl"
                              :via :tag
                              :version-prefix "v"}
@@ -446,7 +447,7 @@
            {:name "zprint"
             :version "1.1.1"
             :platforms [:clj :cljs]
-            :note "1 minor hack to pass with rewrite-clj v1, we'll skip version 1.1.2"
+            :note "1 minor hack to pass with rewrite-clj v1, skip version 1.1.2 release, skip 1.2.0-alpha1 tag"
             :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch
             :prep-fn zprint-prep
