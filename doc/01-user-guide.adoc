@@ -61,6 +61,9 @@ Thanks to @xsc's transfer of rewrite-clj to clj-commons we'll continue on with t
 To upgrade to rewrite-clj v1, update your project dependencies.
 If you were using both rewrite-cljs and rewrite-clj v0 in your project you can now drop the rewrite-cljs dependency.
 
+Rewrite-clj unit tests are run against the current version of ClojureScript and Clojure versions >= v1.8.0.
+We recommend that while bumping your rewrite-clj dependency to v1, that you also bump your Clojure and ClojureScript dependencies to current official releases.
+
 The most notable breaking changes from rewrite-clj v0 relate to handling of namespaced elements:
 
 * Namespaced map handling was incomplete in rewrite-clj, has been reworked a bit and now supports namespaced symbols

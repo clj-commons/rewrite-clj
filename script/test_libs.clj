@@ -201,15 +201,6 @@
                    "[rewrite-clj.zip :as rzip] [rewrite-clj.node]"))
 
 ;;
-;; kibit patch
-;;
-(defn- kibit-patch [{:keys [home-dir rewrite-clj-version]}]
-  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
-               :removals #{'rewrite-clj 'org.clojure/clojure}
-               :additions [['rewrite-clj rewrite-clj-version]
-                           ['org.clojure/clojure "1.9.0"]]}))
-
-;;
 ;; lein ancient
 ;;
 (defn- lein-ancient-patch [{:keys [home-dir rewrite-clj-version]}]
@@ -238,15 +229,6 @@
         (string/replace #"\[(org.clojure/tools.namespace\ \"[0-9-a-z.]+\")\]"
                         "[$1 :exclusions [org.clojure/tools.reader]]")
         (->> (spit p)))))
-
-;;
-;; mutant
-;;
-(defn- mutant-patch [{:keys [home-dir rewrite-clj-version]}]
-  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
-               :removals #{'rewrite-clj 'org.clojure/clojure}
-               :additions [['rewrite-clj rewrite-clj-version]
-                           ['org.clojure/clojure "1.9.0"]]}))
 
 ;;
 ;; refactor-nrepl
@@ -377,7 +359,7 @@
             :root "kibit"
             :version "0.1.8"
             :github-release {:repo "jonase/kibit"}
-            :patch-fn kibit-patch
+            :patch-fn project-clj-v1-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test-all"]}
            {:name "lein-ancient"
@@ -404,7 +386,7 @@
             :note "Dormant project"
             :github-release {:repo "jstepien/mutant"
                              :via :tag}
-            :patch-fn mutant-patch
+            :patch-fn project-clj-v1-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "rewrite-edn"

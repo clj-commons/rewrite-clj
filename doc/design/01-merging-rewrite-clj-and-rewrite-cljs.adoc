@@ -191,7 +191,7 @@ After some experimentation, my general strategy is to:
 .. Grab the a specified release of a project from GitHub via zip download
 .. Patch deps to
 ... Point to rewrite-clj canary release
-... Adjust Clojure version if necessary (we are 1.9 and above)
+... Adjust Clojure version if necessary (we are 1.8 and above)
 .. Adjust sources as necessary
 ... Ex. rewrite-cljc -> rewrite-clj namespace
 ... At the time of the writing only zprint v1.1.1. needed a src code hack to get its tests passing.

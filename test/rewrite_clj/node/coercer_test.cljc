@@ -97,18 +97,7 @@
     (array-map)
     (array-map :d 4 :e 5)))
 
-(deftest t-namespaced-maps-coerce-to-maps
-  (are [?sexpr]
-       (let [n (node/coerce ?sexpr)]
-         (is (node/node? n))
-         (is (= :map (node/tag n)))
-         (is (= :seq (protocols/node-type n)))
-         (is (string? (node/string n)))
-         (is (= ?sexpr (node/sexpr n)))
-         (is (map? (node/sexpr n))))
-    #:prefix {:a 1 :b 2}
-    #::{:c 3 :d 4}
-    #::p{:e 5 :f 6}))
+
 
 (deftest t-sexpr->node->sexpr-roundtrip-for-regex
   (are [?in]

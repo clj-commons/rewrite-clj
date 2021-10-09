@@ -100,12 +100,14 @@
 
 (deftest t-parsing-symbolic-inf-values
   (are [?s ?r]
-      (let [n (p/parse-string ?s)]
-        (is (= :token (node/tag n)))
-        (is (= ?s (node/string n)))
-        (is (= ?r (node/sexpr n))))
-    "##Inf" '##Inf
-    "##-Inf" '##-Inf))
+       (let [n (p/parse-string ?s)]
+         (is (= :token (node/tag n)))
+         (is (= ?s (node/string n)))
+         (is (= ?r (node/sexpr n))))
+    "##Inf" #?(:cljs js/Number.POSITIVE_INFINITY
+               :default Double/POSITIVE_INFINITY)
+    "##-Inf" #?(:cljs js/Number.NEGATIVE_INFINITY
+                :default Double/NEGATIVE_INFINITY)))
 
 (deftest t-parsing-symbolic-NaN-value
   (let [n (p/parse-string "##NaN")
@@ -572,5 +574,3 @@
     ;1   2 3   4   5 6   7
     "\r\n\r\r\f\r\n\r\r\n\r"
     "\n\n\n\n\n\n\n"))
-
-

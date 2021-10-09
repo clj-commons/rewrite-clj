@@ -10,7 +10,7 @@
   ;; we simply pass along any args to kaocha, it will validate them
   (env/assert-min-versions)
   (status/line :head "launching kaocha watch on clojure sources")
-  (apply shell/command "clojure -M:test-common:kaocha --watch" args))
+  (apply shell/command "clojure -M:test-common:kaocha:1.9 --watch" args))
 
 (main/when-invoked-as-script
  (apply -main *command-line-args*))

@@ -16,6 +16,7 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* rewrite-clj v1 minimimum Clojure version is now v1.8.0 (was formerly v1.9.0) https://github.com/clj-commons/rewrite-clj/issues/164[#164]
 * internal rewrite-clj developer facing:
 ** Migrate from `depstar` to `tools.build`
 
@@ -575,4 +576,3 @@ _Development has branched off, using the `0.4.x` branch_
 === 0.1.0
 
 * Initial Release
-

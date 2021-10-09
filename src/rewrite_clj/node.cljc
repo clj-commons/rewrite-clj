@@ -758,7 +758,7 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.token
 (defn token-node
   "Create node for an unspecified token of `value`.
-   
+
    ```Clojure
    (require '[rewrite-clj.node :as n])
 

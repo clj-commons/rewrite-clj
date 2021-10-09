@@ -10,7 +10,7 @@
     (or sym-qualifier map-qualifier)))
 
 (defn- symbol-qualifier [value]
-  (when (qualified-symbol? value)
+  (when (and (symbol? value) (namespace value))
     {:prefix (namespace value)}))
 
 ;; A symbol is different than a keyword in that it can only be auto-resolve qualified by a namespaced map
@@ -30,7 +30,7 @@
   (node-type [_node] :token)
   (printable-only? [_node] false)
   (sexpr* [_node _opts] value)
-  (length [_node] 
+  (length [_node]
     (count string-value))
   (string [_node] string-value)
 
@@ -61,7 +61,7 @@
 (node/make-printable! TokenNode)
 (node/make-printable! SymbolNode)
 
-(defn symbol-node? 
+(defn symbol-node?
   "Returns true if `n` is a node representing a symbol."
   [n]
   (= :symbol (node/node-type n)))
@@ -70,7 +70,7 @@
 
 (defn token-node
   "Create node for an unspecified token of `value`.
-   
+
    ```Clojure
    (require '[rewrite-clj.node :as n])
 

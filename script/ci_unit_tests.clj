@@ -21,7 +21,7 @@
   (shell/command "bb test-doc"))
 
 (defn clojure-tests []
-  (doseq [version ["1.9" "1.10"]]
+  (doseq [version ["1.8" "1.9" "1.10"]]
     (shell/command "bb test-clj --clojure-version" version)) )
 
 (defn cljs-tests []
