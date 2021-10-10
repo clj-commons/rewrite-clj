@@ -1,6 +1,6 @@
 # Contributing Guidelines
 
-**Do** 
+**Do**
 - remember that a gift, while appreciated, is also a burden. We value your input but start with an issue to propose your change before investing your valuable time in a PR.
 - read the [rewrite-clj Developer Guide](doc/02-developer-guide.adoc).
 - follow [the seven rules of a great Git commit message][1].

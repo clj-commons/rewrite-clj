@@ -77,7 +77,7 @@
 
 (defn position
   "Returns the ones-based `[row col]` of the start of the current node in `zloc`.
-   
+
   Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking)."
   [zloc]
   (if (custom-zipper? zloc)
@@ -215,7 +215,7 @@
 
 (defn edit
   "Returns zipper with value of `(apply f current-node args)` replacing current node in `zloc`.
-   
+
    The result of `f` should be a rewrite-clj node."
   [zloc f & args]
   (if (custom-zipper? zloc)

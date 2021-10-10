@@ -10,9 +10,9 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.stringz
 (defn string-node
   "Create node representing a string value where `lines` can be a sequence of strings or a single string.
-  
+
   When `lines` is a sequence, the resulting node will `tag` will be `:multi-line`, otherwise `:token`.
-   
+
   ```Clojure
   (require '[rewrite-clj.node :as n])
 

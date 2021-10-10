@@ -4,9 +4,9 @@
      Must be in equality of specificity of in our protocol extensions.
 
      From https://clojure.org/reference/protocols:
-     
-       if one interface is derived from the other, the more derived is used, 
-       else which one is used is unspecified" 
+
+       if one interface is derived from the other, the more derived is used,
+       else which one is used is unspecified"
   (:require
    [clojure.string :as string]
    #?@(:clj
@@ -153,7 +153,7 @@
 
 #?(:clj
    (extend-protocol NodeCoerceable
-     Object 
+     Object
      (coerce [v]
        (node-with-meta
         (token-node v)

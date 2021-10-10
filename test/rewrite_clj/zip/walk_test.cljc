@@ -4,7 +4,7 @@
 
 (defn- walk-order-tester [walk-fn s]
  (let [zloc (z/of-string s)
-       visits (atom [])] 
+       visits (atom [])]
    (walk-fn zloc (fn [zloc]
                      (swap! visits conj (z/string zloc))
                      zloc))

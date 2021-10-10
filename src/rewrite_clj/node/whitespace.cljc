@@ -38,9 +38,9 @@
   (tag [_node] :whitespace)
   (node-type [_node] :whitespace)
   (printable-only? [_node] true)
-  (sexpr* [_node _opts] 
+  (sexpr* [_node _opts]
     (sexpr-unsupported))
-  (length [_node] 
+  (length [_node]
     (count whitespace))
   (string [_node] whitespace)
 
@@ -53,9 +53,9 @@
   (tag [_node] :comma)
   (node-type [_node] :comma)
   (printable-only? [_node] true)
-  (sexpr* [_node _opts] 
+  (sexpr* [_node _opts]
     (sexpr-unsupported))
-  (length [_node] 
+  (length [_node]
     (count commas))
   (string [_node] commas)
 
@@ -68,11 +68,11 @@
   (tag [_node] :newline)
   (node-type [_node] :newline)
   (printable-only? [_node] true)
-  (sexpr* [_node _opts] 
+  (sexpr* [_node _opts]
     (sexpr-unsupported))
-  (length [_node] 
+  (length [_node]
     (*count-fn* newlines))
-  (string [_node] 
+  (string [_node]
     (*newline-fn* newlines))
 
   Object

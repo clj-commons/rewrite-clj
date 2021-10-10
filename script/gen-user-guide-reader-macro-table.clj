@@ -1,4 +1,4 @@
-;; run via: clojure -M  
+;; run via: clojure -M
 ;; generates user guide reader macro example table, see user guide for comment
 (require '[rewrite-clj.node :as n]
          '[rewrite-clj.parser :as p])
@@ -24,13 +24,13 @@
                              "#@?(:clj [x] :cljs [y])"]]]
      (reduce (fn [sdoc [desc inputs]]
                (let [parsed (map p/parse-string inputs)
-                     tag (-> parsed first n/tag)       
+                     tag (-> parsed first n/tag)
                      _ (assert (every? #(= (n/tag %) tag) parsed) "oops, expected tags to be same")
                      outputs (map #(try (n/sexpr %) (catch Exception _e nil))
                                   parsed)
-                     example-rows (map #(format "a|`%s`\na|%s\n" %1 
+                     example-rows (map #(format "a|`%s`\na|%s\n" %1
                                                 (if %2
-                                                  (str "`" (binding [*print-meta* true] 
+                                                  (str "`" (binding [*print-meta* true]
                                                              (pr-str %2)) "`")
                                                   "<unsupported operation>"))
                                        inputs outputs)]

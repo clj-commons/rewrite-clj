@@ -204,14 +204,14 @@
 
 ;;
 ;; clojure.tools.reader (at the time of this writing v1.3.5) does not seem to normalize Windows \r\n newlines
-;; properly to \n for Clojure 
+;; properly to \n for Clojure
 ;;
-;; ClojureScript seems to work fine - but note that for peek it will return \r for \r\n and \r\f instead of \n. 
+;; ClojureScript seems to work fine - but note that for peek it will return \r for \r\n and \r\f instead of \n.
 ;;
 ;; see https://clojure.atlassian.net/browse/TRDR-65
 ;;
 ;; For now, we introduce a normalizing reader for Clojure.
-;; Once/if this isssue is fixed in in tools reader we can turf our work-around. 
+;; Once/if this isssue is fixed in in tools reader we can turf our work-around.
 
 #?(:clj
    (deftype NewlineNormalizingReader

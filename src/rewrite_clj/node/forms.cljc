@@ -38,7 +38,7 @@
 (defn forms-node
   "Create top-level node wrapping multiple `children`.
    The forms node is equivalent to an implicit `do` at the top-level.
-   
+
    ```Clojure
    (require '[rewrite-clj.node :as n])
 
@@ -47,7 +47,7 @@
                       (n/token-node 2)])
        n/string)
    ;; => \"1 2\"
-   ``` 
+   ```
    "
   [children]
   (->FormsNode children))

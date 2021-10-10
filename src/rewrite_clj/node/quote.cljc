@@ -44,13 +44,13 @@
    is either a sequence of nodes or a single node.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/quote-node (n/token-node 'sym))
        (n/string))
    ;; => \"'sym\"
 
-   ;; specifying a sequence allows for whitespace between the 
+   ;; specifying a sequence allows for whitespace between the
    ;; quote and the quoted
    (-> (n/quote-node [(n/spaces 10)
                       (n/token-node 'sym1) ])
@@ -69,13 +69,13 @@
    is either a sequence of nodes or a single node.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/syntax-quote-node (n/token-node 'map))
        n/string)
    ;; => \"`map\"
 
-   ;; specifying a sequence allows for whitespace between the 
+   ;; specifying a sequence allows for whitespace between the
    ;; syntax quote and the syntax quoted
    (-> (n/syntax-quote-node [(n/spaces 3)
                              (n/token-node 'map)])
@@ -92,15 +92,15 @@
 (defn unquote-node
   "Create node representing a single unquoted form where `children`
    is either a sequence of nodes or a single node.
-   
+
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/unquote-node (n/token-node 'my-var))
        n/string)
    ;; => \"~my-var\"
 
-   ;; specifying a sequence allows for whitespace between the 
+   ;; specifying a sequence allows for whitespace between the
    ;; unquote and the uquoted
    (-> (n/unquote-node [(n/spaces 4)
                         (n/token-node 'my-var)])
@@ -119,18 +119,18 @@
    is either a sequence of nodes or a single node.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/unquote-splicing-node (n/token-node 'my-var))
        n/string)
    ;; => \"~@my-var\"
 
-   ;; specifying a sequence allows for whitespace between the 
+   ;; specifying a sequence allows for whitespace between the
    ;; splicing unquote and the splicing unquoted
    (-> (n/unquote-splicing-node [(n/spaces 2)
                                  (n/token-node 'my-var)])
        n/string)
-   ;; => \"~@  my-var\"   
+   ;; => \"~@  my-var\"
    ```"
   [children]
   (if (sequential? children)

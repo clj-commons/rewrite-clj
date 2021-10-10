@@ -178,7 +178,7 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.custom-zipper.core
 (defn position
   "Returns the ones-based `[row col]` of the start of the current node in `zloc`.
-   
+
   Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking)."
   [zloc] (rewrite-clj.custom-zipper.core/position zloc))
 
@@ -563,8 +563,8 @@
    The result is that a following element (no matter whether it is on the same line
    or not) will end up at same positon (line/column) as the removed one.
    If a comment lies betwen the original node and the neighbour this will not hold true.
-   
-   If the removed node is at end of input and is trailed by 1 or more newlines, 
+
+   If the removed node is at end of input and is trailed by 1 or more newlines,
    a single trailing newline will be preserved."
   [zloc] (rewrite-clj.zip.removez/remove zloc))
 
@@ -680,7 +680,7 @@
   "Return zipper applying function `f` to `zloc`. The resulting
    zipper will be located at the same path (i.e. the same number of
    downwards and right movements from the root) incoming `zloc`.
-   
+
    See also [[subedit-node]] for an isolated edit."
   [zloc f] (rewrite-clj.zip.subedit/edit-node zloc f))
 
@@ -688,14 +688,14 @@
 (defn subedit-node
   "Return zipper replacing current node in `zloc` with result of `f` applied to said node as an isolated sub-tree.
    The resulting zipper will be located on the root of the modified sub-tree.
-   
+
    See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   [zloc f] (rewrite-clj.zip.subedit/subedit-node zloc f))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.subedit
 (defn subzip
   "Create and return a zipper whose root is the current node in `zloc`.
-   
+
    See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   [zloc] (rewrite-clj.zip.subedit/subzip zloc))
 
@@ -704,7 +704,7 @@
   "Like `->`, threads `zloc` through forms.
    The resulting zipper will be located at the same path (i.e. the same
    number of downwards and right movements from the root) as incoming `zloc`.
-   
+
    See also [[subedit->]] for an isolated edit."
   [zloc & body] `(rewrite-clj.zip.subedit/edit-> ~zloc ~@body))
 
@@ -713,7 +713,7 @@
   "Like `->>`, threads `zloc` through forms.
    The resulting zipper will be located at the same path (i.e. the same
    number of downwards and right movements from the root) as incoming `zloc`.
-   
+
    See also [[subedit->>]] for an isolated edit."
   [zloc & body] `(rewrite-clj.zip.subedit/edit->> ~zloc ~@body))
 
@@ -721,7 +721,7 @@
 (defmacro subedit->
   "Like `->`, threads `zloc`, as an isolated sub-tree through forms, then zips
    up to, and locates at, the root of the modified sub-tree.
-   
+
    See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   [zloc & body] `(rewrite-clj.zip.subedit/subedit-> ~zloc ~@body))
 
@@ -1010,7 +1010,7 @@ NOTE: This function does not skip, nor provide any special handling for whitespa
   "Raw version of [[edit]].
 
 Returns zipper with value of `(apply f current-node args)` replacing current node in `zloc`.
-   
+
    The result of `f` should be a rewrite-clj node.
 
 NOTE: This function does not skip, nor provide any special handling for whitespace/comment nodes."

@@ -3,7 +3,7 @@
             [clojure.pprint :as pprint]
             [lread.status-line :as status]))
 
-(def default-opts {:error-fn 
+(def default-opts {:error-fn
                    (fn die-on-error [{{:keys [exit cmd]} :proc}]
                                (status/die exit
                                            "shell exited with %d for: %s"

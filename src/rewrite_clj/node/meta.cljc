@@ -42,10 +42,10 @@
 (defn meta-node
   "Create a node representing a form with metadata.
 
-   When creating manually, you can specify `metadata` and `data` and spacing between the 2 elems will be included: 
+   When creating manually, you can specify `metadata` and `data` and spacing between the 2 elems will be included:
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/meta-node (n/keyword-node :foo)
                     (n/vector-node [(n/token-node 1)]))
@@ -75,27 +75,27 @@
 
 (defn raw-meta-node
   "Create a node representing a form with metadata that renders to the reader syntax.
-   
-   When creating manually, you can specify `metadata` and `data` and spacing between the 2 elems will be included: 
+
+   When creating manually, you can specify `metadata` and `data` and spacing between the 2 elems will be included:
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/raw-meta-node (n/keyword-node :foo)
                         (n/vector-node [(n/token-node 2)]))
         n/string)
    ;; => \"#^:foo [2]\"
-   
+
    (-> (n/raw-meta-node (n/map-node [:foo (n/spaces 1) 42])
                         (n/vector-node [(n/token-node 2)]))
        n/string)
    ;; => \"#^{:foo 42} [2]\"
-   ``` 
+   ```
    When specifying a sequence of `children`, spacing is explicit:
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
-   
+   (require '[rewrite-clj.node :as n])
+
    (-> (n/raw-meta-node [(n/keyword-node :foo)
                          (n/spaces 1)
                          (n/vector-node [(n/token-node 2)])])

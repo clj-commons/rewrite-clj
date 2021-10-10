@@ -239,5 +239,3 @@
                                     update-cnt))
                                 0))]
       (println (format "\n%d of %d targets were updated." update-cnt (count templates)))))
-
-

@@ -1,5 +1,5 @@
 ;; :patch is determined by release workflow
 ;; omit :qualifier for official releases
-{:major 1 
- :minor 0 
+{:major 1
+ :minor 0
  :qualifier "alpha"}

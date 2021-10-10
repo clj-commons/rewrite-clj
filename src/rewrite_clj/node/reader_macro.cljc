@@ -102,18 +102,18 @@
     children))
 
 (defn var-node
-  "Create node representing a var where `children` is either a 
+  "Create node representing a var where `children` is either a
    sequence of nodes or a single node.
-   
+
    ```Clojure
-   (require '[rewrite-clj.node :as n])  
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/var-node (n/token-node 'my-var))
        n/string)
    ;; => \"#'my-var\"
 
-   ;; specifying a sequence allows for whitespace between the 
-   ;; prefix and the var 
+   ;; specifying a sequence allows for whitespace between the
+   ;; prefix and the var
    (-> (n/var-node [(n/spaces 2)
                     (n/token-node 'my-var)])
        n/string)
@@ -127,9 +127,9 @@
 (defn eval-node
   "Create node representing an inline evaluation
    where `children` is either a sequence of nodes or a single node.
-   
+
    ```Clojure
-   (require '[rewrite-clj.node :as n])  
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/eval-node (n/list-node [(n/token-node 'inc)
                                   (n/spaces 1)
@@ -137,8 +137,8 @@
        n/string)
    ;; => \"#=(inc 1)\"
 
-   ;; specifying a sequence allows for whitespace between the 
-   ;; prefix and the form 
+   ;; specifying a sequence allows for whitespace between the
+   ;; prefix and the form
    (-> (n/eval-node [(n/spaces 3)
                      (n/list-node [(n/token-node 'inc)
                                    (n/spaces 1)
@@ -158,10 +158,10 @@
   "Create node representing a reader macro with `macro-node` and `form-node` or `children`.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n])  
+   (require '[rewrite-clj.node :as n])
 
    ;; here we call with macro-node and form-node
-   (-> (n/reader-macro-node (n/token-node 'my-macro) 
+   (-> (n/reader-macro-node (n/token-node 'my-macro)
                             (n/token-node 42))
        n/string)
    ;; => \"#my-macro 42\"
@@ -171,7 +171,7 @@
                              (n/spaces 4)
                              (n/token-node 42)])
        n/string)
-   ;; => \"#my-macro    42\" 
+   ;; => \"#my-macro    42\"
    ```"
   ([children]
    (->ReaderMacroNode children))
@@ -179,11 +179,11 @@
    (->ReaderMacroNode [macro-node (ws/spaces 1) form-node])))
 
 (defn deref-node
-  "Create node representing the dereferencing of a form 
+  "Create node representing the dereferencing of a form
    where `children` is either a sequence of nodes or a single node.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n])   
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/deref-node (n/token-node 'my-var))
        n/string)

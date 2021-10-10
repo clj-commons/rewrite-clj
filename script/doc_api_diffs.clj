@@ -38,7 +38,7 @@
 
 (defn diff-apis [{:keys [:notes-dir :report-dir]} projecta projectb report-name extra-args]
   (status/line :head "Diffing %s and %s" (describe-proj projecta) (describe-proj projectb))
-  (apply shell/command 
+  (apply shell/command
          (concat
           ["clojure" "-M:diff-apis"]
           (map projecta [:coords :version :lang])

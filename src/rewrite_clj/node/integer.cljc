@@ -49,7 +49,7 @@
    (-> (n/integer-node 31 2)
        n/string)
    ;; => \"2r11111\"
-   ```   
+   ```
 
    Note: the parser does not currently parse to integer-nodes, but they fully supported for output."
   ([value]

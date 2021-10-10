@@ -28,8 +28,8 @@
    The result is that a following element (no matter whether it is on the same line
    or not) will end up at same positon (line/column) as the removed one.
    If a comment lies betwen the original node and the neighbour this will not hold true.
-   
-   If the removed node is at end of input and is trailed by 1 or more newlines, 
+
+   If the removed node is at end of input and is trailed by 1 or more newlines,
    a single trailing newline will be preserved."
   [zloc] (rewrite-clj.zip.removez/remove zloc))
 

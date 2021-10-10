@@ -263,7 +263,7 @@
 (defn forms-node
   "Create top-level node wrapping multiple `children`.
    The forms node is equivalent to an implicit `do` at the top-level.
-   
+
    ```Clojure
    (require '[rewrite-clj.node :as n])
 
@@ -272,7 +272,7 @@
                       (n/token-node 2)])
        n/string)
    ;; => \"1 2\"
-   ``` 
+   ```
    "
   [children] (rewrite-clj.node.forms/forms-node children))
 
@@ -292,7 +292,7 @@
    (-> (n/integer-node 31 2)
        n/string)
    ;; => \"2r11111\"
-   ```   
+   ```
 
    Note: the parser does not currently parse to integer-nodes, but they fully supported for output."
   ([value] (rewrite-clj.node.integer/integer-node value))
@@ -300,12 +300,12 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.keyword
 (defn keyword-node
-  "Create a node representing a keyword `k`. 
+  "Create a node representing a keyword `k`.
 
    Optionally include `auto-resolved?`, which defaults to `false`.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    ;; unqualified keyword
    (-> (n/keyword-node :kw)
@@ -339,10 +339,10 @@
 (defn meta-node
   "Create a node representing a form with metadata.
 
-   When creating manually, you can specify `metadata` and `data` and spacing between the 2 elems will be included: 
+   When creating manually, you can specify `metadata` and `data` and spacing between the 2 elems will be included:
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/meta-node (n/keyword-node :foo)
                     (n/vector-node [(n/token-node 1)]))
@@ -370,27 +370,27 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.meta
 (defn raw-meta-node
   "Create a node representing a form with metadata that renders to the reader syntax.
-   
-   When creating manually, you can specify `metadata` and `data` and spacing between the 2 elems will be included: 
+
+   When creating manually, you can specify `metadata` and `data` and spacing between the 2 elems will be included:
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/raw-meta-node (n/keyword-node :foo)
                         (n/vector-node [(n/token-node 2)]))
         n/string)
    ;; => \"#^:foo [2]\"
-   
+
    (-> (n/raw-meta-node (n/map-node [:foo (n/spaces 1) 42])
                         (n/vector-node [(n/token-node 2)]))
        n/string)
    ;; => \"#^{:foo 42} [2]\"
-   ``` 
+   ```
    When specifying a sequence of `children`, spacing is explicit:
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
-   
+   (require '[rewrite-clj.node :as n])
+
    (-> (n/raw-meta-node [(n/keyword-node :foo)
                          (n/spaces 1)
                          (n/vector-node [(n/token-node 2)])])
@@ -405,10 +405,10 @@
 (defn map-qualifier-node
   "Create a map qualifier node.
    The map qualifier node is a child node of [[namespaced-map-node]].
-     
+
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
-   
+   (require '[rewrite-clj.node :as n])
+
    ;; qualified
    (-> (n/map-qualifier-node false \"my-prefix\")
        n/string)
@@ -431,8 +431,8 @@
   "Create a namespaced map node with `children`.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
-   
+   (require '[rewrite-clj.node :as n])
+
    (-> (n/namespaced-map-node [(n/map-qualifier-node true \"my-ns-alias\")
                                (n/spaces 1)
                                (n/map-node [(n/keyword-node :a)
@@ -440,8 +440,8 @@
                                             (n/token-node 1)])])
        n/string)
    ;; => \"#::my-ns-alias {:a 1}\"
-   ``` 
-   
+   ```
+
    Map qualifier context is automatically applied to map keys for sexpr support.
 
    See also [[map-qualifier-node]] and [[map-node]]."
@@ -457,17 +457,17 @@
 
    (-> (n/regex-node \"my\\\\.lil.*regex\")
        n/string)
-   ;; => \"#\\\"my\\\\.lil.*regex\\\"\"  
+   ;; => \"#\\\"my\\\\.lil.*regex\\\"\"
    ```"
   [pattern-string] (rewrite-clj.node.regex/regex-node pattern-string))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.reader-macro
 (defn deref-node
-  "Create node representing the dereferencing of a form 
+  "Create node representing the dereferencing of a form
    where `children` is either a sequence of nodes or a single node.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n])   
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/deref-node (n/token-node 'my-var))
        n/string)
@@ -485,9 +485,9 @@
 (defn eval-node
   "Create node representing an inline evaluation
    where `children` is either a sequence of nodes or a single node.
-   
+
    ```Clojure
-   (require '[rewrite-clj.node :as n])  
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/eval-node (n/list-node [(n/token-node 'inc)
                                   (n/spaces 1)
@@ -495,8 +495,8 @@
        n/string)
    ;; => \"#=(inc 1)\"
 
-   ;; specifying a sequence allows for whitespace between the 
-   ;; prefix and the form 
+   ;; specifying a sequence allows for whitespace between the
+   ;; prefix and the form
    (-> (n/eval-node [(n/spaces 3)
                      (n/list-node [(n/token-node 'inc)
                                    (n/spaces 1)
@@ -511,10 +511,10 @@
   "Create node representing a reader macro with `macro-node` and `form-node` or `children`.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n])  
+   (require '[rewrite-clj.node :as n])
 
    ;; here we call with macro-node and form-node
-   (-> (n/reader-macro-node (n/token-node 'my-macro) 
+   (-> (n/reader-macro-node (n/token-node 'my-macro)
                             (n/token-node 42))
        n/string)
    ;; => \"#my-macro 42\"
@@ -524,25 +524,25 @@
                              (n/spaces 4)
                              (n/token-node 42)])
        n/string)
-   ;; => \"#my-macro    42\" 
+   ;; => \"#my-macro    42\"
    ```"
   ([children] (rewrite-clj.node.reader-macro/reader-macro-node children))
   ([macro-node form-node] (rewrite-clj.node.reader-macro/reader-macro-node macro-node form-node)))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.reader-macro
 (defn var-node
-  "Create node representing a var where `children` is either a 
+  "Create node representing a var where `children` is either a
    sequence of nodes or a single node.
-   
+
    ```Clojure
-   (require '[rewrite-clj.node :as n])  
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/var-node (n/token-node 'my-var))
        n/string)
    ;; => \"#'my-var\"
 
-   ;; specifying a sequence allows for whitespace between the 
-   ;; prefix and the var 
+   ;; specifying a sequence allows for whitespace between the
+   ;; prefix and the var
    (-> (n/var-node [(n/spaces 2)
                     (n/token-node 'my-var)])
        n/string)
@@ -655,9 +655,9 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.stringz
 (defn string-node
   "Create node representing a string value where `lines` can be a sequence of strings or a single string.
-  
+
   When `lines` is a sequence, the resulting node will `tag` will be `:multi-line`, otherwise `:token`.
-   
+
   ```Clojure
   (require '[rewrite-clj.node :as n])
 
@@ -677,13 +677,13 @@
    is either a sequence of nodes or a single node.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/quote-node (n/token-node 'sym))
        (n/string))
    ;; => \"'sym\"
 
-   ;; specifying a sequence allows for whitespace between the 
+   ;; specifying a sequence allows for whitespace between the
    ;; quote and the quoted
    (-> (n/quote-node [(n/spaces 10)
                       (n/token-node 'sym1) ])
@@ -698,13 +698,13 @@
    is either a sequence of nodes or a single node.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/syntax-quote-node (n/token-node 'map))
        n/string)
    ;; => \"`map\"
 
-   ;; specifying a sequence allows for whitespace between the 
+   ;; specifying a sequence allows for whitespace between the
    ;; syntax quote and the syntax quoted
    (-> (n/syntax-quote-node [(n/spaces 3)
                              (n/token-node 'map)])
@@ -717,15 +717,15 @@
 (defn unquote-node
   "Create node representing a single unquoted form where `children`
    is either a sequence of nodes or a single node.
-   
+
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/unquote-node (n/token-node 'my-var))
        n/string)
    ;; => \"~my-var\"
 
-   ;; specifying a sequence allows for whitespace between the 
+   ;; specifying a sequence allows for whitespace between the
    ;; unquote and the uquoted
    (-> (n/unquote-node [(n/spaces 4)
                         (n/token-node 'my-var)])
@@ -740,18 +740,18 @@
    is either a sequence of nodes or a single node.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    (-> (n/unquote-splicing-node (n/token-node 'my-var))
        n/string)
    ;; => \"~@my-var\"
 
-   ;; specifying a sequence allows for whitespace between the 
+   ;; specifying a sequence allows for whitespace between the
    ;; splicing unquote and the splicing unquoted
    (-> (n/unquote-splicing-node [(n/spaces 2)
                                  (n/token-node 'my-var)])
        n/string)
-   ;; => \"~@  my-var\"   
+   ;; => \"~@  my-var\"
    ```"
   [children] (rewrite-clj.node.quote/unquote-splicing-node children))
 
@@ -779,7 +779,7 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.uneval
 (defn uneval-node
   "Create node representing an unevaled form with `children`.
-   
+
    ```Clojure
    (require '[rewrite-clj.node :as n])
 

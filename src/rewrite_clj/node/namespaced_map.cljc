@@ -126,10 +126,10 @@
 (defn map-qualifier-node
   "Create a map qualifier node.
    The map qualifier node is a child node of [[namespaced-map-node]].
-     
+
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
-   
+   (require '[rewrite-clj.node :as n])
+
    ;; qualified
    (-> (n/map-qualifier-node false \"my-prefix\")
        n/string)
@@ -152,8 +152,8 @@
   "Create a namespaced map node with `children`.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
-   
+   (require '[rewrite-clj.node :as n])
+
    (-> (n/namespaced-map-node [(n/map-qualifier-node true \"my-ns-alias\")
                                (n/spaces 1)
                                (n/map-node [(n/keyword-node :a)
@@ -161,8 +161,8 @@
                                             (n/token-node 1)])])
        n/string)
    ;; => \"#::my-ns-alias {:a 1}\"
-   ``` 
-   
+   ```
+
    Map qualifier context is automatically applied to map keys for sexpr support.
 
    See also [[map-qualifier-node]] and [[map-node]]."

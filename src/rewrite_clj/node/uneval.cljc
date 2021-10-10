@@ -35,7 +35,7 @@
 
 (defn uneval-node
   "Create node representing an unevaled form with `children`.
-   
+
    ```Clojure
    (require '[rewrite-clj.node :as n])
 

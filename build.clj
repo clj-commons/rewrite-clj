@@ -1,8 +1,10 @@
 (ns build
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
+            [clojure.string :as string]
             [clojure.tools.build.api :as b]
-            [deps-deploy.deps-deploy :as dd]))
+            [deps-deploy.deps-deploy :as dd]
+            [whitespace-linter]))
 
 (def lib 'rewrite-clj/rewrite-clj)
 (def version (let [version-template (-> "version.edn" slurp edn/read-string)
@@ -16,6 +18,18 @@
 (def basis (b/create-basis {:project "deps.edn"}))
 (def jar-file (format "target/%s.jar" (name lib)))
 (def built-jar-version-file "target/built-jar-version.txt")
+
+(def windows? (string/starts-with? (System/getProperty "os.name") "Windows"))
+
+(defn- localize-path [p]
+  (if windows?
+    (string/replace p "/" "\\")
+    p))
+
+(defn- localize-regex-path [p]
+  (if windows?
+    (string/replace p "/" "\\\\")
+    p))
 
 (defn jar
   "Build library jar file.
@@ -73,3 +87,42 @@
   "Returns project groupid/artifactid"
   [_]
   (println lib))
+
+(defn lint-whitespace
+  "Wrap camsaul's whitespace-linter to handle OS specific file separator"
+  [_]
+  (whitespace-linter/lint {:paths (->> [".clj-kondo/config.edn"
+                                        ".codecov.yml"
+                                        ".github"
+                                        ".gitignore"
+                                        "CHANGELOG.adoc"
+                                        "CODE_OF_CONDUCT.md"
+                                        "CONTRIBUTING.md"
+                                        "LICENSE"
+                                        "ORIGINATOR"
+                                        "README.adoc"
+                                        "bb.edn"
+                                        "build.clj"
+                                        "deps.edn"
+                                        "doc"
+                                        "fig.cljs.edn"
+                                        "package.json"
+                                        "pom.xml"
+                                        "resources"
+                                        "script"
+                                        "src"
+                                        "template"
+                                        "test"
+                                        "test-isolated"
+                                        "tests.edn"
+                                        "version.edn"]
+                                       (mapv localize-path))
+                           :include-patterns ["\\.clj.?$" "\\.edn$" "\\.yaml$" "\\.adoc$" "\\.md$"
+                                              "CODEOWNERS$" "LICENSE$" "ORIGINATOR$"
+                                              ".clj-kondo.config.edn"]
+                           :exclude-patterns (->> [;; exclude things generated
+                                                   "doc/generated/.*$"
+                                                   "src/rewrite_clj/(node|zip)\\.cljc$"
+                                                   "src/rewrite_clj/node/string\\.clj$"
+                                                   "src/rewrite_clj/zip/(edit|find|remove|seq)\\.clj"]
+                                                  (mapv localize-regex-path))}))

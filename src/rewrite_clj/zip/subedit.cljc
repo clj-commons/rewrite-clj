@@ -29,8 +29,8 @@
 (defn- move-to
   "Move to the node represented by the given path."
   [zloc path]
-  (let [root (-> zloc 
-                 zraw/root 
+  (let [root (-> zloc
+                 zraw/root
                  (base/edn* (options/get-opts zloc)))]
     (reduce move-step root path)))
 
@@ -38,7 +38,7 @@
   "Return zipper applying function `f` to `zloc`. The resulting
    zipper will be located at the same path (i.e. the same number of
    downwards and right movements from the root) incoming `zloc`.
-   
+
    See also [[subedit-node]] for an isolated edit."
   [zloc f]
   (let [zloc' (f zloc)]
@@ -49,7 +49,7 @@
   "Like `->`, threads `zloc` through forms.
    The resulting zipper will be located at the same path (i.e. the same
    number of downwards and right movements from the root) as incoming `zloc`.
-   
+
    See also [[subedit->]] for an isolated edit."
   [zloc & body]
   `(edit-node ~zloc #(-> % ~@body)))
@@ -58,7 +58,7 @@
   "Like `->>`, threads `zloc` through forms.
    The resulting zipper will be located at the same path (i.e. the same
    number of downwards and right movements from the root) as incoming `zloc`.
-   
+
    See also [[subedit->>]] for an isolated edit."
   [zloc & body]
   `(edit-node ~zloc #(->> % ~@body)))
@@ -67,19 +67,19 @@
 
 (defn subzip
   "Create and return a zipper whose root is the current node in `zloc`.
-   
+
    See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   [zloc]
-  (let [zloc' (some-> zloc 
-                      zraw/node 
+  (let [zloc' (some-> zloc
+                      zraw/node
                       (base/edn* (options/get-opts zloc)))]
     (assert zloc' "could not create subzipper.")
     zloc'))
- 
+
 (defn subedit-node
   "Return zipper replacing current node in `zloc` with result of `f` applied to said node as an isolated sub-tree.
    The resulting zipper will be located on the root of the modified sub-tree.
-   
+
    See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   [zloc f]
   (let [zloc' (f (subzip zloc))]
@@ -89,7 +89,7 @@
 (defmacro subedit->
   "Like `->`, threads `zloc`, as an isolated sub-tree through forms, then zips
    up to, and locates at, the root of the modified sub-tree.
-   
+
    See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
   [zloc & body]
   `(subedit-node ~zloc #(-> % ~@body)))

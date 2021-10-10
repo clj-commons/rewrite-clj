@@ -42,7 +42,7 @@
 
    (-> (n/regex-node \"my\\\\.lil.*regex\")
        n/string)
-   ;; => \"#\\\"my\\\\.lil.*regex\\\"\"  
+   ;; => \"#\\\"my\\\\.lil.*regex\\\"\"
    ```"
   [pattern-string]
   (->RegexNode pattern-string))

@@ -30,6 +30,3 @@
 
 (defn assert-min-versions[]
   (assert-clojure-min-version))
-
-
-

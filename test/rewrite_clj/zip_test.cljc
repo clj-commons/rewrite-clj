@@ -235,9 +235,8 @@
                             (z/insert-right* (n/string-node "insert-right")) (z/insert-right* (n/spaces 1)) z/up*
                    z/down* z/rightmost* (z/edit* (fn [n] (n/string-node
                                                           (str (n/sexpr n) "-edited")))) z/up*
-                   z/down* z/right* z/right* z/right* z/right* z/right* z/right* 
+                   z/down* z/right* z/right* z/right* z/right* z/right* z/right*
                            (z/replace* (n/string-node "replace")) z/up*
                    z/down* z/rightmost* z/left* z/left* z/remove* z/up*
                    z/sexpr))
             (msg "raw ops sanity test"))))))
-      

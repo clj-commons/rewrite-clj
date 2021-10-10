@@ -54,7 +54,7 @@
 
 (node/make-printable! KeywordNode)
 
-(defn keyword-node? 
+(defn keyword-node?
   "Returns true if `n` is a node representing a keyword."
   [n]
   (= :keyword (node/node-type n)))
@@ -62,12 +62,12 @@
 ;; ## Constructor
 
 (defn keyword-node
-  "Create a node representing a keyword `k`. 
+  "Create a node representing a keyword `k`.
 
    Optionally include `auto-resolved?`, which defaults to `false`.
 
    ```Clojure
-   (require '[rewrite-clj.node :as n]) 
+   (require '[rewrite-clj.node :as n])
 
    ;; unqualified keyword
    (-> (n/keyword-node :kw)

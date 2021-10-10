@@ -67,4 +67,3 @@ This command accepts no arguments.")
          (status/line :detail arg-usage)
          nil)
        opts))))
-
