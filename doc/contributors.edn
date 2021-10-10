@@ -2,10 +2,8 @@
 {:contributors
  [{:github-id "sogaiu"
    :contributions [:code-rewrite-clj-v1 :encouragement :education]}
-  {:github-id "borkdude"
-   :contributions [:code-rewrite-clj-v1 :encouragement :education]}
   {:github-id "slipset"
-   :contributions [:code-rewrite-cljs :encouragement :infrastructure ]}
+   :contributions [:code-rewrite-cljs :encouragement :infrastructure]}
   {:github-id "danielcompton"
    :contributions [:code-rewrite-cljs :encouragement]}
   {:github-id "martinklepsch"
@@ -21,7 +19,7 @@
   {:github-id "stathissideris"
    :contributions [:code-rewrite-clj-v0]}
   {:github-id "plexus"
-   :contributions [:code-rewrite-clj-v0]}
+   :contributions [:code-rewrite-clj-v0 :education]}
   {:github-id "jespera"
    :contributions [:code-rewrite-clj-v0]}
   {:github-id "brian-dawn"
@@ -48,5 +46,7 @@
   {:github-id "rundis"
    :contributions [:original-author :code-rewrite-cljs]}]
  :maintainers
- [{:github-id "lread"
+ [{:github-id "borkdude"
+   :contributions [:code-rewrite-clj-v1 :encouragement :education]}
+  {:github-id "lread"
    :contributions [:code-rewrite-clj-v1]}]}
