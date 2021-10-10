@@ -19,7 +19,7 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 === v1.0.699-alpha
 
 * team update: @borkdude is now officially a co-maintainer of rewrite-clj! Woot woot!
-* rewrite-clj v1 minimimum Clojure version is now v1.8.0 (was formerly v1.9.0) https://github.com/clj-commons/rewrite-clj/issues/164[#164]
+* rewrite-clj v1 minimum Clojure version is now v1.8.0 (was formerly v1.9.0) https://github.com/clj-commons/rewrite-clj/issues/164[#164]
 * internal rewrite-clj developer facing:
 ** Migrate from `depstar` to `tools.build`
 
