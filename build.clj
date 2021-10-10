@@ -67,7 +67,7 @@
   [_]
   (dd/deploy {:installer :remote
               :artifact jar-file
-              :pom-file (b/pom-path lib :class-dir class-dir)}))
+              :pom-file (b/pom-path {:lib lib :class-dir class-dir})}))
 
 (defn project-lib
   "Returns project groupid/artifactid"
