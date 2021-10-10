@@ -130,7 +130,7 @@ Include the following dependency in your `deps.edn` file:
 // NOTE: the version in this snippit is automatically updated by our release workflow
 [source,clojure]
 ----
-rewrite-clj/rewrite-clj {:mvn/version "1.0.682-alpha"}
+rewrite-clj/rewrite-clj {:mvn/version "1.0.699-alpha"}
 ----
 
 === Leiningen
@@ -139,7 +139,7 @@ Include the following dependency in your `project.clj` file:
 // NOTE: the version in this snippit is automatically update by our release workflow
 [source,clojure]
 ----
-[rewrite-clj/rewrite-clj "1.0.682-alpha"]
+[rewrite-clj/rewrite-clj "1.0.699-alpha"]
 ----
 
 == Rewrite-clj APIs
