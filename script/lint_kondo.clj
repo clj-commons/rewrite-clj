@@ -21,8 +21,8 @@
   (status/line :detail "Building cache")
   (when (cache-exists?)
     (delete-cache))
-  (let [clj-cp (-> (shell/command {:out :string} 
-                                  "clojure -A:test:lint-cache -Spath" ) 
+  (let [clj-cp (-> (shell/command {:out :string}
+                                  "clojure -A:test:lint-cache -Spath")
                    :out string/trim)
         bb-cp (bbcp/get-classpath)]
     (shell/command "clojure -M:clj-kondo --dependencies --copy-configs --lint" clj-cp bb-cp)))
@@ -48,8 +48,8 @@
   (check-cache opts)
   (status/line :head "clj-kondo: linting")
   (let [{:keys [exit]}
-        (shell/command {:continue true} 
-                       "clojure -M:clj-kondo --lint src test script deps.edn")]
+        (shell/command {:continue true}
+                       "clojure -M:clj-kondo --lint src test script deps.edn build.clj")]
     (cond
       (= 2 exit) (status/die exit "clj-kondo found one or more lint errors")
       (= 3 exit) (status/die exit "clj-kondo found one or more lint warnings")
