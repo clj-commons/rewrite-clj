@@ -39,7 +39,7 @@
   "Return zipper with `item` inserted to the left of the current node in `zloc`, without moving location.
   Will insert a space if necessary.
 
-  Use [[rewrite-clj.zip/insert-left*]] to insert without adding any whitespace."
+  Use [[insert-left*]] to insert without adding any whitespace."
   [zloc item]
   (insert
     zraw/left
@@ -51,7 +51,7 @@
   "Return zipper with `item` inserted as the first child of the current node in `zloc`, without moving location.
   Will insert a space if necessary.
 
-  Use [[rewrite-clj.zip/insert-child*]] to insert without adding any whitespace."
+  Use [[insert-child*]] to insert without adding any whitespace."
   [zloc item]
   (insert
     zraw/down
@@ -63,7 +63,7 @@
   "Return zipper with `item` inserted as the last child of the current node in `zloc`, without moving.
   Will insert a space if necessary.
 
-  Use [[rewrite-clj.zip/append-child*]] to append without adding any whitespace."
+  Use [[append-child*]] to append without adding any whitespace."
   [zloc item]
   (insert
     #(some-> % zraw/down zraw/rightmost)

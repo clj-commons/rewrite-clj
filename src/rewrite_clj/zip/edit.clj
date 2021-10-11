@@ -13,7 +13,7 @@
   "Return `zloc` with the current node replaced by `value`.
   If `value` is not already a node, an attempt will be made to coerce it to one.
 
-  Use [[rewrite-clj.zip/replace*]] for non-coercing version of replace."
+  Use [[replace*]] for non-coercing version of replace."
   [zloc value] (rewrite-clj.zip.editz/replace zloc value))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.editz
@@ -26,7 +26,7 @@
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances).
 
-  Use [[rewrite-clj.zip/edit*]] for non-coercing version of edit."
+  Use [[edit*]] for non-coercing version of edit."
   [zloc f & args] (apply rewrite-clj.zip.editz/edit zloc f args))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.editz

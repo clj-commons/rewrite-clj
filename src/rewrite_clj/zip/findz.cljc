@@ -32,7 +32,7 @@
   "Return `zloc` located to the first node satisfying predicate `p?` else nil.
    Search starts at the current node and continues via movement function `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc p?]
    (find zloc m/right p?))
   ([zloc f p?]
@@ -68,7 +68,7 @@
   "Return `zloc` located to the next node satisfying predicate `p?` else `nil`.
    Search starts one movement `f` from the current node and continues via `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc p?]
    (find-next zloc m/right p?))
   ([zloc f p?]
@@ -84,7 +84,7 @@
   "Return `zloc` located to the first node with tag `t` else `nil`.
    Search starts at the current node and continues via movement function `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc t]
    (find-tag zloc m/right t))
   ([zloc f t]
@@ -94,7 +94,7 @@
   "Return `zloc` located to the next node with tag `t` else `nil`.
   Search starts one movement `f` after the current node and continues via `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc t]
    (find-next-tag zloc m/right t))
   ([zloc f t]
@@ -111,7 +111,7 @@
   "Return `zloc` located to the the first token node satisfying predicate `p?`.
   Search starts at the current node and continues via movement function `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc p?]
    (find-token zloc m/right p?))
   ([zloc f p?]
@@ -122,7 +122,7 @@
   "Return `zloc` located to the next token node satisfying predicate `p?` else `nil`.
   Search starts one movement `f` after the current node and continues via `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc p?]
    (find-next-token zloc m/right p?))
   ([zloc f p?]
@@ -134,7 +134,7 @@
 
    `v` can be a single value or a set. When `v` is a set, matches on any value in set.
 
-   `f` defaults to [[rewrite-clj.zip/right]] in short form call.
+   `f` defaults to [[right]] in short form call.
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([zloc v]
@@ -151,7 +151,7 @@
 
    `v` can be a single value or a set. When `v` is a set matches on any value in set.
 
-   `f` defaults to [[rewrite-clj.zip/right]] in short form call.
+   `f` defaults to [[right]] in short form call.
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([zloc v]

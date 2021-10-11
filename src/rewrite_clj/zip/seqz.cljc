@@ -90,7 +90,7 @@
   - an updated zloc with zloc positioned at value node
   - a falsey value to leave value node unchanged
 
-  Folks typically use [[rewrite-clj.zip/edit]] for `f`."
+  Folks typically use [[edit]] for `f`."
   [f zloc]
   {:pre [(or (map? zloc) (namespaced-map? zloc))]}
   (container-loc zloc
@@ -134,7 +134,7 @@
   - an updated zloc with zloc positioned at edited node
   - a falsey value to leave value node unchanged
 
-  Folks typically use [[rewrite-clj.zip/edit]] for `f`."
+  Folks typically use [[edit]] for `f`."
   [f zloc]
   {:pre [(seq? zloc)]}
   (if (or (map? zloc) (namespaced-map? zloc))

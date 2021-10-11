@@ -307,7 +307,7 @@
   "Return `zloc` with the current node replaced by `value`.
   If `value` is not already a node, an attempt will be made to coerce it to one.
 
-  Use [[rewrite-clj.zip/replace*]] for non-coercing version of replace."
+  Use [[replace*]] for non-coercing version of replace."
   [zloc value] (rewrite-clj.zip.editz/replace zloc value))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.editz
@@ -320,7 +320,7 @@
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances).
 
-  Use [[rewrite-clj.zip/edit*]] for non-coercing version of edit."
+  Use [[edit*]] for non-coercing version of edit."
   [zloc f & args] (apply rewrite-clj.zip.editz/edit zloc f args))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.editz
@@ -368,7 +368,7 @@
   "Return `zloc` located to the first node satisfying predicate `p?` else nil.
    Search starts at the current node and continues via movement function `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc p?] (rewrite-clj.zip.findz/find zloc p?))
   ([zloc f p?] (rewrite-clj.zip.findz/find zloc f p?)))
 
@@ -377,7 +377,7 @@
   "Return `zloc` located to the next node satisfying predicate `p?` else `nil`.
    Search starts one movement `f` from the current node and continues via `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc p?] (rewrite-clj.zip.findz/find-next zloc p?))
   ([zloc f p?] (rewrite-clj.zip.findz/find-next zloc f p?)))
 
@@ -398,7 +398,7 @@
   "Return `zloc` located to the first node with tag `t` else `nil`.
    Search starts at the current node and continues via movement function `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc t] (rewrite-clj.zip.findz/find-tag zloc t))
   ([zloc f t] (rewrite-clj.zip.findz/find-tag zloc f t)))
 
@@ -407,7 +407,7 @@
   "Return `zloc` located to the next node with tag `t` else `nil`.
   Search starts one movement `f` after the current node and continues via `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc t] (rewrite-clj.zip.findz/find-next-tag zloc t))
   ([zloc f t] (rewrite-clj.zip.findz/find-next-tag zloc f t)))
 
@@ -418,7 +418,7 @@
 
    `v` can be a single value or a set. When `v` is a set, matches on any value in set.
 
-   `f` defaults to [[rewrite-clj.zip/right]] in short form call.
+   `f` defaults to [[right]] in short form call.
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([zloc v] (rewrite-clj.zip.findz/find-value zloc v))
@@ -431,7 +431,7 @@
 
    `v` can be a single value or a set. When `v` is a set matches on any value in set.
 
-   `f` defaults to [[rewrite-clj.zip/right]] in short form call.
+   `f` defaults to [[right]] in short form call.
 
   See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
   ([zloc v] (rewrite-clj.zip.findz/find-next-value zloc v))
@@ -442,7 +442,7 @@
   "Return `zloc` located to the the first token node satisfying predicate `p?`.
   Search starts at the current node and continues via movement function `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc p?] (rewrite-clj.zip.findz/find-token zloc p?))
   ([zloc f p?] (rewrite-clj.zip.findz/find-token zloc f p?)))
 
@@ -451,7 +451,7 @@
   "Return `zloc` located to the next token node satisfying predicate `p?` else `nil`.
   Search starts one movement `f` after the current node and continues via `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc p?] (rewrite-clj.zip.findz/find-next-token zloc p?))
   ([zloc f p?] (rewrite-clj.zip.findz/find-next-token zloc f p?)))
 
@@ -483,7 +483,7 @@
   "Return zipper with `item` inserted to the left of the current node in `zloc`, without moving location.
   Will insert a space if necessary.
 
-  Use [[rewrite-clj.zip/insert-left*]] to insert without adding any whitespace."
+  Use [[insert-left*]] to insert without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/insert-left zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
@@ -491,7 +491,7 @@
   "Return zipper with `item` inserted as the first child of the current node in `zloc`, without moving location.
   Will insert a space if necessary.
 
-  Use [[rewrite-clj.zip/insert-child*]] to insert without adding any whitespace."
+  Use [[insert-child*]] to insert without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/insert-child zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
@@ -499,7 +499,7 @@
   "Return zipper with `item` inserted as the last child of the current node in `zloc`, without moving.
   Will insert a space if necessary.
 
-  Use [[rewrite-clj.zip/append-child*]] to append without adding any whitespace."
+  Use [[append-child*]] to append without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/append-child zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
@@ -582,7 +582,7 @@
    If the removed node is at end of input and is trailed by 1 or more newlines,
    a single trailing newline will be preserved.
 
-   Use [[rewrite-clj.zip/remove*]] to remove node without removing any surrounding whitespace."
+   Use [[remove*]] to remove node without removing any surrounding whitespace."
   [zloc] (rewrite-clj.zip.removez/remove zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.removez
@@ -635,7 +635,7 @@
   - an updated zloc with zloc positioned at edited node
   - a falsey value to leave value node unchanged
 
-  Folks typically use [[rewrite-clj.zip/edit]] for `f`."
+  Folks typically use [[edit]] for `f`."
   [f zloc] (rewrite-clj.zip.seqz/map f zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.seqz
@@ -663,7 +663,7 @@
   - an updated zloc with zloc positioned at value node
   - a falsey value to leave value node unchanged
 
-  Folks typically use [[rewrite-clj.zip/edit]] for `f`."
+  Folks typically use [[edit]] for `f`."
   [f zloc] (rewrite-clj.zip.seqz/map-vals f zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.seqz
@@ -862,7 +862,7 @@
   "Return zipper with location moved to first non-whitespace/non-comment starting from current node in `zloc`
    and traversing by function `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc] (rewrite-clj.zip.whitespace/skip-whitespace zloc))
   ([f zloc] (rewrite-clj.zip.whitespace/skip-whitespace f zloc)))
 

@@ -44,7 +44,7 @@
   - an updated zloc with zloc positioned at value node
   - a falsey value to leave value node unchanged
 
-  Folks typically use [[rewrite-clj.zip/edit]] for `f`."
+  Folks typically use [[edit]] for `f`."
   [f zloc] (rewrite-clj.zip.seqz/map-vals f zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.seqz
@@ -75,7 +75,7 @@
   - an updated zloc with zloc positioned at edited node
   - a falsey value to leave value node unchanged
 
-  Folks typically use [[rewrite-clj.zip/edit]] for `f`."
+  Folks typically use [[edit]] for `f`."
   [f zloc] (rewrite-clj.zip.seqz/map f zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.seqz

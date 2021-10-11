@@ -51,7 +51,7 @@
   "Return zipper with location moved to first non-whitespace/non-comment starting from current node in `zloc`
    and traversing by function `f`.
 
-   `f` defaults to [[rewrite-clj.zip/right]]"
+   `f` defaults to [[right]]"
   ([zloc] (skip-whitespace zraw/right zloc))
   ([f zloc] (skip f whitespace-or-comment? zloc)))
 

@@ -32,7 +32,7 @@
    If the removed node is at end of input and is trailed by 1 or more newlines,
    a single trailing newline will be preserved.
 
-   Use [[rewrite-clj.zip/remove*]] to remove node without removing any surrounding whitespace."
+   Use [[remove*]] to remove node without removing any surrounding whitespace."
   [zloc] (rewrite-clj.zip.removez/remove zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.removez
