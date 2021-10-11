@@ -16,7 +16,9 @@
 
 (defn replace
   "Return `zloc` with the current node replaced by `value`.
-  If `value` is not already a node, an attempt will be made to coerce it to one."
+  If `value` is not already a node, an attempt will be made to coerce it to one.
+
+  Use [[rewrite-clj.zip/replace*]] for non-coercing version of replace."
   [zloc value]
   (zraw/replace zloc (node/coerce value)))
 
@@ -36,7 +38,9 @@
 
   The result of `f`, if not already a node, will be coerced to a node if possible.
 
-  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances).
+
+  Use [[rewrite-clj.zip/edit*]] for non-coercing version of edit."
   [zloc f & args]
   (zraw/edit zloc (node-editor (options/get-opts zloc)) #(apply f % args)))
 

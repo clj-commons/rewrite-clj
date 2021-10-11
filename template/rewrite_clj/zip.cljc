@@ -112,9 +112,11 @@
   [[remove-preserve-newline]]
   [[root]]
 
-  **Update without whitespace treatment**
+  **Update without coercion**
   [[replace*]]
   [[edit*]]
+
+  **Update without whitespace treatment**
   [[insert-left*]]
   [[insert-right*]]
   [[insert-child*]]

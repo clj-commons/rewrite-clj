@@ -11,7 +11,9 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.editz
 (defn replace
   "Return `zloc` with the current node replaced by `value`.
-  If `value` is not already a node, an attempt will be made to coerce it to one."
+  If `value` is not already a node, an attempt will be made to coerce it to one.
+
+  Use [[rewrite-clj.zip/replace*]] for non-coercing version of replace."
   [zloc value] (rewrite-clj.zip.editz/replace zloc value))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.editz
@@ -22,7 +24,9 @@
 
   The result of `f`, if not already a node, will be coerced to a node if possible.
 
-  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances).
+
+  Use [[rewrite-clj.zip/edit*]] for non-coercing version of edit."
   [zloc f & args] (apply rewrite-clj.zip.editz/edit zloc f args))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.editz

@@ -75,7 +75,9 @@
    If a comment lies betwen the original node and the neighbour this will not hold true.
 
    If the removed node is at end of input and is trailed by 1 or more newlines,
-   a single trailing newline will be preserved."
+   a single trailing newline will be preserved.
+
+   Use [[rewrite-clj.zip/remove*]] to remove node without removing any surrounding whitespace."
   [zloc]
   {:pre [zloc]
    :post [%]}

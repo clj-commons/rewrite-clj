@@ -113,9 +113,11 @@
   [[remove-preserve-newline]]
   [[root]]
 
-  **Update without whitespace treatment**
+  **Update without coercion**
   [[replace*]]
   [[edit*]]
+
+  **Update without whitespace treatment**
   [[insert-left*]]
   [[insert-right*]]
   [[insert-child*]]
@@ -303,7 +305,9 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.editz
 (defn replace
   "Return `zloc` with the current node replaced by `value`.
-  If `value` is not already a node, an attempt will be made to coerce it to one."
+  If `value` is not already a node, an attempt will be made to coerce it to one.
+
+  Use [[rewrite-clj.zip/replace*]] for non-coercing version of replace."
   [zloc value] (rewrite-clj.zip.editz/replace zloc value))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.editz
@@ -314,7 +318,9 @@
 
   The result of `f`, if not already a node, will be coerced to a node if possible.
 
-  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances)."
+  See docs for [sexpr nuances](/doc/01-user-guide.adoc#sexpr-nuances).
+
+  Use [[rewrite-clj.zip/edit*]] for non-coercing version of edit."
   [zloc f & args] (apply rewrite-clj.zip.editz/edit zloc f args))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.editz
@@ -467,24 +473,33 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn insert-right
   "Return zipper with `item` inserted to the right of the current node in `zloc`, without moving location.
-  Will insert a space if necessary."
+  Will insert a space if necessary.
+
+  Use [[rewrite-clj.zip/insert-right*]] to insert without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/insert-right zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn insert-left
   "Return zipper with `item` inserted to the left of the current node in `zloc`, without moving location.
-  Will insert a space if necessary."
+  Will insert a space if necessary.
+
+  Use [[rewrite-clj.zip/insert-left*]] to insert without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/insert-left zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn insert-child
-  "Return zipper with `item` inserted as the first child of the current node in `zloc`, without moving location."
+  "Return zipper with `item` inserted as the first child of the current node in `zloc`, without moving location.
+  Will insert a space if necessary.
+
+  Use [[rewrite-clj.zip/insert-child*]] to insert without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/insert-child zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn append-child
   "Return zipper with `item` inserted as the last child of the current node in `zloc`, without moving.
-  Will insert a space if necessary."
+  Will insert a space if necessary.
+
+  Use [[rewrite-clj.zip/append-child*]] to append without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/append-child zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.move
@@ -565,7 +580,9 @@
    If a comment lies betwen the original node and the neighbour this will not hold true.
 
    If the removed node is at end of input and is trailed by 1 or more newlines,
-   a single trailing newline will be preserved."
+   a single trailing newline will be preserved.
+
+   Use [[rewrite-clj.zip/remove*]] to remove node without removing any surrounding whitespace."
   [zloc] (rewrite-clj.zip.removez/remove zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.removez
