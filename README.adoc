@@ -57,6 +57,7 @@ Some projects using rewrite-clj v1
 * https://github.com/weavejester/cljfmt[cljfmt] {canary-tested}
 * https://github.com/greglook/cljstyle[cljstyle] {canary-tested}
 * https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] {canary-tested}
+* https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl] {canary-tested}
 * https://github.com/borkdude/rewrite-edn[rewrite-edn] {canary-tested}
 * https://github.com/lread/test-doc-blocks[test-doc-blocks] {canary-tested}
 * https://github.com/nubank/umschreiben-clj[umschreiben-clj] {canary-tested}
@@ -70,7 +71,6 @@ Some projects using rewrite-clj v0 and/or rewrite-cljs
 * https://github.com/benedekfazekas/mranderson[mranderson] {canary-tested}
 * https://github.com/jstepien/mutant[mutant] {canary-tested}
 * https://github.com/juxt/pack.alpha[pack (alpha)] {not-canary-tested}
-* https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl] {canary-tested}
 * https://github.com/mauricioszabo/repl-tooling[repl-tooling] {not-canary-tested}
 * https://github.com/atomist-skills/update-leiningen-dependencies-skill[update-leiningen-dependencies-skill] {not-canary-tested}
 * https://github.com/kkinnear/zprint[zprint] {canary-tested} {canary-needed-patch}
