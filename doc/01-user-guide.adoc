@@ -338,7 +338,7 @@ The sub zipper acts like, and is, a full zipper; `rewrite-clj.zip/end?` will ret
 
 This can be useful when you:
 
-* Are not interested in restoring your location after digging down deep to make a change
+* Are interested in restoring your location after digging down deep to make a change
 * Want to restrict your changes to a node and its children.
 It can be helpful to bound your movement when using functions that also affect current location such as `rewrite-clj.zip/remove`.
 
