@@ -54,7 +54,7 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.937"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.60.945"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}

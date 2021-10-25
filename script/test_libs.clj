@@ -156,18 +156,20 @@
         (spit fname new-content)))))
 
 (defn- show-patch-diff [{:keys [home-dir]}]
-  (shcmd {:dir home-dir :continue true}
-         "git --no-pager diff"))
+  (let [{:keys [exit]} (shcmd {:dir home-dir :continue true}
+                              "git --no-pager diff --exit-code")]
+    (when (zero? exit)
+      (status/die 1 "found no changes, patch must have failed" ))))
 
 ;;
 ;; ancient-clj
 ;;
 (defn ancient-clj-patch [{:keys [home-dir rewrite-clj-version]}]
-  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
-               ;; we remove and add tools.reader because project.clj has pedantic? :abort enabled
-               :removals #{'rewrite-clj 'org.clojure/tools.reader}
-               :additions [['org.clojure/tools.reader "1.3.6"]
-                           ['rewrite-clj rewrite-clj-version]]}))
+ (patch-deps {:filename (str (fs/file home-dir "project.clj"))
+              ;; we remove and add tools.reader because project.clj has pedantic? :abort enabled
+              :removals #{'rewrite-clj 'org.clojure/tools.reader}
+              :additions [['org.clojure/tools.reader "1.3.6"]
+                          ['rewrite-clj rewrite-clj-version]]}))
 
 ;;
 ;; carve
@@ -209,9 +211,9 @@
     (-> p
         slurp
         ;; done with exercising my rewrite-clj skills for now! :-)
-        (string/replace #"rewrite-clj \"[0-9.]+\""
+        (string/replace #"rewrite-clj \"(\d+\.)+.*\""
                         (format "rewrite-clj \"%s\"" rewrite-clj-version))
-        (string/replace #"org.clojure/tools.reader \"[0-9.]+\""
+        (string/replace #"org.clojure/tools.reader \"(\d+\.)+.*\""
                         "org.clojure/tools.reader \"1.3.6\"")
         (->> (spit p)))))
 
@@ -224,9 +226,9 @@
     (-> p
         slurp
         ;; done with exercising my rewrite-clj skills for now! :-)
-        (string/replace #"rewrite-clj \"[0-9.]+\""
+        (string/replace #"rewrite-clj \"(\d+\.)+.*\""
                         (format "rewrite-clj \"%s\"" rewrite-clj-version))
-        (string/replace #"\[(org.clojure/tools.namespace\ \"[0-9-a-z.]+\")\]"
+        (string/replace #"\[(org.clojure/tools.namespace\ \"(\d+\.)+.*\")\]"
                         "[$1 :exclusions [org.clojure/tools.reader]]")
         (->> (spit p)))))
 
@@ -234,22 +236,17 @@
 ;; refactor-nrepl
 ;;
 
-(defn- refactor-nrepl-prep [{:keys [home-dir]}]
-  (status/line :detail "=> Inlining deps")
-  (shcmd {:dir home-dir}
-         "lein inline-deps"))
-
-(defn- refactor-nrepl-patch [{:keys [home-dir rewrite-clj-version]}]
+(defn- refactor-nrepl-patch
+  "custom because my generic does not handle ^:inline-dep syntax"
+  [{:keys [home-dir rewrite-clj-version]}]
   (status/line :detail "=> Patching deps")
   (let [p (str (fs/file home-dir "project.clj"))]
     (-> p
         slurp
         ;; done with exercising my rewrite-clj skills for now! :-)
-        (string/replace #"rewrite-clj \"[0-9.]+\""
+        (string/replace #"rewrite-clj \"(\d+\.)+.*\""
                         (format "rewrite-clj \"%s\"" rewrite-clj-version))
-        (string/replace #"\[(cljfmt\ \"[0-9.]+\")\]"
-                        "[$1 :exclusions [rewrite-clj rewrite-cljs]]")
-       (->> (spit p)))))
+        (->> (spit p)))))
 
 ;;
 ;; zprint
@@ -390,7 +387,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "rewrite-edn"
-            :version "0.0.2"
+            :version "0.1.0"
             :platforms [:clj]
             :github-release {:repo "borkdude/rewrite-edn"
                              :version-prefix "v"
@@ -399,16 +396,14 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "refactor-nrepl"
-            :version "2.5.1"
+            :version "3.0.0"
             :platforms [:clj]
-            :note "Skip v3.0.0-alpha* and wait for official release"
             :github-release {:repo "clojure-emacs/refactor-nrepl"
                              :via :tag
                              :version-prefix "v"}
             :patch-fn refactor-nrepl-patch
             :show-deps-fn lein-deps-tree
-            :prep-fn refactor-nrepl-prep
-            :test-cmds ["lein with-profile +1.10,+plugin.mranderson/config test"]}
+            :test-cmds ["make test"]}
            {:name "test-doc-blocks"
             :version "1.0.146-alpha"
             :platforms [:clj :cljs]
@@ -514,7 +509,10 @@
 (defn run-tests [requested-libs]
   (status/line :head "Testing 3rd party libs")
   (status/line :detail "Test popular 3rd party libs against current rewrite-clj.")
-  (let [target-root-dir "target/libs-test"]
+  (let [;; target root was "target/libs-test" but refactor-nrepl tests now fails if anywhere under target
+        ;; will move back under target if that changes
+        ;; see: https://github.com/clojure-emacs/refactor-nrepl/issues/346
+        target-root-dir "test-libs-work"]
     (status/line :detail "Requested libs: %s" (into [] (map :name requested-libs)))
     (let [canary-version (install-local)]
       (prep-target target-root-dir)
