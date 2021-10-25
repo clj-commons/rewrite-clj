@@ -16,6 +16,8 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* docs: user guide correction, thanks @rgkirch!
+
 === v1.0.699-alpha
 
 * team update: @borkdude is now officially a co-maintainer of rewrite-clj! Woot woot!

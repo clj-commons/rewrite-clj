@@ -117,6 +117,7 @@ image:green-coder.png[green-coder,role="left",width=310,link="https://github.com
 image:jespera.png[jespera,role="left",width=310,link="https://github.com/jespera"]
 image:martinklepsch.png[martinklepsch,role="left",width=310,link="https://github.com/martinklepsch"]
 image:mhuebert.png[mhuebert,role="left",width=310,link="https://github.com/mhuebert"]
+image:rgkirch.png[rgkirch,role="left",width=310,link="https://github.com/rgkirch"]
 image:stathissideris.png[stathissideris,role="left",width=310,link="https://github.com/stathissideris"]
 image:swannodette.png[swannodette,role="left",width=310,link="https://github.com/swannodette"]
 --
