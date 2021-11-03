@@ -53,7 +53,8 @@ Some projects using rewrite-clj v1
 * https://github.com/xsc/ancient-clj[ancient-clj] {canary-tested}
 * https://github.com/liquidz/antq[antq] {canary-tested}
 * https://github.com/babashka/babashka[babashka] {not-canary-tested}
-* https://github.com/borkdude/carve[carve] {canary-tested} (in dev)
+* https://github.com/borkdude/carve[carve] {canary-tested}
+* https://github.com/nextjournal/clerk[clerk] {not-canary-tested}
 * https://github.com/weavejester/cljfmt[cljfmt] {canary-tested}
 * https://github.com/greglook/cljstyle[cljstyle] {canary-tested}
 * https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] {canary-tested}
