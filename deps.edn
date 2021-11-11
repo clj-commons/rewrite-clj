@@ -13,7 +13,7 @@
            ;;
            ;; ClojureScript version we test with (and support)
            ;;
-           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.879"}}}
+           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.893"}}}
 
            ;;
            ;; Linting
@@ -120,7 +120,7 @@
            ;;
            ;; Deployment
            ;;
-           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.6.2" :git/sha "226fb52"}
+           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.6.3" :git/sha "4a1b53a"}
                           io.github.slipset/deps-deploy {:sha "9b8db1f57722d19cf92de57ac7db28d71a915bcf"}
                           io.github.camsaul/whitespace-linter {:sha "942b34e117c5cb7667abfdb8d3f2449f27e46f57"}}
                    :ns-default build}
@@ -128,7 +128,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.1.0"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.2.0"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.32"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
