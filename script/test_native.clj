@@ -19,7 +19,9 @@
 (defn -main [& args]
   (when (main/doc-arg-opt args)
     (let [native-image-xmx "6g"
-          target-exe "target/rewrite-clj-test"]
+          target-path "target"
+          target-exe "rewrite-clj-test"
+          full-target-exe (str (io/file target-path target-exe))]
       (status/line :head "Creating native image for test")
       (status/line :detail "java -version")
       (shell/command "java -version")
@@ -28,17 +30,18 @@
             test-runner-dir "target/generated/graal"]
         (graal/clean)
         (generate-test-runner test-runner-dir)
-        (let [classpath (graal/compute-classpath "test-common:native-test")]
+        (let [classpath (graal/compute-classpath "test-common:graal:native-test")]
           (graal/aot-compile-sources classpath "clj-graal.test-runner")
           (graal/run-native-image {:graal-native-image graal-native-image
+                                   :target-path target-path
                                    :target-exe target-exe
                                    :classpath classpath
                                    :native-image-xmx native-image-xmx
                                    :entry-class "clj_graal.test_runner"})))
       (status/line :head "Native image built")
-      (status/line :detail "built: %s, %d bytes" target-exe (.length (io/file target-exe)))
+      (status/line :detail "built: %s, %d bytes" full-target-exe (.length (io/file full-target-exe)))
       (status/line :head "Running tests natively")
-      (shell/command target-exe)))
+      (shell/command full-target-exe)))
   nil)
 
 (main/when-invoked-as-script

@@ -31,7 +31,9 @@
   (when (main/doc-arg-opt args)
     (let [native-image-xmx "6g"
           graal-reflection-fname "target/native-image/reflection.json"
-          target-exe "target/sci-test-rewrite-clj"]
+          target-path "target"
+          target-exe "sci-test-rewrite-clj"
+          full-target-exe (str (io/file target-path target-exe))]
       (status/line :head "Creating native image for testing via sci")
       (status/line :detail "java -version")
       (shell/command "java -version")
@@ -39,17 +41,18 @@
       (let [graal-native-image (graal/find-graal-native-image)]
         (graal/clean)
         (expose-api-to-sci)
-        (let [classpath (graal/compute-classpath "sci-test")]
+        (let [classpath (graal/compute-classpath "graal:sci-test")]
           (graal/aot-compile-sources classpath "sci-test.main")
           (generate-reflection-file graal-reflection-fname)
           (graal/run-native-image {:graal-native-image graal-native-image
                                    :graal-reflection-fname graal-reflection-fname
+                                   :target-path target-path
                                    :target-exe target-exe
                                    :classpath classpath
                                    :native-image-xmx native-image-xmx
                                    :entry-class "sci_test.main"})))
       (status/line :head "build done")
-      (status/line :detail "built: %s, %d bytes" target-exe (.length (io/file target-exe)))
+      (status/line :detail "built: %s, %d bytes" full-target-exe (.length (io/file full-target-exe)))
       (interpret-tests)))
   nil)
 

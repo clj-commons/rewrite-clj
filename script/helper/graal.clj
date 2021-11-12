@@ -73,18 +73,18 @@
     classpath))
 
 (defn run-native-image [{:keys [:graal-native-image :graal-reflection-fname
-                                :target-exe :classpath :native-image-xmx
+                                :target-path :target-exe :classpath :native-image-xmx
                                 :entry-class]}]
   (status/line :head "Graal native-image compile AOT")
   (fs/delete-file-recursively target-exe true)
   (let [native-image-cmd (->> [graal-native-image
+                               (str "-H:Path=" target-path)
                                (str "-H:Name=" target-exe)
                                "-H:+ReportExceptionStackTraces"
                                "-J-Dclojure.spec.skip-macros=true"
                                "-J-Dclojure.compiler.direct-linking=true"
                                (when graal-reflection-fname
                                  (str "-H:ReflectionConfigurationFiles=" graal-reflection-fname))
-                               "--initialize-at-build-time"
                                "-H:Log=registerResource:"
                                "-H:EnableURLProtocols=http,https,jar"
                                "--verbose"
