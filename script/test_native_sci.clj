@@ -18,14 +18,11 @@
   (shell/command "clojure -M:sci-test:gen-reflection" fname)
   (status/line :detail fname))
 
-(defn interpret-tests []
+(defn interpret-tests [exe-fname]
   (status/line :head "Interpreting tests with sci using natively compiled binary")
-  (let [exe-fname (if (= :win (env/get-os))
-                    "target/sci-test-rewrite-clj.exe"
-                    "target/sci-test-rewrite-clj")]
-    (when (not (.exists (io/file exe-fname)))
-      (status/die 1 "native image %s not found." exe-fname))
-    (shell/command exe-fname "--file" "script/sci_test_runner.clj" "--classpath" "test")))
+  (when (not (.exists (io/file exe-fname)))
+    (status/die 1 "native image %s not found." exe-fname))
+  (shell/command exe-fname "--file" "script/sci_test_runner.clj" "--classpath" "test"))
 
 (defn -main [& args]
   (when (main/doc-arg-opt args)
@@ -33,7 +30,7 @@
           graal-reflection-fname "target/native-image/reflection.json"
           target-path "target"
           target-exe "sci-test-rewrite-clj"
-          full-target-exe (str (io/file target-path target-exe))]
+          full-target-exe (str target-path "/" target-exe (when (= :win (env/get-os)) ".exe"))]
       (status/line :head "Creating native image for testing via sci")
       (status/line :detail "java -version")
       (shell/command "java -version")
@@ -53,7 +50,7 @@
                                    :entry-class "sci_test.main"})))
       (status/line :head "build done")
       (status/line :detail "built: %s, %d bytes" full-target-exe (.length (io/file full-target-exe)))
-      (interpret-tests)))
+      (interpret-tests full-target-exe)))
   nil)
 
 (main/when-invoked-as-script
