@@ -62,6 +62,7 @@ Some projects using rewrite-clj v1
 * https://github.com/borkdude/rewrite-edn[rewrite-edn] {canary-tested}
 * https://github.com/lread/test-doc-blocks[test-doc-blocks] {canary-tested}
 * https://github.com/nubank/umschreiben-clj[umschreiben-clj] {canary-tested}
+* https://github.com/kkinnear/zprint[zprint] {canary-tested}
 
 Some projects using rewrite-clj v0 and/or rewrite-cljs
 
@@ -74,7 +75,6 @@ Some projects using rewrite-clj v0 and/or rewrite-cljs
 * https://github.com/juxt/pack.alpha[pack (alpha)] {not-canary-tested}
 * https://github.com/mauricioszabo/repl-tooling[repl-tooling] {not-canary-tested}
 * https://github.com/atomist-skills/update-leiningen-dependencies-skill[update-leiningen-dependencies-skill] {not-canary-tested}
-* https://github.com/kkinnear/zprint[zprint] {canary-tested} {canary-needed-patch}
 
 Have an update? Let us know!
 

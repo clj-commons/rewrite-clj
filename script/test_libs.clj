@@ -142,8 +142,8 @@
 
 (defn- project-clj-v1-patch [{:keys [home-dir rewrite-clj-version]}]
   (patch-deps {:filename (str (fs/file home-dir "project.clj"))
-               :removals #{'rewrite-clj}
-               :additions [['rewrite-clj rewrite-clj-version]]}))
+               :removals #{'rewrite-clj 'rewrite-clj/rewrite-clj}
+               :additions [['rewrite-clj/rewrite-clj rewrite-clj-version]]}))
 
 (defn- replace-in-file [fname match replacement]
   (let [orig-filename (str fname ".orig")
@@ -252,40 +252,16 @@
 ;; zprint
 ;;
 
-(defn- zprint-patch [{:keys [home-dir rewrite-clj-version]}]
-  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
-               :removals #{'rewrite-clj 'rewrite-cljs}
-               :additions [['rewrite-clj rewrite-clj-version]]})
+(defn- zprint-patch [lib]
+  ;; zprint has a project.clj and a deps.edn, patch 'em both
+  (deps-edn-v1-patch lib)
+  (project-clj-v1-patch lib))
 
-  (status/line :detail "=> Hacking lift-ns to compensate for rewrite-clj v0->v1 change in sexpr on nsmap keys")
-  (status/line :detail "- note the word 'hacking' - hacked for to get test passing only")
-  (let [src-filename (str (fs/file home-dir "src/zprint/zutil.cljc"))
-        orig-filename (str src-filename ".orig")
-        content (slurp src-filename)
-        find-str "(namespace (z/sexpr k))"
-        replace-str "(namespace (keyword (z/string k)))"]
-    (fs/copy src-filename orig-filename)
-    (status/line :detail "- hacking %s" src-filename)
-    (if-let [ndx (string/last-index-of content find-str)]
-      (spit src-filename
-            (str (subs content 0 ndx)
-                 replace-str
-                 (subs content (+ ndx (count find-str)))))
-      (throw (ex-info "hacking zprint failed" {})))))
-
-(defn- zprint-prep [{:keys [target-root-dir home-dir]}]
-  (status/line :detail "=> Installing not-yet-released expectations/cljc-test")
-  (let [clone-to-dir (str (fs/file target-root-dir "clojure-test"))]
-    (shcmd "git" "clone" "--branch" "enhancements"
-            "https://github.com/kkinnear/clojure-test.git" clone-to-dir)
-    (run! #(shcmd {:dir clone-to-dir} %)
-          ["git reset --hard a6c3be067ab06f677d3b1703ee4092d25db2bb60"
-           "clojure -M:jar"
-           "mvn install:install-file -Dfile=expectations.jar -DpomFile=pom.xml"]))
-
+(defn- zprint-prep [{:keys [home-dir]}]
   (status/line :detail "=> Building uberjar for uberjar tests")
   (shcmd {:dir home-dir} "lein uberjar")
 
+  ;; not sure if this is still necessary, but probably does not hurt(?)
   (status/line :detail "=> Installing zprint locally for ClojureScript tests")
   (shcmd {:dir home-dir} "lein install"))
 
@@ -422,9 +398,8 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "zprint"
-            :version "1.1.1"
+            :version "1.2.0"
             :platforms [:clj :cljs]
-            :note "1 minor hack to pass with rewrite-clj v1, skip version 1.1.2 release, skip 1.2.0-alpha1 tag"
             :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch
             :prep-fn zprint-prep
