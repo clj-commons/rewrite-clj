@@ -114,18 +114,6 @@
 (defn- cli-deps-tree [lib]
   (deps-tree lib "clojure -Stree"))
 
-(defn- patch-rewrite-cljc-sources [home-dir]
-  (status/line :detail "=> Patching sources")
-  (doall (map (fn [f]
-                (let [f (fs/file f)
-                      content (slurp f)
-                      new-content (string/replace content #"(\[rewrite-)cljc(\.\w+\s+:as\s+\w+\])"
-                                                  "$1clj$2")]
-                  (when (not= content new-content)
-                    (status/line :detail "- patching source: %s" f)
-                    (spit f new-content))))
-              (fs/glob home-dir "**/*.{clj,cljc,cljs}"))))
-
 (defn- patch-deps [{:keys [filename] :as opts}]
   (status/line :detail "=> Patching deps in: %s" filename)
   (if (string/ends-with? filename "deps.edn")
@@ -159,6 +147,7 @@
   (let [{:keys [exit]} (shcmd {:dir home-dir :continue true}
                               "git --no-pager diff --exit-code")]
     (when (zero? exit)
+
       (status/die 1 "found no changes, patch must have failed" ))))
 
 ;;
@@ -170,15 +159,6 @@
               :removals #{'rewrite-clj 'org.clojure/tools.reader}
               :additions [['org.clojure/tools.reader "1.3.6"]
                           ['rewrite-clj rewrite-clj-version]]}))
-
-;;
-;; carve
-;;
-(defn carve-patch [{:keys [home-dir rewrite-clj-version]}]
-  (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
-               :removals #{'borkdude/rewrite-cljc}
-               :additions [['rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}]]})
-  (patch-rewrite-cljc-sources home-dir))
 
 ;;
 ;; clojure-lsp
@@ -196,7 +176,6 @@
   (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
                :removals #{'rewrite-clj/rewrite-clj}
                :additions [['rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}]]})
-  (patch-rewrite-cljc-sources home-dir)
   (status/line :detail "=> depot uses but does not require rewrite-clj.node, need to adjust for rewrite-clj v1")
   (replace-in-file (str (fs/file home-dir "src/depot/zip.clj"))
                    "[rewrite-clj.zip :as rzip]"
@@ -285,11 +264,11 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:dev:test"]}
            {:name "carve"
-            :version "0.0.2"
+            :version "0.1.0"
             :platforms [:clj]
             :github-release {:repo "borkdude/carve"
                              :version-prefix "v"}
-            :patch-fn carve-patch
+            :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "cljfmt"
