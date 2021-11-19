@@ -50,32 +50,33 @@ See https://github.com/clj-commons/rewrite-clj/projects/1[project page for curre
 
 Some projects using rewrite-clj v1
 
-* https://github.com/xsc/ancient-clj[ancient-clj] {canary-tested}
-* https://github.com/liquidz/antq[antq] {canary-tested}
-* https://github.com/babashka/babashka[babashka] {not-canary-tested}
-* https://github.com/borkdude/carve[carve] {canary-tested}
-* https://github.com/nextjournal/clerk[clerk] {not-canary-tested}
-* https://github.com/weavejester/cljfmt[cljfmt] {canary-tested}
-* https://github.com/greglook/cljstyle[cljstyle] {canary-tested}
-* https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] {canary-tested}
-* https://github.com/FiV0/kusonga[kusonga] {canary-tested}
-* https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl] {canary-tested}
-* https://github.com/borkdude/rewrite-edn[rewrite-edn] {canary-tested}
-* https://github.com/lread/test-doc-blocks[test-doc-blocks] {canary-tested}
-* https://github.com/nubank/umschreiben-clj[umschreiben-clj] {canary-tested}
-* https://github.com/kkinnear/zprint[zprint] {canary-tested}
+* https://github.com/xsc/ancient-clj[ancient-clj] {canary-tested} - Version Metadata Retrieval for Maven Artifacts
+* https://github.com/liquidz/antq[antq] {canary-tested} - Point out your outdated dependencies
+* https://github.com/babashka/babashka[babashka] {not-canary-tested} - Native, fast starting Clojure interpreter for scripting
+* https://github.com/borkdude/carve[carve] {canary-tested} - Carve out the essentials of your Clojure app
+* https://github.com/nextjournal/clerk[clerk] {not-canary-tested} - Local-First Notebooks for Clojure
+* https://github.com/weavejester/cljfmt[cljfmt] {canary-tested} - A tool for formatting Clojure code
+* https://github.com/greglook/cljstyle[cljstyle] {canary-tested} - A tool for formatting Clojure code
+* https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] {canary-tested} - Language Server (LSP) for Clojure
+* https://github.com/FiV0/kusonga[kusonga] {canary-tested} - Renaming and moving namespaces in Clojure(script)
+* https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl] {canary-tested} - nREPL middleware to support refactorings in an editor agnostic way
+* https://github.com/borkdude/rewrite-edn[rewrite-edn] {canary-tested} - Utility lib on top of rewrite-clj with common operations to update EDN while preserving whitespace and comments
+* https://github.com/lread/test-doc-blocks[test-doc-blocks] {canary-tested} - Test AsciiDoc and CommonMark code blocks found in articles and docstrings
+* https://github.com/nubank/umschreiben-clj[umschreiben-clj] {canary-tested} - Rewrite utilities for refactoring clojure files
+* https://github.com/kkinnear/zprint[zprint] {canary-tested} - Executables, uberjar, and library to beautifully format Clojure and Clojurescript source code and s-expressions
 
 Some projects using rewrite-clj v0 and/or rewrite-cljs
 
-* https://github.com/mauricioszabo/atom-chlorine[atom-chlorine] {not-canary-tested}
-* https://github.com/Olical/depot[depot] {canary-tested} {canary-needed-patch}
-* https://github.com/jonase/kibit[kibit] {canary-tested}
-* https://github.com/xsc/lein-ancient[lein-ancient] {canary-tested}
-* https://github.com/benedekfazekas/mranderson[mranderson] {canary-tested}
-* https://github.com/jstepien/mutant[mutant] {canary-tested}
-* https://github.com/juxt/pack.alpha[pack (alpha)] {not-canary-tested}
-* https://github.com/mauricioszabo/repl-tooling[repl-tooling] {not-canary-tested}
-* https://github.com/atomist-skills/update-leiningen-dependencies-skill[update-leiningen-dependencies-skill] {not-canary-tested}
+* https://github.com/mauricioszabo/atom-chlorine[atom-chlorine] {not-canary-tested} - An Atom plugin to integrate with Socket-REPL over Clojure, ClojureScript, ClojureCLR, Joker, Babashka, Clojerl, Lumo and Plank
+* https://github.com/Olical/depot[depot] {canary-tested} {canary-needed-patch} - Find newer versions of your dependencies in your deps.edn file
+* https://github.com/jonase/kibit[kibit] {canary-tested} - There's a function for that!
+* https://github.com/xsc/lein-ancient[lein-ancient] {canary-tested} - Check your Projects for outdated Dependencies
+* https://github.com/benedekfazekas/mranderson[mranderson] {canary-tested} - Dependency inlining and shadowing
+* https://github.com/jstepien/mutant[mutant] {canary-tested} - Mutation testing for Clojure
+* https://github.com/juxt/pack.alpha[pack (alpha)] {not-canary-tested} -  Package clojure projects
+Resources
+* https://github.com/mauricioszabo/repl-tooling[repl-tooling] {not-canary-tested} - a base package for Clojure's editor tooling
+* https://github.com/atomist-skills/update-leiningen-dependencies-skill[update-leiningen-dependencies-skill] {not-canary-tested} - Track project.clj dependencies across different projects
 
 Have an update? Let us know!
 
