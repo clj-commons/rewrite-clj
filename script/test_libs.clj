@@ -161,21 +161,10 @@
                           ['rewrite-clj rewrite-clj-version]]}))
 
 ;;
-;; clojure-lsp
-;;
-(defn- clojure-lsp-patch [{:keys [home-dir rewrite-clj-version]}]
-  (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
-                  :removals #{'rewrite-clj/rewrite-clj}
-                  :additions [['rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}]]}))
-
-
-;;
 ;; depot
 ;;
-(defn depot-patch [{:keys [home-dir rewrite-clj-version]}]
-  (patch-deps {:filename (str (fs/file home-dir "deps.edn"))
-               :removals #{'rewrite-clj/rewrite-clj}
-               :additions [['rewrite-clj/rewrite-clj {:mvn/version rewrite-clj-version}]]})
+(defn depot-patch [{:keys [home-dir] :as lib}]
+  (deps-edn-v1-patch lib)
   (status/line :detail "=> depot uses but does not require rewrite-clj.node, need to adjust for rewrite-clj v1")
   (replace-in-file (str (fs/file home-dir "src/depot/zip.clj"))
                    "[rewrite-clj.zip :as rzip]"
@@ -293,7 +282,7 @@
             :platforms [:clj]
             :version "2021.11.16-16.52.14"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
-            :patch-fn clojure-lsp-patch
+            :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["make test"]}
            {:name "depot"
