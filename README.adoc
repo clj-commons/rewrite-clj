@@ -58,6 +58,7 @@ Some projects using rewrite-clj v1
 * https://github.com/weavejester/cljfmt[cljfmt] {canary-tested}
 * https://github.com/greglook/cljstyle[cljstyle] {canary-tested}
 * https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] {canary-tested}
+* https://github.com/FiV0/kusonga[kusonga] {canary-tested}
 * https://github.com/clojure-emacs/refactor-nrepl[refactor-nrepl] {canary-tested}
 * https://github.com/borkdude/rewrite-edn[rewrite-edn] {canary-tested}
 * https://github.com/lread/test-doc-blocks[test-doc-blocks] {canary-tested}

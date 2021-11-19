@@ -278,7 +278,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "1.2.0"
+            :version "1.3.0"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -312,7 +312,7 @@
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.11.02-15.24.47"
+            :version "2021.11.16-16.52.14"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn cli-deps-tree
@@ -335,6 +335,15 @@
             :patch-fn project-clj-v1-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test-all"]}
+           {:name "kusonga"
+            :platforms [:clj]
+            :version "0.1.2"
+            :github-release {:repo "FiV0/kusonga"
+                             :via :tag
+                             :version-prefix "v"}
+            :patch-fn deps-edn-v1-patch
+            :show-deps-fn cli-deps-tree
+            :test-cmds ["clojure -P -M:test"]}
            {:name "lein-ancient"
             :platforms [:clj]
             :version "1.0.0-RC3"
