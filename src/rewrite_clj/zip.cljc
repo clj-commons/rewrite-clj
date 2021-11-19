@@ -304,11 +304,11 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.editz
 (defn replace
-  "Return `zloc` with the current node replaced by `value`.
-  If `value` is not already a node, an attempt will be made to coerce it to one.
+  "Return `zloc` with the current node replaced by `item`.
+  If `item` is not already a node, an attempt will be made to coerce it to one.
 
   Use [[replace*]] for non-coercing version of replace."
-  [zloc value] (rewrite-clj.zip.editz/replace zloc value))
+  [zloc item] (rewrite-clj.zip.editz/replace zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.editz
 (defn edit
@@ -473,6 +473,8 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn insert-right
   "Return zipper with `item` inserted to the right of the current node in `zloc`, without moving location.
+  If `item` is not already a node, an attempt will be made to coerce it to one.
+
   Will insert a space if necessary.
 
   Use [[rewrite-clj.zip/insert-right*]] to insert without adding any whitespace."
@@ -482,6 +484,7 @@
 (defn insert-left
   "Return zipper with `item` inserted to the left of the current node in `zloc`, without moving location.
   Will insert a space if necessary.
+  If `item` is not already a node, an attempt will be made to coerce it to one.
 
   Use [[insert-left*]] to insert without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/insert-left zloc item))
@@ -490,6 +493,7 @@
 (defn insert-child
   "Return zipper with `item` inserted as the first child of the current node in `zloc`, without moving location.
   Will insert a space if necessary.
+  If `item` is not already a node, an attempt will be made to coerce it to one.
 
   Use [[insert-child*]] to insert without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/insert-child zloc item))
@@ -498,6 +502,7 @@
 (defn append-child
   "Return zipper with `item` inserted as the last child of the current node in `zloc`, without moving.
   Will insert a space if necessary.
+  If `item` is not already a node, an attempt will be made to coerce it to one.
 
   Use [[append-child*]] to append without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/append-child zloc item))
@@ -922,7 +927,6 @@
   "DEPRECATED: renamed to [[insert-newline-right]]."
   ([zloc n] (rewrite-clj.zip.whitespace/append-newline zloc n))
   ([zloc] (rewrite-clj.zip.whitespace/append-newline zloc)))
-;; TODO: clj-kondo barfs on an empty reader cond
 #?(:clj
    
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
@@ -1014,26 +1018,6 @@ NOTE: This function does not skip, nor provide any special handling for whitespa
   [zloc] (rewrite-clj.custom-zipper.core/leftmost zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.custom-zipper.core
-(defn replace*
-  "Raw version of [[replace]].
-
-Returns zipper with `node` replacing current node in `zloc`, without moving location.
-
-NOTE: This function does not skip, nor provide any special handling for whitespace/comment nodes."
-  [zloc node] (rewrite-clj.custom-zipper.core/replace zloc node))
-
-;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.custom-zipper.core
-(defn edit*
-  "Raw version of [[edit]].
-
-Returns zipper with value of `(apply f current-node args)` replacing current node in `zloc`.
-
-   The result of `f` should be a rewrite-clj node.
-
-NOTE: This function does not skip, nor provide any special handling for whitespace/comment nodes."
-  [zloc f & args] (apply rewrite-clj.custom-zipper.core/edit zloc f args))
-
-;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.custom-zipper.core
 (defn remove*
   "Raw version of [[remove]].
 
@@ -1044,41 +1028,61 @@ NOTE: This function does not skip, nor provide any special handling for whitespa
   [zloc] (rewrite-clj.custom-zipper.core/remove zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.custom-zipper.core
+(defn replace*
+  "Raw version of [[replace]].
+
+Returns zipper with node `item` replacing current node in `zloc`, without moving location.
+
+NOTE: This function does no coercion, does not skip, nor provide any special handling for whitespace/comment nodes."
+  [zloc item] (rewrite-clj.custom-zipper.core/replace zloc item))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.custom-zipper.core
+(defn edit*
+  "Raw version of [[edit]].
+
+Returns zipper with value of `(apply f current-node args)` replacing current node in `zloc`.
+
+   The result of `f` should be a rewrite-clj node.
+
+NOTE: This function does no coercion, does not skip, nor provide any special handling for whitespace/comment nodes."
+  [zloc f & args] (apply rewrite-clj.custom-zipper.core/edit zloc f args))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.custom-zipper.core
 (defn insert-left*
   "Raw version of [[insert-left]].
 
-Returns zipper with `item` inserted as the left sibling of current node in `zloc`,
+Returns zipper with node `item` inserted as the left sibling of current node in `zloc`,
  without moving location.
 
-NOTE: This function does not skip, nor provide any special handling for whitespace/comment nodes."
+NOTE: This function does no coercion, does not skip, nor provide any special handling for whitespace/comment nodes."
   [zloc item] (rewrite-clj.custom-zipper.core/insert-left zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.custom-zipper.core
 (defn insert-right*
   "Raw version of [[insert-right]].
 
-Returns zipper with `item` inserted as the right sibling of the current node in `zloc`,
+Returns zipper with node `item` inserted as the right sibling of the current node in `zloc`,
   without moving location.
 
-NOTE: This function does not skip, nor provide any special handling for whitespace/comment nodes."
+NOTE: This function does no coercion, does not skip, nor provide any special handling for whitespace/comment nodes."
   [zloc item] (rewrite-clj.custom-zipper.core/insert-right zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.custom-zipper.core
 (defn insert-child*
   "Raw version of [[insert-child]].
 
-Returns zipper with `item` inserted as the leftmost child of the current node in `zloc`,
+Returns zipper with node `item` inserted as the leftmost child of the current node in `zloc`,
   without moving location.
 
-NOTE: This function does not skip, nor provide any special handling for whitespace/comment nodes."
+NOTE: This function does no coercion, does not skip, nor provide any special handling for whitespace/comment nodes."
   [zloc item] (rewrite-clj.custom-zipper.core/insert-child zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.custom-zipper.core
 (defn append-child*
   "Raw version of [[append-child]].
 
-Returns zipper with `item` inserted as the rightmost child of the current node in `zloc`,
+Returns zipper with node `item` inserted as the rightmost child of the current node in `zloc`,
   without moving.
 
-NOTE: This function does not skip, nor provide any special handling for whitespace/comment nodes."
+NOTE: This function does no coercion, does not skip, nor provide any special handling for whitespace/comment nodes."
   [zloc item] (rewrite-clj.custom-zipper.core/append-child zloc item))

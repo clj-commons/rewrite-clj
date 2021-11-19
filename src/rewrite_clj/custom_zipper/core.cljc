@@ -186,7 +186,7 @@
       zloc)))
 
 (defn-switchable insert-left
-  "Returns zipper with `item` inserted as the left sibling of current node in `zloc`,
+  "Returns zipper with node `item` inserted as the left sibling of current node in `zloc`,
  without moving location."
   [zloc item]
   (let [{:keys [parent position left]} zloc]
@@ -198,7 +198,7 @@
              :position (node/+extent position (node/extent item))))))
 
 (defn-switchable insert-right
-  "Returns zipper with `item` inserted as the right sibling of the current node in `zloc`,
+  "Returns zipper with node `item` inserted as the right sibling of the current node in `zloc`,
   without moving location."
   [zloc item]
   (let [{:keys [parent right]} zloc]
@@ -209,9 +209,9 @@
              :right (cons item right)))))
 
 (defn-switchable replace
-  "Returns zipper with `node` replacing current node in `zloc`, without moving location."
-  [zloc node]
-  (assoc zloc :changed? true :node node))
+  "Returns zipper with node `item` replacing current node in `zloc`, without moving location."
+  [zloc item]
+  (assoc zloc :changed? true :node item))
 
 (defn edit
   "Returns zipper with value of `(apply f current-node args)` replacing current node in `zloc`.
@@ -223,13 +223,13 @@
     (apply clj-zip/edit zloc f args)))
 
 (defn-switchable insert-child
-  "Returns zipper with `item` inserted as the leftmost child of the current node in `zloc`,
+  "Returns zipper with node `item` inserted as the leftmost child of the current node in `zloc`,
   without moving location."
   [zloc item]
   (replace zloc (make-node zloc (node zloc) (cons item (children zloc)))))
 
 (defn-switchable append-child
-  "Returns zipper with `item` inserted as the rightmost child of the current node in `zloc`,
+  "Returns zipper with node `item` inserted as the rightmost child of the current node in `zloc`,
   without moving."
   [zloc item]
   (replace zloc (make-node zloc (node zloc) (concat (children zloc) [item]))))

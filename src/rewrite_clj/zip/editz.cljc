@@ -15,12 +15,12 @@
 ;; ## In-Place Modification
 
 (defn replace
-  "Return `zloc` with the current node replaced by `value`.
-  If `value` is not already a node, an attempt will be made to coerce it to one.
+  "Return `zloc` with the current node replaced by `item`.
+  If `item` is not already a node, an attempt will be made to coerce it to one.
 
   Use [[replace*]] for non-coercing version of replace."
-  [zloc value]
-  (zraw/replace zloc (node/coerce value)))
+  [zloc item]
+  (zraw/replace zloc (node/coerce item)))
 
 (defn- node-editor
   "Create s-expression from node, apply the function and create

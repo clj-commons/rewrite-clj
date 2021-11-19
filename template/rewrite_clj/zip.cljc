@@ -247,7 +247,6 @@
             ^{:deprecated "0.5.0"} prepend-newline
             ^{:deprecated "0.5.0"} append-newline]]}}
 
-;; TODO: clj-kondo barfs on an empty reader cond
 #?(:clj
    #_{:import-vars/import
       {:from [[rewrite-clj.zip.base
@@ -260,7 +259,13 @@
             right left up down
             next prev
             rightmost leftmost
-            replace edit remove
+            remove]]}}
+
+#_{:import-vars/import
+   {:opts {:sym-to-pattern "@@orig-name@@*"
+           :doc-to-pattern "Raw version of [[@@orig-name@@]].\n\n@@orig-doc@@\n\nNOTE: This function does no coercion, does not skip, nor provide any special handling for whitespace/comment nodes."}
+    :from [[rewrite-clj.custom-zipper.core
+            replace edit
             insert-left insert-right
             insert-child
             append-child]]}}

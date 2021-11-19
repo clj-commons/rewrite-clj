@@ -16,7 +16,9 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
-* docs: user guide correction, thanks @rgkirch!
+* docs:
+** user guide correction, thanks @rgkirch!
+** zip API docstrings now clearer about coercion https://github.com/clj-commons/rewrite-clj/issues/168[#168]
 
 === v1.0.699-alpha
 
