@@ -358,7 +358,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["make test"]}
            {:name "test-doc-blocks"
-            :version "1.0.146-alpha"
+            :version "1.0.166-alpha"
             :platforms [:clj :cljs]
             :note "generates tests under clj, but can also be run under cljs"
             :github-release {:repo "lread/test-doc-blocks"
