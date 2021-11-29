@@ -42,7 +42,7 @@
 
            ;; document block testing
            :test-doc-blocks {:replace-deps {org.clojure/clojure {:mvn/version "1.10.3"}
-                                            com.github.lread/test-doc-blocks {:mvn/version "1.0.146-alpha"}}
+                                            com.github.lread/test-doc-blocks  {:mvn/version "1.0.146-alpha"}}
                              :replace-paths []
                              :ns-default lread.test-doc-blocks
                              :exec-args {:docs ["doc/01-user-guide.adoc"
@@ -123,7 +123,8 @@
            ;;
            :build {:deps {io.github.clojure/tools.build {:git/tag "v0.6.3" :git/sha "4a1b53a"}
                           io.github.slipset/deps-deploy {:sha "9b8db1f57722d19cf92de57ac7db28d71a915bcf"}
-                          io.github.camsaul/whitespace-linter {:sha "942b34e117c5cb7667abfdb8d3f2449f27e46f57"}}
+                          ;; TODO: switch back to io.github.camsaul after https://github.com/camsaul/whitespace-linter/pull/8 merged
+                          io.github.lread/whitespace-linter {:sha "a5b5561ce4d199db54917390695449d9c59c38b6"}}
                    :ns-default build}
 
            ;;
