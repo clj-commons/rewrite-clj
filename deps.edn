@@ -13,18 +13,18 @@
            ;;
            ;; ClojureScript version we test with (and support)
            ;;
-           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.893"}}}
+           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.914"}}}
 
            ;;
            ;; Linting
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.10.19"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.12.19"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
-           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "0.9.9"}}
+           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "1.1.0"}}
                       :main-opts ["-m" "eastwood.lint" {:source-paths ["src"]
                                                         :test-paths ["test"]
                                                         :add-linters [:performance]
@@ -35,7 +35,7 @@
            ;; Test support
            ;;
 
-           :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}
+           :test-common {:extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}}
                          :extra-paths ["test"]}
 
            :test-isolated {:extra-paths ["test-isolated"]}
@@ -54,7 +54,7 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.60.945"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.60.977"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}
@@ -83,12 +83,12 @@
            ;;
            :script {:extra-paths ["script"]
                     :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
-                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.1.0"}
+                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.2.0"}
                                  cli-matic/cli-matic {:mvn/version "0.4.3"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.6.2"}
-                                            io.aviso/pretty {:mvn/version "1.1"}}
+                               :extra-deps {metosin/malli {:mvn/version "0.7.5"}
+                                            io.aviso/pretty {:mvn/version "1.1.1"}}
                                :ns-default lread.apply-import-vars}
 
            ;;
@@ -121,16 +121,16 @@
            ;;
            ;; Deployment
            ;;
-           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.6.8" :git/sha "d79ae84"}
-                          io.github.slipset/deps-deploy {:sha "9b8db1f57722d19cf92de57ac7db28d71a915bcf"}
+           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.7.5" :git/sha "34727f7"}
+                          io.github.slipset/deps-deploy {:sha "d1fac08888ec8beda0579d3071bb9f804a1d446c"}
                           ;; TODO: switch back to io.github.camsaul after https://github.com/camsaul/whitespace-linter/pull/8 merged
-                          io.github.lread/whitespace-linter {:sha "a5b5561ce4d199db54917390695449d9c59c38b6"}}
+                          io.github.lread/whitespace-linter {:sha "8a231450eb63f349f8777c5ddfe09307bc0ab22e"}}
                    :ns-default build}
 
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.3.0"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.3.1"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.32"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}

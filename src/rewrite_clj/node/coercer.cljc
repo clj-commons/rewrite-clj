@@ -171,7 +171,7 @@
 
 (extend-protocol NodeCoerceable
   nil
-  (coerce [v]
+  (coerce [_v]
     (token-node nil)))
 
 ;; ## Regex
