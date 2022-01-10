@@ -246,7 +246,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "1.3.0"
+            :version "1.3.1"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -260,6 +260,15 @@
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
+           ;; TODO: Clerk now has tests, they just aren't part of an official release yet, soon!
+           #_{:name "clerk"
+            :version "0.4.305"
+            :github-release {:repo "nextjournal/clerk"
+                             :via :tag
+                             :version-prefix "v"}
+            :patch-fn deps-edn-v1-patch
+            :show-deps-fn cli-deps-tree
+            :test-cmds ["clojure -X:test"]}
            {:name "cljfmt"
             :version "0.8.0"
             :platforms [:clj :cljs]
@@ -280,7 +289,7 @@
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2021.11.16-16.52.14"
+            :version "2022.01.03-19.46.10"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
@@ -349,7 +358,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "refactor-nrepl"
-            :version "3.0.0"
+            :version "3.2.0"
             :platforms [:clj]
             :github-release {:repo "clojure-emacs/refactor-nrepl"
                              :via :tag
