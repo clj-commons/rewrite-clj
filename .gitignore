@@ -12,7 +12,6 @@
 /log
 /node_modules
 /target
-/test-libs-work/
 /fiddle.clj
 /faddle.clj
 /fiddle/

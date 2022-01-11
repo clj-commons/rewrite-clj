@@ -470,10 +470,7 @@
 (defn run-tests [requested-libs]
   (status/line :head "Testing 3rd party libs")
   (status/line :detail "Test popular 3rd party libs against current rewrite-clj.")
-  (let [;; target root was "target/libs-test" but refactor-nrepl tests now fails if anywhere under target
-        ;; will move back under target if that changes
-        ;; see: https://github.com/clojure-emacs/refactor-nrepl/issues/346
-        target-root-dir "test-libs-work"]
+  (let [target-root-dir "target/test-libs"]
     (status/line :detail "Requested libs: %s" (into [] (map :name requested-libs)))
     (let [canary-version (install-local)]
       (prep-target target-root-dir)
