@@ -24,9 +24,24 @@
     (status/die 1 "native image %s not found." exe-fname))
   (shell/command exe-fname "--file" "script/sci_test_runner.clj" "--classpath" "test"))
 
+(def allowed-clojure-versions '("1.10" "1.11"))
+
+(def args-usage "Valid args: [options]
+
+Options:
+  -v, --clojure-version VERSION  Test with Clojure [1.10, 1.11] [default: 1.10]
+  --help                         Show this help")
+
+
+(defn validate-opts [opts]
+  (when (not (some #{(get opts "--clojure-version")} allowed-clojure-versions))
+        (status/die 1 args-usage)))
+
 (defn -main [& args]
-  (when (main/doc-arg-opt args)
-    (let [native-image-xmx "6g"
+  (when-let [opts (main/doc-arg-opt args-usage args)]
+    (validate-opts opts)
+    (let [clojure-version (get opts "--clojure-version")
+          native-image-xmx "6g"
           graal-reflection-fname "target/native-image/reflection.json"
           target-path "target"
           target-exe "sci-test-rewrite-clj"
@@ -38,7 +53,7 @@
       (let [graal-native-image (graal/find-graal-native-image)]
         (graal/clean)
         (expose-api-to-sci)
-        (let [classpath (graal/compute-classpath "graal:sci-test")]
+        (let [classpath (graal/compute-classpath (str "graal:sci-test:" clojure-version))]
           (graal/aot-compile-sources classpath "sci-test.main")
           (generate-reflection-file graal-reflection-fname)
           (graal/run-native-image {:graal-native-image graal-native-image

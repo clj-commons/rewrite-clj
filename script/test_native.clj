@@ -17,9 +17,24 @@
                  "-m" "clj-graal.gen-test-runner"
                  "--dest-dir" dir "test-by-namespace"))
 
+(def allowed-clojure-versions '("1.10" "1.11"))
+
+(def args-usage "Valid args: [options]
+
+Options:
+  -v, --clojure-version VERSION  Test with Clojure [1.10, 1.11] [default: 1.10]
+  --help                         Show this help")
+
+
+(defn validate-opts [opts]
+  (when (not (some #{(get opts "--clojure-version")} allowed-clojure-versions))
+        (status/die 1 args-usage)))
+
 (defn -main [& args]
-  (when (main/doc-arg-opt args)
-    (let [native-image-xmx "6g"
+  (when-let [opts (main/doc-arg-opt args-usage args)]
+    (validate-opts opts)
+    (let [clojure-version (get opts "--clojure-version")
+          native-image-xmx "6g"
           target-path "target"
           target-exe "rewrite-clj-test"
           full-target-exe (str target-path "/" target-exe (when (= :win (env/get-os)) ".exe"))]
@@ -31,7 +46,7 @@
             test-runner-dir "target/generated/graal"]
         (graal/clean)
         (generate-test-runner test-runner-dir)
-        (let [classpath (graal/compute-classpath "test-common:graal:native-test")]
+        (let [classpath (graal/compute-classpath (str "test-common:graal:native-test:" clojure-version))]
           (graal/aot-compile-sources classpath "clj-graal.test-runner")
           (graal/run-native-image {:graal-native-image graal-native-image
                                    :target-path target-path
