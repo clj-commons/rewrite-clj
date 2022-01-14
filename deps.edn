@@ -22,11 +22,11 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.12.19"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.01.13"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
-           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "1.1.0"}}
+           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "1.1.1"}}
                       :main-opts ["-m" "eastwood.lint" {:source-paths ["src"]
                                                         :test-paths ["test"]
                                                         :add-linters [:performance]
@@ -105,7 +105,7 @@
 
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                   :sha "2af0994d7b4554be08c38f166400fc79f1c28b3e"}}}
+                                                   :sha "926013c916cda7fb8faae207cc8d0e5996020700"}}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 
@@ -133,7 +133,7 @@
            ;; Maintenance support
            ;;
            :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.3.1"}
-                                   org.slf4j/slf4j-simple {:mvn/version "1.7.32"} ;; to rid ourselves of logger warnings
+                                   org.slf4j/slf4j-simple {:mvn/version "1.7.33"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
                       :main-opts ["-m" "antq.core"
