@@ -161,6 +161,17 @@
                           ['rewrite-clj rewrite-clj-version]]}))
 
 ;;
+;; clojure-lsp
+;;
+;; Has moved the deps.edn we care about into a lib subdir
+;;
+(defn clojure-lsp-patch [lib-opts]
+  (deps-edn-v1-patch (update lib-opts :home-dir #(str (fs/file % "lib")))))
+
+(defn clojure-lsp-deps [lib-opts]
+  (cli-deps-tree (update lib-opts :home-dir #(str (fs/file % "lib")))))
+
+;;
 ;; depot
 ;;
 (defn depot-patch [{:keys [home-dir] :as lib}]
@@ -291,8 +302,8 @@
             :platforms [:clj]
             :version "2022.01.22-01.31.09"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
-            :patch-fn deps-edn-v1-patch
-            :show-deps-fn cli-deps-tree
+            :patch-fn clojure-lsp-patch
+            :show-deps-fn clojure-lsp-deps
             :test-cmds ["make test"]}
            {:name "depot"
             :platforms [:clj]
