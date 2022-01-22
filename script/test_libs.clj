@@ -246,7 +246,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "1.3.1"
+            :version "1.4.0"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -289,7 +289,7 @@
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2022.01.03-19.46.10"
+            :version "2022.01.22-01.31.09"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
