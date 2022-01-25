@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
-        graal-java: [ 11, 17 ]
+        graal-java: [ 11 ]
         test: [ test-native, test-native-sci ]
         clojure-version: [ '1.10', '1.11' ]
 
