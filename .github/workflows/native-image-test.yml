@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
-        graal-java: [ java11 ]
+        graal-java: [ 11, 17 ]
         test: [ test-native, test-native-sci ]
         clojure-version: [ '1.10', '1.11' ]
 
@@ -30,22 +30,15 @@ jobs:
         restore-keys: $${ runner.os }}-cljdeps-
 
     #
-    # Time command
-    #
-    - name: Install time command (linux)
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y time
-      if: matrix.os == 'ubuntu-latest'
-
-    #
     # Install GraalVM
     #
     - name: Install GraalVM
-      uses: DeLaGuardo/setup-graalvm@5.0
+      uses: graalvm/setup-graalvm@v1
       with:
-        graalvm: '21.3.0'
-        java: ${{ matrix.graal-java }}
+        version: '22.0.0.2'
+        java-version: ${{ matrix.graal-java }}
+        components: 'native-image'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
     #
     # Install Babashka
@@ -104,15 +97,7 @@ jobs:
       run: clojure -Spath
 
     #
-    # SCI native image tests
+    # native image tests
     #
-    - name: Execute ${{ matrix.test }} native test (windows)
-      run: |
-        # it is overly awkward to get vcvars64.bat loaded into powershell, so we use cmd shell instead
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-        bb ${{ matrix.test }}
-      shell: cmd
-      if: matrix.os == 'windows-latest'
-    - name: Execute ${{ matrix.test }} native test (macos, linux)
+    - name: Execute ${{ matrix.test }} native test
       run: bb ${{ matrix.test }} --clojure-version ${{ matrix.clojure-version }}
-      if: matrix.os != 'windows-latest'

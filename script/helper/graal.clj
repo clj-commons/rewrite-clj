@@ -102,11 +102,5 @@
                                "-cp" (str classpath java.io.File/pathSeparator "classes")
                                (str "-J-Xmx" native-image-xmx)
                                entry-class]
-                              (remove nil?))
-         time-cmd (let [os (env/get-os)]
-                    (case os
-                        :mac ["/usr/bin/time" "-l"]
-                        :unix ["/usr/bin/time" "-v"]
-                        (status/line :warn (str "I don't know how to get run stats (user/real/sys CPU, RAM use, etc) for a command on " os))))]
-
-    (apply shell/command (concat time-cmd native-image-cmd))))
+                              (remove nil?))]
+    (apply shell/command native-image-cmd)))
