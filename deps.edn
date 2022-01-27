@@ -125,8 +125,7 @@
            ;;
            :build {:deps {io.github.clojure/tools.build {:git/tag "v0.7.5" :git/sha "34727f7"}
                           io.github.slipset/deps-deploy {:sha "d1fac08888ec8beda0579d3071bb9f804a1d446c"}
-                          ;; TODO: switch back to io.github.camsaul after https://github.com/camsaul/whitespace-linter/pull/8 merged
-                          io.github.lread/whitespace-linter {:sha "8a231450eb63f349f8777c5ddfe09307bc0ab22e"}}
+                          com.camsaul/whitespace-linter {:mvn/version "2022.01.27.04.43"}}
                    :ns-default build}
 
            ;;
