@@ -271,9 +271,8 @@
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
-           ;; TODO: Clerk now has tests, they just aren't part of an official release yet, soon!
-           #_{:name "clerk"
-            :version "0.4.305"
+           {:name "clerk"
+            :version "0.5.346"
             :github-release {:repo "nextjournal/clerk"
                              :via :tag
                              :version-prefix "v"}
@@ -395,7 +394,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "zprint"
-            :version "1.2.0"
+            :version "1.2.1"
             :platforms [:clj :cljs]
             :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch

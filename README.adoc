@@ -54,7 +54,7 @@ Some projects using rewrite-clj v1
 * https://github.com/liquidz/antq[antq] {canary-tested} - Point out your outdated dependencies
 * https://github.com/babashka/babashka[babashka] {not-canary-tested} - Native, fast starting Clojure interpreter for scripting
 * https://github.com/borkdude/carve[carve] {canary-tested} - Carve out the essentials of your Clojure app
-* https://github.com/nextjournal/clerk[clerk] {not-canary-tested} - Local-First Notebooks for Clojure
+* https://github.com/nextjournal/clerk[clerk] {canary-tested} - Local-First Notebooks for Clojure
 * https://github.com/weavejester/cljfmt[cljfmt] {canary-tested} - A tool for formatting Clojure code
 * https://github.com/greglook/cljstyle[cljstyle] {canary-tested} - A tool for formatting Clojure code
 * https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] {canary-tested} - Language Server (LSP) for Clojure
