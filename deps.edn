@@ -56,7 +56,7 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.60.977"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.62.993"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}
@@ -68,7 +68,7 @@
                              :main-opts ["-m" "cognitect.test-runner"]}
 
            ;; figwheel for clojurescript testing during dev
-           :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.15-SNAPSHOT"}}
+           :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.16"}}
                       :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
                       :extra-paths ["target" "test"]
                       :main-opts ["-m" "figwheel.main" "-b" "fig" "-r"]}
@@ -89,7 +89,7 @@
                                  cli-matic/cli-matic {:mvn/version "0.4.3"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.8.0"}
+                               :extra-deps {metosin/malli {:mvn/version "0.8.1"}
                                             io.aviso/pretty {:mvn/version "1.1.1"}}
                                :ns-default lread.apply-import-vars}
 
@@ -132,7 +132,7 @@
            ;; Maintenance support
            ;;
            :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.4.0"}
-                                   org.slf4j/slf4j-simple {:mvn/version "1.7.35"} ;; to rid ourselves of logger warnings
+                                   org.slf4j/slf4j-simple {:mvn/version "1.7.36"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
                       :main-opts ["-m" "antq.core"
