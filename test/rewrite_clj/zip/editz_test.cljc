@@ -27,7 +27,7 @@
                          z/of-string
                          z/down
                          z/right
-                         (z/edit #(+ %1 %2 %3 %4) 33 23 44)
+                         (z/edit + 33 23 44)
                          z/root-string))))
 
 (deftest t-edit-uses-default-auto-resolver

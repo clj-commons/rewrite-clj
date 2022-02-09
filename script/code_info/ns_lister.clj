@@ -28,7 +28,7 @@
 (defn- cmd-find-all-vars[{:keys [lang] :as _opts}]
   (->> (nses lang)
        vars
-       (map #(symbol %))
+       (map symbol)
        sort
        (string/join " ")
        println))

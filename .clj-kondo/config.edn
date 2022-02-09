@@ -12,7 +12,8 @@
   rewrite-clj.zip.subedit/edit->> clojure.core/->>
   rewrite-clj.custom-zipper.switchable/defn-switchable clojure.core/defn}
  :linters
- {:unsorted-required-namespaces {:level :warning}
+ {:redundant-fn-wrapper {:level :warning} ;; experimental linter, let's give it a go
+  :unsorted-required-namespaces {:level :warning}
   :unresolved-var {:exclude [io.aviso.ansi]}
   :unused-namespace
   {:exclude [clojure.test.check]}

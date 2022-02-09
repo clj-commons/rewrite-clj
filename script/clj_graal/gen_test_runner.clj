@@ -75,7 +75,7 @@
 (defn- cmd-find-all-vars[_opts]
   (->> (nses)
        vars
-       (map #(symbol %))
+       (map symbol)
        sort
        (string/join " ")
        println))
