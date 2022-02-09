@@ -137,13 +137,14 @@
   (status/line :detail "%s container is running" (:name container))
   (let [url (str "http://localhost:" (:port container))]
     (loop []
-      (try
-        (curl/get url)
-        (println url "reached")
-        (catch Exception _e
-          (println "waiting on" url " - hit Ctrl-C to give up")
-          (Thread/sleep 4000)
-          (recur))))))
+      (if-not (try
+                (curl/get url)
+                url
+                (catch Exception _e
+                  (Thread/sleep 4000)))
+        (do (println "waiting on" url " - hit Ctrl-C to give up")
+            (recur))
+        (println "reached" url)))))
 
 (defn status-server-print [container]
   (status/line :detail (str (:name container) ": " (status-server container))))
