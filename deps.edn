@@ -10,7 +10,7 @@
            :1.9 {:override-deps {org.clojure/clojure {:mvn/version "1.9.0"}}}
            :1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
            ;; We also test against
-           :1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.0-beta1"}}}
+           :1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.0-rc1"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
@@ -56,7 +56,7 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.62.993"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.63.998"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}
@@ -89,7 +89,7 @@
                                  cli-matic/cli-matic {:mvn/version "0.4.3"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.8.1"}
+                               :extra-deps {metosin/malli {:mvn/version "0.8.3"}
                                             io.aviso/pretty {:mvn/version "1.1.1"}}
                                :ns-default lread.apply-import-vars}
 
@@ -104,8 +104,8 @@
                    :extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "0.1.4"}}}
 
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
-                      :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                   :sha "eb8f57aebd5b050603285a49d3e64a9878503fb3"}}}
+                      :extra-deps {lread/sci-test  {:git/url "https://github.com/lread/sci-test.git"
+                                                    :sha "414abb99e643f6591f88c38eb03c72b79e448b7e" }}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 
@@ -123,7 +123,7 @@
            ;;
            ;; Deployment
            ;;
-           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.7.5" :git/sha "34727f7"}
+           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.7.7" :git/sha "1474ad6"}
                           io.github.slipset/deps-deploy {:sha "d1fac08888ec8beda0579d3071bb9f804a1d446c"}
                           com.camsaul/whitespace-linter {:mvn/version "2022.01.27.04.43"}}
                    :ns-default build}
@@ -131,11 +131,12 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.4.0"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.5.0"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.36"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
                       :main-opts ["-m" "antq.core"
+                                  "--ignore-locals"
                                   "--exclude=lambdaisland/kaocha@1.0.829" ;; https://github.com/lambdaisland/kaocha/issues/208
                                   "--exclude=com.bhauman/figwheel-main@0.2.15" ;; deployment was botched, some components missing
                                   ]}}}

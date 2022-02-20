@@ -35,37 +35,47 @@
     (status/line :detail "Installed %s to local maven repo" canary-version)
     canary-version))
 
+
 (defn- get-current-version
   "Get current available version of lib via GitHub API.
 
    Note that github API does have rate limiting... so if running this a lot some calls will fail.
+   Set GITHUB_TOKEN env var to a GitHub personal access token to increase this limit.
+   The token needs no scopes.
 
    Could get from deps.edn RELEASE technique, but not all libs are on clojars.
    See: https://github.com/babashka/babashka/blob/master/examples/outdated.clj"
   [{:keys [github-release]}]
-  (case  (:via github-release)
-    ;; no official release
-    :sha
-    (-> (curl/get (format "https://api.github.com/repos/%s/git/refs/heads/master" (:repo github-release)))
-        :body
-        (json/parse-string true)
-        :object
-        :sha)
+  (let [token (System/getenv "GITHUB_TOKEN")
+        opts (if token
+               {:headers {"Authorization" (format "Bearer %s" token)}}
+               {})]
+    (case  (:via github-release)
+      ;; no official release
+      :sha
+      (-> (curl/get (format "https://api.github.com/repos/%s/git/refs/heads/master" (:repo github-release))
+                    opts)
+          :body
+          (json/parse-string true)
+          :object
+          :sha)
 
-    ;; tags can work better than release - sometimes libs have release 1.2 that refs tag 1.1
-    :tag
-    (-> (curl/get (format "https://api.github.com/repos/%s/tags" (:repo github-release)))
-        :body
-        (json/parse-string true)
-        first
-        :name)
+      ;; tags can work better than release - sometimes libs have release 1.2 that refs tag 1.1
+      :tag
+      (-> (curl/get (format "https://api.github.com/repos/%s/tags" (:repo github-release))
+                    opts)
+          :body
+          (json/parse-string true)
+          first
+          :name)
 
-    ;; else via release which works better than tags sometimes due to the way tags sort
-    (->  (curl/get (format "https://api.github.com/repos/%s/releases" (:repo github-release)))
-         :body
-         (json/parse-string true)
-         first
-         :tag_name)))
+      ;; else via release which works better than tags sometimes due to the way tags sort
+      (->  (curl/get (format "https://api.github.com/repos/%s/releases" (:repo github-release))
+                     opts)
+           :body
+           (json/parse-string true)
+           first
+           :tag_name))))
 
 (defn- fetch-lib-release [{:keys [target-root-dir name version github-release]}]
   (let [target (str (fs/file target-root-dir (format "%s-%s.zip" name version)))
@@ -257,7 +267,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "1.4.0"
+            :version "1.5.0"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -368,7 +378,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "refactor-nrepl"
-            :version "3.3.1"
+            :version "3.3.2"
             :platforms [:clj]
             :github-release {:repo "clojure-emacs/refactor-nrepl"
                              :via :tag
@@ -394,7 +404,8 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "zprint"
-            :version "1.2.1"
+            :version "1.2.2"
+            :note "planck cljs tests disabled for now: https://github.com/kkinnear/zprint/issues/222"
             :platforms [:clj :cljs]
             :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch
@@ -405,6 +416,8 @@
                             (status/line :detail "=> Deps Clojurescript run:")
                             (cli-deps-tree lib))
             :test-cmds ["lein with-profile expectations test"
+                        ;; temporarily disabled: https://github.com/kkinnear/zprint/issues/222
+                        #_
                         "clojure -M:cljs-runner"]}])
 
 (defn- header [text]
