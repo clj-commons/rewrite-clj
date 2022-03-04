@@ -15,7 +15,7 @@
   "This is the underlying zipper that rewrite-clj uses.
 
    It delegates to two different zipper implementations:
-   1. the code herein under defn-switchable bodies when the user has created a `:position-tracking` zipper
+   1. the code herein under defn-switchable bodies when the user has created a `:track-position?` zipper
    2. otherwise clojure.zip, with some small exceptions:
       - `edit` explicitly handles the delegation - I assume because defn-switchable could not handle the argument delegation
       - there are fns exclusive to the position trakcing zipper, `position`, `position-span`"

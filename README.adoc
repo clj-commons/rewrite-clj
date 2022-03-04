@@ -24,16 +24,13 @@ A library that reads and writes Clojure, ClojureScript and https://github.com/ed
 
 *Warning*: v1 Alpha Release
 
-* Migration from https://github.com/lread/rewrite-cljc-playground[rewrite-cljc-playground] complete.
-Rewrite-cljc-playground is where I first merged rewrite-clj v0 and rewrite-cljs.
-* We are automatically link:#used-in[testing against popular libraries].
-We patch them to use rewrite-clj v1 and then run their test suites.
-No major issues have been found.
-* Please review link:CHANGELOG.adoc[change log] for an overview of all v1 changes.
-* I am very conservative on making any further v0->v1 breaking changes, but am open to breaking changes to any of the new v1 work.
+Our first rewrite-clj v1 alpha release was in March of 2021. +
+Since then we have seen wide and successful adoption of rewrite-clj v1 with no show-stoppers. +
+I would drop the alpha status but have not yet seen the following features get a good shake yet in the wild:
 
-We'll move out of alpha after folks have had a chance to give rewrite-clj v1 alpha a good shake.
-Things look very solid at this point.
+1. zippers with `:track-position?` enabled
+1. zippers using `:auto-resolve` support
+1. paredit API
 
 See https://github.com/clj-commons/rewrite-clj/projects/1[project page for current priorities].
 

@@ -5,9 +5,8 @@
 == Supported Environments
 Rewrite-clj is verified on each push on macOS, Ubuntu and Windows via GitHub Actions.
 
-All scripts are written in Clojure and most invoked via https://github.com/borkdude/babashka[babashka].
+All scripts are written in Clojure and most invoked via https://github.com/borkdude/babashka[babashka] tasks.
 This gives us a cross platform scripting language that is familiar, fun and consistent.
-These docs will show babashka scripts invoked explicitly via babashka's `bb`; on macOS and linux feel free to leave out `bb`.
 
 We make use of planck for cljs bootstrap (aka cljs self-hosted) testing.
 Planck is currently not available for Windows.
