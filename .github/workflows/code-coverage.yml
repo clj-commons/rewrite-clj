@@ -25,7 +25,9 @@ jobs:
         java-version: '11'
 
     - name: Install babashka
-      run: curl -s https://raw.githubusercontent.com/borkdude/babashka/master/install | sudo bash
+      uses: turtlequeue/setup-babashka@v1.3.0
+      with:
+        babashka-version: 0.7.8
 
     - name: Install clojure
       run: curl -s https://download.clojure.org/install/linux-install-1.10.3.986.sh | sudo bash

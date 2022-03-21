@@ -33,8 +33,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y planck
 
-    - name: Install Babashka
-      run: curl -s https://raw.githubusercontent.com/borkdude/babashka/master/install | sudo bash
+    - name: Install babashka
+      uses: turtlequeue/setup-babashka@v1.3.0
+      with:
+        babashka-version: 0.7.8
 
     - name: Install Clojure
       run: curl -s https://download.clojure.org/install/linux-install-1.10.3.986.sh | sudo bash
