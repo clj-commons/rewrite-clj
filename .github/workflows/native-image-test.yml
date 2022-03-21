@@ -21,7 +21,7 @@ jobs:
     # Caches
     #
     - name: Clojure deps cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.m2/repository

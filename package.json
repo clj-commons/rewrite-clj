@@ -2,10 +2,10 @@
   "name": "rewrite-clj",
   "devDependencies": {
     "karma": "^6.3.17",
-    "karma-chrome-launcher": "^3.1.0",
+    "karma-chrome-launcher": "^3.1.1",
     "karma-cljs-test": "^0.1.0",
     "karma-junit-reporter": "^2.0.0",
     "karma-spec-reporter": "^0.0.33",
-    "shadow-cljs": "^2.17.6"
+    "shadow-cljs": "^2.17.8"
   }
 }

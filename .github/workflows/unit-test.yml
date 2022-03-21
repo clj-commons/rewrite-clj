@@ -26,7 +26,7 @@ jobs:
     # Caches
     #
     - name: Clojure deps cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.m2/repository
@@ -35,7 +35,7 @@ jobs:
         restore-keys: $${ runner.os }}-cljdeps-
 
     - name: Node modules cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ./node_modules
         key: $${ runner.os }}-node-${{ hashFiles('package-lock.json') }}

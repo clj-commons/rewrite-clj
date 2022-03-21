@@ -22,7 +22,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.03.04"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.03.09"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
@@ -56,7 +56,7 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.63.998"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.64.1010"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}
@@ -105,7 +105,7 @@
 
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                   :sha "ea4bddfb91ede7e0e70cb4c7207a9813186a933a" }}}
+                                                   :sha "929fb7d5ba937abe62b2085d193b5e3d43ce616e"}}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 
@@ -122,8 +122,8 @@
 
            ;;
            ;; Deployment
-           ;;
-           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.8.0" :git/sha "e3e3532"}
+           ;
+           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.8.1" :git/sha "7d40500"}
                           io.github.slipset/deps-deploy {:sha "d1fac08888ec8beda0579d3071bb9f804a1d446c"}
                           com.camsaul/whitespace-linter {:mvn/version "2022.01.27.04.43"}}
                    :ns-default build}
@@ -131,7 +131,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.5.1"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.6.0"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.36"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
