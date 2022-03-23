@@ -10,7 +10,7 @@ jobs:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
         graal-java: [ 11 ]
         test: [ test-native, test-native-sci ]
-        clojure-version: [ '1.10', '1.11' ]
+        clojure-version: [ '1.11' ]
 
     name: ${{ matrix.os }},jdk ${{ matrix.graal-java }},${{ matrix.test }},clj ${{ matrix.clojure-version }}
 
