@@ -27,7 +27,8 @@
                    (doall))]
     (with-meta
       (nforms/forms-node nodes)
-      (meta (first nodes)))))
+      (merge (meta (first nodes))
+             (select-keys (meta (last nodes)) [:end-row :end-col])))))
 
 ;; ## Specialized Parsers
 

@@ -58,7 +58,18 @@
       [2 4]  [2 5]  :token  "x"            'x
       [3 3]  [3 14] :list   "(println x)"  '(println x)
       [3 4]  [3 11] :token  "println"      'println
-      [3 12] [3 13] :token  "x"            'x)))
+      [3 12] [3 13] :token  "x"            'x))
+  ;; root node
+  (let [s (str
+           ;1234567890
+           "(def a 1)\n"
+           "(def b\n"
+           "  2)")
+        [start-pos end-pos] (-> (z/of-string s {:track-position? true})
+                                z/up
+                                z/position-span)]
+    (is (= [1 1] start-pos))
+    (is (= [3 5] end-pos))))
 
 (deftest namespaced-keywords
   (is (= ":dill" (-> ":dill" z/of-string z/root-string)))

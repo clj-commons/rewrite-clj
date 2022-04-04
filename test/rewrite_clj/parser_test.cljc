@@ -541,7 +541,18 @@
       [2 4]  [2 5]  :token  "x"            'x
       [3 3]  [3 14] :list   "(println x)"  '(println x)
       [3 4]  [3 11] :token  "println"      'println
-      [3 12] [3 13] :token  "x"            'x)))
+      [3 12] [3 13] :token  "x"            'x))
+  ;; root node
+  (let [s (str
+           ;1234567890
+           "(def a 1)\n"
+           "(def b\n"
+           "  2)")
+        n (p/parse-string-all s)
+        start-pos ((juxt :row :col) (meta n))
+        end-pos ((juxt :end-row :end-col) (meta n))]
+    (is (= [1 1] start-pos))
+    (is (= [3 5] end-pos))))
 
 
 (deftest t-os-specific-line-endings
