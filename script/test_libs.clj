@@ -283,6 +283,7 @@
             :test-cmds ["clojure -M:test"]}
            {:name "clerk"
             :version "0.5.346"
+            :platforms [:clj]
             :github-release {:repo "nextjournal/clerk"
                              :via :tag
                              :version-prefix "v"}
