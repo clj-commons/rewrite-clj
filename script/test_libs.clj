@@ -454,7 +454,7 @@
       (throw (ex-info (format "missing test-cmds for %s" name) {})))
     (status/line :head "%s: Running tests" name)
     (let [exit-codes (into [] (map-indexed (fn [ndx cmd]
-                                             (let [{:keys [exit]} (shcmd {:dir home-dir} cmd)]
+                                             (let [{:keys [exit]} (shcmd {:dir home-dir :continue true} cmd)]
                                                (if (zero? exit)
                                                  (status/line :detail "=> %s: TESTS %d of %d PASSED\n" name (inc ndx) (count test-cmds))
                                                  (status/line :warn "=> %s: TESTS %d of %d FAILED" name (inc ndx) (count test-cmds)))
