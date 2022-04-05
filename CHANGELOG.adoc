@@ -16,6 +16,7 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* fix `:end-row` `:end-col` metadata for root node https://github.com/clj-commons/rewrite-clj/issues/173[#173] - thanks @mainej!
 * docs:
 ** user guide correction, thanks @rgkirch!
 ** zip API docstrings now clearer about coercion https://github.com/clj-commons/rewrite-clj/issues/168[#168]
