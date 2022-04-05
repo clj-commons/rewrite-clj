@@ -9,7 +9,7 @@
            :1.8 {:override-deps {org.clojure/clojure {:mvn/version "1.8.0"}}}
            :1.9 {:override-deps {org.clojure/clojure {:mvn/version "1.9.0"}}}
            :1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
-           :1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.0"}}}
+           :1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
@@ -22,7 +22,7 @@
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
            :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.03.09"}}
-                       :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
+                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :eastwood {:extra-deps {jonase/eastwood {:mvn/version "1.2.3"}}
@@ -42,7 +42,7 @@
            :test-isolated {:extra-paths ["test-isolated"]}
 
            ;; document block testing
-           :test-doc-blocks {:replace-deps {org.clojure/clojure {:mvn/version "1.10.3"}
+           :test-doc-blocks {:replace-deps {org.clojure/clojure {:mvn/version "1.11.1"}
                                             com.github.lread/test-doc-blocks  {:mvn/version "1.0.166-alpha"}}
                              :replace-paths []
                              :ns-default lread.test-doc-blocks
@@ -51,7 +51,7 @@
                                                 "doc/design/namespaced-elements.adoc"
                                                 "src/rewrite_clj/node.cljc"]}}
 
-           :test-docs {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
+           :test-docs {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
@@ -68,7 +68,7 @@
 
            ;; figwheel for clojurescript testing during dev
            :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.16"}}
-                      :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
+                      :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                       :extra-paths ["target" "test"]
                       :main-opts ["-m" "figwheel.main" "-b" "fig" "-r"]}
 
@@ -83,11 +83,11 @@
            ;; General script deps
            ;;
            :script {:extra-paths ["script"]
-                    :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
+                    :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                     :extra-deps {org.clojure/tools.namespace {:mvn/version "1.2.0"}
-                                 cli-matic/cli-matic {:mvn/version "0.4.3"}}}
+                                 cli-matic/cli-matic {:mvn/version "0.5.3"}}}
 
-           :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
+           :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                                :extra-deps {metosin/malli {:mvn/version "0.8.4"}
                                             io.aviso/pretty {:mvn/version "1.1.1"}}
                                :ns-default lread.apply-import-vars}
@@ -99,7 +99,7 @@
            ;; graal:sci-test - interpret tests via sci over natively compiled rewrite-clj
            ;; graal:native-test - natively compile src and tests and run
 
-           :graal {:override-deps {org.clojure/clojure {:mvn/version "1.11.0"}}
+           :graal {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                    :extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "0.1.4"}}}
 
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
@@ -133,7 +133,7 @@
            :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.6.0"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.36"} ;; to rid ourselves of logger warnings
                                    }
-                      :override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}
+                      :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                       :main-opts ["-m" "antq.core"
                                   "--ignore-locals"
                                   "--exclude=lambdaisland/kaocha@1.0.829" ;; https://github.com/lambdaisland/kaocha/issues/208
