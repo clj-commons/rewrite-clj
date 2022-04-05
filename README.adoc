@@ -112,6 +112,7 @@ image:eraserhd.png[eraserhd,role="left",width=310,link="https://github.com/erase
 image:ericdallo.png[ericdallo,role="left",width=310,link="https://github.com/ericdallo"]
 image:green-coder.png[green-coder,role="left",width=310,link="https://github.com/green-coder"]
 image:jespera.png[jespera,role="left",width=310,link="https://github.com/jespera"]
+image:mainej.png[mainej,role="left",width=310,link="https://github.com/mainej"]
 image:martinklepsch.png[martinklepsch,role="left",width=310,link="https://github.com/martinklepsch"]
 image:mhuebert.png[mhuebert,role="left",width=310,link="https://github.com/mhuebert"]
 image:rgkirch.png[rgkirch,role="left",width=310,link="https://github.com/rgkirch"]

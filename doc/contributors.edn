@@ -41,6 +41,8 @@
   {:github-id "ericdallo"
    :contributions [:encouragement]}
   {:github-id "rgkirch"
+   :contributions [:code-rewrite-clj-v1]}
+  {:github-id "mainej"
    :contributions [:code-rewrite-clj-v1]}]
  :founders
  [{:github-id "xsc"
