@@ -1,0 +1,7 @@
+{:source-paths ["src" "test"]
+ :dependencies [[org.clojure/test.check "1.1.1"]]
+ :builds {:test {:target :node-test
+                 :output-to "target/shadow-cljs/node-test.js"
+                 :compiler-options {:warnings
+                                    ;; clj-kondo handles deprecation warnings for us
+                                    {:fn-deprecated false}}}}}
