@@ -23,11 +23,11 @@
   "Parse all forms from the given reader."
   [#?(:cljs ^not-native reader :default reader)]
   (let [nodes (->> (repeatedly #(parse reader))
-                   (take-while identity)
-                   (doall))]
-    (with-meta
-      (nforms/forms-node nodes)
-      (meta (first nodes)))))
+                   (take-while identity))
+        position-meta (merge (meta (first nodes))
+                             (select-keys (meta (last nodes))
+                                          [:end-row :end-col]))]
+    (with-meta (nforms/forms-node nodes) position-meta)))
 
 ;; ## Specialized Parsers
 
