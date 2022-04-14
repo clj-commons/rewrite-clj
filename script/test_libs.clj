@@ -267,7 +267,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "1.6.0"
+            :version "1.6.1"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -371,7 +371,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "rewrite-edn"
-            :version "0.1.0"
+            :version "0.2.0"
             :platforms [:clj]
             :github-release {:repo "borkdude/rewrite-edn"
                              :version-prefix "v"
@@ -406,8 +406,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "zprint"
-            :version "1.2.2"
-            :note "planck cljs tests disabled for now: https://github.com/kkinnear/zprint/issues/222"
+            :version "1.2.3"
             :platforms [:clj :cljs]
             :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch
@@ -418,8 +417,6 @@
                             (status/line :detail "=> Deps Clojurescript run:")
                             (cli-deps-tree lib))
             :test-cmds ["lein with-profile expectations test"
-                        ;; temporarily disabled: https://github.com/kkinnear/zprint/issues/222
-                        #_
                         "clojure -M:cljs-runner"]}])
 
 (defn- header [text]
