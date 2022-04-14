@@ -239,12 +239,12 @@
              ch)))))
 
 #?(:clj
-   (defn ^Closeable newline-normalizing-reader
+   (defn newline-normalizing-reader
      "Normalizes the following line endings to LF (line feed - 0x0A):
       - LF (remains LF)
       - CRLF (carriage return 0x0D line feed 0x0A)
       - CRFF (carriage return 0x0D form feed 0x0C)"
-     [rdr]
+     ^Closeable [rdr]
      (NewlineNormalizingReader. (r/to-rdr rdr) nil nil)))
 
 #?(:clj
