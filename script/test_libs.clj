@@ -407,6 +407,7 @@
             :test-cmds ["lein test"]}
            {:name "zprint"
             :version "1.2.3"
+            :note "planck cljs tests disabled for now: https://github.com/planck-repl/planck/issues/1088"
             :platforms [:clj :cljs]
             :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch
@@ -417,7 +418,8 @@
                             (status/line :detail "=> Deps Clojurescript run:")
                             (cli-deps-tree lib))
             :test-cmds ["lein with-profile expectations test"
-                        "clojure -M:cljs-runner"]}])
+                        ;; disable zprint cljs tests for now, see https://github.com/planck-repl/planck/issues/1088
+                        #_"clojure -M:cljs-runner"]}])
 
 (defn- header [text]
   (let [dashes (apply str (repeat 80 "-"))]
