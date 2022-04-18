@@ -14,6 +14,7 @@
   [[forms-node]]
   [[integer-node]]
   [[keyword-node]]
+  [[list-node]]
   [[map-node]]
   [[map-qualifier-node]]
   [[meta-node]]
