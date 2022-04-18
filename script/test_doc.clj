@@ -18,10 +18,13 @@
 
 (defn run-cljs-doc-tests []
   (status/line :head "Running code block tests under ClojureScript")
-  (shell/command "clojure" "-M:test-common:test-docs:cljs:cljs-test"
-                 "--compile-opts" "{:warnings {:fn-deprecated false :single-segment-namespace false}}"
-                 "--dir" "target/test-doc-blocks/test"
-                 "--out" "target/cljsbuild/doc-tests"))
+  (let [compile-opts {:warnings {:fn-deprecated false :single-segment-namespace false}}
+        opts-fname "target/cljsbuild/test/doc-tests-opts.edn"]
+    (spit opts-fname compile-opts)
+    (shell/command "clojure" "-M:test-common:test-docs:cljs:cljs-test"
+                   "--compile-opts" opts-fname
+                   "--dir" "target/test-doc-blocks/test"
+                   "--out" "target/cljsbuild/doc-tests")))
 
 (defn -main [& args]
   (when (main/doc-arg-opt args)
