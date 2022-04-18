@@ -4,16 +4,24 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.sys.os }}-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        sys:
+          # override the default of pwsh for windows
+          - { os: windows, shell: powershell }
+          - { os: ubuntu,  shell: bash  }
+          - { os: macos,   shell: bash  }
         graal-java: [ 11 ]
         test: [ test-native, test-native-sci ]
         clojure-version: [ '1.11' ]
 
-    name: ${{ matrix.os }},jdk ${{ matrix.graal-java }},${{ matrix.test }},clj ${{ matrix.clojure-version }}
+    defaults:
+      run:
+        shell: ${{ matrix.sys.shell }}
+
+    name: ${{ matrix.sys.os }},jdk ${{ matrix.graal-java }},${{ matrix.test }},clj ${{ matrix.clojure-version }}
 
     steps:
     - uses: actions/checkout@v3
