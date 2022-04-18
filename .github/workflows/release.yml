@@ -35,13 +35,12 @@ jobs:
         distribution: 'temurin'
         java-version: '11'
 
-    - name: Install babashka
-      uses: turtlequeue/setup-babashka@v1.3.0
+    - name: Install Clojure tools
+      uses: DeLaGuardo/setup-clojure@5.0
       with:
-        babashka-version: 0.7.8
-
-    - name: Install Clojure
-      run: curl -s https://download.clojure.org/install/linux-install-1.10.3.986.sh | sudo bash
+        cli: 1.11.1.1105
+        bb: 'latest'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Tools Versions
       run: |
