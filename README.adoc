@@ -115,6 +115,7 @@ image:jespera.png[jespera,role="left",width=310,link="https://github.com/jespera
 image:mainej.png[mainej,role="left",width=310,link="https://github.com/mainej"]
 image:martinklepsch.png[martinklepsch,role="left",width=310,link="https://github.com/martinklepsch"]
 image:mhuebert.png[mhuebert,role="left",width=310,link="https://github.com/mhuebert"]
+image:rfhayashi.png[rfhayashi,role="left",width=310,link="https://github.com/rfhayashi"]
 image:rgkirch.png[rgkirch,role="left",width=310,link="https://github.com/rgkirch"]
 image:stathissideris.png[stathissideris,role="left",width=310,link="https://github.com/stathissideris"]
 image:swannodette.png[swannodette,role="left",width=310,link="https://github.com/swannodette"]
