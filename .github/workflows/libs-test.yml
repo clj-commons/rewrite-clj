@@ -12,6 +12,16 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Clojure deps cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.m2/repository
+          ~/.gitlibs
+        # base cache on libs_test.clj script for now... lib deps are embedded in it
+        key: ${{ runner.os }}-clj-libs-deps-${{ hashFiles('script/test_libs.clj') }}
+        restore-keys: ${{ runner.os }}-clj-libs-deps-
+
     - name: Install Clojure tools
       uses: DeLaGuardo/setup-clojure@5.0
       with:
