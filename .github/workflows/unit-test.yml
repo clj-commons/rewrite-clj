@@ -32,8 +32,8 @@ jobs:
         path: |
           ~/.m2/repository
           ~/.gitlibs
-        key: $${ runner.os }}-cljdeps-${{ hashFiles('deps.edn') }}
-        restore-keys: $${ runner.os }}-cljdeps-
+        key: ${{ runner.os }}-cljdeps-${{ hashFiles('deps.edn') }}
+        restore-keys: ${{ runner.os }}-cljdeps-
 
     - name: Node modules cache
       uses: actions/cache@v3

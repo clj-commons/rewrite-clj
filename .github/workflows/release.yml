@@ -26,8 +26,8 @@ jobs:
         path: |
           ~/.m2/repository
           ~/.gitlibs
-        key: $${ runner.os }}-cljdeps-release-${{ hashFiles('deps.edn') }}
-        restore-keys: $${ runner.os }}-cljdeps-release-
+        key: ${{ runner.os }}-cljdeps-release-${{ hashFiles('deps.edn') }}
+        restore-keys: ${{ runner.os }}-cljdeps-release-
 
     - name: Setup Java
       uses: actions/setup-java@v3
