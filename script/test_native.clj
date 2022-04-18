@@ -2,10 +2,10 @@
 
 (ns test-native
   (:require [clojure.java.io :as io]
-            [helper.env :as env]
             [helper.fs :as fs]
             [helper.graal :as graal]
             [helper.main :as main]
+            [helper.os :as os]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -37,7 +37,7 @@ Options:
           native-image-xmx "6g"
           target-path "target"
           target-exe "rewrite-clj-test"
-          full-target-exe (str target-path "/" target-exe (when (= :win (env/get-os)) ".exe"))]
+          full-target-exe (str target-path "/" target-exe (when (= :win (os/get-os)) ".exe"))]
       (status/line :head "Creating native image for test")
       (status/line :detail "java -version")
       (shell/command "java -version")

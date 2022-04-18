@@ -1,8 +1,8 @@
 (ns helper.graal
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
-            [helper.env :as env]
             [helper.fs :as fs]
+            [helper.os :as os]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -12,10 +12,10 @@
       (fs/at-path (str (io/file (System/getenv "GRAALVM_HOME") "bin")) prog-name)))
 
 (defn find-native-image-prog []
-  (find-graal-prog (if (= :win (env/get-os)) "native-image.cmd" "native-image")))
+  (find-graal-prog (if (= :win (os/get-os)) "native-image.cmd" "native-image")))
 
 (defn find-gu-prog []
-  (find-graal-prog (if (= :win (env/get-os)) "gu.cmd" "gu")))
+  (find-graal-prog (if (= :win (os/get-os)) "gu.cmd" "gu")))
 
 (defn- assert-min-native-image-version [native-image-exe]
   (let [min-major 21

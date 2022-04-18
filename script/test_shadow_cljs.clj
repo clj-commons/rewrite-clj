@@ -1,8 +1,8 @@
 #!/usr/bin/env bb
 
 (ns test-shadow-cljs
-  (:require [helper.env :as env]
-            [helper.main :as main]
+  (:require [helper.main :as main]
+            [helper.os :as os]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -12,7 +12,7 @@
 (defn -main [& args]
   (when (main/doc-arg-opt args)
     (status/line :head "testing ClojureScript source with Shadow CLJS, node, optimizations: none")
-    (shell/command (if (= :win (env/get-os)) "npx.cmd" "npx")
+    (shell/command (if (= :win (os/get-os)) "npx.cmd" "npx")
                    "shadow-cljs" "compile" "test")
     (shell/command "node" compiled-tests))
   nil)

@@ -1,9 +1,9 @@
 #!/usr/bin/env bb
 
 (ns ci-unit-tests
-  (:require [helper.env :as env]
-            [helper.fs :as fs]
+  (:require [helper.fs :as fs]
             [helper.main :as main]
+            [helper.os :as os]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -33,7 +33,7 @@
   (shell/command "bb test-shadow-cljs"))
 
 (defn cljs-bootstrap-tests []
-  (if (some #{(env/get-os)} '(:mac :unix))
+  (if (some #{(os/get-os)} '(:mac :unix))
     (shell/command "bb test-cljs --env planck --optimizations none")
     (status/line :warn "skipping planck tests, they can only be run on linux and macOS")) )
 
