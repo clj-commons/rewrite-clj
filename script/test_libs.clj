@@ -509,7 +509,7 @@
                        0 1))))))
 
 (def args-usage "Valid args:
-  list
+  list [--format=json]
   run [<lib-name>...]
   outdated [<lib-name>...]
   --help
@@ -528,7 +528,9 @@ Specifying no lib-names selects all libraries.")
   (when-let [opts (main/doc-arg-opt args-usage args)]
     (cond
       (get opts "list")
-      (status/line :detail (str "available libs: " (string/join " " (map :name libs))))
+      (if (= "json" (get opts "--format"))
+        (status/line :detail (->> libs (map :name) json/generate-string))
+        (status/line :detail (str "available libs: " (string/join " " (map :name libs)))))
 
       :else
       (let [lib-names (get opts "<lib-name>")

@@ -3,8 +3,32 @@ name: Libs Test
 on: [push, pull_request]
 
 jobs:
-  libs-test:
+  enumerate-libs:
     runs-on: ubuntu-latest
+
+    outputs:
+      libs: ${{ steps.set-libs.outputs.libs }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install babashka
+      uses: turtlequeue/setup-babashka@v1.3.0
+      with:
+        babashka-version: 0.8.1
+
+    - id: set-libs
+      name: Set libs var for matrix
+      ## call bb script directly instead of as task to avoid task status output
+      run: echo "::set-output name=libs::$(bb script/test_libs.clj list --format=json)"
+
+  libs-test:
+    needs: enumerate-libs
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        lib: ${{fromJSON(needs.enumerate-libs.outputs.libs)}}
 
     steps:
     - uses: actions/checkout@v3
@@ -36,7 +60,7 @@ jobs:
     - name: Install babashka
       uses: turtlequeue/setup-babashka@v1.3.0
       with:
-        babashka-version: 0.7.8
+        babashka-version: 0.8.1
 
     - name: Install Clojure
       run: curl -s https://download.clojure.org/install/linux-install-1.10.3.986.sh | sudo bash
@@ -55,4 +79,4 @@ jobs:
         planck --version
 
     - name: Run Libs Tests
-      run: bb test-libs run
+      run: bb test-libs run $${ matrix.lib }
