@@ -4,24 +4,16 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ${{ matrix.sys.os }}-latest
+    runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
-        sys:
-          # override the default of pwsh for windows
-          - { os: windows, shell: powershell }
-          - { os: ubuntu,  shell: bash  }
-          - { os: macos,   shell: bash  }
+        os: [ windows, ubuntu, macos ]
         graal-java: [ 11 ]
         test: [ test-native, test-native-sci ]
         clojure-version: [ '1.11' ]
 
-    defaults:
-      run:
-        shell: ${{ matrix.sys.shell }}
-
-    name: ${{ matrix.sys.os }},jdk ${{ matrix.graal-java }},${{ matrix.test }},clj ${{ matrix.clojure-version }}
+    name: ${{ matrix.os }},jdk ${{ matrix.graal-java }},${{ matrix.test }},clj ${{ matrix.clojure-version }}
 
     steps:
     - uses: actions/checkout@v3
@@ -50,14 +42,31 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
     #
-    # Install Clojure, Babashka
+    # Install Babashka
     #
-    - name: Install Clojure tools
+    - name: Install Babashka
+      uses: DeLaGuardo/setup-clojure@5.0
+      with:
+        bb: 'latest'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    #
+    # Install Clojure
+    #
+    - name: Install clojure (windows)
+      # On windows, deps.clj's deps.exe is used in place of clojure to avoid complexities of official clojure install
+      run: |
+       PowerShell -Command "iwr -useb https://raw.githubusercontent.com/borkdude/deps.clj/master/install.ps1 | iex"
+       Rename-Item $HOME\deps.clj\deps.exe clojure.exe
+       echo "$HOME\deps.clj" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      if: matrix.os == 'windows'
+
+    - name: Install Clojure (macos, linux)
       uses: DeLaGuardo/setup-clojure@5.0
       with:
         cli: 1.11.1.1105
-        bb: 'latest'
         github-token: ${{ secrets.GITHUB_TOKEN }}
+      if: matrix.os != 'windows'
 
     #
     # Summarize installs
