@@ -544,7 +544,7 @@ Specifying no lib-names selects all libraries.")
                                      lib-names))]
         (cond
           (not (seq requested-libs))
-          (status/die 0 "no specified lib-names found")
+          (status/die 1 "no specified lib-names found")
 
           (get opts "outdated")
           (report-outdated requested-libs)
