@@ -21,7 +21,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.04.08"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.04.25"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
@@ -55,7 +55,7 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.65.1029"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.66.1034"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}

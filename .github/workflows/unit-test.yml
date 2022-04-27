@@ -71,10 +71,9 @@ jobs:
     # Install Babashka
     #
     - name: Install Babashka
-      uses: DeLaGuardo/setup-clojure@5.0
+      uses: DeLaGuardo/setup-clojure@5.1
       with:
         bb: 'latest'
-        github-token: ${{ secrets.GITHUB_TOKEN }}
 
     #
     # Install Clojure
@@ -88,10 +87,9 @@ jobs:
       if: matrix.os == 'windows'
 
     - name: Install Clojure (macos, linux)
-      uses: DeLaGuardo/setup-clojure@5.0
+      uses: DeLaGuardo/setup-clojure@5.1
       with:
-        cli: 1.11.1.1105
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        cli: 'latest'
       if: matrix.os != 'windows'
 
     #
