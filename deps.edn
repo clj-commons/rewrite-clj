@@ -67,7 +67,7 @@
                              :main-opts ["-m" "cognitect.test-runner"]}
 
            ;; figwheel for clojurescript testing during dev
-           :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.16"}}
+           :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.17"}}
                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                       :extra-paths ["target" "test"]
                       :main-opts ["-m" "figwheel.main" "-b" "fig" "-r"]}
@@ -104,7 +104,7 @@
 
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                   :sha "c2adbc30516e4e50099a86ae693693237f2ea674"}}}
+                                                   :sha "b560518e7c36a063347d0c660b819a871f2711c3"}}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 
