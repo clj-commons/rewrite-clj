@@ -14,7 +14,7 @@
            ;;
            ;; ClojureScript version we test with (and support)
            ;;
-           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.4"}}}
+           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.51"}}}
 
            ;;
            ;; Linting
@@ -63,7 +63,7 @@
            ;; cognitect test-runner for testing clojure < v1.9
            ;; (we prefer kaocha but it requires a min Clojure version of 1.9)
            :clj-test-runner {:extra-deps {io.github.cognitect-labs/test-runner
-                                          {:git/tag "v0.5.0" :git/sha "b3fd0d2"}}
+                                          {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
                              :main-opts ["-m" "cognitect.test-runner"]}
 
            ;; figwheel for clojurescript testing during dev
@@ -84,7 +84,7 @@
            ;;
            :script {:extra-paths ["script"]
                     :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
-                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.2.0"}
+                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.3.0"}
                                  cli-matic/cli-matic {:mvn/version "0.5.3"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
@@ -122,7 +122,7 @@
            ;;
            ;; Deployment
            ;
-           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.8.1" :git/sha "7d40500"}
+           :build {:deps {io.github.clojure/tools.build {:git/tag "v0.8.2" :git/sha "ba1a2bf"}
                           io.github.slipset/deps-deploy {:sha "d1fac08888ec8beda0579d3071bb9f804a1d446c"}
                           com.camsaul/whitespace-linter {:mvn/version "2022.01.27.04.43"}}
                    :ns-default build}
