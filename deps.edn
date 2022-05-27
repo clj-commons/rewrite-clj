@@ -14,7 +14,7 @@
            ;;
            ;; ClojureScript version we test with (and support)
            ;;
-           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.51"}}}
+           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.54"}}}
 
            ;;
            ;; Linting
@@ -67,7 +67,7 @@
                              :main-opts ["-m" "cognitect.test-runner"]}
 
            ;; figwheel for clojurescript testing during dev
-           :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.17"}}
+           :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.18"}}
                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                       :extra-paths ["target" "test"]
                       :main-opts ["-m" "figwheel.main" "-b" "fig" "-r"]}
@@ -123,14 +123,14 @@
            ;; Deployment
            ;
            :build {:deps {io.github.clojure/tools.build {:git/tag "v0.8.2" :git/sha "ba1a2bf"}
-                          io.github.slipset/deps-deploy {:sha "d1fac08888ec8beda0579d3071bb9f804a1d446c"}
+                          slipset/deps-deploy {:mvn/version "0.2.0"}
                           com.camsaul/whitespace-linter {:mvn/version "2022.01.27.04.43"}}
                    :ns-default build}
 
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.6.1"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.6.774"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.36"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
