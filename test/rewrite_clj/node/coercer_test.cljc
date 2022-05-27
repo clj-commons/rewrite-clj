@@ -48,6 +48,7 @@
       "\n"                   :multi-line :string
       "\n\n"                 :multi-line :string
       ","                    :token      :string
+      "inner\"quote"         :token      :string
 
       ;; seqs
       []                     :vector     :seq

@@ -92,10 +92,11 @@
 
 (defn- split-to-lines
   "Slightly different than string/split-lines in that:
+   - escape inline double quotes (to emulate the clojure reader)
    - includes all lines even if empty
    - behaves the same on clj and cljs"
   [s]
-  (loop [s s
+  (loop [s (string/escape s {\" "\\\""})
          lines []]
     (if-let [m (first (re-find #"(\r\n|\r|\n)" s))]
       (let [eol-ndx (string/index-of s m)]

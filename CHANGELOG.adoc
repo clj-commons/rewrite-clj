@@ -16,8 +16,10 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* now properly escaping inline double quotes for coerced strings https://github.com/clj-commons/rewrite-clj/issues/176[#176] - thanks to @ivarref for raising the issue!
 * docs:
-** docstring fix, was missing list-node from toc, thanks @rfhayashi!
+** docstring fix, was missing `list-node` from toc, thanks @rfhayashi!
+
 
 === v1.0.767-alpha
 
