@@ -13,46 +13,96 @@
   {:github-id "PEZ"
    :contributions [:code-rewrite-cljs :encouragement]}
   {:github-id "eraserhd"
-   :contributions [:code-rewrite-clj-v0]}
+   :contributions [:code-rewrite-clj-v0 :doc :design :issue]}
   {:github-id "arrdem"
    :contributions [:code-rewrite-clj-v0]}
   {:github-id "stathissideris"
    :contributions [:code-rewrite-clj-v0]}
   {:github-id "plexus"
-   :contributions [:code-rewrite-clj-v0 :education]}
+   :contributions [:code-rewrite-clj-v0 :education :issue]}
   {:github-id "jespera"
-   :contributions [:code-rewrite-clj-v0]}
+   :contributions [:code-rewrite-clj-v0 :issue]}
   {:github-id "brian-dawn"
    :contributions [:code-rewrite-clj-v0]}
   {:github-id "bbatsov"
-   :contributions [:code-rewrite-clj-v0]}
+   :contributions [:doc :issue]}
   {:github-id "AndreaCrotti"
-   :contributions [:code-rewrite-clj-v0]}
+   :contributions [:doc]}
   {:github-id "mhuebert"
    :contributions [:code-rewrite-cljs]}
   {:github-id "kkinnear"
-   :contributions [:code-rewrite-cljs :encouragement]}
+   :contributions [:code-rewrite-cljs :encouragement :issue]}
   {:github-id "anmonteiro"
    :contributions [:code-rewrite-cljs]}
   {:github-id "green-coder"
    :contributions [:code-rewrite-clj-v1]}
   {:github-id "vemv"
-   :contributions [:code-rewrite-clj-v1 :encouragement :education]}
+   :contributions [:code-rewrite-clj-v1 :encouragement :education :issue]}
   {:github-id "ericdallo"
-   :contributions [:encouragement]}
+   :contributions [:encouragement :issue]}
   {:github-id "rgkirch"
-   :contributions [:code-rewrite-clj-v1]}
+   :contributions [:doc]}
   {:github-id "mainej"
-   :contributions [:code-rewrite-clj-v1]}
+   :contributions [:code-rewrite-clj-v1 :design :issue]}
   {:github-id "rfhayashi"
-   :contributions [:code-rewrite-clj-v1]}]
+   :contributions [:doc]}
+  {:github-id "FiV0"
+   :contributions [:issue :doc]}
+  {:github-id "mjayprateek"
+   :contributions [:issue]}
+  {:github-id "guoyongxin"
+   :contributions [:issue]}
+  {:github-id "drorbemet"
+   :contributions [:issue]}
+  {:github-id "theronic"
+   :contributions [:issue]}
+  {:github-id "doby162"
+   :contributions [:issue]}
+  {:github-id "awb99"
+   :contributions [:issue]}
+  {:github-id "snoe"
+   :contributions [:issue]}
+  {:github-id "fazzone"
+   :contributions [:issue]}
+  {:github-id "immoh"
+   :contributions [:issue]}
+  {:github-id "matanster"
+   :contributions [:issue]}
+  {:github-id "SevereOverfl0w"
+   :contributions [:issue]}
+  {:github-id "mynomoto"
+   :contributions [:issue]}
+  {:github-id "weavejester"
+   :contributions [:issue]}
+  {:github-id "mikekap"
+   :contributions [:issue]}
+  {:github-id "shmish111"
+   :contributions [:issue]}
+  {:github-id "expez"
+   :contributions [:issue]}
+  {:github-id "RickMoynihan"
+   :contributions [:issue]}
+  {:github-id "zcaudate"
+   :contributions [:issue]}
+  {:github-id "luxbock"
+   :contributions [:issue]}
+  {:github-id "msgodf"
+   :contributions [:issue]}
+  {:github-id "shaunlebron"
+   :contributions [:issue]}
+  {:github-id "shaunxcode"
+   :contributions [:issue]}
+  {:github-id "optevo"
+   :contributions [:issue]}
+  {:github-id "ivarref"
+   :contributions [:issue]}]
  :founders
  [{:github-id "xsc"
-   :contributions [:original-author :code-rewrite-clj-v0]}
+   :contributions [:original-author :doc :design :issue :review :support :code-rewrite-clj-v0]}
   {:github-id "rundis"
-   :contributions [:original-author :code-rewrite-cljs]}]
+   :contributions [:original-author :doc :design :issue :review :support :code-rewrite-cljs]}]
  :maintainers
  [{:github-id "borkdude"
-   :contributions [:code-rewrite-clj-v1 :encouragement :education]}
+   :contributions [:code-rewrite-clj-v1 :doc :design :review :issue :support :encouragement :education]}
   {:github-id "lread"
-   :contributions [:code-rewrite-clj-v1]}]}
+   :contributions [:code-rewrite-clj-v1 :doc :design :review :issue :support]}]}

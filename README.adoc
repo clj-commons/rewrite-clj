@@ -1,4 +1,6 @@
 :notitle:
+// num-contributors is updated automatically by doc-readme-update bb task
+:num-contributors: 52
 :figure-caption!:
 :imagesdir: ./doc
 :project-src-coords: clj-commons/rewrite-clj
@@ -17,6 +19,7 @@ https://cljdoc.org/d/{project-mvn-coords}/CURRENT[image:https://cljdoc.org/badge
 https://codecov.io/gh/{project-src-coords}[image:https://codecov.io/gh/{project-src-coords}/branch/main/graph/badge.svg[Code Coverage]]
 https://clojurians.slack.com/messages/CHB5Q2XUJ[image:https://img.shields.io/badge/slack-join_chat-brightgreen.svg[Join chat]]
 https://clojars.org/rewrite-clj[image:https://img.shields.io/clojars/v/rewrite-clj.svg[Clojars project]]
+link:#contributors[image:https://img.shields.io/badge/all_contributors-{num-contributors}-blueviolet.svg?style=flat[Contributors]]
 
 A library that reads and writes Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] from Clojure and ClojureScript in a whitespace and comment preserving way.
 
@@ -28,9 +31,9 @@ Our first rewrite-clj v1 alpha release was in March of 2021. +
 Since then we have seen wide and successful adoption of rewrite-clj v1 with no show-stoppers. +
 I would drop the alpha status but have not yet seen the following features get a good shake yet in the wild:
 
-1. zippers with `:track-position?` enabled
-1. zippers using `:auto-resolve` support
-1. paredit API
+. zippers with `:track-position?` enabled
+. zippers using `:auto-resolve` support
+. paredit API
 
 See https://github.com/clj-commons/rewrite-clj/projects/1[project page for current priorities].
 
@@ -88,7 +91,10 @@ Rewrite-clj versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
 * `test-qualifier` is absent for stable releases.
 Can be `alpha`, `beta`, `rc1`, etc.
 
+[[contributors]]
 == People
+
+A big thank you to all the people who have contributed to rewrite-clj!
 
 === Contributors
 // Contributors updated by script, do not edit
@@ -96,29 +102,54 @@ Can be `alpha`, `beta`, `rc1`, etc.
 :imagesdir: ./doc/generated/contributors
 [.float-group]
 --
-image:slipset.png[slipset,role="left",width=310,link="https://github.com/slipset"]
-image:sogaiu.png[sogaiu,role="left",width=310,link="https://github.com/sogaiu"]
-image:vemv.png[vemv,role="left",width=310,link="https://github.com/vemv"]
-image:danielcompton.png[danielcompton,role="left",width=310,link="https://github.com/danielcompton"]
-image:kkinnear.png[kkinnear,role="left",width=310,link="https://github.com/kkinnear"]
-image:PEZ.png[PEZ,role="left",width=310,link="https://github.com/PEZ"]
-image:plexus.png[plexus,role="left",width=310,link="https://github.com/plexus"]
-image:AndreaCrotti.png[AndreaCrotti,role="left",width=310,link="https://github.com/AndreaCrotti"]
-image:anmonteiro.png[anmonteiro,role="left",width=310,link="https://github.com/anmonteiro"]
-image:arrdem.png[arrdem,role="left",width=310,link="https://github.com/arrdem"]
-image:bbatsov.png[bbatsov,role="left",width=310,link="https://github.com/bbatsov"]
-image:brian-dawn.png[brian-dawn,role="left",width=310,link="https://github.com/brian-dawn"]
-image:eraserhd.png[eraserhd,role="left",width=310,link="https://github.com/eraserhd"]
-image:ericdallo.png[ericdallo,role="left",width=310,link="https://github.com/ericdallo"]
-image:green-coder.png[green-coder,role="left",width=310,link="https://github.com/green-coder"]
-image:jespera.png[jespera,role="left",width=310,link="https://github.com/jespera"]
-image:mainej.png[mainej,role="left",width=310,link="https://github.com/mainej"]
-image:martinklepsch.png[martinklepsch,role="left",width=310,link="https://github.com/martinklepsch"]
-image:mhuebert.png[mhuebert,role="left",width=310,link="https://github.com/mhuebert"]
-image:rfhayashi.png[rfhayashi,role="left",width=310,link="https://github.com/rfhayashi"]
-image:rgkirch.png[rgkirch,role="left",width=310,link="https://github.com/rgkirch"]
-image:stathissideris.png[stathissideris,role="left",width=310,link="https://github.com/stathissideris"]
-image:swannodette.png[swannodette,role="left",width=310,link="https://github.com/swannodette"]
+image:eraserhd.png[eraserhd,role="left",width=273,link="https://github.com/eraserhd"]
+image:vemv.png[vemv,role="left",width=273,link="https://github.com/vemv"]
+image:kkinnear.png[kkinnear,role="left",width=273,link="https://github.com/kkinnear"]
+image:mainej.png[mainej,role="left",width=273,link="https://github.com/mainej"]
+image:plexus.png[plexus,role="left",width=273,link="https://github.com/plexus"]
+image:slipset.png[slipset,role="left",width=273,link="https://github.com/slipset"]
+image:sogaiu.png[sogaiu,role="left",width=273,link="https://github.com/sogaiu"]
+image:bbatsov.png[bbatsov,role="left",width=273,link="https://github.com/bbatsov"]
+image:danielcompton.png[danielcompton,role="left",width=273,link="https://github.com/danielcompton"]
+image:ericdallo.png[ericdallo,role="left",width=273,link="https://github.com/ericdallo"]
+image:FiV0.png[FiV0,role="left",width=273,link="https://github.com/FiV0"]
+image:jespera.png[jespera,role="left",width=273,link="https://github.com/jespera"]
+image:PEZ.png[PEZ,role="left",width=273,link="https://github.com/PEZ"]
+image:AndreaCrotti.png[AndreaCrotti,role="left",width=273,link="https://github.com/AndreaCrotti"]
+image:anmonteiro.png[anmonteiro,role="left",width=273,link="https://github.com/anmonteiro"]
+image:arrdem.png[arrdem,role="left",width=273,link="https://github.com/arrdem"]
+image:awb99.png[awb99,role="left",width=273,link="https://github.com/awb99"]
+image:brian-dawn.png[brian-dawn,role="left",width=273,link="https://github.com/brian-dawn"]
+image:doby162.png[doby162,role="left",width=273,link="https://github.com/doby162"]
+image:drorbemet.png[drorbemet,role="left",width=273,link="https://github.com/drorbemet"]
+image:expez.png[expez,role="left",width=273,link="https://github.com/expez"]
+image:fazzone.png[fazzone,role="left",width=273,link="https://github.com/fazzone"]
+image:green-coder.png[green-coder,role="left",width=273,link="https://github.com/green-coder"]
+image:guoyongxin.png[guoyongxin,role="left",width=273,link="https://github.com/guoyongxin"]
+image:immoh.png[immoh,role="left",width=273,link="https://github.com/immoh"]
+image:ivarref.png[ivarref,role="left",width=273,link="https://github.com/ivarref"]
+image:luxbock.png[luxbock,role="left",width=273,link="https://github.com/luxbock"]
+image:martinklepsch.png[martinklepsch,role="left",width=273,link="https://github.com/martinklepsch"]
+image:matanster.png[matanster,role="left",width=273,link="https://github.com/matanster"]
+image:mhuebert.png[mhuebert,role="left",width=273,link="https://github.com/mhuebert"]
+image:mikekap.png[mikekap,role="left",width=273,link="https://github.com/mikekap"]
+image:mjayprateek.png[mjayprateek,role="left",width=273,link="https://github.com/mjayprateek"]
+image:msgodf.png[msgodf,role="left",width=273,link="https://github.com/msgodf"]
+image:mynomoto.png[mynomoto,role="left",width=273,link="https://github.com/mynomoto"]
+image:optevo.png[optevo,role="left",width=273,link="https://github.com/optevo"]
+image:rfhayashi.png[rfhayashi,role="left",width=273,link="https://github.com/rfhayashi"]
+image:rgkirch.png[rgkirch,role="left",width=273,link="https://github.com/rgkirch"]
+image:RickMoynihan.png[RickMoynihan,role="left",width=273,link="https://github.com/RickMoynihan"]
+image:SevereOverfl0w.png[SevereOverfl0w,role="left",width=273,link="https://github.com/SevereOverfl0w"]
+image:shaunlebron.png[shaunlebron,role="left",width=273,link="https://github.com/shaunlebron"]
+image:shaunxcode.png[shaunxcode,role="left",width=273,link="https://github.com/shaunxcode"]
+image:shmish111.png[shmish111,role="left",width=273,link="https://github.com/shmish111"]
+image:snoe.png[snoe,role="left",width=273,link="https://github.com/snoe"]
+image:stathissideris.png[stathissideris,role="left",width=273,link="https://github.com/stathissideris"]
+image:swannodette.png[swannodette,role="left",width=273,link="https://github.com/swannodette"]
+image:theronic.png[theronic,role="left",width=273,link="https://github.com/theronic"]
+image:weavejester.png[weavejester,role="left",width=273,link="https://github.com/weavejester"]
+image:zcaudate.png[zcaudate,role="left",width=273,link="https://github.com/zcaudate"]
 --
 // AUTO-GENERATED:CONTRIBUTORS-END
 
@@ -128,8 +159,8 @@ image:swannodette.png[swannodette,role="left",width=310,link="https://github.com
 :imagesdir: ./doc/generated/contributors
 [.float-group]
 --
-image:rundis.png[rundis,role="left",width=310,link="https://github.com/rundis"]
-image:xsc.png[xsc,role="left",width=310,link="https://github.com/xsc"]
+image:rundis.png[rundis,role="left",width=273,link="https://github.com/rundis"]
+image:xsc.png[xsc,role="left",width=273,link="https://github.com/xsc"]
 --
 // AUTO-GENERATED:FOUNDERS-END
 
@@ -139,8 +170,8 @@ image:xsc.png[xsc,role="left",width=310,link="https://github.com/xsc"]
 :imagesdir: ./doc/generated/contributors
 [.float-group]
 --
-image:borkdude.png[borkdude,role="left",width=310,link="https://github.com/borkdude"]
-image:lread.png[lread,role="left",width=310,link="https://github.com/lread"]
+image:borkdude.png[borkdude,role="left",width=273,link="https://github.com/borkdude"]
+image:lread.png[lread,role="left",width=273,link="https://github.com/lread"]
 --
 // AUTO-GENERATED:MAINTAINERS-END
 
