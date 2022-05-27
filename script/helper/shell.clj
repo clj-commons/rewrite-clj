@@ -19,3 +19,12 @@
                           [nil cmd args])
         opts (merge opts default-opts)]
     (apply tasks/shell opts cmd args)))
+
+(defn clojure
+  "Wrap tasks/clojure for my loud error reporting treatment"
+  [& args]
+  (let [[opts args] (if (map? (first args))
+                      [(first args) (rest args)]
+                      [nil args])
+        opts (merge opts default-opts)]
+    (apply tasks/clojure opts args)))

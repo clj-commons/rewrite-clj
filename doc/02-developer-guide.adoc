@@ -296,7 +296,7 @@ bb lint
 and you can too. The lint script will build the clj-kondo cache when it is missing or stale.
 If you want to force a rebuild of the cache run:
 ----
-bb lint --rebuild-cache
+bb lint --rebuild
 ----
 
 https://github.com/borkdude/clj-kondo/blob/master/doc/editor-integration.md[Integrate clj-kondo into your editor] to catch mistakes as they happen.

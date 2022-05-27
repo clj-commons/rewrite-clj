@@ -18,14 +18,18 @@
     (fs/delete-tree clj-kondo-cache)))
 
 (defn- build-cache []
-  (status/line :detail "Building cache")
   (when (cache-exists?)
     (delete-cache))
-  (let [clj-cp (-> (shell/command {:out :string}
-                                  "clojure -A:test:lint-cache -Spath")
-                   :out string/trim)
+  (let [clj-cp (-> (shell/clojure {:out :string}
+                                  "-Spath -M:test")
+                   with-out-str
+                   string/trim)
         bb-cp (bbcp/get-classpath)]
-    (shell/command "clojure -M:clj-kondo --dependencies --copy-configs --lint" clj-cp bb-cp)))
+
+    (status/line :detail "- copying configs")
+    (shell/command "clojure -M:clj-kondo --skip-lint --copy-configs --lint" clj-cp bb-cp)
+    (status/line :detail "- creating cache")
+    (shell/command "clojure -M:clj-kondo --dependencies --parallel --lint" clj-cp bb-cp)))
 
 (defn- check-cache [{:keys [rebuild-cache]}]
   (status/line :head "clj-kondo: cache check")
@@ -58,12 +62,12 @@
 (def args-usage "Valid args: [options]
 
 Options:
-  --rebuild-cache  Force rebuild of clj-kondo lint cache.
-  --help           Show this help.")
+  --rebuild  Force rebuild of clj-kondo lint cache.
+  --help     Show this help.")
 
 (defn -main [& args]
   (when-let [opts (main/doc-arg-opt args-usage args)]
-    (lint {:rebuild-cache (get opts "--rebuild-cache")})))
+    (lint {:rebuild-cache (get opts "--rebuild")})))
 
 (main/when-invoked-as-script
  (apply -main *command-line-args*))
