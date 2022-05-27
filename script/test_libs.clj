@@ -267,7 +267,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "1.6.1"
+            :version "1.6.774"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -310,7 +310,7 @@
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2022.05.03-12.35.40"
+            :version "2022.05.23-13.18.11"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
@@ -325,6 +325,16 @@
             :patch-fn depot-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["bin/kaocha --reporter documentation"]}
+           ;; add when repo starts version tagging
+           #_{:name "gen-fn"
+            :platforms [:clj]
+            :version "0.1.33"
+            :github-release {:repo "ivarref/gen-fn"
+                             :via :tag
+                             :version-prefix "v??"}
+            :patch-fn deps-edn-v1-patch
+            :show-deps-fn cli-deps-tree
+            :test-cmds ["clojure -M:test"]}
            {:name "kibit"
             :platforms [:clj]
             :root "kibit"
@@ -341,7 +351,7 @@
                              :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
-            :test-cmds ["clojure -P -M:test"]}
+            :test-cmds ["clojure -X:test"]}
            {:name "lein-ancient"
             :platforms [:clj]
             :version "1.0.0-RC3"
@@ -369,6 +379,15 @@
             :patch-fn project-clj-v1-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
+           {:name "reval"
+            :version "0.0.38"
+            :github-release {:repo "pink-gorilla/reval"
+                             :version-prefix "v"
+                             :via :tag}
+            :root "reval"
+            :patch-fn deps-edn-v1-patch
+            :show-deps-fn cli-deps-tree
+            :test-cmds ["clojure -M:test"]}
            {:name "rewrite-edn"
             :version "0.2.0"
             :platforms [:clj]
