@@ -21,7 +21,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.05.28"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.05.31"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
@@ -85,7 +85,7 @@
            :script {:extra-paths ["script"]
                     :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                     :extra-deps {org.clojure/tools.namespace {:mvn/version "1.3.0"}
-                                 cli-matic/cli-matic {:mvn/version "0.5.3"}}}
+                                 cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                                :extra-deps {metosin/malli {:mvn/version "0.8.4"}
@@ -130,7 +130,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.6.774"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.7.798"}
                                    org.slf4j/slf4j-simple {:mvn/version "1.7.36"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}

@@ -267,7 +267,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "1.6.774"
+            :version "1.7.798"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -282,14 +282,14 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "clerk"
-            :version "0.5.346"
+            :version "0.8.445"
             :platforms [:clj]
             :github-release {:repo "nextjournal/clerk"
                              :via :tag
                              :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
-            :test-cmds ["clojure -X:test"]}
+            :test-cmds ["bb test:clj"]}
            {:name "cljfmt"
             :version "0.8.0"
             :platforms [:clj :cljs]
@@ -310,7 +310,7 @@
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2022.05.23-13.18.11"
+            :version "2022.05.31-17.35.50"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
@@ -325,16 +325,6 @@
             :patch-fn depot-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["bin/kaocha --reporter documentation"]}
-           ;; add when repo starts version tagging
-           #_{:name "gen-fn"
-            :platforms [:clj]
-            :version "0.1.33"
-            :github-release {:repo "ivarref/gen-fn"
-                             :via :tag
-                             :version-prefix "v??"}
-            :patch-fn deps-edn-v1-patch
-            :show-deps-fn cli-deps-tree
-            :test-cmds ["clojure -M:test"]}
            {:name "kibit"
             :platforms [:clj]
             :root "kibit"

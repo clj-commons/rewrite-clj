@@ -76,7 +76,7 @@ Some projects using rewrite-clj v0 and/or rewrite-cljs
 * https://github.com/Olical/depot[depot] {canary-tested} {canary-needed-patch} - Find newer versions of your dependencies in your deps.edn file
 // unit tests (unpatched after clone), at time of this writing, are failing for confair
 * https://github.com/magnars/confair[confair] {not-canary-tested} - A configuration library for Clojure
-// no version tag on gen-fn repo:
+// tests rely on datomic-pro
 * https://github.com/ivarref/gen-fn[gen-fn] {not-canary-tested} - Generate Datomic function literals from regular Clojure namespaces
 * https://github.com/jonase/kibit[kibit] {canary-tested} - There's a function for that!
 * https://github.com/xsc/lein-ancient[lein-ancient] {canary-tested} - Check your Projects for outdated Dependencies
