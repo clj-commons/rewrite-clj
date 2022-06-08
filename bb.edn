@@ -1,5 +1,5 @@
 {:min-bb-version "0.3.7"
- :paths ["script"]
+ :paths ["script" "build"]
  :deps {org.clojure/data.zip {:mvn/version "1.0.0"}
         io.aviso/pretty {:mvn/version "1.1.1"}
         dev.nubank/docopt {:mvn/version "0.6.1-fix7"}

@@ -49,7 +49,7 @@ If you so wish, you can also locally run all steps up to, but not including, dep
 ----
 bb ci-release prep
 ----
-Be aware though that you will NOT want to check in changes `prep` makes to `CHANGELOG.adoc` and `01-user-guide.adoc`.
+Be aware though that you will NOT want to check in changes `prep` makes to `version.edn`, `CHANGELOG.adoc` and `doc/01-user-guide.adoc`.
 
 === Invoking
 

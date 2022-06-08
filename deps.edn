@@ -125,6 +125,7 @@
            :build {:deps {io.github.clojure/tools.build {:git/tag "v0.8.2" :git/sha "ba1a2bf"}
                           slipset/deps-deploy {:mvn/version "0.2.0"}
                           com.camsaul/whitespace-linter {:mvn/version "2022.01.27.04.43"}}
+                   :extra-paths ["src" "build"]
                    :ns-default build}
 
            ;;

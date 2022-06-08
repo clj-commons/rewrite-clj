@@ -5,7 +5,8 @@
 ;;
 
 (ns ci-release
-  (:require [clojure.java.io :as io]
+  (:require [build-util :as bu]
+            [clojure.java.io :as io]
             [clojure.string :as string]
             [helper.fs :as fs]
             [helper.main :as main]
@@ -128,7 +129,7 @@
     (status/line :head (str  "Committing and pushing changes made for " tag-version))
     (assert-on-ci "commit changes")
     (status/line :detail "Adding changes")
-    (shell/command "git add doc/01-user-guide.adoc CHANGELOG.adoc")
+    (shell/command "git add doc/01-user-guide.adoc CHANGELOG.adoc version.edn")
     (status/line :detail "Committing")
     (shell/command "git commit -m" (str  "Release job: updates for version " tag-version))
     (status/line :detail "Version tagging")
@@ -177,6 +178,7 @@ Options
                 last-version (last-release-tag)]
             (status/line :detail (str "Last version released: " (or last-version "<none>")))
             (io/make-parents "target")
+            (bu/bump-version)
             (create-jar!)
             (let [version (built-version)]
               (status/line :detail (str "Built version: " version))

@@ -25,15 +25,7 @@ A library that reads and writes Clojure, ClojureScript and https://github.com/ed
 
 == Status
 
-*Warning*: v1 Alpha Release
-
-Our first rewrite-clj v1 alpha release was in March of 2021. +
-Since then we have seen wide and successful adoption of rewrite-clj v1 with no show-stoppers. +
-I would drop the alpha status but have not yet seen the following features get a good shake yet in the wild:
-
-. zippers with `:track-position?` enabled
-. zippers using `:auto-resolve` support
-. paredit API
+Rewrite-clj v1 has been successfully and widely adopted.
 
 See https://github.com/clj-commons/rewrite-clj/projects/1[project page for current priorities].
 
@@ -95,11 +87,11 @@ Have an update? Let us know!
 
 == Versioning
 
-Rewrite-clj versioning scheme is: `major`.`minor`.`patch`-`test-qualifier`
+Rewrite-clj versioning scheme is: `major`.`minor`.`release`-`test-qualifier`
 
 * `major` increments when a non alpha release API has been broken - something, as a rule, we'd like to avoid.
 * `minor` increments to convey significant new features have been added.
-* `patch` indicates bug fixes - it is the total number of commits in the repo.
+* `release` indicates small changes or bug fixes - starting with v1.1, it is the rewrite-clj release count over the life of rewrite-clj.
 * `test-qualifier` is absent for stable releases.
 Can be `alpha`, `beta`, `rc1`, etc.
 

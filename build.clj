@@ -1,18 +1,13 @@
 (ns build
-  (:require [clojure.edn :as edn]
+  (:require [build-util :as bu]
             [clojure.java.io :as io]
             [clojure.tools.build.api :as b]
             [deps-deploy.deps-deploy :as dd]
             [whitespace-linter]))
 
+
 (def lib 'rewrite-clj/rewrite-clj)
-(def version (let [version-template (-> "version.edn" slurp edn/read-string)
-                   patch (b/git-count-revs nil)]
-               (str (:major version-template) "."
-                    (:minor version-template) "."
-                    patch
-                    (cond->> (:qualifier version-template)
-                      true (str "-")))))
+(def version (bu/version-string)) ;; the expectations is some pre-processing has bumped the version when releasing
 (def class-dir "target/classes")
 (def basis (b/create-basis {:project "deps.edn"}))
 (def jar-file (format "target/%s.jar" (name lib)))
