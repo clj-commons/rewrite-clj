@@ -11,7 +11,7 @@
         b (node/token-node 'b)
         c (node/token-node 'c)
         d (node/token-node 'd)
-        loc (z/down (base/edn* (node/forms-node [a b c d])))]
+        loc (z/down (base/of-node* (node/forms-node [a b c d])))]
     (testing "remove-right"
       (let [loc' (u/remove-right loc)]
         (is (= 'a (base/sexpr loc')))

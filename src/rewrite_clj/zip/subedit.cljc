@@ -31,7 +31,7 @@
   [zloc path]
   (let [root (-> zloc
                  zraw/root
-                 (base/edn* (options/get-opts zloc)))]
+                 (base/of-node* (options/get-opts zloc)))]
     (reduce move-step root path)))
 
 (defn edit-node
@@ -72,7 +72,7 @@
   [zloc]
   (let [zloc' (some-> zloc
                       zraw/node
-                      (base/edn* (options/get-opts zloc)))]
+                      (base/of-node* (options/get-opts zloc)))]
     (assert zloc' "could not create subzipper.")
     zloc'))
 

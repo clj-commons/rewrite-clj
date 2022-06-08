@@ -54,4 +54,14 @@
              rewrite-clj.node.protocols/value
              {:namespaces [rewrite-clj.node rewrite-clj.zip.base]}
              rewrite-clj.node/value
-             {:defs [rewrite-clj.zip.base/value]}}}}}
+             {:defs [rewrite-clj.zip.base/value]}
+
+             rewrite-clj.zip/edn
+             {:namespaces [rewrite-clj.zip-test]}
+
+             rewrite-clj.zip/edn*
+             {:namespaces [;; this is a bb script usage which is using an older version rewrite-clj
+                           ;; can update code and remove when bb upgrades to rewrite-clj v1.1
+                           helper.deps-patcher
+                           ;; and this is legitimate, we still need to sanity test that the deprecated fn works
+                           rewrite-clj.zip-test]}}}}}

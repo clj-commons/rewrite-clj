@@ -11,36 +11,49 @@
 
 ;; ## Zipper
 
-(defn edn*
-  "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj.parse]]).
+(defn of-node*
+  "Create and return zipper from a rewrite-clj `node` (likely parsed by [[rewrite-clj.parse]]).
 
   Optional `opts` can specify:
   - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
   ([node]
-   (edn* node {}))
+   (of-node* node {}))
   ([node opts]
    (-> (if (:track-position? opts)
          (zraw/custom-zipper node)
          (zraw/zipper node))
        (options/set-opts opts))))
 
-(defn edn
-  "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj.parse]]),
+(defn of-node
+  "Create and return zipper from a rewrite-clj `node` (likely parsed by [[rewrite-clj.parser]]),
   and move to the first non-whitespace/non-comment child. If node is not forms node, is wrapped in forms node
   for a consistent root.
 
   Optional `opts` can specify:
   - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
-  ([node] (edn node {}))
+  ([node] (of-node node {}))
   ([node opts]
    (loop [node node opts opts]
      (if (= (node/tag node) :forms)
-       (let [top (edn* node opts)]
+       (let [top (of-node* node opts)]
          (or (-> top zraw/down ws/skip-whitespace)
              top))
        (recur (nforms/forms-node [node]) opts)))))
+
+(defn edn*
+  "DEPRECATED. Renamed to [[of-node*]]."
+  ([node]
+   (edn* node {}))
+  ([node opts]
+   (of-node* node opts)))
+
+(defn edn
+  "DEPRECATED. Renamed to [[of-node]]."
+  ([node] (edn node {}))
+  ([node opts]
+   (of-node node opts)))
 
 ;; ## Inspection
 

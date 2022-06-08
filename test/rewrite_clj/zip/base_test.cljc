@@ -8,7 +8,7 @@
            [(node/spaces 3)
             (node/coerce [[1 2] 3])])
         s "   [[1 2] 3]"
-        loc (z/edn* n)
+        loc (z/of-node* n)
         [_ a b c d] (iterate z/next* loc)]
       (is (= :forms (z/tag loc)))
       (is (= [[1 2] 3] (z/sexpr loc)))
@@ -49,7 +49,7 @@
                      (with-open [w (java.io.StringWriter.)]
                        (z/print-root loc w)
                        (str w)))))
-         (z/edn
+         (z/of-node
           (node/forms-node
            [(node/spaces 3)
             (node/coerce [[1 2] 3])]))
@@ -60,7 +60,7 @@
 (deftest t-zipper-creation-for-whitespace-only-nodes
   (are [?ws ?s]
        (let [n (node/forms-node [?ws])
-             loc (z/edn n)]
+             loc (z/of-node n)]
          (is (= :forms (z/tag loc)))
          (is (= nil (z/sexpr loc)))
          (is (= ?s (z/string loc)))

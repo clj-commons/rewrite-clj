@@ -17,8 +17,13 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 === Unreleased
 
 * dropped the alpha status
-* now properly escaping inline double quotes for coerced strings https://github.com/clj-commons/rewrite-clj/issues/176[#176] - thanks to @ivarref for raising the issue!
 * changed rewrite-clj library version scheme from commit-count to release-num https://github.com/clj-commons/rewrite-clj/issues/179[#179]
+* renamed zipper creation functions that take a rewrite-clj node as input.
+The old names did not reflect their purpose which led to confusion.
+Old functions will remain but are marked as deprecated. https://github.com/clj-commons/rewrite-clj/issues/178[#178]
+** `rewrite-clj.zip/edn` -> `rewrite-clj.zip/of-node`
+** `rewrite-clj.zip/edn*` -> `rewrite-clj.zip/of-node*`
+* now properly escaping inline double quotes for coerced strings https://github.com/clj-commons/rewrite-clj/issues/176[#176] - thanks to @ivarref for raising the issue!
 * docs:
 ** docstring fix, was missing `list-node` from toc, thanks @rfhayashi!
 

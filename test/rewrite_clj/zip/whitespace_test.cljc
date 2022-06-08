@@ -9,7 +9,7 @@
         c0 (node/comment-node "comment")
         t0 (node/token-node 0)
         t1 (node/token-node 1)
-        loc (z/edn* (node/forms-node [space linebreak t0 space t1 c0]))]
+        loc (z/of-node* (node/forms-node [space linebreak t0 space t1 c0]))]
     (testing "predicates"
       (is (z/whitespace? (-> loc z/down*)))
       (is (z/linebreak? (-> loc z/down* z/right*)))

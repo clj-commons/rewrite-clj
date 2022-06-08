@@ -205,24 +205,36 @@
   [zloc] (rewrite-clj.zip.base/child-sexprs zloc))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
-(defn edn*
-  "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj.parse]]).
+(defn ^{:added "1.1.45"} of-node*
+  "Create and return zipper from a rewrite-clj `node` (likely parsed by [[rewrite-clj.parse]]).
 
   Optional `opts` can specify:
   - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
+  ([node] (rewrite-clj.zip.base/of-node* node))
+  ([node opts] (rewrite-clj.zip.base/of-node* node opts)))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
+(defn ^{:deprecated "1.1.45"} edn*
+  "DEPRECATED. Renamed to [[of-node*]]."
   ([node] (rewrite-clj.zip.base/edn* node))
   ([node opts] (rewrite-clj.zip.base/edn* node opts)))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
-(defn edn
-  "Create and return zipper from Clojure/ClojureScript/EDN `node` (likely parsed by [[rewrite-clj.parse]]),
+(defn ^{:added "1.1.45"} of-node
+  "Create and return zipper from a rewrite-clj `node` (likely parsed by [[rewrite-clj.parser]]),
   and move to the first non-whitespace/non-comment child. If node is not forms node, is wrapped in forms node
   for a consistent root.
 
   Optional `opts` can specify:
   - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
+  ([node] (rewrite-clj.zip.base/of-node node))
+  ([node opts] (rewrite-clj.zip.base/of-node node opts)))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
+(defn ^{:deprecated "1.1.45"} edn
+  "DEPRECATED. Renamed to [[of-node]]."
   ([node] (rewrite-clj.zip.base/edn node))
   ([node opts] (rewrite-clj.zip.base/edn node opts)))
 

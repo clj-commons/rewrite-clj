@@ -176,7 +176,10 @@
 
            [rewrite-clj.zip.base
             ^{:added "0.4.4"} child-sexprs
-            edn* edn
+            ^{:added "1.1.45"} of-node*
+            ^{:deprecated "1.1.45"} edn*
+            ^{:added "1.1.45"} of-node
+            ^{:deprecated "1.1.45"} edn
             tag sexpr sexpr-able?
             length
             ^{:deprecated "0.4.0"} value

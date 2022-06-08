@@ -163,7 +163,7 @@
   (prop/for-all [node (g/node)
                  operations (gen/vector (gen/elements (keys operations)) 1 8)]
                 (let [zloc (apply-operations
-                            (base/edn* node {:track-position? true})
+                            (base/of-node* node {:track-position? true})
                             operations)]
                   (= (char-here zloc)
                      (char-at-position (base/root-string zloc) (z/position zloc))))))

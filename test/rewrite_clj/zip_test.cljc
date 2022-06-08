@@ -251,3 +251,29 @@
                    z/down* z/rightmost* z/left* z/left* z/remove* z/up*
                    z/sexpr))
             (msg "raw ops sanity test"))))))
+
+(deftest t-from-nodes
+  (let [my-node (n/keyword-node :hey)]
+    ;; z/edn is deprecated but it remains and should work
+    (doseq [nf [z/of-node z/edn]]
+      (is (= ":hey" (-> (n/forms-node [(n/spaces 3) my-node])
+                        nf
+                        z/string)))
+      (is (= [1 4] (-> (n/forms-node [(n/spaces 3) my-node])
+                       (nf {:track-position? true})
+                       (z/position))))
+      (is (= :forms (-> my-node
+                        nf
+                        z/up
+                        z/tag))))
+    ;; z/edn* is deprecated but it remains and should work
+    (doseq [nf [z/of-node* z/edn*]]
+      (is (= "   :hey" (-> (n/forms-node [(n/spaces 3) my-node])
+                        nf
+                        z/string)))
+      (is (= [1 1] (-> (n/forms-node [(n/spaces 3) my-node])
+                       (nf {:track-position? true})
+                       (z/position))))
+      (is (= :token (-> my-node
+                        nf
+                        z/tag))))))
