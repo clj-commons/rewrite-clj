@@ -20,8 +20,8 @@
   Because this API contains many functions, we offer the following categorized listing:
 
   **Create a zipper**
-  [[edn]]
-  [[edn*]]
+  [[of-node]]
+  [[of-node*]]
   [[of-string]]
   [[of-file]]
 
