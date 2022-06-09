@@ -1,6 +1,6 @@
 :notitle:
 // num-contributors is updated automatically by doc-readme-update bb task
-:num-contributors: 52
+:num-contributors: 53
 :figure-caption!:
 :imagesdir: ./doc
 :project-src-coords: clj-commons/rewrite-clj
@@ -118,7 +118,9 @@ image:danielcompton.png[danielcompton,role="left",width=273,link="https://github
 image:ericdallo.png[ericdallo,role="left",width=273,link="https://github.com/ericdallo"]
 image:FiV0.png[FiV0,role="left",width=273,link="https://github.com/FiV0"]
 image:jespera.png[jespera,role="left",width=273,link="https://github.com/jespera"]
+image:NoahTheDuke.png[NoahTheDuke,role="left",width=273,link="https://github.com/NoahTheDuke"]
 image:PEZ.png[PEZ,role="left",width=273,link="https://github.com/PEZ"]
+image:snoe.png[snoe,role="left",width=273,link="https://github.com/snoe"]
 image:AndreaCrotti.png[AndreaCrotti,role="left",width=273,link="https://github.com/AndreaCrotti"]
 image:anmonteiro.png[anmonteiro,role="left",width=273,link="https://github.com/anmonteiro"]
 image:arrdem.png[arrdem,role="left",width=273,link="https://github.com/arrdem"]
@@ -148,7 +150,6 @@ image:SevereOverfl0w.png[SevereOverfl0w,role="left",width=273,link="https://gith
 image:shaunlebron.png[shaunlebron,role="left",width=273,link="https://github.com/shaunlebron"]
 image:shaunxcode.png[shaunxcode,role="left",width=273,link="https://github.com/shaunxcode"]
 image:shmish111.png[shmish111,role="left",width=273,link="https://github.com/shmish111"]
-image:snoe.png[snoe,role="left",width=273,link="https://github.com/snoe"]
 image:stathissideris.png[stathissideris,role="left",width=273,link="https://github.com/stathissideris"]
 image:swannodette.png[swannodette,role="left",width=273,link="https://github.com/swannodette"]
 image:theronic.png[theronic,role="left",width=273,link="https://github.com/theronic"]

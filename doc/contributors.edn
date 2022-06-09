@@ -61,7 +61,7 @@
   {:github-id "awb99"
    :contributions [:issue]}
   {:github-id "snoe"
-   :contributions [:issue]}
+   :contributions [:issue :support]}
   {:github-id "fazzone"
    :contributions [:issue]}
   {:github-id "immoh"
@@ -95,7 +95,9 @@
   {:github-id "optevo"
    :contributions [:issue]}
   {:github-id "ivarref"
-   :contributions [:issue]}]
+   :contributions [:issue]}
+  {:github-id "NoahTheDuke"
+   :contributions [:issue :encouragement]}]
  :founders
  [{:github-id "xsc"
    :contributions [:original-author :doc :design :issue :review :support :code-rewrite-clj-v0]}
