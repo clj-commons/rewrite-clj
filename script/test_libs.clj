@@ -244,15 +244,20 @@
 (defn- zprint-patch [lib]
   ;; zprint has a project.clj and a deps.edn, patch 'em both
   (deps-edn-v1-patch lib)
-  (project-clj-v1-patch lib))
+  (project-clj-v1-patch lib)
+  (show-patch-diff lib))
 
 (defn- zprint-prep [{:keys [home-dir]}]
   (status/line :detail "=> Building uberjar for uberjar tests")
   (shcmd {:dir home-dir} "lein uberjar")
-
-  ;; not sure if this is still necessary, but probably does not hurt(?)
+  ;; not sure if this is still necessary...
   (status/line :detail "=> Installing zprint locally for ClojureScript tests")
   (shcmd {:dir home-dir} "lein install"))
+
+(defn- zprint-cleanup [_lib]
+  (status/line :detail "=> Deleting jar installed to local maven repo for tests")
+  ;; currently an over-clobber but official zprint libs will re-install as needed
+  (fs/delete-tree (fs/file (fs/home) ".m2/repository/zprint")))
 
 ;;
 ;; lib defs
@@ -427,7 +432,8 @@
                             (cli-deps-tree lib))
             :test-cmds ["lein with-profile expectations test"
                         ;; disable zprint cljs tests for now, see https://github.com/planck-repl/planck/issues/1088
-                        #_"clojure -M:cljs-runner"]}])
+                        #_"clojure -M:cljs-runner"]
+            :cleanup-fn zprint-cleanup}])
 
 (defn- header [text]
   (let [dashes (apply str (repeat 80 "-"))]
@@ -435,7 +441,7 @@
                             text "\n"
                             dashes))))
 
-(defn- test-lib [{:keys [name root patch-fn prep-fn show-deps-fn test-cmds] :as lib}]
+(defn- test-lib [{:keys [name root patch-fn prep-fn show-deps-fn test-cmds cleanup-fn] :as lib}]
   (header name)
   (let [home-dir (do
                    (status/line :head "%s: Fetching" name)
@@ -450,26 +456,31 @@
     (when patch-fn
       (status/line :head "%s: Patching" name)
       (patch-fn lib))
-    (when prep-fn
-      (status/line :head "%s: Preparing" name)
-      (prep-fn lib))
-    (when (not show-deps-fn)
-      (throw (ex-info (format "missing show-deps-fn for %s" name) {})))
-    (status/line :head "%s: Effect of our patches" name)
-    (show-patch-diff lib)
-    (status/line :head "%s: Deps report" name)
-    (show-deps-fn lib)
-    (when-not test-cmds
-      (throw (ex-info (format "missing test-cmds for %s" name) {})))
-    (status/line :head "%s: Running tests" name)
-    (let [exit-codes (into [] (map-indexed (fn [ndx cmd]
-                                             (let [{:keys [exit]} (shcmd {:dir home-dir :continue true} cmd)]
-                                               (if (zero? exit)
-                                                 (status/line :detail "=> %s: TESTS %d of %d PASSED\n" name (inc ndx) (count test-cmds))
-                                                 (status/line :warn "=> %s: TESTS %d of %d FAILED" name (inc ndx) (count test-cmds)))
-                                               exit))
-                                           test-cmds))]
-      (assoc lib :exit-codes exit-codes))))
+    (try
+      (when prep-fn
+        (status/line :head "%s: Preparing" name)
+        (prep-fn lib))
+      (when (not show-deps-fn)
+        (throw (ex-info (format "missing show-deps-fn for %s" name) {})))
+      (status/line :head "%s: Effect of our patches" name)
+      (show-patch-diff lib)
+      (status/line :head "%s: Deps report" name)
+      (show-deps-fn lib)
+      (when-not test-cmds
+        (throw (ex-info (format "missing test-cmds for %s" name) {})))
+      (status/line :head "%s: Running tests" name)
+      (let [exit-codes (into [] (map-indexed (fn [ndx cmd]
+                                               (let [{:keys [exit]} (shcmd {:dir home-dir :continue true} cmd)]
+                                                 (if (zero? exit)
+                                                   (status/line :detail "=> %s: TESTS %d of %d PASSED\n" name (inc ndx) (count test-cmds))
+                                                   (status/line :warn "=> %s: TESTS %d of %d FAILED" name (inc ndx) (count test-cmds)))
+                                                 exit))
+                                             test-cmds))]
+        (assoc lib :exit-codes exit-codes))
+      (finally
+        (when cleanup-fn
+          (status/line :head "%s: Cleanup" name)
+          (cleanup-fn lib))))))
 
 (defn- prep-target [target-root-dir]
   (status/line :head "Prep target")
