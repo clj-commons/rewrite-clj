@@ -409,7 +409,9 @@
                              :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
-            :test-cmds ["bb ci-test"]}
+            :test-cmds ["bb test-unit"
+                        "bb test-integration"
+                        "bb test-gen-clj"]}
            {:name "umschreiben-clj"
             :version "0.1.0"
             :platforms [:clj]
