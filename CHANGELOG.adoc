@@ -16,6 +16,8 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+=== v1.1.45
+
 * dropped the alpha status
 * changed rewrite-clj library version scheme from commit-count to release-num https://github.com/clj-commons/rewrite-clj/issues/179[#179]
 * renamed zipper creation functions that take a rewrite-clj node as input.
@@ -27,6 +29,8 @@ Old functions will remain but are marked as deprecated. https://github.com/clj-c
 * docs:
 ** docstring fix, was missing `list-node` from toc, thanks @rfhayashi!
 
+
+https://github.com/clj-commons/rewrite-clj/compare/v1.0.767-alpha\...v1.1.45[Gritty details of changes for this release]
 
 === v1.0.767-alpha
 
