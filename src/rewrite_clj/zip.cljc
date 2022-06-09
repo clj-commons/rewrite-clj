@@ -206,7 +206,7 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
 (defn ^{:added "1.1.45"} of-node*
-  "Create and return zipper from a rewrite-clj `node` (likely parsed by [[rewrite-clj.parse]]).
+  "Create and return zipper from a rewrite-clj `node` (likely parsed by [[rewrite-clj.parser]]).
 
   Optional `opts` can specify:
   - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
