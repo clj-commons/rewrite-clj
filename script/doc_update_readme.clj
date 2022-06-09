@@ -79,8 +79,8 @@
         card-shadow-h-offset 4
         card-border 1
         card-width (- image-width (+ card-margin-right card-padding (* 2 card-shadow-h-offset) card-border))
-        avatar-size 95
-        contrib-font-size (if (< (count contributions) 5) "1em" "0.75em")]
+        avatar-size 90
+        contrib-font-size (if (< (count contributions) 5) "0.9em" "0.68em")]
     (str
      (h/html
       [:head
@@ -211,7 +211,7 @@
 
 (defn -main [& _args]
   (let [readme-filename "README.adoc"
-        image-opts {:image-width 273
+        image-opts {:image-width 250
                     :images-dir "./doc/generated/contributors"}
         people (-> (load-contributors) sort-contributors)]
     (status/line :head "updating docs to honor those who contributed")
