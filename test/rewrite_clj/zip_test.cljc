@@ -185,7 +185,7 @@
 
 (deftest t-zipper-options-are-retained-after-operations
   ;; use a custom auto-resolve to verify that options are still in effect on returned zippers
-  ;; test with both track-position true (rewrite-clj.custom-zipper.core) and false (clojure.zip)
+  ;; test with both track-position? true (rewrite-clj.custom-zipper.core) and false (clojure.zip)
   (let [opts {:track-position? true
               :auto-resolve (constantly 'testing123)}]
     (doseq [opts [(assoc opts :track-position? false)

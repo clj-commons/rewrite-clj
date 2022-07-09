@@ -437,12 +437,12 @@ Let's explore:
 [#position-tracking]
 ==== Tracking Position with the Zip API
 
-If you need to track the source row and column while reading and updating your zipper, create your zipper with `:track-position true` option.
+If you need to track the source row and column while reading and updating your zipper, create your zipper with `:track-position? true` option.
 Note that the row and column are 1-based.
 
 [TIP]
 ====
-If you have no interest in the zipper updating positions when the zipper changes, but are still interested in node positions, you can use a zipper without `:track-positon true` option.
+If you have no interest in the zipper updating positions when the zipper changes, but are still interested in node positions, you can use a zipper without `:track-position? true` option.
 
 Read up on positional metadata under link:#nodes[rewrite-clj nodes].
 ====
@@ -510,7 +510,7 @@ When creating a new zipper you may optionally include an options map.
 These options will be carried by the zipper and live for the life of the zipper.
 Current options are:
 
-* `:track-position` - see <<position-tracking>>
+* `:track-position?` - see <<position-tracking>>
 * `:auto-resolve` - see <<custom-auto-resolve>>
 
 After making changes via a zipper, the final step is typically to call `root-string` or `print-root`.
@@ -524,9 +524,8 @@ The options passed into the original zipper on creation will not be automaticall
 (require '[rewrite-clj.zip :as z])
 
 ;; some contrived options to demonstrate:
-(def zip-opts {:track-position true
+(def zip-opts {:track-position? true
                :auto-resolve (fn [_alias] 'custom-resolved)})
-
 
 (-> "(+ 10 20 30)"         ;; <- something more complicated would be here, of course
     (z/of-string zip-opts) ;; <- our opts are passed in on creation

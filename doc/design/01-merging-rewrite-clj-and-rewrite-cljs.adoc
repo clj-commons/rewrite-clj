@@ -697,6 +697,6 @@ We:
 I personally prefer the map notation, but, as a rule, favor rewrite-clj v0 over rewrite-cljs because rewrite-clj v0 is the more widely used library and thus changes affect more users.
 3. include rewrite-cljs's positional functions: `rewrite-clj.zip/find-last-by-pos` and `rewrite-clj.zip/find-tag-by-pos`.
 
-The most glaring breaking change for ClojureScript is that it must now create the zipper with positional support enabled, for example: `(z/of-string "[1 2 3]" {:track-position true})`
+The most glaring breaking change for ClojureScript is that it must now create the zipper with positional support enabled, for example: `(z/of-string "[1 2 3]" {:track-position? true})`
 
 === link:namespaced-elements.adoc[Namespaced maps and keywords]
