@@ -20,7 +20,7 @@ Automated testing is setup using GraalVM v22 JDK11.
 * Clojure v1.10.1.697 or above for `clojure` command
 ** Note that rewrite-clj v1 itself supports Clojure v1.8 and above
 * Babashka v0.3.7 or above
-* GraalVM v22.1.0 JDK 11 (if you want to run GraalVM native image tests)
+* GraalVM v22.2.0 JDK 11 or 17 (if you want to run GraalVM native image tests)
 
 === Windows Notes
 

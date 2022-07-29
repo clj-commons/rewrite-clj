@@ -18,7 +18,7 @@
   (find-graal-prog (if (= :win (os/get-os)) "gu.cmd" "gu")))
 
 (defn- assert-min-native-image-version [native-image-exe]
-  (let [min-major 21
+  (let [min-major 22
         version-out (->> (shell/command {:out :string} native-image-exe "--version")
                          :out)
         actual-major (->> version-out
