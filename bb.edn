@@ -7,8 +7,7 @@
         version-clj/version-clj {:mvn/version "2.0.2"}
         lread/status-line {:git/url "https://github.com/lread/status-line.git"
                            :sha "35ed39645038e81b42cb15ed6753b8462e60a06d"}
-        etaoin/etaoin {:git/url "https://github.com/clj-commons/etaoin.git"
-                       :sha "cfef813480298b10b5c29f255b1d2fe579cd2536"}}
+        etaoin/etaoin {:mvn/version "1.0.38"}}
  :tasks {;; setup
          :requires ([clojure.string :as string]
                     [lread.status-line :as status])
