@@ -59,6 +59,7 @@
       #{}                    :set        :seq
       #{1 2 3}               :set        :seq
       (cons 1 [2 3])         :list       :seq
+      (lazy-seq [1 2 3])     :list       :seq
 
       ;; date
       #inst "2014-11-26T00:05:23" :token :token))
