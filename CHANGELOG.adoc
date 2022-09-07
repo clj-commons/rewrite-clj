@@ -16,6 +16,8 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* a lazy sequence now coerces to a rewrite-clj list node https://github.com/clj-commons/rewrite-clj/pull/180[#180] (thanks @borkdude!)
+
 === v1.1.45
 
 * dropped the alpha status
