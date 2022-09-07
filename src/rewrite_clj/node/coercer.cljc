@@ -200,6 +200,9 @@
   #?(:clj clojure.lang.IPersistentList :cljs List)
   (coerce [sq]
     (seq-node list-node sq))
+  #?(:clj clojure.lang.LazySeq :cljs LazySeq)
+  (coerce [sq]
+    (seq-node list-node sq))
   #?(:clj clojure.lang.Cons :cljs Cons)
   (coerce [sq]
     (seq-node list-node sq))
