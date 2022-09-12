@@ -241,10 +241,17 @@
 ;; zprint
 ;;
 
-(defn- zprint-patch [lib]
+(defn- zprint-patch [{:keys [home-dir] :as lib}]
   ;; zprint has a project.clj and a deps.edn, patch 'em both
   (deps-edn-v1-patch lib)
   (project-clj-v1-patch lib)
+  (status/line :detail "v1.4.1 fixup - can delete for subsequent versions")
+  (let [p (str (fs/file home-dir "project.clj"))]
+    (-> p
+        slurp
+        (string/replace #"\[lein-zprint \"1.2.4\"\]"
+                        "[lein-zprint \"1.2.4.1\"]")
+        (->> (spit p))))
   (show-patch-diff lib))
 
 (defn- zprint-prep [{:keys [home-dir]}]
@@ -272,14 +279,14 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "1.7.804"
+            :version "2.0.895"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:dev:test"]}
            {:name "carve"
-            :version "0.1.0"
+            :version "0.2.0"
             :platforms [:clj]
             :github-release {:repo "borkdude/carve"
                              :version-prefix "v"}
@@ -287,7 +294,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "clerk"
-            :version "0.8.486"
+            :version "0.10.550"
             :platforms [:clj]
             :github-release {:repo "nextjournal/clerk"
                              :via :tag
@@ -296,7 +303,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test:clj"]}
            {:name "cljfmt"
-            :version "0.8.0"
+            :version "0.9.0"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
@@ -315,7 +322,7 @@
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2022.06.29-19.32.13"
+            :version "2022.09.01-15.27.31"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
@@ -393,7 +400,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "refactor-nrepl"
-            :version "3.5.2"
+            :version "3.5.5"
             :platforms [:clj]
             :github-release {:repo "clojure-emacs/refactor-nrepl"
                              :via :tag
@@ -421,7 +428,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "zprint"
-            :version "1.2.3"
+            :version "1.2.4"
             :note "planck cljs tests disabled for now: https://github.com/planck-repl/planck/issues/1088"
             :platforms [:clj :cljs]
             :github-release {:repo "kkinnear/zprint"}
