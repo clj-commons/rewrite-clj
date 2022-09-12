@@ -18,12 +18,15 @@
 (defn throw-reader
   "Throw reader exception, including line line/column."
   [#?(:cljs ^:not-native reader :default reader) fmt & data]
-  (let [c (r/get-column-number reader)
+  (let [m (apply interop/simple-format fmt data)
+        c (r/get-column-number reader)
         l (r/get-line-number reader)]
     (throw
      (ex-info
-      (str (apply interop/simple-format fmt data)
-           " [at line " l ", column " c "]") {}))))
+      (str m " [at line " l ", column " c "]")
+      {:msg m
+       :row l
+       :col c}))))
 
 ;; ## Decisions
 

@@ -554,7 +554,6 @@
     (is (= [1 1] start-pos))
     (is (= [3 5] end-pos))))
 
-
 (deftest t-os-specific-line-endings
   (are [?in ?expected]
     (let [str-actual (-> ?in p/parse-string-all node/string)]
@@ -585,3 +584,9 @@
     ;1   2 3   4   5 6   7
     "\r\n\r\r\f\r\n\r\r\n\r"
     "\n\n\n\n\n\n\n"))
+
+(deftest t-position-in-ex-data
+  (let [ex (try (p/parse-string "(defn foo [)")
+                (catch Exception e e))]
+    (is (= 1 (-> ex ex-data :row)))
+    (is (= 12 (-> ex ex-data :col)))))
