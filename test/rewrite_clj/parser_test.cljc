@@ -587,6 +587,6 @@
 
 (deftest t-position-in-ex-data
   (let [ex (try (p/parse-string "(defn foo [)")
-                (catch Exception e e))]
+                (catch #?(:clj Exception :cljs :default) e e))]
     (is (= 1 (-> ex ex-data :row)))
     (is (= 12 (-> ex ex-data :col)))))
