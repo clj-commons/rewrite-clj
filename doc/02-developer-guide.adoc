@@ -15,7 +15,7 @@ We test that rewrite-clj operates as expected when natively compile via GraalVM.
 Automated testing is setup using GraalVM v22 JDK11.
 
 == Prerequisites
-* Java JDK 1.8 or above
+* Java JDK 1.8 or above (shadow-cljs tests require min of JDK 11)
 * NodeJs v12 or above
 * Clojure v1.10.1.697 or above for `clojure` command
 ** Note that rewrite-clj v1 itself supports Clojure v1.8 and above
@@ -210,9 +210,20 @@ This generates tests for doc code blocks and then runs them under Clojure and Cl
 Before pushing, you likely want to mimic what is run on each push via GitHub Actions.
 
 === Unit tests
-Unit tests are run via:
+Unit tests can be run locally on your dev box.
+Some tests require a specific os and jdk, you will see warnings if a test is skipped for your current environment.
 ----
 bb ci-unit-tests
+----
+
+Unit tests for our ci matrix are driven by:
+----
+bb script/ci_unit_tests.clj matrix-for-ci --format=json
+----
+
+To get a human readable version of the ci matrix:
+----
+bb ci-unit-tests matrix-for-ci
 ----
 
 === Native image tests
