@@ -6,6 +6,6 @@
     "karma-cljs-test": "^0.1.0",
     "karma-junit-reporter": "^2.0.0",
     "karma-spec-reporter": "^0.0.34",
-    "shadow-cljs": "^2.20.1"
+    "shadow-cljs": "^2.19.5"
   }
 }
