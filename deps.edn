@@ -21,11 +21,11 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.06.22"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.09.08"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
-           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "1.2.4"}}
+           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "1.2.5"}}
                       :main-opts ["-m" "eastwood.lint" {:source-paths ["src"]
                                                         :test-paths ["test"]
                                                         :add-linters [:performance]
@@ -58,8 +58,8 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.68.1059"}
-                                 lambdaisland/kaocha-junit-xml {:mvn/version "0.0.76"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.69.1069"}
+                                 lambdaisland/kaocha-junit-xml {:mvn/version "1.16.98"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}
 
@@ -91,7 +91,7 @@
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.8.8"}
+                               :extra-deps {metosin/malli {:mvn/version "0.8.9"}
                                             io.aviso/pretty {:mvn/version "1.1.1"}}
                                :ns-default lread.apply-import-vars}
 
@@ -115,7 +115,7 @@
            :gen-reflection {:main-opts ["-m" "sci-test.generate-reflection-file"]}
 
            ;;
-           ;; Document rewrite-clj* differences
+           ;; Document rewrite-clj* differences (needs love!)
            ;;
            :diff-apis {:extra-paths ["script/resources"]
                        :extra-deps {lread/diff-apis {:git/url "https://github.com/lread/diff-apis"
@@ -127,15 +127,15 @@
            ;
            :build {:deps {io.github.clojure/tools.build {:git/tag "v0.8.3" :git/sha "0d20256"}
                           slipset/deps-deploy {:mvn/version "0.2.0"}
-                          com.camsaul/whitespace-linter {:mvn/version "2022.01.27.04.43"}}
+                          com.camsaul/whitespace-linter {:mvn/version "2022.07.21.02.09"}}
                    :extra-paths ["src" "build"]
                    :ns-default build}
 
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "1.7.804"}
-                                   org.slf4j/slf4j-simple {:mvn/version "1.7.36"} ;; to rid ourselves of logger warnings
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.0.895"}
+                                   org.slf4j/slf4j-simple {:mvn/version "2.0.0"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                       :main-opts ["-m" "antq.core"

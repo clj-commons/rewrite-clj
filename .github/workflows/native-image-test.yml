@@ -45,7 +45,7 @@ jobs:
     # Install Babashka
     #
     - name: Install Babashka
-      uses: DeLaGuardo/setup-clojure@7.0
+      uses: DeLaGuardo/setup-clojure@9.5
       with:
         bb: 'latest'
 
@@ -61,7 +61,7 @@ jobs:
       if: matrix.os == 'windows'
 
     - name: Install Clojure (macos, linux)
-      uses: DeLaGuardo/setup-clojure@7.0
+      uses: DeLaGuardo/setup-clojure@9.5
       with:
         cli: 'latest'
       if: matrix.os != 'windows'
