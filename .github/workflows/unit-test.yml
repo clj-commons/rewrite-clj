@@ -1,17 +1,56 @@
 name: Unit Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches: ['main']
+  pull_request:
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    outputs:
+      tests: ${{ steps.set-tests.outputs.tests }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Clojure deps cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.m2/repository
+          ~/.deps.clj
+          ~/.gitlibs
+        key: cljdeps-${{ hashFiles('deps.edn', 'bb.edn') }}
+        restore-keys: cljdeps-
+
+    - name: "Setup Java"
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
+    - name: Install Clojure Tools
+      uses: DeLaGuardo/setup-clojure@9.5
+      with:
+        cli: 'latest'
+        bb: 'latest'
+
+    - id: set-tests
+      name: Set test var for matrix
+      # run test.clj directly instead of via bb task to avoid generic task output
+      run: echo "::set-output name=tests::$(bb script/ci_unit_tests.clj matrix-for-ci --format=json)"
+
   build:
+    needs: setup
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows, ubuntu, macos ]
-        java: [ '8', '11', '17' ]
+        include: ${{fromJSON(needs.setup.outputs.tests)}}
 
-    name: ${{ matrix.os }},jdk ${{ matrix.java }}
+    name: ${{ matrix.desc }}
 
     steps:
     #
@@ -49,7 +88,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
-        java-version: ${{ matrix.java }}
+        java-version: ${{ matrix.jdk }}
 
     #
     # Install Planck
@@ -63,9 +102,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y planck
       if: matrix.os == 'ubuntu'
-    - name: Install planck (macOS)
-      run: brew install planck
-      if: matrix.os == 'macos'
 
     #
     # Install Babashka
@@ -133,5 +169,5 @@ jobs:
     #
     # Run tests
     #
-    - name: Run CI tests
-      run: bb ci-unit-tests
+    - name: Run Tests
+      run: ${{ matrix.cmd }}
