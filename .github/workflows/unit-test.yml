@@ -34,6 +34,7 @@ jobs:
     - name: Install Clojure Tools
       uses: DeLaGuardo/setup-clojure@9.5
       with:
+        cli: 'latest'
         bb: 'latest'
 
     - id: set-tests
