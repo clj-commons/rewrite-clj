@@ -2,6 +2,7 @@
 
 (ns ci-unit-tests
   (:require [cheshire.core :as json]
+            [clojure.string :as string]
             [doric.core :as doric]
             [helper.fs :as fs]
             [helper.jdk :as jdk]
@@ -23,8 +24,8 @@
 
 (defn- test-tasks []
   (concat [;; run lintish tasks across all oses to verify that they will work for all devs regardless of their os choice
-           {:desc "import-vars" :cmd "bb apply-import-vars check" :oses all-oses :jdks [:default]}
-           {:desc "lint"        :cmd "bb lint"                    :oses all-oses :jdks [:default]}
+           {:desc "import-vars" :cmd "bb apply-import-vars check" :oses all-oses :jdks ["8"]}
+           {:desc "lint"        :cmd "bb lint"                    :oses all-oses :jdks ["8"]}
            ;; test-docs on default clojure version across all oses and jdks
            {:desc "test-doc"          :cmd "bb test-doc"          :oses all-oses :jdks all-jdks}]
           (for [version ["1.8" "1.9" "1.10" "1.11"]]
@@ -32,6 +33,7 @@
              :cmd (str "bb test-clj --clojure-version " version)
              :oses all-oses
              :jdks all-jdks})
+          ;; I'm not sure there's much value testing across jdks for ClojureScript tests, for now we'll stick with jdk 8 only
           (for [env [{:param "node" :desc "node"}
                      {:param "chrome-headless" :desc "browser"}]
                 opt [{:param "none"}
@@ -41,22 +43,35 @@
                         (when (:desc opt) (str "-" (:desc opt))))
              :cmd (str "bb test-cljs --env " (:param env) " --optimizations " (:param opt))
              :oses all-oses
-             :jdks all-jdks})
-          ;; shadow-cljs requires a min of jdk 11
-          [{:desc "shadow-cljs"    :cmd "bb test-shadow-cljs" :oses all-oses :jdks ["11" "17"]}]
-          ;; planck does not run on windows, and I don't think it uses a jdk
+             :jdks ["8"]})
+          ;; shadow-cljs requires a min of jdk 11 so we'll test on that
+          [{:desc "shadow-cljs"    :cmd "bb test-shadow-cljs" :oses all-oses :jdks ["11"]
+            :skip-reason-fn (fn [{:keys [jdk]}] (when (< (parse-long jdk) 11)
+                                                  "jdk must be >= 11"))}]
+          ;; planck does not run on windows, and I don't think it needs a jdk
           [{:desc "cljs-bootstrap" :cmd "bb test-cljs --env planck --optimizations none"
-            :oses ["macos" "ubuntu"] :jdks [:default]}]))
+            :oses ["macos" "ubuntu"] :jdks ["8"]}]))
 
-(defn- test-matrix [default-jdk]
+(defn- ci-test-matrix []
   (for [{:keys [desc cmd oses jdks]} (test-tasks)
         os oses
-        jdk jdks
-        :let [jdk (if (= :default jdk) default-jdk jdk)]]
+        jdk jdks]
     {:desc (str desc " " os " jdk" jdk)
      :cmd cmd
      :os os
      :jdk jdk}))
+
+(defn- local-test-list [local-os local-jdk]
+  (for [{:keys [desc cmd oses skip-reason-fn]} (test-tasks)]
+   (let [skip-reasons (cond-> []
+                        (not (some #{local-os} oses))
+                        (conj (str "os must be among " oses))
+                        (and skip-reason-fn (skip-reason-fn {:jdk local-jdk}))
+                        (conj (skip-reason-fn {:jdk local-jdk})))]
+     (cond-> {:desc desc
+              :cmd cmd}
+       (seq skip-reasons)
+       (assoc :skip-reasons skip-reasons)))))
 
 (defn- clean []
   (doseq [dir ["target" ".cpcache" ".shadow-cljs"]]
@@ -77,7 +92,7 @@ By default, will run all tests applicable to your current jdk and os.")
 (defn -main [& args]
   (when-let [opts (main/doc-arg-opt args-usage args)]
     (if (get opts "matrix-for-ci")
-      (let [matrix (test-matrix "8")]
+      (let [matrix (ci-test-matrix)]
         (if (= "json" (get opts "--format"))
           (status/line :detail (json/generate-string matrix))
           (do
@@ -86,23 +101,24 @@ By default, will run all tests applicable to your current jdk and os.")
       (let [cur-os (matrix-os)
             cur-jdk (jdk/version)
             cur-major-jdk (str (:major cur-jdk))
-            test-list (test-matrix cur-major-jdk)
-            tasks-for-cur-env (filter #(and (= cur-os (:os %))
-                                            (= cur-major-jdk (:jdk %)))
-                                      test-list)
-            excluded-for-cur-env (->> (test-tasks)
-                                      (remove #(and (some #{cur-os} (:oses %))
-                                                    (or (= [:default] (:jdks %))
-                                                        (some #{cur-major-jdk} (:jdks %))))))]
-        (status/line :detail "Found %d tests suitable for jdk %s on %s"
-                     (count tasks-for-cur-env) cur-major-jdk cur-os)
-        (doseq [skipped excluded-for-cur-env]
-          (status/line :warn "Skipping: %s\nOnly runs on jdks %s and oses %s"
-                       (:desc skipped)
-                       (:jdks skipped)
-                       (:oses skipped)))
+            test-list (local-test-list cur-os cur-major-jdk)
+            tests-skipped (filter :skip-reasons test-list)
+            tests-to-run (remove :skip-reasons test-list)]
+        (when (not (some #{cur-major-jdk} all-jdks))
+          (status/line :warn "CI runs only on jdks %s but you are on jdk %s\nWe'll run tests anyway."
+                       all-jdks (:version cur-jdk)))
+
+        (status/line :head "Test plan")
+        (status/line :detail "Found %d runnable tests for jdk %s on %s:"
+                     (count tests-to-run) cur-major-jdk cur-os)
+        (doseq [{:keys [cmd]} tests-to-run]
+          (status/line :detail (str " " cmd)))
+        (doseq [{:keys [cmd skip-reasons]} tests-skipped]
+          (status/line :warn (string/join "\n* "
+                                          (concat [(str "Skipping: " cmd)]
+                                                  skip-reasons))))
         (clean)
-        (doseq [{:keys [cmd]} tasks-for-cur-env]
+        (doseq [{:keys [cmd]} tests-to-run]
           (shell/command cmd)))))
   nil)
 
