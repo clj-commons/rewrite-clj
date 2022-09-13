@@ -102,9 +102,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y planck
       if: matrix.os == 'ubuntu'
-    - name: Install planck (macOS)
-      run: brew install planck
-      if: matrix.os == 'macos'
 
     #
     # Install Babashka

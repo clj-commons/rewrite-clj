@@ -19,7 +19,7 @@
     "ubuntu"))
 
 ;; matrix params to be used on ci
-(def ^:private all-oses ["macos" "unbuntu" "windows"])
+(def ^:private all-oses ["ubuntu" "macos" "windows"])
 (def ^:private all-jdks ["8" "11" "17"])
 
 (defn- test-tasks []
