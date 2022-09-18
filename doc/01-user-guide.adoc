@@ -712,6 +712,8 @@ Rewrite-clj makes use of https://github.com/clojure/tools.reader[Clojure's tools
 The `tools.reader` normalizes all recognized newline variants to `\n`.
 Rewrite-clj picks up this behaviour.
 
+You can chime in and/or up-vote on this topic on https://ask.clojure.org/index.php/12216/clojure-tools-reader-intent-regarding-newline-normalization[Ask Clojure].
+
 [[unbalanced-maps]]
 === Unbalanced Maps
 An unbalanced map is one where there is a key with no value.
