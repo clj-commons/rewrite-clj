@@ -99,7 +99,9 @@
   {:github-id "NoahTheDuke"
    :contributions [:issue :encouragement]}
   {:github-id "ferdinand-beyer"
-   :contributions [:code-rewrite-clj-v1]}]
+   :contributions [:code-rewrite-clj-v1]}
+  {:github-id "ikappaki"
+   :contributions [:issue]}]
  :founders
  [{:github-id "xsc"
    :contributions [:original-author :doc :design :issue :review :support :code-rewrite-clj-v0]}

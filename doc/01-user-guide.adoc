@@ -702,8 +702,15 @@ This is convenient when navigating through the source, but when we want to logic
 
 == Parsing Peculiarities
 
-Rewrite-clj can, in some specific cases, parse technically invalid Clojure.
+Rewrite-clj might suprise Windows users and can, in some specific cases, parse technically invalid Clojure.
 Some folks have come to rely on this over the years, so these are behaviours we will preserve.
+
+=== Newlines Always Normalize to `\n`
+Window users might be suprised that `\r\n` newlines are converted to `\n` by rewrite-clj.
+
+Rewrite-clj makes use of https://github.com/clojure/tools.reader[Clojure's tools.reader] to parse Clojure code.
+The `tools.reader` normalizes all recognized newline variants to `\n`.
+Rewrite-clj picks up this behaviour.
 
 [[unbalanced-maps]]
 === Unbalanced Maps
