@@ -17,7 +17,9 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 === Unreleased
 
 * a lazy sequence now coerces to a rewrite-clj list node https://github.com/clj-commons/rewrite-clj/pull/180[#180] (thanks @borkdude!)
-* exceptions thrown while reading now include `:row` and `:col` keys in `ex-data`  https://github.com/clj-commons/rewrite-clj/pull/181[#181] (thanks @ferdinand-beyer)
+* exceptions thrown while reading now include `:row` and `:col` keys in `ex-data` https://github.com/clj-commons/rewrite-clj/pull/181[#181] (thanks @ferdinand-beyer)
+* docs
+** a docstring typo fix https://github.com/clj-commons/rewrite-clj/pull/191[#191] (thanks @BTowersCoding!)
 
 === v1.1.45
 
