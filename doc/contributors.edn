@@ -101,7 +101,9 @@
   {:github-id "ferdinand-beyer"
    :contributions [:code-rewrite-clj-v1]}
   {:github-id "ikappaki"
-   :contributions [:issue]}]
+   :contributions [:issue]}
+  {:github-id "BTowersCoding"
+   :contributions [:doc]}]
  :founders
  [{:github-id "xsc"
    :contributions [:original-author :doc :design :issue :review :support :code-rewrite-clj-v0]}
