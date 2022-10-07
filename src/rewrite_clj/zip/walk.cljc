@@ -83,7 +83,7 @@
 (defn postwalk
   "Return zipper modified by an isolated depth-first post-order traversal.
 
-   Pre-order traversal visits children before root.
+   Post-order traversal visits children before root.
    For example, traversal order of `(1 (2 3 (4 5) 6 (7 8)) 9)` is:
 
    1. `1`
