@@ -279,7 +279,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "2.0.895"
+            :version "2.1.932"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -294,14 +294,14 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "clerk"
-            :version "0.10.550"
+            :version "0.10.562"
             :platforms [:clj]
             :github-release {:repo "nextjournal/clerk"
                              :via :tag
                              :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
-            :test-cmds ["bb test:clj"]}
+            :test-cmds ["bb test:clj :kaocha/reporter '[kaocha.report/documentation]'"]}
            {:name "cljfmt"
             :version "0.9.0"
             :platforms [:clj :cljs]
@@ -322,11 +322,11 @@
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2022.09.01-15.27.31"
+            :version "2022.10.05-16.39.51"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
-            :test-cmds ["make test"]}
+            :test-cmds ["bb test"]}
            {:name "depot"
             :platforms [:clj]
             :note "1 patch required due to using, but not requiring, rewrite-clj.node"
@@ -391,7 +391,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "rewrite-edn"
-            :version "0.2.0"
+            :version "0.3.4"
             :platforms [:clj]
             :github-release {:repo "borkdude/rewrite-edn"
                              :version-prefix "v"
@@ -429,7 +429,7 @@
             :test-cmds ["lein test"]}
            {:name "zprint"
             :version "1.2.4"
-            :note "planck cljs tests disabled for now: https://github.com/planck-repl/planck/issues/1088"
+            :note "1) planck cljs tests disabled for now: https://github.com/planck-repl/planck/issues/1088 2) 1.2.5-alpha1 is a pre-release, we'll skip it"
             :platforms [:clj :cljs]
             :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch
