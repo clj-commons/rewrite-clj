@@ -21,11 +21,11 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.09.08"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.10.05"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
-           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "1.2.5"}}
+           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "1.3.0"}}
                       :main-opts ["-m" "eastwood.lint" {:source-paths ["src"]
                                                         :test-paths ["test"]
                                                         :add-linters [:performance]
@@ -58,7 +58,7 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.69.1069"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.70.1086"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "1.16.98"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
                     :main-opts ["-m" "kaocha.runner"]}
@@ -92,7 +92,7 @@
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                                :extra-deps {metosin/malli {:mvn/version "0.8.9"}
-                                            io.aviso/pretty {:mvn/version "1.1.1"}}
+                                            io.aviso/pretty {:mvn/version "1.2"}}
                                :ns-default lread.apply-import-vars}
 
            ;;
@@ -134,8 +134,8 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.0.895"}
-                                   org.slf4j/slf4j-simple {:mvn/version "2.0.0"} ;; to rid ourselves of logger warnings
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.1.932"}
+                                   org.slf4j/slf4j-simple {:mvn/version "2.0.3"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                       :main-opts ["-m" "antq.core"
