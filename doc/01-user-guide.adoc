@@ -534,7 +534,7 @@ The options passed into the original zipper on creation will not be automaticall
     z/down z/right z/right
     (z/edit inc)
     z/root                 ;; <- applying changes and getting root node
-    (z/edn zip-opts)       ;; <- pass the original zip-opts on creation of new zipper
+    (z/of-node zip-opts)   ;; <- pass the original zip-opts on creation of new zipper
     z/down z/right z/right
     (z/edit inc)
     (z/root-string))
@@ -1178,7 +1178,7 @@ For example, if you know namespace and alias info for the code rewrite-clj is op
 The `:auto-resolve` option is accepted in the `opts` map arg for:
 
 * The `rewrite-clj.node` namespace functions `sexpr` and `child-sexpr`.
-* The `rewrite-clj.zip` namespace zipper creation functions `edn*`, `edn`, `of-string*`, `of-string`, `of-file*` and `of-file`.
+* The `rewrite-clj.zip` namespace zipper creation functions `of-node*`, `of-node`, `of-string*`, `of-string`, `of-file*` and `of-file`.
 The resulting zipper will then automatically apply your `:auto-resolve` within any zip operation that makes use of sexpr, namely:
 ** `sexpr`
 ** `find-value` and `find-next-value` - sexpr is applied to each node to get the "value" for comparison
