@@ -29,7 +29,6 @@
   "Create and return zipper from a rewrite-clj `node` (likely parsed by [[rewrite-clj.parser]]),
   and move to the first non-whitespace/non-comment child. If node is not forms node, is wrapped in forms node
   for a consistent root.
-
   Optional `opts` can specify:
   - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
@@ -95,26 +94,55 @@
   (some-> zloc zraw/node node/value))
 
 ;; ## Read
+(defn of-string*
+  "Create and return zipper from all forms in Clojure/ClojureScript/END string `s`, and do no automatic move.
+
+  See [[of-string]] for same but with automatic move to first interesting node.
+
+  Optional `opts` can specify:
+  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
+  ([s] (of-string* s {}))
+  ([s opts]
+   (some-> s p/parse-string-all (of-node* opts))))
+
 (defn of-string
-  "Create and return zipper from all forms in Clojure/ClojureScript/EDN string `s`.
+  "Create and return zipper from all forms in Clojure/ClojureScript/EDN string `s`, and move to the first non-whitespace/non-comment child.
+
+  See [[of-string*]] for same but with no automatic move.
 
   Optional `opts` can specify:
   - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
   ([s] (of-string s {}))
   ([s opts]
-   (some-> s p/parse-string-all (edn opts))))
+   (some-> s p/parse-string-all (of-node opts))))
+
+#?(:clj
+   (defn of-file*
+     "Create and return zipper from all forms in Clojure/ClojureScript/EDN File `f`, and do no automatic move.
+
+     See [[of-file]] for same but with automatic move to first interesting node.
+
+     Optional `opts` can specify:
+     - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
+     - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
+     ([f] (of-file* f {}))
+     ([f opts]
+      (some-> f p/parse-file-all (of-node* opts)))))
 
 #?(:clj
    (defn of-file
-     "Create and return zipper from all forms in Clojure/ClojureScript/EDN File `f`.
+     "Create and return zipper from all forms in Clojure/ClojureScript/EDN File `f`, and move to the first non-whitespace/non-comment child.
+
+     See [[of-file*]] for same but with no automatic move.
 
      Optional `opts` can specify:
      - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
      - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
      ([f] (of-file f {}))
      ([f opts]
-      (some-> f p/parse-file-all (edn opts)))))
+      (some-> f p/parse-file-all (of-node opts)))))
 
 ;; ## Write
 

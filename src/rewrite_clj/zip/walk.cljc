@@ -52,12 +52,11 @@
 
    When `p?` is not specified `f` is called on all locations.
 
-   Note that by default a newly created zipper automatically navigates to the first non-whitespace
-   node. If you want to be sure to walk all forms in a zipper, you'll want to navigate one up prior to your walk:
+   To walk all nodes, you'll want to walk from the root node.
+   You can do this by, for example, using [[of-string*]] instead of [[of-string]].
 
    ```Clojure
-   (-> (zip/of-string \"my clojure forms\")
-       zip/up
+   (-> (zip/of-string* \"my clojure forms\")
        (zip/prewalk ...))
    ```
 
@@ -109,12 +108,11 @@
 
    When `p?` is not specified `f` is called on all locations.
 
-   Note that by default a newly created zipper automatically navigates to the first non-whitespace
-   node. If you want to be sure to walk all forms in a zipper, you'll want to navigate one up prior to your walk:
+   To walk all nodes, you'll want to walk from the root node.
+   You can do this by, for example, using [[of-string*]] instead of [[of-string]].
 
    ```Clojure
-   (-> (zip/of-string \"my clojure forms\")
-       zip/up
+   (-> (zip/of-string* \"my clojure forms\")
        (zip/postwalk ...))
    ```
 
