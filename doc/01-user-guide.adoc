@@ -423,7 +423,7 @@ Let's explore:
 ;; => "(def x 101) (def y [2 3 [4 [5]]])"
 
 ;; Hmmm... what happened? Only the first number was affected.
-;; A new zipper create by of-string automaticaly navigates to the first non-whitespace/non-comment node.
+;; A new zipper created by of-string automaticaly navigates to the first non-whitespace/non-comment node.
 ;; In our example, this is node (def x 1).
 ;; Our walk was isolated to current node (def x 1) so that's all that got updated
 
