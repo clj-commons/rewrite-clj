@@ -18,11 +18,15 @@
 
   Because this API contains many functions, we offer the following categorized listing:
 
-  **Create a zipper**
+  **Create a zipper and move to first non-whitespace/comment node**
   [[of-node]]
-  [[of-node*]]
   [[of-string]]
   [[of-file]]
+
+  **Create a zipper without skipping any nodes**
+  [[of-node*]]
+  [[of-string*]]
+  [[of-file*]]
 
   **Move**
   [[left]]
@@ -184,6 +188,7 @@
             length
             ^{:deprecated "0.4.0"} value
             of-string
+            ^{:added "1.1.46"} of-string*
             ^{:added "0.4.0"} string
             ^{:deprecated "0.4.0"} ->string
             ^{:added "0.4.0"} root-string
@@ -254,6 +259,11 @@
    #_{:import-vars/import
       {:from [[rewrite-clj.zip.base
                of-file]]}})
+
+#?(:clj
+   #_{:import-vars/import
+      {:from [[rewrite-clj.zip.base
+               ^{:added "1.1.46"} of-file*]]}})
 
 #_{:import-vars/import
    {:opts {:sym-to-pattern "@@orig-name@@*"

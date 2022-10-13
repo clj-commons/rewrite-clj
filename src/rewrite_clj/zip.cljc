@@ -19,11 +19,15 @@
 
   Because this API contains many functions, we offer the following categorized listing:
 
-  **Create a zipper**
+  **Create a zipper and move to first non-whitespace/comment node**
   [[of-node]]
-  [[of-node*]]
   [[of-string]]
   [[of-file]]
+
+  **Create a zipper without skipping any nodes**
+  [[of-node*]]
+  [[of-string*]]
+  [[of-file*]]
 
   **Move**
   [[left]]
@@ -225,7 +229,6 @@
   "Create and return zipper from a rewrite-clj `node` (likely parsed by [[rewrite-clj.parser]]),
   and move to the first non-whitespace/non-comment child. If node is not forms node, is wrapped in forms node
   for a consistent root.
-
   Optional `opts` can specify:
   - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
@@ -270,13 +273,27 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
 (defn of-string
-  "Create and return zipper from all forms in Clojure/ClojureScript/EDN string `s`.
+  "Create and return zipper from all forms in Clojure/ClojureScript/EDN string `s`, and move to the first non-whitespace/non-comment child.
+
+  See [[of-string*]] for same but with no automatic move.
 
   Optional `opts` can specify:
   - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
   - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
   ([s] (rewrite-clj.zip.base/of-string s))
   ([s opts] (rewrite-clj.zip.base/of-string s opts)))
+
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
+(defn ^{:added "1.1.46"} of-string*
+  "Create and return zipper from all forms in Clojure/ClojureScript/END string `s`, and do no automatic move.
+
+  See [[of-string]] for same but with automatic move to first interesting node.
+
+  Optional `opts` can specify:
+  - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
+  - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
+  ([s] (rewrite-clj.zip.base/of-string* s))
+  ([s opts] (rewrite-clj.zip.base/of-string* s opts)))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
 (defn ^{:added "0.4.0"} string
@@ -797,12 +814,11 @@
 
    When `p?` is not specified `f` is called on all locations.
 
-   Note that by default a newly created zipper automatically navigates to the first non-whitespace
-   node. If you want to be sure to walk all forms in a zipper, you'll want to navigate one up prior to your walk:
+   To walk all nodes, you'll want to walk from the root node.
+   You can do this by, for example, using [[of-string*]] instead of [[of-string]].
 
    ```Clojure
-   (-> (zip/of-string \"my clojure forms\")
-       zip/up
+   (-> (zip/of-string* \"my clojure forms\")
        (zip/prewalk ...))
    ```
 
@@ -840,12 +856,11 @@
 
    When `p?` is not specified `f` is called on all locations.
 
-   Note that by default a newly created zipper automatically navigates to the first non-whitespace
-   node. If you want to be sure to walk all forms in a zipper, you'll want to navigate one up prior to your walk:
+   To walk all nodes, you'll want to walk from the root node.
+   You can do this by, for example, using [[of-string*]] instead of [[of-string]].
 
    ```Clojure
-   (-> (zip/of-string \"my clojure forms\")
-       zip/up
+   (-> (zip/of-string* \"my clojure forms\")
        (zip/postwalk ...))
    ```
 
@@ -943,13 +958,29 @@
    
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
 (defn of-file
-  "Create and return zipper from all forms in Clojure/ClojureScript/EDN File `f`.
+  "Create and return zipper from all forms in Clojure/ClojureScript/EDN File `f`, and move to the first non-whitespace/non-comment child.
+
+     See [[of-file*]] for same but with no automatic move.
 
      Optional `opts` can specify:
      - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
      - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
   ([f] (rewrite-clj.zip.base/of-file f))
   ([f opts] (rewrite-clj.zip.base/of-file f opts))))
+
+#?(:clj
+   
+;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.base
+(defn ^{:added "1.1.46"} of-file*
+  "Create and return zipper from all forms in Clojure/ClojureScript/EDN File `f`, and do no automatic move.
+
+     See [[of-file]] for same but with automatic move to first interesting node.
+
+     Optional `opts` can specify:
+     - `:track-position?` set to `true` to enable ones-based row/column tracking, see [docs on position tracking](/doc/01-user-guide.adoc#position-tracking).
+     - `:auto-resolve` specify a function to customize namespaced element auto-resolve behavior, see [docs on namespaced elements](/doc/01-user-guide.adoc#namespaced-elements)"
+  ([f] (rewrite-clj.zip.base/of-file* f))
+  ([f opts] (rewrite-clj.zip.base/of-file* f opts))))
 
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.custom-zipper.core

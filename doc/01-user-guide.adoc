@@ -59,7 +59,7 @@ Read link:design/01-merging-rewrite-clj-and-rewrite-cljs.adoc[Merging rewrite-cl
 Thanks to @xsc's transfer of rewrite-clj to clj-commons we'll continue on with the rewrite-clj namespace and clojars deploy target.
 
 To upgrade to rewrite-clj v1, update your project dependencies.
-If you were using both rewrite-cljs and rewrite-clj v0 in your project you can now drop the rewrite-cljs dependency.
+If you were using both rewrite-cljs and rewrite-clj v0 in your project you should now drop the rewrite-cljs dependency.
 
 Rewrite-clj unit tests are run against the current version of ClojureScript and Clojure versions >= v1.8.0.
 We recommend that while bumping your rewrite-clj dependency to v1, that you also bump your Clojure and ClojureScript dependencies to current official releases.
@@ -229,8 +229,10 @@ You may want to refer to link:#nodes[rewrite-clj nodes] while reviewing this int
 ====
 The zip location movement functions (`right`, `left`, `up`, `down`, etc) skip over Clojure whitespace nodes and comment nodes.
 Remember that Clojure whitespace includes commas.
-
 If you want to navigate over all nodes, use the `+*+` counterparts (`right*`, `left*`, `up*`, `down*`, etc).
+
+Similarily, the zipper creation functions `of-node`, `of-string` and `of-file` automatically skip over the the first Clojure whitespace and comment nodes.
+This is usually appropriate, but if you don't want this auto-navigation on create use the `+*+` counterparts `of-node*`, `of-string*`, and `of-file*`.
 ====
 
 See link:{cljdoc-api-url}/rewrite-clj.zip[zip API docs].
@@ -410,23 +412,23 @@ Let's explore:
 (require '[rewrite-clj.zip :as z])
 
 ;; Let's contrive an example with multiple top level forms:
-(def zloc (z/of-string "(def x 1) (def y [2 3 [4 [5]]])"))
+;; Let's contrive an example with multiple top level forms:
+(def s "(def x 1) (def y [2 3 [4 [5]]])")
 
 ;; Now let's add 100 to all numbers:
-(-> zloc
+(-> (z/of-string s)
     (z/postwalk (fn select [zloc] (number? (z/sexpr zloc)))
                 (fn visit [zloc] (z/edit zloc + 100)))
     z/root-string)
 ;; => "(def x 101) (def y [2 3 [4 [5]]])"
 
 ;; Hmmm... what happened? Only the first number was affected.
-;; A new zipper automaticaly navigates to the first non-whitespace/non-comment node.
+;; A new zipper created by of-string automaticaly navigates to the first non-whitespace/non-comment node.
 ;; In our example, this is node (def x 1).
 ;; Our walk was isolated to current node (def x 1) so that's all that got updated
 
-;; We can adapt to walk all nodes with a movement up to the top level prior to our walk
-(-> zloc
-    z/up
+;; We can adapt to walk all nodes by instead using of-string* which does no auto navigation
+(-> (z/of-string* s)
     (z/postwalk (fn select [zloc] (number? (z/sexpr zloc)))
                 (fn visit [zloc] (z/edit zloc + 100)))
     z/root-string)
@@ -532,7 +534,7 @@ The options passed into the original zipper on creation will not be automaticall
     z/down z/right z/right
     (z/edit inc)
     z/root                 ;; <- applying changes and getting root node
-    (z/edn zip-opts)       ;; <- pass the original zip-opts on creation of new zipper
+    (z/of-node zip-opts)   ;; <- pass the original zip-opts on creation of new zipper
     z/down z/right z/right
     (z/edit inc)
     (z/root-string))
@@ -547,7 +549,7 @@ The link:#zip-api[zip API] makes use of the parser API to parse Clojure into zip
 If your focus is parsing instead of rewriting, you might find this lower level API useful.
 Keep in mind that if you forgo the zip API, you forgo niceties such as the automatic handling of whitespace.
 
-You can choose to parse the first, or all forms from a string or a file.footnote:file[]
+You can choose to parse the first, or all forms from a string or, if using Clojure, a file.
 
 Here we parse a single form from a string:
 
@@ -1176,7 +1178,7 @@ For example, if you know namespace and alias info for the code rewrite-clj is op
 The `:auto-resolve` option is accepted in the `opts` map arg for:
 
 * The `rewrite-clj.node` namespace functions `sexpr` and `child-sexpr`.
-* The `rewrite-clj.zip` namespace zipper creation functions `edn*`, `edn`, `of-string` and `of-file`.
+* The `rewrite-clj.zip` namespace zipper creation functions `of-node*`, `of-node`, `of-string*`, `of-string`, `of-file*` and `of-file`.
 The resulting zipper will then automatically apply your `:auto-resolve` within any zip operation that makes use of sexpr, namely:
 ** `sexpr`
 ** `find-value` and `find-next-value` - sexpr is applied to each node to get the "value" for comparison
