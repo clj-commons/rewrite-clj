@@ -9,6 +9,13 @@
     <connection>scm:git:git@github.com:clj-commons/rewrite-clj.git</connection>
     <developerConnection>scm:git:git@github.com:clj-commons/rewrite-clj.git</developerConnection>
   </scm>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://opensource.org/licenses/MIT</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
