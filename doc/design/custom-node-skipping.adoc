@@ -1,0 +1,198 @@
+= Custom node skipping
+:toc:
+
+== Status ==
+Initial musings, first draft.
+
+== The Idea
+Currently rewrite-clj automatically skips whitespace and comments when navigating through the zipper with `left`,`right`,`down`,`up`, `next`, `prev` etc.
+
+It would be nice if rewrite-clj could be asked to also skip reader discards (unevals), maybe optionally `(comment ...)` forms, and maybe other user-imagined skip scenarios.
+
+The https://github.com/clj-commons/rewrite-clj/issues/70[request to skip unevals nodes] was raised a very long time ago.
+
+== Personal Impetus ==
+I was working on MrAnderson and found, like many do, the skipping of uneval nodes awkward.
+I started to experiment with handling this generically in MrAnderson, but then thought maybe we could just finally handle this here in rewrite-clj for everyone.
+Hence this little design note.
+
+== Code Snippet Notes
+For any code snippet, assume:
+[source,clojure]
+----
+(require '[rewrite-clj.zip :as z])
+----
+
+== In the specific
+Let's look at the specific perceived common use cases.
+
+=== Skipping whitespace and comments
+This is already implemented as hardcoded skip alg, would become an overrideable default.
+
+=== Also skipping reader discards
+Comments, whitespace and unevals can be tested via `z/sexpr-able?`.
+So, to add in skipping unevals, we'd want to skip every node that is not `z/sepxr-able?`.
+
+[source,clojure]
+----
+(a b c #_#_ skip1 skip2 d #_ (skip3 #_ skip4) e f)
+----
+
+For this skip scenario, we effectively see `(a ...)` `a` `b` `c` `d` `e` `f` nodes when moving through the tree.
+
+If we were to navigate down into, for example, `skip3` via `+*+` move fns, what would then be the effect of non-`+*+` move fns from that zipper node location?
+
+To me `next` and `prev` feel straightforward:
+
+- `next` -> `e`
+- `prev` -> `d`
+
+But what about?:
+
+- `right` -> `nil`? there is no non skipped right because we are in a skipped node
+- `left` -> `nil`? there is no non skipped left because we are in a skipped node
+- `up` -> `nil`?
+- `down` -> `nil`
+
+So maybe if we are inside a skipped node all but `next` and `prev` should return `nil`?
+Would it be more helpful if they threw?
+Maybe.
+They are used internally by other fns.
+
+If we are at a skipped node root, for example at `+#_#_ skip1 skip2+`, I think we can operate almost as per normal:
+
+- `right` -> `d`
+- `left` -> `c`
+- `up` -> `(a ...)`
+- `down` -> `nil` nothing unskipped in this direction.
+
+Logically, we can check if we are in a skipped node by:
+
+- if an ancestor node is skipped, we are inside a skipped node
+- else if current node is skipped we are at a skipped node root
+- else node is not skipped
+
+=== Also skipping comment forms
+In the same theme, a user might want to also skip any list that starts with `comment`.
+
+This is a bit interesting.
+We'd also want to skip any whitespace, comments, unevals before the `comment` symbol.
+
+[source,clojure]
+----
+foo
+(
+    comment (+ 1 2 3))
+bar
+----
+
+For this skip scenario, movement fns would see `foo` and `bar`.
+
+== In the generic
+Whitespace and comment nodes are simple.
+They are not container nodes; they are always leaf nodes.
+
+What generic affect would excluding container nodes have?
+
+Let's explore with an example:
+
+[source,clojure]
+----
+(a b c)
+[x y z [d e f]]
+(1 2 3 (4 [5 6 [7 8] 9 (10 11 [99 100])]))
+----
+
+If I wanted to skip everything but vectors, what would I expect?
+
+My first unskipped node would be `[x y z [d e f]]`.
+A `right` would return `nil`
+A `next` would return `nil`
+A `down` would move us to `[d e f]`, but a subsequent `down` would return `nil`.
+
+So is this what the user really wants and/or expects?
+Would the user have expected to see the nested vectors `[5...]` `[7...]` `[99...]`?
+Is this, in the generic, at all useful?
+
+Note that we already have `prewalk` and `postwalk` which could be better chandidates for some types of use cases, like "I want to visit every vector".
+
+== Insertions
+I think we are probably fine here, but worth a think.
+We'll just continue with the strategy rewrite-clj has taken for comments.
+Existing behaviour:
+
+[source,clojure]
+----
+(-> "(;; comment\na b c)"
+    z/of-string
+    (z/insert-child 'new)
+    z/root-string)
+;; => "(new ;; comment\na b c)"
+
+ (-> "(a b c ;; commment\n)"
+     z/of-string
+     (z/append-child 'new)
+     z/root-string)
+ ;; => "(a b c ;; commment\n new)"
+----
+
+== Deletion
+The `z/remove` fn is whitespace aware.
+Internally it uses `z/right` `z/rightmost?` and `z/leftmost?`.
+Hmm... I don't think we want these tests and movements to be affected by skip behaviour.
+
+== Paredit API
+Hmmm... have to take a look and see what makes sense.
+I don't think slurp and barf, for example, should be affected by skip behaviour.
+
+== Internal vs External Skipping
+So maybe our current default skip behaviour happens to match whitespace skip behaviour, plus `+;+` comments.
+And we might need that whitespace skip behaviour to support internal functions, regardless of the skip behaviour a user chooses.
+We'd have to look at each internal usage case by case.
+
+== Sub trees
+What about operating on a subtree?
+When isolating work to a subtree within a skipped node, do we need to remember we are working within a skipped node?
+Probably? Or maybe optionally?
+
+== Performance
+All these extra checks will have a cost.
+I think we should take rough measures for the common use cases.
+We should work to not incur any significant extra penalty if users want to stick with current skip behaviour.
+
+== Expressing skip behaviour
+We were thinking it would be expressed as an option on zipper creation and remain unchanged for the life of the zipper.
+We currently have an `auto-resolve` option that accepts a function.
+We were thinking of a `skip-node?` predicate, it would accept a zipper `zloc` as its single argument.
+
+Here's a skip-node? predicate fn I was experimenting with:
+
+[source,clojure]
+----
+(defn- skip-uninteresting-pred [zloc]
+  (z/find zloc z/up* (fn [zloc]
+                           ;; skip whitespace, comments, unevals
+                       (or (not (z/sexpr-able? zloc))
+                           ;; skip (comment ...) forms
+                           (and (z/list? zloc)
+                                (when-let [first-child (some-> zloc
+                                                               z/down*
+                                                               (z/find z/right* z/sexpr-able?))]
+                                  (and (n/symbol-node? (z/node first-child))
+                                       (= 'comment (z/sexpr first-child)))))))))
+----
+This is entirely exploratory, experimental and unoptimized.
+I'm not sure of much yet.
+If we take the a similar approach to the above, not sure if rewrite-clj will handle the search upward or if that will be up to the predicate.
+Or maybe checking if we are within a skipped node will be handled through some other mechanism.
+
+Alternatives:
+
+- a `skip-to-node?` (or other named) predicate which would express the inverse of `skip-node?`.
+- hard code and accept common use cases only, ex. `:skip-node-strategies [:whitespace :comment :comment-form :uneval]`.
+I think the flexibility of a predicate makes more sense, and we can document examples.
+
+== Other thougths
+Is there some key concept I am missing?
+Should we somehow be separating navigation from selection?
+Or treating containers differently than leaf nodes?
