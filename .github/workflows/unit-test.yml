@@ -40,7 +40,7 @@ jobs:
     - id: set-tests
       name: Set test var for matrix
       # run test.clj directly instead of via bb task to avoid generic task output
-      run: echo "::set-output name=tests::$(bb script/ci_unit_tests.clj matrix-for-ci --format=json)"
+      run: echo "tests=$(bb script/ci_unit_tests.clj matrix-for-ci --format=json)" >> $GITHUB_OUTPUT
 
   build:
     needs: setup
@@ -48,7 +48,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{fromJSON(needs.setup.outputs.tests)}}
+        include: ${{ fromJSON(needs.setup.outputs.tests) }}
 
     name: ${{ matrix.desc }}
 
