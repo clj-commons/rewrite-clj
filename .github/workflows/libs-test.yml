@@ -31,7 +31,7 @@ jobs:
     - id: set-libs
       name: Set libs var for matrix
       ## call bb script directly instead of as task to avoid task status output
-      run: echo "::set-output name=libs::$(bb script/test_libs.clj list --format=json)"
+      run: echo "libs=$(bb script/test_libs.clj list --format=json)" >> $GITHUB_OUTPUT
 
   libs-test:
     needs: enumerate-libs
@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lib: ${{fromJSON(needs.enumerate-libs.outputs.libs)}}
+        lib: ${{ fromJSON(needs.enumerate-libs.outputs.libs) }}
 
     steps:
     - uses: actions/checkout@v3
