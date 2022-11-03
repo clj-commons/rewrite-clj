@@ -32,7 +32,7 @@ jobs:
         java-version: '11'
 
     - name: Install Clojure Tools
-      uses: DeLaGuardo/setup-clojure@9.5
+      uses: DeLaGuardo/setup-clojure@10.0
       with:
         cli: 'latest'
         bb: 'latest'
@@ -107,7 +107,7 @@ jobs:
     # Install Babashka
     #
     - name: Install Babashka
-      uses: DeLaGuardo/setup-clojure@9.5
+      uses: DeLaGuardo/setup-clojure@10.0
       with:
         bb: 'latest'
 
@@ -123,7 +123,7 @@ jobs:
       if: matrix.os == 'windows'
 
     - name: Install Clojure (macos, linux)
-      uses: DeLaGuardo/setup-clojure@9.5
+      uses: DeLaGuardo/setup-clojure@10.0
       with:
         cli: 'latest'
       if: matrix.os != 'windows'
