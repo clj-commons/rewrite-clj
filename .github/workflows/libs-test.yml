@@ -23,7 +23,7 @@ jobs:
         restore-keys: ${{ runner.os }}-clj-libs-deps-
 
     - name: Install Clojure tools
-      uses: DeLaGuardo/setup-clojure@10.0
+      uses: DeLaGuardo/setup-clojure@10.1
       with:
         cli: 'latest'
         bb: 'latest'
@@ -69,7 +69,7 @@ jobs:
         sudo apt-get install -y planck
 
     - name: Install Clojure tools
-      uses: DeLaGuardo/setup-clojure@10.0
+      uses: DeLaGuardo/setup-clojure@10.1
       with:
         cli: 'latest'
         bb: 'latest'

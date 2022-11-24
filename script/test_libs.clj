@@ -279,7 +279,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "2.1.939"
+            :version "2.2.962"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -391,7 +391,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "rewrite-edn"
-            :version "0.3.4"
+            :version "0.4.5"
             :platforms [:clj]
             :github-release {:repo "borkdude/rewrite-edn"
                              :version-prefix "v"
