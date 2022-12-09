@@ -294,7 +294,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "clerk"
-            :version "0.11.603"
+            :version "0.12.707"
             :platforms [:clj]
             :github-release {:repo "nextjournal/clerk"
                              :via :tag
@@ -322,7 +322,7 @@
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2022.11.03-00.14.57"
+            :version "2022.12.09-15.51.10"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
@@ -391,7 +391,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "rewrite-edn"
-            :version "0.4.5"
+            :version "0.4.6"
             :platforms [:clj]
             :github-release {:repo "borkdude/rewrite-edn"
                              :version-prefix "v"
