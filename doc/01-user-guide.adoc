@@ -1087,13 +1087,16 @@ a|`'prefix/my-symbol`
 
 |auto-resolved current namespace
 a|`::my-kw`
-a|``my-kw`
+a|n/a ^*^
 
 |auto-resolved namespaced alias
 a|`::my-ns-alias/my-kw`
-a|``my-ns-alias/my-kw` (note: for symbols, if the alias didn't exist, it will be used literally)
+a|n/a ^*^
 
 |===
++
+^*^ _not applicable, stand-alone symbols do not support auto-resolve syntax_
+
 
 * Namespaced keyword and symbols:
 +
