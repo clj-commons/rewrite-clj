@@ -1087,11 +1087,11 @@ a|`'prefix/my-symbol`
 
 |auto-resolved current namespace
 a|`::my-kw`
-a|n/a
+a|``my-kw`
 
 |auto-resolved namespaced alias
 a|`::my-ns-alias/my-kw`
-a|n/a
+a|``my-ns-alias/my-kw` (note: for symbols, if the alias didn't exist, it will be used literally)
 
 |===
 
