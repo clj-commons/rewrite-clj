@@ -1072,28 +1072,26 @@ If the code you are parsing doesn't use namespaced maps or you have no interest 
 In Clojure keywords and symbols can be qualified.
 A recap via examples:
 
-* Stand-alone keyword and symbols:
+* Stand-alone keywords:
 +
 |===
-| |keyword|symbol
+| |keyword
 
 |unqualified
 a|`:my-kw`
-a|`'my-symbol`
 
 |qualified
 a|`:prefix/my-kw`
-a|`'prefix/my-symbol`
+
 
 |auto-resolved current namespace
 a|`::my-kw`
-a|n/a
 
 |auto-resolved namespaced alias
 a|`::my-ns-alias/my-kw`
-a|n/a
 
 |===
+
 
 * Namespaced keyword and symbols:
 +
