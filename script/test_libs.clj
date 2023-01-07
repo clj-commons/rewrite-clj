@@ -279,7 +279,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "2.2.962"
+            :version "2.2.970"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -408,6 +408,15 @@
             :patch-fn refactor-nrepl-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["make test"]}
+           {:name "rich-comment-tests"
+            :version "0.0.4"
+            :platforms [:clj] ;; and bb but we don't test that here
+            :github-release {:repo "matthewdowney/rich-comment-tests"
+                             :version-prefix "v"
+                             :via :tag}
+            :patch-fn deps-edn-v1-patch
+            :show-deps-fn cli-deps-tree
+            :test-cmds ["bb test-clj"]}
            {:name "test-doc-blocks"
             :version "1.0.166-alpha"
             :platforms [:clj :cljs]
