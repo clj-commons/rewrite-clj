@@ -279,14 +279,14 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "2.2.970"
+            :version "2.2.983"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:dev:test"]}
            {:name "carve"
-            :version "0.2.0"
+            :version "0.3.5"
             :platforms [:clj]
             :github-release {:repo "borkdude/carve"
                              :version-prefix "v"}
@@ -303,7 +303,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test:clj :kaocha/reporter '[kaocha.report/documentation]'"]}
            {:name "cljfmt"
-            :version "0.9.0"
+            :version "0.9.2"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
@@ -322,7 +322,7 @@
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2022.12.09-15.51.10"
+            :version "2023.01.26-11.08.16"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
@@ -409,7 +409,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["make test"]}
            {:name "rich-comment-tests"
-            :version "0.0.4"
+            :version "1.0.0"
             :platforms [:clj] ;; and bb but we don't test that here
             :github-release {:repo "matthewdowney/rich-comment-tests"
                              :version-prefix "v"
@@ -437,8 +437,8 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "zprint"
-            :version "1.2.4"
-            :note "1) planck cljs tests disabled for now: https://github.com/planck-repl/planck/issues/1088 2) 1.2.5-alpha1 is a pre-release, we'll skip it"
+            :version "1.2.5"
+            :note "1) planck cljs tests disabled for now: https://github.com/planck-repl/planck/issues/1088"
             :platforms [:clj :cljs]
             :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch
@@ -448,7 +448,7 @@
                             (lein-deps-tree lib)
                             (status/line :detail "=> Deps Clojurescript run:")
                             (cli-deps-tree lib))
-            :test-cmds ["lein with-profile expectations test"
+            :test-cmds ["clojure -M:cljtest:test"
                         ;; disable zprint cljs tests for now, see https://github.com/planck-repl/planck/issues/1088
                         #_"clojure -M:cljs-runner"]
             :cleanup-fn zprint-cleanup}])

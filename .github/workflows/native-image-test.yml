@@ -36,7 +36,7 @@ jobs:
     - name: Install GraalVM
       uses: graalvm/setup-graalvm@v1
       with:
-        version: '22.3.0'
+        version: '22.3.1'
         java-version: ${{ matrix.graal-java }}
         components: 'native-image'
         github-token: ${{ secrets.GITHUB_TOKEN }}
