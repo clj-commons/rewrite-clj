@@ -39,8 +39,10 @@
 
 ;; ## Constructors
 
-(defn list-node
-  "Create a node representing a list with `children`.
+(let [;; re-use seq-fn for all instances so equals works
+      list-node-seq-fn #(apply list %)]
+  (defn list-node
+    "Create a node representing a list with `children`.
 
    ```Clojure
    (require '[rewrite-clj.node :as n])
@@ -53,8 +55,8 @@
        n/string)
    ;; => \"(1 2 3)\"
    ```"
-  [children]
-  (->SeqNode :list "(%s)" 2 #(apply list %) children))
+    [children]
+    (->SeqNode :list "(%s)" 2 list-node-seq-fn children)))
 
 (defn vector-node
   "Create a node representing a vector with `children`.
@@ -101,8 +103,10 @@
   [children]
   (->SeqNode :set "#{%s}" 3 set children))
 
-(defn map-node
-  "Create a node representing a map with `children`.
+(let [;; re-use seq-fn for all instances for equality
+      map-seq-fn #(apply hash-map %)]
+  (defn map-node
+    "Create a node representing a map with `children`.
    ```Clojure
    (require '[rewrite-clj.node :as n])
 
@@ -138,5 +142,5 @@
    ;; => \"{:a 1 :a 2}\"
    ```
    See [docs on maps with duplicate keys](/doc/01-user-guide.adoc#maps-with-duplicate-keys)."
-  [children]
-  (->SeqNode :map "{%s}" 2 #(apply hash-map %) children))
+    [children]
+    (->SeqNode :map "{%s}" 2 map-seq-fn children)))

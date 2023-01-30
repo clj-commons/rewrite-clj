@@ -23,7 +23,7 @@ https://github.com/clj-commons/rewrite-clj/issues/189[#189]
 * exceptions thrown while reading now include `:row` and `:col` keys in `ex-data` https://github.com/clj-commons/rewrite-clj/pull/181[#181] (thanks @ferdinand-beyer)
 * docs
 ** a docstring typo fix https://github.com/clj-commons/rewrite-clj/pull/191[#191] (thanks @BTowersCoding!)
-
+* Implement equality for seq nodes https://github.com/clj-commons/rewrite-clj/issues/212[#212] (@borkdude)
 
 === v1.1.45
 
