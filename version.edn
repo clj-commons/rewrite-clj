@@ -3,4 +3,4 @@
 ;; omit :qualifier (ex. :qualifier "alpha") for official releases
 {:major 1
  :minor 1
- :release 45}
+ :release 46}
