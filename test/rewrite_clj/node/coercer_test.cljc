@@ -66,7 +66,9 @@
   (testing "multi-line string newline variants are normalized"
     (let [s "hey\nyou\rover\r\nthere"
           n (node/coerce s)]
-      (is (= "hey\nyou\nover\nthere" (node/sexpr n))))))
+      (is (= "hey\nyou\nover\nthere" (node/sexpr n)))))
+  (testing "coerce string roundtrip"
+    (is (= "\"hey \\\" man\"" (-> "hey \" man" node/coerce node/string)))))
 
 (deftest
   t-quoted-list-reader-location-metadata-elided
