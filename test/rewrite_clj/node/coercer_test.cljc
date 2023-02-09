@@ -64,10 +64,12 @@
 
       ;; date
       #inst "2014-11-26T00:05:23" :token :token))
-  (testing "multi-line string newline variants are normalized"
+  (testing "multi-line string newline variants are preserved"
     (let [s "hey\nyou\rover\r\nthere"
           n (node/coerce s)]
-      (is (= s (node/sexpr n))))))
+      (is (= s (node/sexpr n)))))
+  (testing "coerce string roundtrip"
+    (is (= "\"hey \\\" man\"" (-> "hey \" man" node/coerce node/string)))))
 
 (deftest
   t-quoted-list-reader-location-metadata-elided

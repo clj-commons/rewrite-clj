@@ -31,7 +31,7 @@
   (length [_node]
     (+ 2 (reduce + (map count lines))))
   (string [_node]
-    (wrap-string (join-lines lines)))
+    (wrap-string (or raw-lines (join-lines lines))))
 
   Object
   (toString [node]
