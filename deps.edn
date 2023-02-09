@@ -58,7 +58,7 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.76.1230"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.77.1236"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "1.17.101"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.1.89"}}
                     :main-opts ["-m" "kaocha.runner"]}
@@ -134,7 +134,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.2.983"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.2.992"}
                                    org.slf4j/slf4j-simple {:mvn/version "2.0.6"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
