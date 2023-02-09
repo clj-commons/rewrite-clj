@@ -57,7 +57,11 @@
        n/string)
   ;; => \"\\\"line1\\n\\nline3\\\"\"
   ```"
-  [lines raw-lines]
-  (if (string? lines)
-    (->StringNode [lines] raw-lines)
-    (->StringNode lines raw-lines)))
+  ([lines]
+   (if (string? lines)
+     (->StringNode [lines] lines)
+     (->StringNode lines nil)))
+  ([lines raw-string]
+   (if (string? lines)
+     (->StringNode [lines] raw-string)
+     (->StringNode lines raw-string))))
