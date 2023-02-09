@@ -1,6 +1,5 @@
 (ns ^:no-doc rewrite-clj.node.stringz
   (:require [clojure.string :as string]
-            [clojure.tools.reader.edn :as edn]
             [rewrite-clj.node.protocols :as node] ))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -22,10 +21,7 @@
   (node-type [_node] :string)
   (printable-only? [_node] false)
   (sexpr* [_node _opts]
-    (join-lines
-      (map
-        (comp edn/read-string wrap-string)
-        lines)))
+    (join-lines lines))
   (length [_node]
     (+ 2 (reduce + (map count lines))))
   (string [_node]

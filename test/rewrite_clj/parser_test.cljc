@@ -185,7 +185,7 @@
          (is (= ?s (node/string n)))
          (is (= ?sexpr (node/sexpr n))))
     "\"123\""       :token       "123"
-    "\"123\\n456\"" :token       "123\n456"
+    "\"123\\n456\"" :token       "123\\n456"
     "\"123\n456\""  :multi-line  "123\n456"))
 
 (deftest t-parsing-seqs
