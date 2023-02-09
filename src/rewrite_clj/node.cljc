@@ -670,7 +670,10 @@
        n/string)
   ;; => \"\\\"line1\\n\\nline3\\\"\"
   ```"
-  [lines] (rewrite-clj.node.stringz/string-node lines lines))
+  [lines] (rewrite-clj.node.stringz/string-node
+           lines
+           (when (string? lines)
+             lines)))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.node.quote
 (defn quote-node
