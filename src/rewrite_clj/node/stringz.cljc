@@ -1,7 +1,7 @@
 (ns ^:no-doc rewrite-clj.node.stringz
   (:require [clojure.string :as string]
             [clojure.tools.reader.edn :as edn]
-            [rewrite-clj.node.protocols :as node] ))
+            [rewrite-clj.node.protocols :as node]))
 
 #?(:clj (set! *warn-on-reflection* true))
 
@@ -13,7 +13,7 @@
 (defn- join-lines [lines]
   (string/join "\n" lines))
 
-(defrecord StringNode [lines]
+(defrecord StringNode [lines raw-lines]
   node/Node
   (tag [_node]
     (if (next lines)
@@ -22,10 +22,12 @@
   (node-type [_node] :string)
   (printable-only? [_node] false)
   (sexpr* [_node _opts]
-    (join-lines
-      (map
-        (comp edn/read-string wrap-string)
-        lines)))
+    (or raw-lines
+        (join-lines
+         (map
+          (fn [line]
+            (-> line wrap-string edn/read-string))
+          lines))))
   (length [_node]
     (+ 2 (reduce + (map count lines))))
   (string [_node]
@@ -55,7 +57,7 @@
        n/string)
   ;; => \"\\\"line1\\n\\nline3\\\"\"
   ```"
-  [lines]
+  [lines raw-lines]
   (if (string? lines)
-    (->StringNode [lines])
-    (->StringNode lines)))
+    (->StringNode [lines] raw-lines)
+    (->StringNode lines raw-lines)))

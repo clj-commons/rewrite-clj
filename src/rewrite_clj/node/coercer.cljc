@@ -96,7 +96,7 @@
    - includes all lines even if empty
    - behaves the same on clj and cljs"
   [s]
-  (loop [s (string/escape s {\" "\\\""})
+  (loop [s s
          lines []]
     (if-let [m (first (re-find #"(\r\n|\r|\n)" s))]
       (let [eol-ndx (string/index-of s m)]
@@ -150,7 +150,7 @@
 (extend-protocol NodeCoerceable
   #?(:clj java.lang.String :cljs string)
   (coerce [v]
-    (string-node (split-to-lines v))))
+    (string-node (split-to-lines v) v)))
 
 #?(:clj
    (extend-protocol NodeCoerceable

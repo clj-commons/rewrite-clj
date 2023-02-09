@@ -49,6 +49,7 @@
       "\n\n"                 :multi-line :string
       ","                    :token      :string
       "inner\"quote"         :token      :string
+      "\\s+"                 :token      :string
 
       ;; seqs
       []                     :vector     :seq
@@ -66,7 +67,7 @@
   (testing "multi-line string newline variants are normalized"
     (let [s "hey\nyou\rover\r\nthere"
           n (node/coerce s)]
-      (is (= "hey\nyou\nover\nthere" (node/sexpr n))))))
+      (is (= s (node/sexpr n))))))
 
 (deftest
   t-quoted-list-reader-location-metadata-elided

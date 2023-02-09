@@ -16,6 +16,8 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* Fix `node/coerce` + `node/sexpr` roundtrip of regex pattern https://github.com/clj-commons/rewrite-clj/issues/214[#214] (@borkdude)
+
 === v1.1.46
 
 * added new `rewrite-clj.zip` functions `of-string*` and `of-file*`, these are versions of `of-string` and `of-file` that do no auto-navigation

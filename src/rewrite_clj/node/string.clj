@@ -24,4 +24,4 @@
        n/string)
   ;; => \"\\\"line1\\n\\nline3\\\"\"
   ```"
-  [lines] (rewrite-clj.node.stringz/string-node lines))
+  [lines] (rewrite-clj.node.stringz/string-node lines lines))
