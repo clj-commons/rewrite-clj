@@ -34,8 +34,7 @@
 
 (defn parse-string
   [#?(:cljs ^not-native reader :default reader)]
-  (let [data (read-string-data reader)]
-    (nstring/string-node data)))
+  (nstring/string-node (read-string-data reader)))
 
 (defn parse-regex
   [#?(:cljs ^not-native reader :default reader)]
