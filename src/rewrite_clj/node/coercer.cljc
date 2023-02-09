@@ -96,7 +96,8 @@
    - includes all lines even if empty
    - behaves the same on clj and cljs"
   [s]
-  (loop [s (string/escape s {\" "\\\""})
+  (loop [s (string/escape s {\" "\\\""
+                             \\ "\\\\"})
          lines []]
     (if-let [m (first (re-find #"(\r\n|\r|\n)" s))]
       (let [eol-ndx (string/index-of s m)]
