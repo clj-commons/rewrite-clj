@@ -44,6 +44,22 @@
 
   When `lines` is a sequence, the resulting node will `tag` will be `:multi-line`, otherwise `:token`.
 
+  `:multi-line` refers to a single string in your source that appears over multiple lines, for example:
+
+  ```Clojure
+  (def s \"foo
+            bar
+              baz\")
+  ```
+
+  It does not apply to a string that appears on a single line that includes escaped newlines, for example:
+
+  ```Clojure
+  (def s \"foo\\nbar\\n\\baz\")
+  ```
+
+  Naive examples (see example on escaping below):
+
   ```Clojure
   (require '[rewrite-clj.node :as n])
 
@@ -54,7 +70,30 @@
   (-> (n/string-node [\"line1\" \"\" \"line3\"])
        n/string)
   ;; => \"\\\"line1\\n\\nline3\\\"\"
-  ```"
+  ```
+
+  This function was originally written to serve the rewrite-clj parser.
+  Escaping and wrapping expectations are non-obvious.
+  Characters within strings are assumed to be escaped, but not wrapped with `\\\"`
+  Neglecting to escape characters that require escaping will result in invalid strings.
+
+  (Best to view this on cljdoc, docstring string escaping is confusing).
+
+  ```Clojure
+  (require '[clojure.string :as string])
+
+  (defn pr-str-unwrapped [s]
+    (apply str (-> s pr-str next butlast)))
+
+  (-> \"hey \\\" man\"
+      pr-str-unwrapped
+      n/string-node
+      n/string)
+  ;; => \"\\\"hey \\\\\\\" man\\\"\"
+  ```
+
+  For single-line strings consider [[token-node]].
+  It will handle escaping for you."
   [lines]
   (if (string? lines)
     (->StringNode [lines])

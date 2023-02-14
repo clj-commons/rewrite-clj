@@ -79,7 +79,12 @@
 
    (-> (n/token-node 42) n/string)
    ;; => \"42\"
-   ```"
+
+   (-> (n/token-node \"astring\") n/string)
+   ;; => \"\\\"astring\\\"\"
+   ```
+
+   For strings appearing over multiple lines, see [[string-node]]."
   ([value]
    (token-node value (pr-str value)))
   ([value string-value]

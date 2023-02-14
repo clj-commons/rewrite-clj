@@ -41,14 +41,14 @@
       ::1.5.1                :token      :keyword
       :namespace/keyword     :token      :keyword
 
-      ""                     :token      :string
-      "hello, over there!"   :token      :string
-      "multi\nline"          :multi-line :string
-      " "                    :token      :string
-      "\n"                   :multi-line :string
-      "\n\n"                 :multi-line :string
-      ","                    :token      :string
-      "inner\"quote"         :token      :string
+      ""                     :token      :token
+      "hello, over there!"   :token      :token
+      "multi\nline"          :token      :token
+      " "                    :token      :token
+      "\n"                   :token      :token
+      "\n\n"                 :token      :token
+      ","                    :token      :token
+      "inner\"quote"         :token      :token
 
       ;; seqs
       []                     :vector     :seq
@@ -63,10 +63,10 @@
 
       ;; date
       #inst "2014-11-26T00:05:23" :token :token))
-  (testing "multi-line string newline variants are normalized"
+  (testing "multi-line string newline variants are preserved"
     (let [s "hey\nyou\rover\r\nthere"
           n (node/coerce s)]
-      (is (= "hey\nyou\nover\nthere" (node/sexpr n)))))
+      (is (= s (node/sexpr n)))))
   (testing "coerce string roundtrip"
     (is (= "\"hey \\\" man\"" (-> "hey \" man" node/coerce node/string)))))
 
