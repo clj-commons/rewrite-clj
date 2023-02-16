@@ -156,16 +156,6 @@ jobs:
         planck --version
       if: matrix.os != 'windows'
 
-    #
-    # Node modules
-    #
-    - name: Install karma command line (windows)
-      run: npm install karma-cli -g
-      if: matrix.os == 'windows'
-    - name: Install karma command line (macos, linux)
-      run: sudo npm install karma-cli -g
-      if: matrix.os != 'windows'
-
     - name: Install node modules
       run: npm install
 

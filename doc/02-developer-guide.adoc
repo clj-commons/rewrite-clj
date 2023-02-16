@@ -67,7 +67,6 @@ After checking out this project from GitHub,
 1. Install JavaScript libraries and tools required by https://github.com/bensu/doo[doo] and https://github.com/thheller/shadow-cljs[shadow-cljs]:
 +
 ----
-sudo npm install karma-cli -g
 npm install
 ----
 

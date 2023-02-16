@@ -22,7 +22,8 @@
    :source-map (= "none" optimizations)})
 
 (defn doo-opts [test-combo]
-  {:karma
+  {:paths {:karma "npx karma"}
+   :karma
    {:config {"plugins" ["karma-spec-reporter" "karma-junit-reporter"]
              "reporters" ["spec" "junit"]
              "specReporter" {"suppressSkipped" "false"
