@@ -690,8 +690,9 @@
   This function was originally written to serve the rewrite-clj parser.
   Escaping and wrapping expectations are non-obvious.
   - characters within strings are assumed to be escaped
-  - the string should not wrapped with `\\\"`
+  - but the string should not wrapped with `\\\"`
 
+  Here's an example of conforming to these expectations.
   (Best to view this on cljdoc, docstring string escaping is confusing).
 
   ```Clojure
