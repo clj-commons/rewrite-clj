@@ -42,7 +42,7 @@
 (defn string-node
   "Create node representing a string value where `lines` can be a sequence of strings or a single string.
 
-  When `lines` is a sequence, the resulting node will `tag` will be `:multi-line`, otherwise `:token`.
+  When `lines` is a sequence, the resulting node `tag` will be `:multi-line`, otherwise `:token`.
 
   `:multi-line` refers to a single string in your source that appears over multiple lines, for example:
 
@@ -74,8 +74,8 @@
 
   This function was originally written to serve the rewrite-clj parser.
   Escaping and wrapping expectations are non-obvious.
-  Characters within strings are assumed to be escaped, but not wrapped with `\\\"`
-  Neglecting to escape characters that require escaping will result in invalid strings.
+  - characters within strings are assumed to be escaped
+  - the string should not wrapped with `\\\"`
 
   (Best to view this on cljdoc, docstring string escaping is confusing).
 
@@ -92,7 +92,7 @@
   ;; => \"\\\"hey \\\\\\\" man\\\"\"
   ```
 
-  For single-line strings consider [[token-node]].
+  To construct strings appearing on a single line, consider [[token-node]].
   It will handle escaping for you."
   [lines]
   (if (string? lines)

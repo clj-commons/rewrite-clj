@@ -84,7 +84,7 @@
    ;; => \"\\\"astring\\\"\"
    ```
 
-   For strings appearing over multiple lines, see [[string-node]]."
+   To construct strings appearing over multiple lines, see [[string-node]]."
   ([value]
    (token-node value (pr-str value)))
   ([value string-value]
