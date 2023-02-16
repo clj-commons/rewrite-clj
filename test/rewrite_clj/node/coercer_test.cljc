@@ -49,6 +49,7 @@
       "\n\n"                 :token      :token
       ","                    :token      :token
       "inner\"quote"         :token      :token
+      "\\s+"                 :token      :token
 
       ;; seqs
       []                     :vector     :seq
