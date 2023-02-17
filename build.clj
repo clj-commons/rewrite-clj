@@ -1,29 +1,23 @@
 (ns build
-  (:require [build-util :as bu]
-            [clojure.java.io :as io]
-            [clojure.tools.build.api :as b]
-            [deps-deploy.deps-deploy :as dd]
-            [whitespace-linter]))
+  (:require [build-shared]
+            [clojure.tools.build.api :as b]))
 
+(def version (build-shared/lib-version))
+(def lib (build-shared/lib-artifact-name))
 
-(def lib 'rewrite-clj/rewrite-clj)
-(def version (bu/version-string)) ;; the expectations is some pre-processing has bumped the version when releasing
 (def class-dir "target/classes")
 (def basis (b/create-basis {:project "deps.edn"}))
 (def jar-file (format "target/%s.jar" (name lib)))
-(def built-jar-version-file "target/built-jar-version.txt")
 
 (defn jar
   "Build library jar file.
-  Also writes built version to target/built-jar-version.txt for easy peasy pickup by any interested downstream operation.
-
-  We use the optional :version-suffix to distinguish local installs from production releases.
-  For example, when testing 3rd party libs against rewrite-clj master we use the suffix: canary. "
-  [{:keys [version-suffix]}]
+  Supports `:version-override` for local testing, otherwise official version is used.
+  For example, when testing 3rd party libs against rewrite-clj master we use the suffix: canary."
+  [{:keys [version-override] :as opts}]
   (b/delete {:path class-dir})
   (b/delete {:path jar-file})
-  (let [version (if version-suffix (format "%s-%s" version version-suffix)
-                    version)]
+  (let [version (or version-override version)]
+    (println "jarring version" version)
     (b/write-pom {:class-dir class-dir
                   :lib lib
                   :version version
@@ -34,75 +28,23 @@
                  :target-dir class-dir})
     (b/jar {:class-dir class-dir
             :jar-file jar-file})
-    (spit built-jar-version-file version)))
-
-(defn- built-version* []
-  (when (not (.exists (io/file built-jar-version-file)))
-    (throw (ex-info (str "Built jar version file not found: " built-jar-version-file) {})))
-  (slurp built-jar-version-file))
-
-(defn built-version
-  ;; NOTE: Used by release script and github workflow
-  "Spit out version of jar built (with no trailing newline).
-  A separate task because I don't know what build.tools might spit to stdout."
-  [_]
-  (print (built-version*))
-  (flush))
+    (assoc opts :built-version version)))
 
 (defn install
-  "Install built jar to local maven repo"
-  [_]
-  (b/install {:class-dir class-dir
-              :lib lib
-              :version (built-version*)
-              :basis basis
-              :jar-file jar-file}))
+  "Install built jar to local maven repo, optionally specify `:version-override` for local testing."
+  [opts]
+  (let [{:keys [built-version]} (jar opts)]
+    (println "installing version" built-version)
+    (b/install {:class-dir class-dir
+                :lib lib
+                :version built-version
+                :basis basis
+                :jar-file jar-file})))
 
-(defn deploy
-  "Deploy built jar to clojars"
-  [_]
-  (dd/deploy {:installer :remote
-              :artifact jar-file
-              :pom-file (b/pom-path {:lib lib :class-dir class-dir})}))
-
-(defn project-lib
-  "Returns project groupid/artifactid"
-  [_]
-  (println lib))
-
-(defn lint-whitespace
-  "Use camsaul's whitespace-linter"
-  [_]
-  (whitespace-linter/lint {:paths [".clj-kondo/config.edn"
-                                   ".codecov.yml"
-                                   ".github/"
-                                   ".gitignore"
-                                   "CHANGELOG.adoc"
-                                   "CODE_OF_CONDUCT.md"
-                                   "CONTRIBUTING.md"
-                                   "LICENSE"
-                                   "ORIGINATOR"
-                                   "README.adoc"
-                                   "bb.edn"
-                                   "build.clj"
-                                   "deps.edn"
-                                   "doc/"
-                                   "fig.cljs.edn"
-                                   "package.json"
-                                   "pom.xml"
-                                   "resources/"
-                                   "script/"
-                                   "src/"
-                                   "template/"
-                                   "test/"
-                                   "test-isolated/"
-                                   "tests.edn"
-                                   "version.edn"]
-                           :include-patterns [#"\.clj.?$" #"\.edn$" #"\.yaml$" #"\.adoc$" #"\.md$"
-                                              #"CODEOWNERS$" #"LICENSE$" #"ORIGINATOR$"
-                                              #"\.clj-kondo/config.edn"]
-                           :exclude-patterns [;; exclude things generated
-                                              #"doc/generated/.*$"
-                                              #"src/rewrite_clj/(node|zip)\.cljc$"
-                                              #"src/rewrite_clj/node/string\.clj$"
-                                              #"src/rewrite_clj/zip/(edit|find|remove|seq)\.clj"]}))
+(defn deploy [_]
+  (jar {})
+  (println "deploy")
+  ((requiring-resolve 'deps-deploy.deps-deploy/deploy)
+   {:installer :remote
+    :artifact jar-file
+    :pom-file (b/pom-path {:lib lib :class-dir class-dir})}))

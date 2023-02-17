@@ -15,6 +15,6 @@
     ;; one at a time because aliases with :replace-deps will... well... you know.
     (status/line :detail "Bring down default deps")
     (t/clojure "-P")
-    (doseq [a aliases]
+    (doseq [a (sort aliases)]
       (status/line :detail "Bring down deps for alias: %s" a)
       (t/clojure "-P" (str "-M" a)))))

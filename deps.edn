@@ -133,8 +133,7 @@
            ;; Deployment
            ;
            :build {:deps {org.clojure/tools.build {:mvn/version "0.9.2"}
-                          slipset/deps-deploy {:mvn/version "0.2.0"}
-                          com.camsaul/whitespace-linter {:mvn/version "2022.07.21.02.09"}}
+                          slipset/deps-deploy {:mvn/version "0.2.0"}}
                    :extra-paths ["src" "build"]
                    :ns-default build}
 

@@ -4,6 +4,7 @@
   "Test 3rd party libs against rewrite-clj head"
   (:require [babashka.curl :as curl]
             [babashka.fs :as fs]
+            [build-shared]
             [cheshire.core :as json]
             [clojure.java.io :as io]
             [clojure.string :as string]
@@ -21,20 +22,9 @@
     (status/line :detail (str "Running: " cmd " " (string/join " " args)))
     (apply shell/command opts cmd args)))
 
-(defn- built-version []
-  (-> (shell/command {:out :string}
-                     "clojure -T:build built-version")
-      :out
-      string/trim))
-
-(defn- install-local []
+(defn- install-local [canary-version]
   (status/line :head "Installing canary rewrite-clj locally")
-  (shcmd "clojure -T:build jar :version-suffix canary")
-  (shcmd "clojure -T:build install")
-  (let [canary-version (built-version)]
-    (status/line :detail "Installed %s to local maven repo" canary-version)
-    canary-version))
-
+  (shcmd "clojure -T:build install :version-override" (pr-str canary-version)))
 
 (defn- get-current-version
   "Get current available version of lib via GitHub API.
@@ -533,7 +523,8 @@
   (status/line :detail "Test popular 3rd party libs against current rewrite-clj.")
   (let [target-root-dir "target/test-libs"]
     (status/line :detail "Requested libs: %s" (into [] (map :name requested-libs)))
-    (let [canary-version (install-local)]
+    (let [canary-version (str (build-shared/lib-version) "-canary")]
+      (install-local canary-version)
       (prep-target target-root-dir)
       (let [results (doall (map #(test-lib (assoc %
                                                   :target-root-dir target-root-dir
