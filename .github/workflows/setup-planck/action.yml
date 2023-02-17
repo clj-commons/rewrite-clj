@@ -26,4 +26,4 @@ runs:
       run: |
         echo "planck --version"
         planck --version
-      if: matrix.os != 'Windows'
+      if: runner.os != 'Windows'
