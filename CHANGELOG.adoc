@@ -16,6 +16,22 @@ For a list of breaking changes see link:#v1-breaking[breaking changes].
 
 === Unreleased
 
+* Clojure string to rewrite-clj node coercion fixes
+https://github.com/clj-commons/rewrite-clj/issues/214[#214]
+(@borkdude/@lread collab)
+** `"a\n\b\r\nc"` is now preserved as is.
+It was being coerced to:
++
+[source,clojure]
+----
+"a
+b
+c"
+----
+** escaped characters now coerce correctly.
+Previously we were only handling `\"`.
+Strings like `"\\s+"` now handled and preserved.
+
 === v1.1.46
 
 * added new `rewrite-clj.zip` functions `of-string*` and `of-file*`, these are versions of `of-string` and `of-file` that do no auto-navigation
