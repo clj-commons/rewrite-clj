@@ -47,11 +47,11 @@
     (some #{origin-url} [(format "https://github.com/%s.git" (build-shared/lib-github-coords))
                          (format "git@github.com:%s.git" (build-shared/lib-github-coords))])))
 
-(defn- master-branch? []
+(defn- default-branch? []
   (let [current-branch (->> (t/shell {:out :string} "git rev-parse --abbrev-ref HEAD")
                             :out
                             string/trim)]
-    (= "master" current-branch)))
+    (= "main" current-branch)))
 
 (defn- uncommitted-code? []
   (-> (t/shell {:out :string}
@@ -67,15 +67,15 @@
       (-> out string/trim seq)
       (status/die 1 "Failed to check for unpushed commits, are you on an unpushed branch?"))))
 
-(defn- commit-matches-master? []
-  (let [master-head-sha (-> (t/shell {:out :string} (format "git ls-remote https://github.com/%s.git master" (build-shared/lib-github-coords)))
+(defn- commit-matches-default-head? []
+  (let [repo-head-sha (-> (t/shell {:out :string} (format "git ls-remote https://github.com/%s.git main" (build-shared/lib-github-coords)))
                              :out
                              (string/split #"\s+")
                              first)
         local-head-sha (-> (t/shell {:out :string} "git rev-parse HEAD")
                            :out
                            string/trim)]
-    (= master-head-sha local-head-sha)))
+    (= repo-head-sha local-head-sha)))
 
 (defn- analyze-changelog
   "Certainly not fool proof, but should help for common mistakes"
@@ -101,14 +101,14 @@
                                    (analyze-changelog))]
     [{:check "not on fork"
       :result (if (not-fork?) :pass :fail)}
-     {:check "on master branch"
-      :result (if (master-branch?) :pass :fail)}
+     {:check "on default branch"
+      :result (if (default-branch?) :pass :fail)}
      {:check "no uncommitted code"
       :result (if (uncommitted-code?) :fail :pass)}
      {:check "no unpushed commits"
       :result (if (unpushed-commits?) :fail :pass)}
-     {:check "in synch with master HEAD"
-      :result (if (commit-matches-master?) :pass :fail)}
+     {:check "in synch with project repo HEAD"
+      :result (if (commit-matches-default-head?) :pass :fail)}
      {:check "changelog has unreleased section"
       :result (if (:section-missing changelog-findings) :fail :pass)}
      {:check "changelog unreleased section attributes valid"

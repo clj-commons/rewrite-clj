@@ -12,7 +12,7 @@
 (defn jar
   "Build library jar file.
   Supports `:version-override` for local testing, otherwise official version is used.
-  For example, when testing 3rd party libs against rewrite-clj master we use the suffix: canary."
+  For example, when testing 3rd party libs against rewrite-clj HEAD we use the suffix: canary."
   [{:keys [version-override] :as opts}]
   (b/delete {:path class-dir})
   (b/delete {:path jar-file})

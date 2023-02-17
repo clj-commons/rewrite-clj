@@ -17,7 +17,7 @@ The publish task locally validates:
 
 * local git
 ** you are not on a fork
-** you are on master branch
+** you are on the default branch
 ** do not have any uncommitted code
 ** do not have any unpushed commits
 ** local head sha matches matches remote head sha
