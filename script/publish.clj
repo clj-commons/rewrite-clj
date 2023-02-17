@@ -82,7 +82,7 @@
   []
   (let [content (slurp changelog-fname)
         valid-attrs ["[minor breaking]" "[breaking]"]
-        [_ attr content :as match] (re-find #"(?ims)^== Unreleased ?(.*?)$(.*?)(== v\d|\z)" content)]
+        [_ attr content :as match] (re-find #"(?ims)^=== Unreleased ?(.*?)$(.*?)(== v\d|\z)" content)]
     (if (not match)
       [{:error :section-missing}]
       (cond-> []
