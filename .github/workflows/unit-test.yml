@@ -16,34 +16,18 @@ jobs:
       tests: ${{ steps.set-tests.outputs.tests }}
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Clojure deps cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.m2/repository
-          ~/.deps.clj
-          ~/.gitlibs
-        key: cljdeps-${{ hashFiles('deps.edn', 'bb.edn') }}
-        restore-keys: cljdeps-
+      - name: Setup
+        uses: ./github/workflows/shared-setup
+        with:
+          jdk: 11
 
-    - name: "Setup Java"
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '11'
-
-    - name: Install Clojure Tools
-      uses: DeLaGuardo/setup-clojure@10.1
-      with:
-        cli: 'latest'
-        bb: 'latest'
-
-    - id: set-tests
-      name: Set test var for matrix
-      # run test.clj directly instead of via bb task to avoid generic task output
-      run: echo "tests=$(bb script/ci_unit_tests.clj matrix-for-ci --format=json)" >> $GITHUB_OUTPUT
+      - id: set-tests
+        name: Set test var for matrix
+        # run test.clj directly instead of via bb task to avoid generic task output
+        run: echo "tests=$(bb script/ci_unit_tests.clj matrix-for-ci --format=json)" >> $GITHUB_OUTPUT
 
   build:
     needs: setup
@@ -56,117 +40,34 @@ jobs:
     name: ${{ matrix.desc }}
 
     steps:
-    #
-    # Tell git not to convert newlines on checkout for Windows
-    #
-    - name: Prepare git (Windows)
-      run: git config --global core.autocrlf false
-      if: matrix.os == 'windows'
+      #
+      # Tell git not to convert newlines on checkout for Windows
+      #
+      - name: Prepare git (Windows)
+        run: git config --global core.autocrlf false
+        if: matrix.os == 'windows'
 
-    - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    #
-    # Caches
-    #
-    - name: Clojure deps cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.m2/repository
-          ~/.gitlibs
-        key: ${{ runner.os }}-cljdeps-${{ hashFiles('deps.edn') }}
-        restore-keys: ${{ runner.os }}-cljdeps-
+      - name: Setup
+        uses: ./.github/workflows/shared-setup
+        with:
+          jdk: ${{ matrix.jdk }}
 
-    - name: Node modules cache
-      uses: actions/cache@v3
-      with:
-        path: ./node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-        restore-keys: ${{ runner.os }}-node-
+      - name: Install Planck
+        uses: ./.github/workflows/setup-planck
+        if: matrix.os != 'windows'
 
-    #
-    # Setup Java
-    #
-    - name: "Setup Java"
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: ${{ matrix.jdk }}
+      - name: Node modules cache
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
 
-    #
-    # Install Planck
-    #
-    - name: Install planck (macOS)
-      run: brew install planck
-      if: matrix.os == 'macos'
-    - name: Install planck (linux)
-      run: |
-        # There are not planck binaries for jammy yet, so hack-around to use focal release
-        sudo add-apt-repository -y "deb http://cz.archive.ubuntu.com/ubuntu focal main universe"
-        sudo add-apt-repository -y "deb http://security.ubuntu.com/ubuntu focal-security main"
+      - name: Install node modules
+        run: npm install
 
-        # is missing after installing planck so compensate
-        DEBIAN_FRONTEND=noninteractive sudo apt-get install -y libicu66
-
-        wget https://launchpad.net/~mfikes/+archive/ubuntu/planck/+files/planck_2.25.0-1ppa1~focal1_amd64.deb
-        sudo apt-get install ./planck_2.25.0-1ppa1~focal1_amd64.deb
-      if: matrix.os == 'ubuntu'
-
-    #
-    # Install Babashka
-    #
-    - name: Install Babashka
-      uses: DeLaGuardo/setup-clojure@10.1
-      with:
-        bb: 'latest'
-
-    #
-    # Install Clojure
-    #
-    - name: Install clojure (windows)
-      # On windows, deps.clj's deps.exe is used in place of clojure to avoid complexities of official clojure install
-      run: |
-       PowerShell -Command "iwr -useb https://raw.githubusercontent.com/borkdude/deps.clj/master/install.ps1 | iex"
-       Rename-Item $HOME\deps.clj\deps.exe clojure.exe
-       echo "$HOME\deps.clj" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      if: matrix.os == 'windows'
-
-    - name: Install Clojure (macos, linux)
-      uses: DeLaGuardo/setup-clojure@10.1
-      with:
-        cli: 'latest'
-      if: matrix.os != 'windows'
-
-    #
-    # Summarize installs
-    #
-    - name: Tools versions
-      run: |
-        echo "bb --version"
-        bb --version
-        echo "node --version"
-        node --version
-        echo "java -version"
-        java -version
-        echo "clojure -Sdescribe"
-        clojure -Sdescribe
-    - name: Tools versions (macos, linux)
-      run: |
-        echo "planck --version"
-        planck --version
-      if: matrix.os != 'windows'
-
-    - name: Install node modules
-      run: npm install
-
-    #
-    # Prep Clojure
-    #
-    - name: Download clojure main dependencies
-      run: clojure -Spath
-
-    #
-    # Run tests
-    #
-    - name: Run Tests
-      run: ${{ matrix.cmd }}
+      - name: Run Tests
+        run: ${{ matrix.cmd }}

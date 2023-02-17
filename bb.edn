@@ -7,13 +7,15 @@
         version-clj/version-clj {:mvn/version "2.0.2"}
         lread/status-line {:git/url "https://github.com/lread/status-line.git"
                            :sha "cf44c15f30ea3867227fa61ceb823e5e942c707f"}
-        etaoin/etaoin {:mvn/version "1.0.39"}}
+        etaoin/etaoin {:mvn/version "1.0.39"}
+        io.github.babashka/neil {:git/tag "v0.1.56" :git/sha "abea182"}}
  :tasks {;; setup
          :requires ([clojure.string :as string]
                     [lread.status-line :as status])
          :enter (let [{:keys [name]} (current-task)] (status/line :head "TASK %s %s" name (string/join " " *command-line-args*)))
          :leave (let [{:keys [name]} (current-task)] (status/line :detail "\nTASK %s done." name))
          ;; commands
+         download-deps     {:task download-deps/-main     :doc "bring down Clojure deps"}
          apply-import-vars {:task apply-import-vars/-main :doc "(check|gen-code) - export APIs statically from templates"}
          lint              {:task lint/-main              :doc "[--rebuild] lint source code using clj-kondo, eastwood, whitespace-linter"}
          -lint-kondo       {:task lint-kondo/-main        :doc "[--rebuild]"}
@@ -35,4 +37,14 @@
          doc-update-readme {:task doc-update-readme/-main :doc "honour our contributors in README"}
          cljdoc-preview    {:task cljdoc-preview/-main    :doc "preview what docs will look like on cljdoc, use --help for args"}
          ci-unit-tests     {:task ci-unit-tests/-main     :doc "run/list continuous integration unit tests, use --help for args"}
+         pubcheck          {:task publish/pubcheck        :doc "Run only publish checks (without publishing)"}
+         publish           {:task publish/-main           :doc "Publish a release (for maintainers)"}
+         ;; let's not rely on a random version of neil
+         neil              {:task babashka.neil/-main     :doc "Pinned version of babashka/neil (used in scripting)"}
+
+         ;; hidden tasks, no need for folks to be trying these ci invoked tasks
+         -ci-clojars-deploy {:task ci-publish/clojars-deploy :doc "triggered on ci by release tag" }
+         -ci-github-create-release {:task ci-publish/github-create-release :doc "triggered on ci by release tag" }
+         -ci-cljdoc-request-build {:task ci-publish/cljdoc-request-build :doc "ask cljdoc to build docs for new release" }
+
          ci-release        {:task ci-release/-main        :doc "release tasks, use --help for args"}}}

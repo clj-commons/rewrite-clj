@@ -4,8 +4,9 @@
 ;; This script is ultimately run from GitHub Actions
 ;;
 
+
 (ns ci-release
-  (:require [build-util :as bu]
+  (:require [build-shared :as bu]
             [clojure.java.io :as io]
             [clojure.string :as string]
             [helper.fs :as fs]
@@ -140,6 +141,15 @@
     (shell/command "git push origin" tag-version)
     nil))
 
+(defn create-github-release [version]
+  (let [tag-version (str "v" version)
+        changelog-url (format "https://github.com/clj-commons/rewrite-clj/blob/master/CHANGELOG.adoc")]
+    (status/line :head (str "Creating GitHub release for tag" tag-version))
+    (shell/command "gh release create"
+                   tag-version
+                   "--title" tag-version
+                   "--notes" (format "[Changelog](%s#%s)" changelog-url tag-version))))
+
 (defn- inform-cljdoc! [version]
   (status/line :head (str "Informing cljdoc of new version " version))
   (assert-on-ci "inform cljdoc")
@@ -191,6 +201,7 @@ Options
       (get opts "commit")
       (let [version (built-version)]
         (commit-changes! version)
+        (create-github-release version)
         (inform-cljdoc! version))
 
       (get opts "validate")

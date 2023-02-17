@@ -22,76 +22,22 @@ jobs:
     name: ${{ matrix.os }},jdk ${{ matrix.graal-java }},${{ matrix.test }},clj ${{ matrix.clojure-version }}
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Setup
+        uses: ./github/workflows/shared-setup
 
-    #
-    # Caches
-    #
-    - name: Clojure deps cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.m2/repository
-          ~/.gitlibs
-        key: ${{ runner.os }}-cljdeps-${{ hashFiles('deps.edn') }}
-        restore-keys: ${{ runner.os }}-cljdeps-
+      - name: Install GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: '22.3.1'
+          java-version: ${{ matrix.graal-java }}
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    #
-    # Install GraalVM
-    #
-    - name: Install GraalVM
-      uses: graalvm/setup-graalvm@v1
-      with:
-        version: '22.3.1'
-        java-version: ${{ matrix.graal-java }}
-        components: 'native-image'
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-
-    #
-    # Install Babashka
-    #
-    - name: Install Babashka
-      uses: DeLaGuardo/setup-clojure@10.1
-      with:
-        bb: 'latest'
-
-    #
-    # Install Clojure
-    #
-    - name: Install clojure (windows)
-      # On windows, deps.clj's deps.exe is used in place of clojure to avoid complexities of official clojure install
-      run: |
-       PowerShell -Command "iwr -useb https://raw.githubusercontent.com/borkdude/deps.clj/master/install.ps1 | iex"
-       Rename-Item $HOME\deps.clj\deps.exe clojure.exe
-       echo "$HOME\deps.clj" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      if: matrix.os == 'windows'
-
-    - name: Install Clojure (macos, linux)
-      uses: DeLaGuardo/setup-clojure@10.1
-      with:
-        cli: 'latest'
-      if: matrix.os != 'windows'
-
-    #
-    # Summarize installs
-    #
-    - name: Tools versions
-      run: |
-        echo "bb --version"
-        bb --version
-        echo "java -version"
-        java -version
-        echo "clojure -Sdescribe"
-        clojure -Sdescribe
-
-    #
-    # Prep Clojure
-    #
-    - name: Download clojure dependencies
-      run: clojure -Spath
-
-    #
-    # native image tests
-    #
-    - name: Execute ${{ matrix.test }} native test
-      run: bb ${{ matrix.test }} --clojure-version ${{ matrix.clojure-version }}
+      #
+      # native image tests
+      #
+      - name: Execute ${{ matrix.test }}
+        run: bb ${{ matrix.test }} --clojure-version ${{ matrix.clojure-version }}
