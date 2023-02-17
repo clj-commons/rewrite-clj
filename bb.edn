@@ -44,6 +44,4 @@
          ;; hidden tasks, no need for folks to be trying these ci invoked tasks
          -ci-clojars-deploy {:task ci-publish/clojars-deploy :doc "triggered on ci by release tag" }
          -ci-github-create-release {:task ci-publish/github-create-release :doc "triggered on ci by release tag" }
-         -ci-cljdoc-request-build {:task ci-publish/cljdoc-request-build :doc "ask cljdoc to build docs for new release" }
-
-         ci-release        {:task ci-release/-main        :doc "release tasks, use --help for args"}}}
+         -ci-cljdoc-request-build {:task ci-publish/cljdoc-request-build :doc "ask cljdoc to build docs for new release" }}}
