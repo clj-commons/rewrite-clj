@@ -150,12 +150,12 @@
   (status/line :detail "Applying version %s to changelog" version)
   (update-file! changelog-fname
                 "update unreleased header"
-                #"(?ims)^=== Unreleased(.*?)($.*?)(== v\d|\z)"
+                #"(?ims)^=== Unreleased(.*?)($.*?)(=== v\d|\z)"
                 (str
                   ;; add Unreleased section for next released
                  "=== Unreleased\n\n"
                   ;; replace "Unreleased" with actual version
-                 "== v" version
+                 "=== v" version
                  ;; followed by any attributes
                  "$1"
                   ;; followed by datestamp
