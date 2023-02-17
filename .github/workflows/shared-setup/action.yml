@@ -29,8 +29,8 @@ runs:
           ~/.m2/repository
           ~/.deps.clj
           ~/.gitlibs
-        key: ${{ inputs.clj-cache-prefix }}-${{ hashFiles(fromJson(inputs.clj-cache-hash-files)) }}
-        restore-keys: ${{ inputs.clj-cache-prefix }}-
+        key: ${{ runner.os }}-${{ inputs.clj-cache-prefix }}-${{ hashFiles(fromJson(inputs.clj-cache-hash-files)) }}
+        restore-keys: ${{ runner.os }}-${{ inputs.clj-cache-prefix }}-
 
     - name: Setup Java
       uses: actions/setup-java@v3
