@@ -23,8 +23,6 @@ jobs:
 
     - name: Setup
       uses: ./.github/workflows/shared-setup
-      with:
-        jdk: '11'
 
     - name: Deploy to clojars
       env:

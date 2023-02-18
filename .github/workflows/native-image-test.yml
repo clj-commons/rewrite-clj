@@ -27,6 +27,8 @@ jobs:
         
       - name: Setup
         uses: ./github/workflows/shared-setup
+        with:
+          jdk: skip
 
       - name: Install GraalVM
         uses: graalvm/setup-graalvm@v1

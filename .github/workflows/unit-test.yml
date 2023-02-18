@@ -21,8 +21,6 @@ jobs:
 
       - name: Setup
         uses: ./github/workflows/shared-setup
-        with:
-          jdk: 11
 
       - id: set-tests
         name: Set test var for matrix

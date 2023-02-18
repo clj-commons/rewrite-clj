@@ -2,8 +2,9 @@ name: 'shared setup'
 description: 'Composite action for common setup steps'
 inputs:
   jdk:
-    description: 'jdk version'
-    required: true
+    description: 'jdk major version, use value skip to not install jdk'
+    required: false
+    default: 11
   shell:
     description: 'shell must be specified for composite actions - so we setup an appropriate default'
     required: false
@@ -37,6 +38,7 @@ runs:
       with:
         distribution: 'temurin'
         java-version: ${{ inputs.jdk }}
+      if: inputs.jdk != 'skip'
 
     - name: Install Babashka
       uses: DeLaGuardo/setup-clojure@10.1
