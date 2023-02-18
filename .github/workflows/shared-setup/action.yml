@@ -16,8 +16,7 @@ inputs:
   clj-cache-hash-files:
     description: 'base cache hash on these files'
     required: false
-    # does not seem to support arrays so specify as a json string
-    default: "['deps.edn','bb.edn']"
+    default: "'deps.edn','bb.edn'"
 
 runs:
   using: 'composite'
@@ -30,8 +29,8 @@ runs:
           ~/.m2/repository
           ~/.deps.clj
           ~/.gitlibs
-        key: ${{ runner.os }}-${{ inputs.clj-cache-prefix }}-${{ hashFiles(fromJson(inputs.clj-cache-hash-files)) }}
-        restore-keys: ${{ runner.os }}-${{ inputs.clj-cache-prefix }}-
+        key: ${{ runner.os }}-${{ inputs.clj-cache-prefix }}-${{ hashFiles(inputs.clj-cache-hash-files) }}
+        restore-keys: ${{ runner.os }}-${{ inputs.clj-cache-prefix }}
 
     - name: Setup Java
       uses: actions/setup-java@v3
