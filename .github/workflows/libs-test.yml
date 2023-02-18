@@ -21,9 +21,6 @@ jobs:
 
       - name: Setup
         uses: ./.github/workflows/shared-setup
-        with:
-          clj-cache-prefix: clj-libs-deps
-          clj-cache-hash-files: "['script/test_libs.clj','deps.edn','bb.edn']"
 
       - id: set-libs
         name: Set libs var for matrix
@@ -47,7 +44,7 @@ jobs:
       - name: Setup
         uses: ./.github/workflows/shared-setup
         with:
-          clj-cache-prefix: clj-libs-deps
+          clj-cache-prefix: clj-libs-deps-${{ matrix.lib }}
           clj-cache-hash-files: "['script/test_libs.clj','deps.edn','bb.edn']"
 
       - name: Install planck
