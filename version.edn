@@ -1,6 +1,0 @@
-;; describes last release and is also a template for the next release
-;; :release is incremented by release workflow
-;; omit :qualifier (ex. :qualifier "alpha") for official releases
-{:major 1
- :minor 1
- :release 46}

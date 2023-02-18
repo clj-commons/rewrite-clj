@@ -1,60 +1,69 @@
 = Maintainer Guide
-:toclevels: 6
+:toclevels: 5
 :toc:
 
-== Introduction
-This doc covers notes for project maintainers.
+== Audience
+You are a maintainer of this project.
 
-== Releasing
-
-=== Overview
-The released workflow is handled by our https://github.com/clj-commons/rewrite-clj/actions?query=workflow%3A%22Release%22[Release] GitHub Action.
-
-The release workflow:
-
-. Create a thin jar using our version scheme
-. Apply jar version to following docs:
-.. user guide docs `deps.edn` usage example
-.. change log "unreleased" and "unreleased breaking changes" headings
-. Deploy the jar to clojars
-. Commit and push updates made to `CHANGELOG.adoc` and `01-user-guide.adoc` back to the project
-. Create and push a release tag back to the project repo
-. Inform cljdoc of the new release
-
-At this time, the release workflow does not run tests.
-The assumption is that you've waited for the last CI test run to complete and are happy with the results.
-
-The release workflow will fail if the change log is not ready for release.
-
-=== Updating the Version
-
-Edit `version.edn` in the project root.
-The release workflow consults this file when constructing the version.
-
-=== Special Setup
-
-GitHub has been configured with necessary secrets for GitHub Actions to deploy to clojars.
-
-=== Local Verification
-To run the change log validation locally:
+== Publishing a New Release
+Is invoked from the command line via:
 
 [source,shell]
 ----
-bb ci-release validate
+bb publish
 ----
 
-If you so wish, you can also locally run all steps up to, but not including, deploy via:
+The publish task locally validates:
 
-[source,shell]
-----
-bb ci-release prep
-----
-Be aware though that you will NOT want to check in changes `prep` makes to `version.edn`, `CHANGELOG.adoc` and `doc/01-user-guide.adoc`.
+* local git
+** you are not on a fork
+** you are on the default branch
+** do not have any uncommitted code
+** do not have any unpushed commits
+** local head sha matches matches remote head sha
+* changelog
+** Has an "Unreleased" section with content
 
-=== Invoking
+TIP: to run these validations without publishing, run `bb pubcheck`
 
-As a maintainer you should have sufficient privileges to see a "Run Workflow" dropdown button on the https://github.com/clj-commons/rewrite-clj/actions?query=workflow%3A%22Release%22[Release] action page.
-The dropdown will prompt for a branch.
-I did not see a way to disable this prompt, simply leave it at "main" and run the workflow.
+Then also locally:
 
-TIP: Don't forget to pull after a release to get the changes made by the release workflow.
+. bumps the version `<release count>` (our scheme is `major.minor.<release count>`)
+** Our version is stored in `deps.edn` under `:aliases` `:neil` `:project` `:version`
+. applies version to:
+.. `doc/01-user-guide.adoc`
+.. `CHANGELOG.adoc`
+. git commits: `deps.edn` `doc/01-user-guide.adoc` `CHANGELOG.adoc`
+. git tags with release tag `v<version>`
+. pushes commit
+. pushes tag
+
+Then up on CI, the CI publish workflow is only triggered when it sees a release tag:
+
+. CI tests workflow is invoked
+. a release jar is published to clojars
+. a GitHub release is created
+. cljdoc is informed of the new release
+
+== Relevant Sources
+
+Scripts:
+
+. `bb.edn` - tasks entry point
+. `script/publish.clj` - client side work
+. `script/ci_publish.clj` - ci side work
+
+CI - We use GitHub Actions for this project
+
+. `.github/workflows/publish.yml`
+
+== CI Config
+
+Clojars secrets are protected under the `publish` environment which is only referenced by `publish.yml`.
+
+== Expected Oddities
+
+When publishing, you will see both the `tests` workflow triggered and the `publish` workflow triggered (which also invokes the `tests` workflow).
+
+This extra running of the `tests` workflow is GitHub Actions responding to changes committed as part of the publishing work.
+Annoying, but harmless.

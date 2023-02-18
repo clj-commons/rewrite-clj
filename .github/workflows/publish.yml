@@ -1,0 +1,39 @@
+name: Publish
+on:
+  push:
+    tags:
+      - 'v\d+.*'
+
+jobs:
+  unit-test:
+    uses: ./.github/workflows/unit-test.yml
+  native-image-test:
+    uses: ./.github/workflows/native-image-test.yml
+  libs-test:
+    uses: ./.github/workflows/libs-test.yml
+
+  publish:
+    environment: publish
+    runs-on: ubuntu-latest
+    needs: [unit-test, native-image-test, libs-test]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup
+      uses: ./.github/workflows/shared-setup
+
+    - name: Deploy to clojars
+      env:
+        CLOJARS_USERNAME: ${{ secrets.CLOJARS_USERNAME }}
+        CLOJARS_PASSWORD: ${{ secrets.CLOJARS_PASSWORD }}
+      run: bb -ci-clojars-deploy
+
+    - name: Create GitHub Release
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: bb -ci-github-create-release
+
+    - name: Inform Cljdoc
+      run: bb -ci-cljdoc-request-build

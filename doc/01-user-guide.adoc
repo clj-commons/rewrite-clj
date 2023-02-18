@@ -4,6 +4,8 @@
 :cljdoc-api-url: {cljdoc-host}/d/rewrite-clj/rewrite-clj/CURRENT/api
 :toclevels: 5
 :toc:
+// DO NOT EDIT: the lib-version parameter is automatically updated by bb publish
+:lib-version: 1.1.46
 
 == Introduction
 Rewrite-clj is a library that can read, update and write Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] source code while preserving whitespace and comments.
@@ -128,18 +130,18 @@ As you get more experienced with rewrite-clj, you will want to review link:#sexp
 Include the following dependency in your `deps.edn` file:
 //:test-doc-blocks/skip
 // NOTE: the version in this snippit is automatically updated by our release workflow
-[source,clojure]
+[source,clojure,subs="attributes+"]
 ----
-rewrite-clj/rewrite-clj {:mvn/version "1.1.46"}
+rewrite-clj/rewrite-clj {:mvn/version "{lib-version}"}
 ----
 
 === Leiningen
 Include the following dependency in your `project.clj` file:
 //:test-doc-blocks/skip
 // NOTE: the version in this snippit is automatically update by our release workflow
-[source,clojure]
+[source,clojure,subs="attributes+"]
 ----
-[rewrite-clj/rewrite-clj "1.1.46"]
+[rewrite-clj/rewrite-clj "{lib-version}"]
 ----
 
 == Rewrite-clj APIs

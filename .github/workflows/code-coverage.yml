@@ -10,53 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Clojure deps cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.m2/repository
-          ~/.gitlibs
-        key: ${{ runner.os }}-cljdeps-${{ hashFiles('deps.edn') }}
-        restore-keys: ${{ runner.os }}-cljdeps-
+      - name: Setup
+        uses: ./.github/workflows/shared-setup
 
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '11'
+      - name: Run Tests with Code Coverage
+        run: bb test-coverage
 
-    - name: Install Clojure tools
-      uses: DeLaGuardo/setup-clojure@10.1
-      with:
-        cli: 'latest'
-        bb: 'latest'
-
-    - name: Tools versions
-      run: |
-        echo "bb --version"
-        bb --version
-        echo "java -version"
-        java -version
-        echo "clojure -Sdescribe"
-        clojure -Sdescribe
-
-    - name: Download clojure dependencies
-      run: clojure -Spath
-
-    - name: Run Tests with Code Coverage
-      run: bb test-coverage
-
-    - name: Upload Code Coverage Results
-      run: |
-        echo "Downloading codecov uploader script"
-        curl -s https://codecov.io/bash > codecov
-        echo "Verifying codedov uploader script"
-        VERSION=$(grep 'VERSION=\".*\"' codecov | cut -d'"' -f2);
-        for i in 1 256 512
-        do
-          sha${i}sum -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
-        done
-        echo "Uploading to codecov"
-        bash codecov -f target/coverage/codecov.json
+      - name: Upload Code Coverage Results
+        run: |
+          echo "Downloading codecov uploader script"
+          curl -s https://codecov.io/bash > codecov
+          echo "Verifying codedov uploader script"
+          VERSION=$(grep 'VERSION=\".*\"' codecov | cut -d'"' -f2);
+          for i in 1 256 512
+          do
+            sha${i}sum -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
+          done
+          echo "Uploading to codecov"
+          bash codecov -f target/coverage/codecov.json
