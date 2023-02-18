@@ -1,15 +1,22 @@
 name: 'setup plank'
 description: 'Composite action to install planck (no-op if invoked for Windows)'
+inputs:
+  shell:
+    description: 'shell must be specified for composite actions - so we setup an appropriate default'
+    required: false
+    default: ${{ contains(runner.os, 'windows') && 'pwsh' || 'bash' }}
 
 runs:
   using: 'composite'
 
   steps:
     - name: Install planck (macOS)
+      shell: ${{ inputs.shell }}
       run: brew install planck
       if: runner.os == 'macOS'
 
     - name: Install planck (linux)
+      shell: ${{ inputs.shell }}
       run: |
         # There are not planck binaries for jammy yet, so hack-around to use focal release
         sudo add-apt-repository -y "deb http://cz.archive.ubuntu.com/ubuntu focal main universe"
@@ -23,6 +30,7 @@ runs:
       if: runner.os == 'Linux'
 
     - name: Planck version (macos, linux)
+      shell: ${{ inputs.shell }}
       run: |
         echo "planck --version"
         planck --version
