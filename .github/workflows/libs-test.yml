@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup
-        uses: ./github/workflows/shared-setup
+        uses: ./.github/workflows/shared-setup
         with:
           clj-cache-prefix: clj-libs-deps
           clj-cache-hash-files: "['script/test_libs.clj','deps.edn','bb.edn']"
@@ -45,13 +45,13 @@ jobs:
           fetch-depth: 0
 
       - name: Setup
-        uses: ./github/workflows/shared-setup
+        uses: ./.github/workflows/shared-setup
         with:
           clj-cache-prefix: clj-libs-deps
           clj-cache-hash-files: "['script/test_libs.clj','deps.edn','bb.edn']"
 
       - name: Install planck
-        uses: ./github/workflows/setup-planck
+        uses: ./.github/workflows/setup-planck
 
       - name: Run Libs Tests
         run: bb test-libs run ${{ matrix.lib }}
