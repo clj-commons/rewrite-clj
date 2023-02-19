@@ -64,8 +64,8 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-
 
-      - name: Install node modules
-        run: npm install
+      - name: Install node packages
+        run: npm ci
 
       - name: Run Tests
         run: ${{ matrix.cmd }}

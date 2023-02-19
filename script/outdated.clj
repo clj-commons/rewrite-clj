@@ -15,7 +15,7 @@
   (status/line :head "Checking Node.js deps")
   (when (not (.exists (io/file "node_modules")))
     (status/line :detail "node_modules, not found, installing.")
-    (shell/command "npm install"))
+    (shell/command "npm ci"))
 
   (let [{:keys [:exit]} (shell/command {:continue true}
                                        "npm outdated")]
