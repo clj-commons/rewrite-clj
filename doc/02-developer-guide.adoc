@@ -293,11 +293,12 @@ This task uses:
 * npm for JavaScript.
 It only checks against installed `./node_modules`, so you may want to run `npm ci` first.
 
-To bump npm packages:
-.. make appropriate changes to `package.json`
-.. delete the `./node_modules` directory and `./package-lock.json`
-.. run `npm install`
-.. after you are happy the updates work, commit both `package.json` and `package-lock.json`
+To bump JavaScript npm packages:
+
+. make appropriate changes to `package.json`
+. delete the `./node_modules` directory and `./package-lock.json`
+. run `npm install`
+. after you are happy the updates work, commit both `package.json` and `package-lock.json`
 
 [#linting]
 == Linting
