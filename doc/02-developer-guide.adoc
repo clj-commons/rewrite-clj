@@ -67,7 +67,7 @@ After checking out this project from GitHub,
 1. Install JavaScript libraries and tools required by https://github.com/bensu/doo[doo] and https://github.com/thheller/shadow-cljs[shadow-cljs]:
 +
 ----
-npm install
+npm ci
 ----
 
 2. If you are on macOS or linux, https://github.com/planck-repl/planck#installing[install planck].
@@ -291,7 +291,14 @@ This task uses:
 
 * https://github.com/liquidz/antq[antq] for Clojure.
 * npm for JavaScript.
-It only checks against installed `./node_modules`, so you may want to run `npm install` first.
+It only checks against installed `./node_modules`, so you may want to run `npm ci` first.
+
+To bump JavaScript npm packages:
+
+. make appropriate changes to `package.json`
+. delete the `./node_modules` directory and `./package-lock.json`
+. run `npm install`
+. after you are happy the updates work, commit both `package.json` and `package-lock.json`
 
 [#linting]
 == Linting
