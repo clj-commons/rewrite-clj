@@ -399,7 +399,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["make test"]}
            {:name "rich-comment-tests"
-            :version "1.0.1"
+            :version "1.0.2"
             :platforms [:clj] ;; and bb but we don't test that here
             :github-release {:repo "matthewdowney/rich-comment-tests"
                              :version-prefix "v"
