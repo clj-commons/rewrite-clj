@@ -303,7 +303,6 @@ To bump JavaScript npm packages:
 [#linting]
 == Linting
 We use https://github.com/borkdude/clj-kondo[clj-kondo] and https://github.com/jonase/eastwood[eastwood] to lint rewrite-clj source code.
-We apply https://github.com/camsaul/whitespace-linter[whitespace-linter] to docs, config, and source code to avoid some annoying whitespace diffs.
 
 We fail the build on any lint violations.
 The CI server runs:
@@ -320,7 +319,6 @@ https://github.com/borkdude/clj-kondo/blob/master/doc/editor-integration.md[Inte
 
 You can optionally:
 
-* `bb -lint-whitespace` to run only whitespace linting
 * `bb -lint-kondo` to run only clj-kondo linting
 * `bb -lint-eastwood` to run only the eastwood linting
 
