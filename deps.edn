@@ -28,7 +28,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2023.02.17"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2023.03.17"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
@@ -65,7 +65,7 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.77.1236"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.80.1274"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "1.17.101"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.1.89"}}
                     :main-opts ["-m" "kaocha.runner"]}
@@ -94,11 +94,11 @@
            ;;
            :script {:extra-paths ["script"]
                     :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
-                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.4.1"}
+                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.4.4"}
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.10.1"}
+                               :extra-deps {metosin/malli {:mvn/version "0.10.4"}
                                             io.aviso/pretty {:mvn/version "1.3"}}
                                :ns-default lread.apply-import-vars}
 
@@ -114,7 +114,7 @@
 
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                   :sha "f7d76e43d0c6cda62dd53d21c38cafcb9971e4ae"}}}
+                                                   :sha "804c72830f09fc16b2f1b38f4b7af7e90b7ec919"}}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 
@@ -140,8 +140,8 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.2.992"}
-                                   org.slf4j/slf4j-simple {:mvn/version "2.0.6"} ;; to rid ourselves of logger warnings
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.2.1017"}
+                                   org.slf4j/slf4j-simple {:mvn/version "2.0.7"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                       :main-opts ["-m" "antq.core"
