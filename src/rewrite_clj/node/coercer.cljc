@@ -21,10 +21,11 @@
         [rewrite-clj.node.reader-macro :refer [reader-macro-node var-node]]
         [rewrite-clj.node.regex :refer [regex-node pattern-string-for-regex]]
         [rewrite-clj.node.seq :refer [vector-node list-node set-node map-node]]
-        [rewrite-clj.node.stringz]
+        [rewrite-clj.node.stringz :as stringz]
         [rewrite-clj.node.token :refer [token-node]]
         [rewrite-clj.node.uneval]
-        [rewrite-clj.node.whitespace :as ws]]
+        [rewrite-clj.node.whitespace :as ws]
+        [rewrite-clj.parser.impl :as pimpl]]
        :cljs
        [[clojure.string :as string]
         [rewrite-clj.node.comment :refer [CommentNode]]
@@ -39,10 +40,12 @@
         [rewrite-clj.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode reader-macro-node var-node]]
         [rewrite-clj.node.regex :refer [RegexNode regex-node pattern-string-for-regex]]
         [rewrite-clj.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
-        [rewrite-clj.node.stringz :refer [StringNode]]
+        [rewrite-clj.node.stringz :as stringz :refer [StringNode]]
         [rewrite-clj.node.token :refer [TokenNode SymbolNode token-node]]
         [rewrite-clj.node.uneval :refer [UnevalNode]]
-        [rewrite-clj.node.whitespace :refer [WhitespaceNode CommaNode NewlineNode] :as ws]]))
+        [rewrite-clj.node.whitespace :refer [WhitespaceNode CommaNode NewlineNode] :as ws]
+        [rewrite-clj.parser.impl :as pimpl]])
+   [rewrite-clj.reader :as reader])
   #?(:clj
      (:import [rewrite_clj.node.comment CommentNode]
               [rewrite_clj.node.fn FnNode]
@@ -135,13 +138,8 @@
 
 (extend-protocol NodeCoerceable
   #?(:clj java.lang.String :cljs string)
-  ;; You might we should be coercing to a string-node here.
-  ;; We did this initially for rewrite-clj v1 but found it made more sense to revert to v0 behaviour.
-  ;; The string-node was created to serve the parser and expects the strings to be escaped in a particular way.
-  ;; The token-node has no such expectations and is therefore, currently, what we use for coercing strings.
-  ;; If this makes future internal changes awkward we'll revisit.
   (coerce [v]
-    (token-node v)))
+    (stringz/string-node (pimpl/read-string-data (reader/string-reader (pr-str v))))))
 
 #?(:clj
    (extend-protocol NodeCoerceable
