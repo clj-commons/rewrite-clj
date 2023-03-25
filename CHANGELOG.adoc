@@ -19,6 +19,8 @@ A release with known breaking changes is marked with:
 //   (adjust these in publish.clj as you see fit)
 === Unreleased
 
+=== v1.1.47 - 2023-03-25 [[v1.1.47]]
+
 * Clojure string to rewrite-clj node coercion fixes
 https://github.com/clj-commons/rewrite-clj/issues/214[#214]
 (@borkdude/@lread collab)
@@ -34,6 +36,8 @@ c"
 ** escaped characters now coerce correctly.
 Previously we were only handling `\"`.
 Strings like `"\\s+"` now handled and preserved.
+
+https://github.com/clj-commons/rewrite-clj/compare/v1.1.46\...v1.1.47[commit log]
 
 === v1.1.46 - 2023-01-30 [[v.1.1.46]]
 

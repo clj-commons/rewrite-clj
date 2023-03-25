@@ -5,7 +5,7 @@
 :toclevels: 5
 :toc:
 // DO NOT EDIT: the lib-version parameter is automatically updated by bb publish
-:lib-version: 1.1.46
+:lib-version: 1.1.47
 
 == Introduction
 Rewrite-clj is a library that can read, update and write Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] source code while preserving whitespace and comments.
