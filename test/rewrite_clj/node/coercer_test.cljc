@@ -41,15 +41,15 @@
       ::1.5.1                :token      :keyword
       :namespace/keyword     :token      :keyword
 
-      ""                     :token      :token
-      "hello, over there!"   :token      :token
-      "multi\nline"          :token      :token
-      " "                    :token      :token
-      "\n"                   :token      :token
-      "\n\n"                 :token      :token
-      ","                    :token      :token
-      "inner\"quote"         :token      :token
-      "\\s+"                 :token      :token
+      ""                     :token      :string
+      "hello, over there!"   :token      :string
+      "multi\nline"          :token      :string
+      " "                    :token      :string
+      "\n"                   :token      :string
+      "\n\n"                 :token      :string
+      ","                    :token      :string
+      "inner\"quote"         :token      :string
+      "\\s+"                 :token      :string
 
       ;; seqs
       []                     :vector     :seq
@@ -69,7 +69,9 @@
           n (node/coerce s)]
       (is (= s (node/sexpr n)))))
   (testing "coerce string roundtrip"
-    (is (= "\"hey \\\" man\"" (-> "hey \" man" node/coerce node/string)))))
+    (is (= "\"hey \\\" man\"" (-> "hey \" man" node/coerce node/string))))
+  (testing "coerce string equals parsed string"
+    (is (= (p/parse-string "\"hello\"") (node/coerce "hello")))))
 
 (deftest
   t-quoted-list-reader-location-metadata-elided
