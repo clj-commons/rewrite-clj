@@ -1,7 +1,7 @@
 {:min-bb-version "0.9.162"
  :paths ["script" "build"]
  :deps {org.clojure/data.zip {:mvn/version "1.0.0"}
-        io.aviso/pretty {:mvn/version "1.4"}
+        io.aviso/pretty {:mvn/version "1.4.2"}
         dev.nubank/docopt {:mvn/version "0.6.1-fix7"}
         doric/doric {:mvn/version "0.9.0"}
         version-clj/version-clj {:mvn/version "2.0.2"}
@@ -17,7 +17,7 @@
          ;; commands
          download-deps     {:task download-deps/-main     :doc "bring down Clojure deps"}
          apply-import-vars {:task apply-import-vars/-main :doc "(check|gen-code) - export APIs statically from templates"}
-         lint              {:task lint/-main              :doc "[--rebuild] lint source code using clj-kondo, eastwood, whitespace-linter"}
+         lint              {:task lint/-main              :doc "[--rebuild] lint source code using clj-kondo, eastwood"}
          -lint-kondo       {:task lint-kondo/-main        :doc "[--rebuild]"}
          -lint-eastwood    {:task lint-eastwood/-main}
          test-clj          {:task test-clj/-main          :doc "[--clojure-version (1.8|1.9|1.10|1.11)]"}
