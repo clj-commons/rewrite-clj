@@ -1,9 +1,9 @@
 #!/usr/bin/env bb
 
 (ns test-cljs
-  (:require [clojure.java.io :as io]
+  (:require [babashka.fs :as fs]
+            [clojure.java.io :as io]
             [clojure.string :as string]
-            [helper.fs :as fs]
             [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
@@ -57,7 +57,7 @@
                      "--env" env
                      "--compile-opts" compile-opts-fname
                      "--doo-opts" doo-opts-fname])]
-    (fs/delete-file-recursively out-dir true)
+    (fs/delete-tree out-dir)
     (.mkdirs (io/file out-dir))
     (spit compile-opts-fname (compile-opts out-dir opts))
     (spit doo-opts-fname (doo-opts test-combo))

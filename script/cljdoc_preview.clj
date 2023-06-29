@@ -2,10 +2,10 @@
 
 (ns cljdoc-preview
   (:require [babashka.curl :as curl]
+            [babashka.fs :as fs]
             [build-shared]
             [clojure.java.browse :as browse]
             [clojure.string :as string]
-            [helper.fs :as fs]
             [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
@@ -25,7 +25,7 @@
 ;;
 
 (defn check-prerequisites []
-  (let [missing-cmds (doall (remove fs/on-path ["git" "docker"]))]
+  (let [missing-cmds (doall (remove fs/which ["git" "docker"]))]
     (when (seq missing-cmds)
       (status/die 1 (string/join "\n" ["Required commands not found:"
                                        (string/join "\n" missing-cmds)])))))
@@ -201,7 +201,7 @@
       (status/line :warn (string/join "\n" warnings)))))
 
 (defn cleanup-resources []
-  (fs/delete-file-recursively cljdoc-db-dir true))
+  (fs/delete-tree cljdoc-db-dir))
 
 (def args-usage "Valid args: (start|ingest|view|stop|status|--help)
 

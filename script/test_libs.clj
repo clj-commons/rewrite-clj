@@ -269,7 +269,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "2.4.1070"
+            :version "2.5.1095"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -284,7 +284,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "clerk"
-            :version "0.13.842"
+            :version "0.14.919"
             :platforms [:clj]
             :github-release {:repo "nextjournal/clerk"
                              :via :tag
@@ -293,7 +293,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test:clj :kaocha/reporter '[kaocha.report/documentation]'"]}
            {:name "cljfmt"
-            :version "0.9.2"
+            :version "0.10.5"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
@@ -427,7 +427,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "zprint"
-            :version "1.2.5"
+            :version "1.2.7"
             :note "1) planck cljs tests disabled for now: https://github.com/planck-repl/planck/issues/1088"
             :platforms [:clj :cljs]
             :github-release {:repo "kkinnear/zprint"}

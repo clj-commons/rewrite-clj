@@ -1,10 +1,10 @@
 #!/usr/bin/env bb
 
 (ns ci-unit-tests
-  (:require [cheshire.core :as json]
+  (:require [babashka.fs :as fs]
+            [cheshire.core :as json]
             [clojure.string :as string]
             [doric.core :as doric]
-            [helper.fs :as fs]
             [helper.jdk :as jdk]
             [helper.main :as main]
             [helper.os :as os]
@@ -75,7 +75,7 @@
 
 (defn- clean []
   (doseq [dir ["target" ".cpcache" ".shadow-cljs"]]
-    (fs/delete-file-recursively dir true)))
+    (fs/delete-tree dir)))
 
 (def args-usage "Valid args:
   [matrix-for-ci [--format=json]]

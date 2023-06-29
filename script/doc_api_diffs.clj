@@ -1,9 +1,9 @@
 #!/usr/bin/env bb
 
 (ns doc-api-diffs
-  (:require [clojure.java.io :as io]
+  (:require [babashka.fs :as fs]
+            [clojure.java.io :as io]
             [clojure.string :as string]
-            [helper.fs :as fs]
             [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
@@ -21,12 +21,12 @@
                                            #(string/starts-with? (str (.getName %)) proj-cache-prefix)
                                            (.listFiles cache-dir))))]
       (println "- removing " proj-cache-dir)
-      (fs/delete-file-recursively proj-cache-dir true))))
+      (fs/delete-tree proj-cache-dir))))
 
 (defn clean [{:keys [:report-dir]} rewrite-clj-v1-coords]
   (status/line :head "Clean")
   (status/line :detail "- report dir")
-  (fs/delete-file-recursively report-dir true)
+  (fs/delete-tree report-dir)
   (.mkdirs (io/file report-dir))
   (status/line :detail "- cached metdata for rewrite-clj v1 (because that's the thing that is changing, right?)")
   (wipe-rewrite-clj-diff-cache rewrite-clj-v1-coords)
