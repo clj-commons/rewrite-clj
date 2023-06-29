@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ windows, ubuntu, macos ]
-        graal-java: [ '11', '17' ]
+        java-version: [ '17.0.7', '20.0.1' ]
         test: [ test-native, test-native-sci ]
         clojure-version: [ '1.11' ]
 
@@ -35,9 +35,8 @@ jobs:
       - name: Install GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.3.2'
-          java-version: ${{ matrix.graal-java }}
-          components: 'native-image'
+          java-version: ${{ matrix.java-versio }}
+          distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       #

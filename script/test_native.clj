@@ -1,8 +1,8 @@
 #!/usr/bin/env bb
 
 (ns test-native
-  (:require [clojure.java.io :as io]
-            [helper.fs :as fs]
+  (:require [babashka.fs :as fs]
+            [clojure.java.io :as io]
             [helper.graal :as graal]
             [helper.main :as main]
             [helper.os :as os]
@@ -11,7 +11,7 @@
 
 (defn generate-test-runner [dir]
   (status/line :head "Generate test runner")
-  (fs/delete-file-recursively dir true)
+  (fs/delete-tree dir)
   (io/make-parents dir)
   (shell/command "clojure" "-M:script:test-common"
                  "-m" "clj-graal.gen-test-runner"
@@ -33,6 +33,7 @@ Options:
 (defn -main [& args]
   (when-let [opts (main/doc-arg-opt args-usage args)]
     (validate-opts opts)
+    (graal/assert-min-version)
     (let [clojure-version (get opts "--clojure-version")
           native-image-xmx "6g"
           target-path "target"

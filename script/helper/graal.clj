@@ -1,55 +1,60 @@
 (ns helper.graal
-  (:require [clojure.java.io :as io]
+  (:require [babashka.fs :as fs]
+            [clojure.java.io :as io]
             [clojure.string :as string]
-            [helper.fs :as fs]
-            [helper.os :as os]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
-(defn find-graal-prog [prog-name]
-  (or (fs/on-path prog-name)
-      (fs/at-path (str (io/file (System/getenv "JAVA_HOME") "bin")) prog-name)
-      (fs/at-path (str (io/file (System/getenv "GRAALVM_HOME") "bin")) prog-name)))
+(defn- find-graal-prog [prog-name]
+  (or (fs/which prog-name)
+      (fs/which (str (io/file (System/getenv "JAVA_HOME") "bin")) prog-name)
+      (fs/which (str (io/file (System/getenv "GRAALVM_HOME") "bin")) prog-name)))
 
-(defn find-native-image-prog []
-  (find-graal-prog (if (= :win (os/get-os)) "native-image.cmd" "native-image")))
+(defn assert-min-version
+  "After GraalVM 22.3.2, the Graal team moved to matching JDK version.
+  For now, we check for something at least with the new JDK version scheme."
+  []
+  (if-let [java-exe (find-graal-prog "java")]
+    (let [min-major 17
+          version-out (->> (shell/command {:err :string} java-exe "-version")
+                           :err)
+          [actual-graal-major actual-jdk-major] (->> version-out
+                                       (re-find #"(?i)GraalVM(?: CE)? (\d+)\..*\(build (\d+)\.")
+                                       rest
+                                       (map parse-long))]
+      (cond
+        (nil? actual-graal-major)
+        (status/die 1
+                    "Did not find GraalVM JDK, found version:\n%s"
+                    version-out)
 
-(defn find-gu-prog []
-  (find-graal-prog (if (= :win (os/get-os)) "gu.cmd" "gu")))
+        (not= actual-graal-major actual-jdk-major)
+        (status/die 1
+                    "Found legacy GraalVM version (use a version that tracks JDK version instead):\n%s"
+                    version-out)
 
-(defn- assert-min-native-image-version [native-image-exe]
-  (let [min-major 22
-        version-out (->> (shell/command {:out :string} native-image-exe "--version")
-                         :out)
-        actual-major (->> version-out
-                          (re-find #"(?i)GraalVM (Version )?(\d+)\.")
-                          last
-                          Long/parseLong)]
-    (when (< actual-major min-major)
-      (status/die 1
-                  "Need a minimum major version of %d for Graal\nnative-image returned: %s"
-                  min-major version-out))))
+        (< actual-graal-major min-major)
+        (status/die 1
+                    "Need a minimum major version of %d, found version:\n%s"
+                    min-major version-out)))
+    (status/die 1 "java not found")))
 
-(defn find-graal-native-image []
+(defn find-graal-native-image
+  "The Graal team now bundle native-image with Graal, there is no longer any need to install it."
+  []
   (status/line :head "Locate GraalVM native-image")
-  (if-let [gu (find-gu-prog)]
-    ;; its ok (and simpler and safer) to request an install of native-image when it is already installed
-    (do (shell/command gu "install" "native-image")
-        (let [native-image (or (find-native-image-prog)
-                               (status/die 1 "failed to install GraalVM native-image, check your GraalVM installation"))]
-          (status/line :detail (str "found: " native-image))
-          (assert-min-native-image-version native-image)
-          native-image))
-    (status/die 1 "GraalVM native image not found nor its installer, check your GraalVM installation")))
-
+  (let [native-image (or (find-graal-prog "native-image")
+                         (status/die 1 "failed to to find GraalVM native-image, it should be bundle with your Graal installation"))]
+    (status/line :detail (str "found: " native-image))
+    native-image))
 
 (defn clean []
   (status/line :head "Clean")
-  (fs/delete-file-recursively ".cpcache" true)
-  (fs/delete-file-recursively "classes" true)
+  (fs/delete-tree ".cpcache")
+  (fs/delete-tree "classes")
 
-  (.mkdirs (io/file "classes"))
-  (.mkdirs (io/file "target"))
+  (fs/create-dirs "classes")
+  (fs/create-dirs "target")
   (status/line :detail "all clean"))
 
 (defn aot-compile-sources [classpath ns]
@@ -67,7 +72,7 @@
                       :out
                       string/trim)]
     (println "\nClasspath:")
-    (println (str "- " (string/join "\n- " (fs/split-path-list classpath))))
+    (println (str "- " (string/join "\n- " (fs/split-paths classpath))))
     (println "\nDeps tree:")
     (shell/command "clojure" alias-opt "-Stree")
     classpath))
@@ -76,7 +81,8 @@
                                 :target-path :target-exe :classpath :native-image-xmx
                                 :entry-class]}]
   (status/line :head "Graal native-image compile AOT")
-  (fs/delete-file-recursively target-exe true)
+  (when (fs/exists? target-exe)
+    (fs/delete target-exe))
   (let [native-image-cmd (->> [graal-native-image
                                (str "-H:Path=" target-path)
                                (str "-H:Name=" target-exe)

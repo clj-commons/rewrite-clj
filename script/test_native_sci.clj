@@ -40,6 +40,7 @@ Options:
 (defn -main [& args]
   (when-let [opts (main/doc-arg-opt args-usage args)]
     (validate-opts opts)
+    (graal/assert-min-version)
     (let [clojure-version (get opts "--clojure-version")
           native-image-xmx "6g"
           graal-reflection-fname "target/native-image/reflection.json"
