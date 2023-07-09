@@ -778,7 +778,7 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.subedit
 (defmacro subedit->>
-  "Like `->`. Threads `zloc`, as an isolated sub-tree through forms, then zips
+  "Like `->>`. Threads `zloc`, as an isolated sub-tree through forms, then zips
       up to, and locates at, the root of the modified sub-tree.
 
    See [docs on sub editing](/doc/01-user-guide.adoc#sub-editing)."
