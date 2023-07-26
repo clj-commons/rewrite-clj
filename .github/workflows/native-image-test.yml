@@ -21,7 +21,7 @@ jobs:
         test: [ test-native, test-native-sci ]
         clojure-version: [ '1.11' ]
 
-    name: ${{ matrix.os }},jdk ${{ matrix.graal-java }},${{ matrix.test }},clj ${{ matrix.clojure-version }}
+    name: ${{ matrix.os }},jdk${{ matrix.java-version }},${{ matrix.test }},clj${{ matrix.clojure-version }}
 
     steps:
       - name: Checkout
