@@ -293,7 +293,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test:clj :kaocha/reporter '[kaocha.report/documentation]'"]}
            {:name "cljfmt"
-            :version "0.10.5"
+            :version "0.10.6"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
@@ -312,7 +312,7 @@
                         "lein test"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2023.05.04-19.38.01"
+            :version "2023.07.01-22.35.41"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
@@ -390,7 +390,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "refactor-nrepl"
-            :version "3.6.0"
+            :version "3.9.0"
             :platforms [:clj]
             :github-release {:repo "clojure-emacs/refactor-nrepl"
                              :via :tag

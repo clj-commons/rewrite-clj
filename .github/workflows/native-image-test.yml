@@ -17,11 +17,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ windows, ubuntu, macos ]
-        java-version: [ '17.0.7', '20.0.1' ]
-        test: [ test-native, test-native-sci ]
+        java-version: [ '17.0.8', '20.0.2' ]
+        test: [ native, native-sci ]
         clojure-version: [ '1.11' ]
 
-    name: ${{ matrix.os }},jdk ${{ matrix.graal-java }},${{ matrix.test }},clj ${{ matrix.clojure-version }}
+    name: ${{ matrix.os }},jdk${{ matrix.java-version }},${{ matrix.test }},clj${{ matrix.clojure-version }}
 
     steps:
       - name: Checkout
@@ -42,5 +42,5 @@ jobs:
       #
       # native image tests
       #
-      - name: Execute ${{ matrix.test }}
-        run: bb ${{ matrix.test }} --clojure-version ${{ matrix.clojure-version }}
+      - name: Execute test-${{ matrix.test }}
+        run: bb test-${{ matrix.test }} --clojure-version ${{ matrix.clojure-version }}
