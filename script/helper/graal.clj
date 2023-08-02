@@ -86,6 +86,7 @@
   (let [native-image-cmd (->> [graal-native-image
                                (str "-H:Path=" target-path)
                                (str "-H:Name=" target-exe)
+                               "--features=clj_easy.graal_build_time.InitClojureClasses"
                                "-H:+ReportExceptionStackTraces"
                                "-J-Dclojure.spec.skip-macros=true"
                                "-J-Dclojure.compiler.direct-linking=true"
