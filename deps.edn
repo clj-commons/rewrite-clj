@@ -110,7 +110,8 @@
            ;; graal:native-test - natively compile src and tests and run
 
            :graal {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
-                   :extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "0.1.4"}}}
+                   :extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "1.0.5"}}}
+
 
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test_{:git/url "https://github.com/lread/sci-test.git"
