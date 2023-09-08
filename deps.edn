@@ -28,7 +28,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2023.07.13"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2023.09.07"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
@@ -65,7 +65,7 @@
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
-           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.85.1342"}
+           :kaocha {:extra-deps {lambdaisland/kaocha {:mvn/version "1.86.1355"}
                                  lambdaisland/kaocha-junit-xml {:mvn/version "1.17.101"}
                                  lambdaisland/kaocha-cloverage {:mvn/version "1.1.89"}}
                     :main-opts ["-m" "kaocha.runner"]}
@@ -98,7 +98,7 @@
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.11.0"}
+                               :extra-deps {metosin/malli {:mvn/version "0.12.0"}
                                             io.aviso/pretty {:mvn/version "1.4.4"}}
                                :ns-default lread.apply-import-vars}
 
@@ -141,12 +141,13 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.5.1095"}
-                                   org.slf4j/slf4j-simple {:mvn/version "2.0.7"} ;; to rid ourselves of logger warnings
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.5.1109"}
+                                   org.slf4j/slf4j-simple {:mvn/version "2.0.9"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                       :main-opts ["-m" "antq.core"
                                   "--ignore-locals"
                                   "--exclude=lambdaisland/kaocha@1.0.829" ;; https://github.com/lambdaisland/kaocha/issues/208
                                   "--exclude=com.bhauman/figwheel-main@0.2.15" ;; deployment was botched, some components missing
+                                  "--exclude=org.clojure/clojurescript@1.11.121" ;; no evidence yet that this is an official release
                                   ]}}}
