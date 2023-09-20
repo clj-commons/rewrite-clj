@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ windows, ubuntu, macos ]
-        java-version: [ '17.0.8', '20.0.2' ]
+        java-version: [ '21' ]
         test: [ native, native-sci ]
         clojure-version: [ '1.11' ]
 
