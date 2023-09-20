@@ -19,7 +19,7 @@
           version-out (->> (shell/command {:err :string} java-exe "-version")
                            :err)
           [actual-graal-major actual-jdk-major] (->> version-out
-                                       (re-find #"(?i)GraalVM(?: CE)? (\d+)\..*\(build (\d+)\.")
+                                       (re-find #"(?i)GraalVM(?: CE)? (\d+).*\(build (\d+)")
                                        rest
                                        (map parse-long))]
       (cond
