@@ -269,7 +269,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "2.5.1109"
+            :version "2.7.1133"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -284,7 +284,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "clerk"
-            :version "0.14.919"
+            :version "0.15.957"
             :platforms [:clj]
             :github-release {:repo "nextjournal/clerk"
                              :via :tag
@@ -381,7 +381,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "rewrite-edn"
-            :version "0.4.6"
+            :version "0.4.7"
             :platforms [:clj]
             :github-release {:repo "borkdude/rewrite-edn"
                              :version-prefix "v"
@@ -427,7 +427,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "zprint"
-            :version "1.2.7"
+            :version "1.2.8"
             :note "1) planck cljs tests disabled for now: https://github.com/planck-repl/planck/issues/1088"
             :platforms [:clj :cljs]
             :github-release {:repo "kkinnear/zprint"}
@@ -438,7 +438,7 @@
                             (lein-deps-tree lib)
                             (status/line :detail "=> Deps Clojurescript run:")
                             (cli-deps-tree lib))
-            :test-cmds ["clojure -M:cljtest:test"
+            :test-cmds ["clojure -M:cljtest"
                         ;; disable zprint cljs tests for now, see https://github.com/planck-repl/planck/issues/1088
                         #_"clojure -M:cljs-runner"]
             :cleanup-fn zprint-cleanup}])
