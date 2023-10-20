@@ -20,7 +20,7 @@
 
 ;; matrix params to be used on ci
 (def ^:private all-oses ["ubuntu" "macos" "windows"])
-(def ^:private all-jdks ["8" "11" "17"])
+(def ^:private all-jdks ["8" "11" "17" "21"])
 
 (defn- test-tasks []
   (concat [;; run lintish tasks across all oses to verify that they will work for all devs regardless of their os choice
