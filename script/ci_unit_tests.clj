@@ -27,7 +27,8 @@
            {:desc "import-vars" :cmd "bb apply-import-vars check" :oses all-oses :jdks ["8"]}
            {:desc "lint"        :cmd "bb lint"                    :oses all-oses :jdks ["8"]}
            ;; test-docs on default clojure version across all oses and jdks
-           {:desc "test-doc"          :cmd "bb test-doc"          :oses all-oses :jdks all-jdks}]
+           {:desc "test-doc"          :cmd "bb test-doc"          :oses all-oses :jdks all-jdks
+            :requires ["npm"]}]
           (for [version ["1.8" "1.9" "1.10" "1.11"]]
             {:desc (str "clj-" version)
              :cmd (str "bb test-clj --clojure-version " version)
@@ -43,11 +44,13 @@
                         (when (:desc opt) (str "-" (:desc opt))))
              :cmd (str "bb test-cljs --env " (:param env) " --optimizations " (:param opt))
              :oses all-oses
-             :jdks ["8"]})
+             :jdks ["8"]
+             :requires ["npm"]})
           ;; shadow-cljs requires a min of jdk 11 so we'll test on that
           [{:desc "shadow-cljs"    :cmd "bb test-shadow-cljs" :oses all-oses :jdks ["11"]
             :skip-reason-fn (fn [{:keys [jdk]}] (when (< (parse-long jdk) 11)
-                                                  "jdk must be >= 11"))}]
+                                                  "jdk must be >= 11"))
+            :requires ["npm"]}]
           ;; planck does not run on windows, and I don't think it needs a jdk
           [{:desc "cljs-bootstrap" :cmd "bb test-cljs --env planck --optimizations none"
             :oses ["macos" "ubuntu"] :jdks ["8"] :requires ["planck"]}]))
