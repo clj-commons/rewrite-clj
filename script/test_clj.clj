@@ -28,17 +28,21 @@
 (def args-usage "Valid args: [options]
 
 Options:
-  -v, --clojure-version VERSION  Test with Clojure [1.8, 1.9, 1.10, 1.11] [default: 1.8]
+  -v, --clojure-version VERSION  Test with Clojure [1.8, 1.9, 1.10, 1.11 all] [default: 1.8]
   --help                         Show this help")
 
 (defn -main [& args]
   (when-let [opts (main/doc-arg-opt args-usage args)]
     (let [clojure-version (get opts "--clojure-version")]
-      (if (not (some #{clojure-version} allowed-clojure-versions))
+
+      (if (not (some #{clojure-version} (conj allowed-clojure-versions "all")))
         (status/die 1 args-usage)
-        (do
-          (run-unit-tests clojure-version)
-          (run-isolated-tests clojure-version)))))
+        (let [clojure-versions (if (= "all" clojure-version)
+                                 allowed-clojure-versions
+                                 [clojure-version])]
+          (doseq [v clojure-versions]
+            (run-unit-tests v)
+            (run-isolated-tests v))))))
   nil)
 
 (main/when-invoked-as-script

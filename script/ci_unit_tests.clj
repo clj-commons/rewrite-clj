@@ -29,7 +29,7 @@
            ;; test-docs on default clojure version across all oses and jdks
            {:desc "test-doc"          :cmd "bb test-doc"          :oses all-oses :jdks all-jdks
             :requires ["npm"]}]
-          (for [version ["1.8" "1.9" "1.10" "1.11"]]
+          (for [version ["all"]]
             {:desc (str "clj-" version)
              :cmd (str "bb test-clj --clojure-version " version)
              :oses all-oses
