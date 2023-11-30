@@ -1,8 +1,8 @@
 (ns build
   (:require [build-shared]
             [clojure.edn :as edn]
-            [clojure.tools.deps :as deps]
-            [clojure.tools.build.api :as b]))
+            [clojure.tools.build.api :as b]
+            [clojure.tools.deps :as deps]))
 
 (def version (build-shared/lib-version))
 (def lib (build-shared/lib-artifact-name))
