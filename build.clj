@@ -1,5 +1,7 @@
 (ns build
   (:require [build-shared]
+            [clojure.edn :as edn]
+            [clojure.tools.deps :as deps]
             [clojure.tools.build.api :as b]))
 
 (def version (build-shared/lib-version))
@@ -48,3 +50,18 @@
    {:installer :remote
     :artifact jar-file
     :pom-file (b/pom-path {:lib lib :class-dir class-dir})}))
+
+(defn download-deps
+  "Download all deps for all aliases"
+  [_]
+  (let [aliases (->> "deps.edn"
+                     slurp
+                     edn/read-string
+                     :aliases
+                     keys)]
+    ;; one at a time because aliases with :replace-deps will... well... you know.
+    (println "Bring down default deps")
+    (deps/create-basis {})
+    (doseq [a (sort aliases)]
+      (println "Bring down deps for alias" a)
+      (deps/create-basis {:aliases [a]}))))
