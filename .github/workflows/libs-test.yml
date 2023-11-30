@@ -53,7 +53,7 @@ jobs:
 
       - name: Install Planck
         uses: ./.github/workflows/setup-planck
-        if: contains( matrix.requires, "planck" )
+        if: contains( matrix.requires, 'planck' )
 
       - name: Run Libs Tests
         run: bb test-libs run ${{ matrix.lib }}
