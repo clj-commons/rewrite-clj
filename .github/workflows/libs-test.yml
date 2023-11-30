@@ -35,7 +35,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lib: ${{ fromJSON(needs.enumerate-libs.outputs.libs) }}
+        include: ${{ fromJSON(needs.enumerate-libs.outputs.libs) }}
+
+    name: ${{ matrix.lib-name }}
 
     steps:
       - name: Checkout
@@ -46,11 +48,12 @@ jobs:
       - name: Setup
         uses: ./.github/workflows/shared-setup
         with:
-          clj-cache-prefix: clj-libs-deps-${{ matrix.lib }}
+          clj-cache-prefix: clj-libs-deps-${{ matrix.lib-name }}
           clj-cache-hash-files: "'script/test_libs.clj','deps.edn','bb.edn'"
 
-      - name: Install planck
+      - name: Install Planck
         uses: ./.github/workflows/setup-planck
+        if: contains( matrix.requires, "planck" )
 
       - name: Run Libs Tests
         run: bb test-libs run ${{ matrix.lib }}

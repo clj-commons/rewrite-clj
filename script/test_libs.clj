@@ -441,6 +441,7 @@
             :test-cmds ["clojure -M:cljtest"
                         ;; disable zprint cljs tests for now, see https://github.com/planck-repl/planck/issues/1088
                         #_"clojure -M:cljs-runner"]
+            ;; :requires ["planck"] ;; re-enable when cljs tests are re-enabled
             :cleanup-fn zprint-cleanup}])
 
 (defn- header [text]
@@ -558,7 +559,11 @@ Specifying no lib-names selects all libraries.")
     (cond
       (get opts "list")
       (if (= "json" (get opts "--format"))
-        (status/line :detail (->> libs (map :name) json/generate-string))
+        (status/line :detail (->> libs
+                                  (map (fn [{:keys [name requires]}]
+                                         {:lib-name name
+                                          :requires (or requires [])}))
+                                  json/generate-string))
         (status/line :detail (str "available libs: " (string/join " " (map :name libs)))))
 
       :else

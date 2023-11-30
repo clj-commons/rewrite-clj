@@ -50,16 +50,17 @@
                                                   "jdk must be >= 11"))}]
           ;; planck does not run on windows, and I don't think it needs a jdk
           [{:desc "cljs-bootstrap" :cmd "bb test-cljs --env planck --optimizations none"
-            :oses ["macos" "ubuntu"] :jdks ["8"]}]))
+            :oses ["macos" "ubuntu"] :jdks ["8"] :requires ["planck"]}]))
 
 (defn- ci-test-matrix []
-  (for [{:keys [desc cmd oses jdks]} (test-tasks)
+  (for [{:keys [desc cmd oses jdks requires]} (test-tasks)
         os oses
         jdk jdks]
     {:desc (str desc " " os " jdk" jdk)
      :cmd cmd
      :os os
-     :jdk jdk}))
+     :jdk jdk
+     :requires (or requires [])}))
 
 (defn- local-test-list [local-os local-jdk]
   (for [{:keys [desc cmd oses skip-reason-fn]} (test-tasks)]
@@ -96,7 +97,7 @@ By default, will run all tests applicable to your current jdk and os.")
         (if (= "json" (get opts "--format"))
           (status/line :detail (json/generate-string matrix))
           (do
-            (status/line :detail (doric/table [:os :jdk :desc :cmd] matrix))
+            (status/line :detail (doric/table [:os :jdk :desc :cmd :requires] matrix))
             (status/line :detail "Total jobs found: %d" (count matrix)))))
       (let [cur-os (matrix-os)
             cur-jdk (jdk/version)

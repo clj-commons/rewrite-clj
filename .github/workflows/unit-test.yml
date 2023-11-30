@@ -57,7 +57,7 @@ jobs:
 
       - name: Install Planck
         uses: ./.github/workflows/setup-planck
-        if: matrix.os != 'windows'
+        if: contains( matrix.requires, "planck" )
 
       - name: Node modules cache
         uses: actions/cache@v3
