@@ -57,7 +57,7 @@ jobs:
 
       - name: Install Planck
         uses: ./.github/workflows/setup-planck
-        if: matrix.os != 'windows'
+        if: contains( matrix.requires, 'planck' )
 
       - name: Node modules cache
         uses: actions/cache@v3
@@ -65,9 +65,11 @@ jobs:
           path: ./node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-
+        if: contains( matrix.requires, 'npm' )
 
       - name: Install node packages
         run: npm ci
+        if: contains( matrix.requires, 'npm' )
 
       - name: Run Tests
         run: ${{ matrix.cmd }}

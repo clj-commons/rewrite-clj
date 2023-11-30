@@ -27,8 +27,9 @@
            {:desc "import-vars" :cmd "bb apply-import-vars check" :oses all-oses :jdks ["8"]}
            {:desc "lint"        :cmd "bb lint"                    :oses all-oses :jdks ["8"]}
            ;; test-docs on default clojure version across all oses and jdks
-           {:desc "test-doc"          :cmd "bb test-doc"          :oses all-oses :jdks all-jdks}]
-          (for [version ["1.8" "1.9" "1.10" "1.11"]]
+           {:desc "test-doc"          :cmd "bb test-doc"          :oses all-oses :jdks all-jdks
+            :requires ["npm"]}]
+          (for [version ["all"]]
             {:desc (str "clj-" version)
              :cmd (str "bb test-clj --clojure-version " version)
              :oses all-oses
@@ -43,23 +44,26 @@
                         (when (:desc opt) (str "-" (:desc opt))))
              :cmd (str "bb test-cljs --env " (:param env) " --optimizations " (:param opt))
              :oses all-oses
-             :jdks ["8"]})
+             :jdks ["8"]
+             :requires ["npm"]})
           ;; shadow-cljs requires a min of jdk 11 so we'll test on that
           [{:desc "shadow-cljs"    :cmd "bb test-shadow-cljs" :oses all-oses :jdks ["11"]
             :skip-reason-fn (fn [{:keys [jdk]}] (when (< (parse-long jdk) 11)
-                                                  "jdk must be >= 11"))}]
+                                                  "jdk must be >= 11"))
+            :requires ["npm"]}]
           ;; planck does not run on windows, and I don't think it needs a jdk
           [{:desc "cljs-bootstrap" :cmd "bb test-cljs --env planck --optimizations none"
-            :oses ["macos" "ubuntu"] :jdks ["8"]}]))
+            :oses ["macos" "ubuntu"] :jdks ["8"] :requires ["planck"]}]))
 
 (defn- ci-test-matrix []
-  (for [{:keys [desc cmd oses jdks]} (test-tasks)
+  (for [{:keys [desc cmd oses jdks requires]} (test-tasks)
         os oses
         jdk jdks]
     {:desc (str desc " " os " jdk" jdk)
      :cmd cmd
      :os os
-     :jdk jdk}))
+     :jdk jdk
+     :requires (or requires [])}))
 
 (defn- local-test-list [local-os local-jdk]
   (for [{:keys [desc cmd oses skip-reason-fn]} (test-tasks)]
@@ -96,7 +100,7 @@ By default, will run all tests applicable to your current jdk and os.")
         (if (= "json" (get opts "--format"))
           (status/line :detail (json/generate-string matrix))
           (do
-            (status/line :detail (doric/table [:os :jdk :desc :cmd] matrix))
+            (status/line :detail (doric/table [:os :jdk :desc :cmd :requires] matrix))
             (status/line :detail "Total jobs found: %d" (count matrix)))))
       (let [cur-os (matrix-os)
             cur-jdk (jdk/version)
