@@ -157,7 +157,7 @@
  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
               ;; we remove and add tools.reader because project.clj has pedantic? :abort enabled
               :removals #{'rewrite-clj 'org.clojure/tools.reader}
-              :additions [['org.clojure/tools.reader "1.3.6"]
+              :additions [['org.clojure/tools.reader "1.3.7"]
                           ['rewrite-clj rewrite-clj-version]]}))
 
 ;;
@@ -193,7 +193,7 @@
         (string/replace #"rewrite-clj \"(\d+\.)+.*\""
                         (format "rewrite-clj \"%s\"" rewrite-clj-version))
         (string/replace #"org.clojure/tools.reader \"(\d+\.)+.*\""
-                        "org.clojure/tools.reader \"1.3.6\"")
+                        "org.clojure/tools.reader \"1.3.7\"")
         (->> (spit p)))))
 
 ;;

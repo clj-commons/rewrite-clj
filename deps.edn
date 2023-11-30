@@ -1,7 +1,7 @@
 {:paths ["src" "resources"]
 
  :deps {org.clojure/clojure {:mvn/version "1.8.0"}
-        org.clojure/tools.reader {:mvn/version "1.3.6"}}
+        org.clojure/tools.reader {:mvn/version "1.3.7"}}
 
  :aliases {;; we use babashka/neil for project attributes
            ;; publish workflow references these values (and automatically bumps patch component of version)
