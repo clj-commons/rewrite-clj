@@ -225,6 +225,9 @@
         ;; done with exercising my rewrite-clj skills for now! :-)
         (string/replace #"rewrite-clj \"(\d+\.)+.*\""
                         (format "rewrite-clj \"%s\"" rewrite-clj-version))
+        ;; pedantic is enabled for CI, so adjust to match rewrite-clj so we don't fail
+        (string/replace #"org.clojure/tools.reader \"(\d+\.)+.*\""
+                        "org.clojure/tools.reader \"1.3.7\"")
         (->> (spit p)))))
 
 ;;
