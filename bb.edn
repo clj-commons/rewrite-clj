@@ -8,7 +8,7 @@
         lread/status-line {:git/url "https://github.com/lread/status-line.git"
                            :sha "cf44c15f30ea3867227fa61ceb823e5e942c707f"}
         etaoin/etaoin {:mvn/version "1.0.40"}
-        io.github.babashka/neil {:git/tag "v0.2.62" :git/sha "f597921"}}
+        io.github.babashka/neil {:git/tag "v0.2.63" :git/sha "076fb83"}}
  :tasks {;; setup
          :requires ([clojure.string :as string]
                     [lread.status-line :as status])

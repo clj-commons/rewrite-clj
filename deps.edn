@@ -32,7 +32,7 @@
                        :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
-           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "1.4.0"}}
+           :eastwood {:extra-deps {jonase/eastwood {:mvn/version "1.4.2"}}
                       :main-opts ["-m" "eastwood.lint" {:source-paths ["src"]
                                                         :test-paths ["test"]
                                                         :add-linters [:performance]
@@ -115,7 +115,7 @@
 
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                   :sha "4323578406848180424a801018047fe859e72c4b"}}}
+                                                   :sha "1ec4529a9c6f8610aacbe4efa874d5bfc9c67c66"}}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 
@@ -134,7 +134,7 @@
            ;; Deployment
            ;;
            :build {:deps {org.clojure/tools.build {:mvn/version "0.9.2"}
-                          slipset/deps-deploy {:mvn/version "0.2.1"}}
+                          slipset/deps-deploy {:mvn/version "0.2.2"}}
                    :extra-paths ["src" "build"]
                    :ns-default build}
 
