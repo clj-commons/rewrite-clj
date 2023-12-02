@@ -108,17 +108,24 @@
     `[a [|b c d]] -> [a |[c d]]`"
   [loc]
   (if (zraw/custom-zipper? loc)
-    (let [{:keys [left]} loc]
-      (if (seq left)
-        (-> loc zraw/remove zraw/up)
-        (zraw/remove loc)))
+    (let [{:keys [left parent right]} loc]
+      (if (nil? (:parent parent))
+        (throw (ex-info "cannot remove at top" {}))
+        (if (seq left)
+          ;; same as zraw/up, except we don't include our current node
+          (assoc parent
+                 :changed? true
+                 :node (zraw/make-node loc
+                                       (:node parent)
+                                       (concat (map first left) right)))
+          (zraw/remove loc))))
     (let [[_node {l :l, ppath :ppath, pnodes :pnodes, rs :r, :as path}] loc]
       (if (nil? ppath)
         (throw (ex-info "cannot remove at top" {}))
         (if (pos? (count l))
           (zraw/up (with-meta [(peek l)
-                            (assoc path :l (pop l) :changed? true)]
-                  (meta loc)))
+                               (assoc path :l (pop l) :changed? true)]
+                     (meta loc)))
           (with-meta [(zraw/make-node loc (peek pnodes) rs)
                       (and ppath (assoc ppath :changed? true))]
             (meta loc)))))))

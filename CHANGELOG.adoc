@@ -20,6 +20,8 @@ A release with known breaking changes is marked with:
 === Unreleased
 
 * bump `org.clojure/tools.reader` to version `1.3.7`
+* `rewrite-clj.paredit/barf-forward` on zipper created with `:track-position? true` now correctly barfs when current node has children
+https://github.com/clj-commons/rewrite-clj/issues/245[#245]
 
 === v1.1.47 - 2023-03-25 [[v1.1.47]]
 
