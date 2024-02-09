@@ -18,6 +18,9 @@
            :1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
            :1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}}
 
+           ;; Clojure pre-release to test against
+           :1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.0-alpha7"}}}
+
            ;;
            ;; ClojureScript version we test with (and support)
            ;;

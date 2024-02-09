@@ -5,7 +5,7 @@
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
-(def allowed-clojure-versions '("1.8" "1.9" "1.10" "1.11"))
+(def allowed-clojure-versions '("1.8" "1.9" "1.10" "1.11" "1.12"))
 
 (defn run-unit-tests [clojure-version]
   (status/line :head (str "testing clojure source against clojure v" clojure-version))
@@ -28,7 +28,7 @@
 (def args-usage "Valid args: [options]
 
 Options:
-  -v, --clojure-version VERSION  Test with Clojure [1.8, 1.9, 1.10, 1.11 all] [default: 1.8]
+  -v, --clojure-version VERSION  Test with Clojure [1.8, 1.9, 1.10, 1.11, 1.12 all] [default: 1.8]
   --help                         Show this help")
 
 (defn -main [& args]
