@@ -51,6 +51,14 @@ jobs:
           clj-cache-prefix: clj-libs-deps-${{ matrix.lib-name }}
           clj-cache-hash-files: "'script/test_libs.clj','deps.edn','bb.edn'"
 
+      ## Lein version > 2.10.0 is causing refactor-nrepl to fail, so explicitly install a version that works
+      ## instead of using lein bundled with github actions image.
+      ## Upcoming 2.11.2 might fix, can optionally revisit in the future.
+      - name: Install Lein
+        uses: DeLaGuardo/setup-clojure@12.4
+        with:
+          lein: 2.10.0
+
       - name: Install Planck
         uses: ./.github/workflows/setup-planck
         if: contains( matrix.requires, 'planck' )

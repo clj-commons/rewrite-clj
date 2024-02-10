@@ -19,7 +19,7 @@ jobs:
         os: [ windows, ubuntu, macos ]
         java-version: [ '21.0.1' ]
         test: [ native, native-sci ]
-        clojure-version: [ '1.11' ]
+        clojure-version: [ '1.11', '1.12' ]
 
     name: ${{ matrix.os }},jdk${{ matrix.java-version }},${{ matrix.test }},clj${{ matrix.clojure-version }}
 

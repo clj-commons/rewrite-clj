@@ -20,7 +20,7 @@
          lint              {:task lint/-main              :doc "[--rebuild] lint source code using clj-kondo, eastwood"}
          -lint-kondo       {:task lint-kondo/-main        :doc "[--rebuild]"}
          -lint-eastwood    {:task lint-eastwood/-main}
-         test-clj          {:task test-clj/-main          :doc "[--clojure-version (1.8|1.9|1.10|1.11)]"}
+         test-clj          {:task test-clj/-main          :doc "[--clojure-version (1.8|1.9|1.10|1.11|1.12)]"}
          test-cljs         {:task test-cljs/-main         :doc "use --help for args"}
          test-shadow-cljs  {:task test-shadow-cljs/-main}
          test-native       {:task test-native/-main       :doc "run rewrite-clj and tests after both compiled with GraalVM native-image"}
