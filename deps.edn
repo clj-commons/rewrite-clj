@@ -24,14 +24,14 @@
            ;;
            ;; ClojureScript version we test with (and support)
            ;;
-           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.60"}}}
+           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.132"}}}
 
            ;;
            ;; Linting
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2023.10.20"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2023.12.15"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
@@ -85,7 +85,7 @@
                       :extra-paths ["target" "test"]
                       :main-opts ["-m" "figwheel.main" "-b" "fig" "-r"]}
 
-           :cljs-test {:extra-deps {olical/cljs-test-runner {:mvn/version "3.8.0"}}
+           :cljs-test {:extra-deps {olical/cljs-test-runner {:mvn/version "3.8.1"}}
                        :extra-paths ["test"]
                        :main-opts ["-m" "cljs-test-runner.main"]}
 
@@ -97,11 +97,11 @@
            ;;
            :script {:extra-paths ["script"]
                     :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
-                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.4.4"}
+                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.4.5"}
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.13.0"}
+                               :extra-deps {metosin/malli {:mvn/version "0.14.0"}
                                             io.aviso/pretty {:mvn/version "1.4.4"}}
                                :ns-default lread.apply-import-vars}
 
@@ -144,8 +144,8 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.7.1133"}
-                                   org.slf4j/slf4j-simple {:mvn/version "2.0.9"} ;; to rid ourselves of logger warnings
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.8.1173"}
+                                   org.slf4j/slf4j-simple {:mvn/version "2.0.12"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                       :main-opts ["-m" "antq.core"
@@ -153,4 +153,6 @@
                                   "--exclude=lambdaisland/kaocha@1.0.829" ;; https://github.com/lambdaisland/kaocha/issues/208
                                   "--exclude=com.bhauman/figwheel-main@0.2.15" ;; deployment was botched, some components missing
                                   "--exclude=org.clojure/clojurescript@1.11.121" ;; no evidence yet that this is an official release
+                                  "--exclude=technomancy/leiningen@2.11.0" ;; exclude for refactor-nrepl lib test
+                                  "--exclude=technomancy/leiningen@2.11.1" ;; exclude for refactor-nrepl lib test
                                   ]}}}
