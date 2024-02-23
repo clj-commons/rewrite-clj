@@ -41,7 +41,7 @@
 (defn clojars-deploy []
   (assert-on-ci)
   (analyze-ci-tag) ;; fail on unexpected version tag
-  (t/shell "clojure -T:build deploy"))
+  (t/shell "clojure -T:build:deploy deploy"))
 
 (defn github-create-release []
   (assert-on-ci)
