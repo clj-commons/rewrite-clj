@@ -40,7 +40,7 @@ runs:
       if: inputs.jdk != 'skip'
 
     - name: Install Babashka
-      uses: DeLaGuardo/setup-clojure@12.4
+      uses: DeLaGuardo/setup-clojure@12.5
       with:
         bb: 'latest'
 
@@ -54,7 +54,7 @@ runs:
       if: runner.os == 'Windows'
 
     - name: Install Clojure (macos, linux)
-      uses: DeLaGuardo/setup-clojure@12.4
+      uses: DeLaGuardo/setup-clojure@12.5
       with:
         cli: 'latest'
       if: runner.os != 'Windows'
