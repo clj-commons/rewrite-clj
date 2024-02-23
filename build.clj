@@ -1,8 +1,7 @@
 (ns build
   (:require [build-shared]
             [clojure.edn :as edn]
-            [clojure.tools.build.api :as b]
-            [clojure.tools.deps :as deps]))
+            [clojure.tools.build.api :as b]))
 
 (def version (build-shared/lib-version))
 (def lib (build-shared/lib-artifact-name))
@@ -61,7 +60,7 @@
                      keys)]
     ;; one at a time because aliases with :replace-deps will... well... you know.
     (println "Bring down default deps")
-    (deps/create-basis {})
+    (b/create-basis {})
     (doseq [a (sort aliases)]
       (println "Bring down deps for alias" a)
-      (deps/create-basis {:aliases [a]}))))
+      (b/create-basis {:aliases [a]}))))
