@@ -19,7 +19,7 @@
            :1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}}
 
            ;; Clojure pre-release to test against
-           :1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.0-alpha7"}}}
+           :1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.0-alpha8"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
@@ -31,7 +31,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2023.12.15"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2024.02.12"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
@@ -97,7 +97,7 @@
            ;;
            :script {:extra-paths ["script"]
                     :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
-                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.4.5"}
+                    :extra-deps {org.clojure/tools.namespace {:mvn/version "1.5.0"}
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
@@ -147,7 +147,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.8.1173"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.8.1185"}
                                    org.slf4j/slf4j-simple {:mvn/version "2.0.12"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
@@ -158,4 +158,5 @@
                                   "--exclude=org.clojure/clojurescript@1.11.121" ;; no evidence yet that this is an official release
                                   "--exclude=technomancy/leiningen@2.11.0" ;; exclude for refactor-nrepl lib test
                                   "--exclude=technomancy/leiningen@2.11.1" ;; exclude for refactor-nrepl lib test
+                                  "--exclude=technomancy/leiningen@2.11.2" ;; exclude for refactor-nrepl lib test
                                   ]}}}
