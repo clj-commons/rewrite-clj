@@ -272,7 +272,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "2.7.1133"
+            :version "2.8.1185"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -296,7 +296,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test:clj :kaocha/reporter '[kaocha.report/documentation]'"]}
            {:name "cljfmt"
-            :version "0.11.2"
+            :version "0.12.0"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
@@ -305,17 +305,17 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "cljstyle"
-            :version "0.15.0"
+            :version "0.16.626"
             :platforms [:clj]
             :github-release {:repo "greglook/cljstyle"
                              :via :tag}
-            :patch-fn project-clj-v1-patch
-            :show-deps-fn lein-deps-tree
-            :test-cmds ["lein check"
-                        "lein test"]}
+            :patch-fn deps-edn-v1-patch
+            :show-deps-fn cli-deps-tree
+            :test-cmds ["bin/test check"
+                        "bin/test unit"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2023.10.30-16.25.41"
+            :version "2024.02.01-11.01.59"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
