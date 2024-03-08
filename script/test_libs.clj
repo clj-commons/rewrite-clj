@@ -315,7 +315,7 @@
                         "bin/test unit"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2024.02.01-11.01.59"
+            :version "2024.03.01-11.37.51"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
@@ -393,7 +393,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "refactor-nrepl"
-            :version "3.9.1"
+            :version "3.10.0"
             :platforms [:clj]
             :github-release {:repo "clojure-emacs/refactor-nrepl"
                              :via :tag
