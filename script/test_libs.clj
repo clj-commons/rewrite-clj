@@ -315,7 +315,7 @@
                         "bin/test unit"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2024.03.01-11.37.51"
+            :version "2024.03.13-13.11.00"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
@@ -430,7 +430,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "zprint"
-            :version "1.2.8"
+            :version "1.2.9"
             :note "1) planck cljs tests disabled for now: https://github.com/planck-repl/planck/issues/1088"
             :platforms [:clj :cljs]
             :github-release {:repo "kkinnear/zprint"}

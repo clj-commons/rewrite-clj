@@ -31,8 +31,8 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2024.03.05"}}
-                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2024.03.13"}}
+                       :override-deps {org.clojure/clojure {:mvn/version "1.11.2"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
            :eastwood {:extra-deps {jonase/eastwood {:mvn/version "1.4.2"}}
@@ -55,7 +55,7 @@
            :test-isolated {:extra-paths ["test-isolated"]}
 
            ;; document block testing
-           :test-doc-blocks {:replace-deps {org.clojure/clojure {:mvn/version "1.11.1"}
+           :test-doc-blocks {:replace-deps {org.clojure/clojure {:mvn/version "1.11.2"}
                                             com.github.lread/test-doc-blocks  {:mvn/version "1.0.166-alpha"}}
                              :replace-paths []
                              :ns-default lread.test-doc-blocks
@@ -64,7 +64,7 @@
                                                 "doc/design/namespaced-elements.adoc"
                                                 "src/rewrite_clj/node.cljc"]}}
 
-           :test-docs {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
+           :test-docs {:override-deps {org.clojure/clojure {:mvn/version "1.11.2"}}
                        :extra-paths ["target/test-doc-blocks/test"]}
 
            ;; kaocha for testing clojure versions>= v1.9
@@ -81,7 +81,7 @@
 
            ;; figwheel for clojurescript testing during dev
            :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.18"}}
-                      :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
+                      :override-deps {org.clojure/clojure {:mvn/version "1.11.2"}}
                       :extra-paths ["target" "test"]
                       :main-opts ["-m" "figwheel.main" "-b" "fig" "-r"]}
 
@@ -96,12 +96,12 @@
            ;; General script deps
            ;;
            :script {:extra-paths ["script"]
-                    :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
+                    :override-deps {org.clojure/clojure {:mvn/version "1.11.2"}}
                     :extra-deps {org.clojure/tools.namespace {:mvn/version "1.5.0"}
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
-           :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.14.0"}
+           :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.11.2"}}
+                               :extra-deps {metosin/malli {:mvn/version "0.15.0"}
                                             io.aviso/pretty {:mvn/version "1.4.4"}}
                                :ns-default lread.apply-import-vars}
 
@@ -112,7 +112,7 @@
            ;; graal:sci-test - interpret tests via sci over natively compiled rewrite-clj
            ;; graal:native-test - natively compile src and tests and run
 
-           :graal {:override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
+           :graal {:override-deps {org.clojure/clojure {:mvn/version "1.11.2"}}
                    :extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "1.0.5"}}}
 
 
@@ -136,7 +136,7 @@
            ;;
            ;; Deployment
            ;;
-           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.6"}}
+           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.0"}}
                    :extra-paths ["src" "build"]
                    :ns-default build}
 
