@@ -44,7 +44,7 @@
   []
   (status/line :head "Locate GraalVM native-image")
   (let [native-image (or (find-graal-prog "native-image")
-                         (status/die 1 "failed to to find GraalVM native-image, it should be bundle with your Graal installation"))]
+                         (status/die 1 "failed to to find GraalVM native-image, it should be bundled with your Graal installation"))]
     (status/line :detail (str "found: " native-image))
     native-image))
 
