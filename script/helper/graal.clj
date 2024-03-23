@@ -81,33 +81,25 @@
                                 :target-path :target-exe :classpath :native-image-xmx
                                 :entry-class]}]
   (status/line :head "Graal native-image compile AOT")
-  (when (fs/exists? target-exe)
-    (fs/delete target-exe))
-  (let [native-image-cmd (->> [graal-native-image
-                               (str "-H:Path=" target-path)
-                               (str "-H:Name=" target-exe)
-                               "--features=clj_easy.graal_build_time.InitClojureClasses"
-                               "-H:+ReportExceptionStackTraces"
-                               "-J-Dclojure.spec.skip-macros=true"
-                               "-J-Dclojure.compiler.direct-linking=true"
-                               (when graal-reflection-fname
-                                 (str "-H:ReflectionConfigurationFiles=" graal-reflection-fname))
-                               "-H:Log=registerResource:"
-                               "-H:EnableURLProtocols=http,https,jar"
-                               "--verbose"
-                               "-H:ServiceLoaderFeatureExcludeServices=javax.sound.sampled.spi.AudioFileReader"
-                               "-H:ServiceLoaderFeatureExcludeServices=javax.sound.midi.spi.MidiFileReader"
-                               "-H:ServiceLoaderFeatureExcludeServices=javax.sound.sampled.spi.MixerProvider"
-                               "-H:ServiceLoaderFeatureExcludeServices=javax.sound.sampled.spi.FormatConversionProvider"
-                               "-H:ServiceLoaderFeatureExcludeServices=javax.sound.sampled.spi.AudioFileWriter"
-                               "-H:ServiceLoaderFeatureExcludeServices=javax.sound.midi.spi.MidiDeviceProvider"
-                               "-H:ServiceLoaderFeatureExcludeServices=javax.sound.midi.spi.SoundbankReader"
-                               "-H:ServiceLoaderFeatureExcludeServices=javax.sound.midi.spi.MidiFileWriter"
-                               "--no-fallback"
-                               "--no-server"
-                               "--report-unsupported-elements-at-runtime"
-                               "-cp" (str classpath java.io.File/pathSeparator "classes")
-                               (str "-J-Xmx" native-image-xmx)
-                               entry-class]
-                              (remove nil?))]
-    (apply shell/command native-image-cmd)))
+  (let [full-path-target-exe (str (fs/file target-path target-exe))]
+    (when-let [exe (fs/which full-path-target-exe)]
+      (status/line :detail "Deleting existing %s" exe)
+      (fs/delete exe))
+    (let [native-image-cmd (->> [graal-native-image
+                                 "-o" full-path-target-exe
+                                 "--enable-http"
+                                 "--enable-https"
+                                 "--features=clj_easy.graal_build_time.InitClojureClasses"
+                                 "-H:+ReportExceptionStackTraces"
+                                 "-J-Dclojure.spec.skip-macros=true"
+                                 "-J-Dclojure.compiler.direct-linking=true"
+                                 (when graal-reflection-fname
+                                   (str "-H:ReflectionConfigurationFiles=" graal-reflection-fname))
+                                 "--verbose"
+                                 "--no-fallback"
+                                 "--report-unsupported-elements-at-runtime"
+                                 "-cp" (str classpath java.io.File/pathSeparator "classes")
+                                 (str "-J-Xmx" native-image-xmx)
+                                 entry-class]
+                                (remove nil?))]
+      (apply shell/command native-image-cmd))))
