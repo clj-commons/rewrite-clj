@@ -272,7 +272,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "2.8.1185"
+            :version "2.8.1194"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -295,6 +295,13 @@
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test:clj :kaocha/reporter '[kaocha.report/documentation]'"]}
+           {:name "clj-mergetool"
+            :version "0.2.1"
+            :platforms [:clj]
+            :github-release {:repo "kurtharriger/clj-mergetool"}
+            :patch-fn deps-edn-v1-patch
+            :show-deps-fn cli-deps-tree
+            :test-cmds ["clojure -T:build test"]}
            {:name "cljfmt"
             :version "0.12.0"
             :platforms [:clj :cljs]
@@ -315,7 +322,7 @@
                         "bin/test unit"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2024.03.13-13.11.00"
+            :version "2024.03.31-19.10.13"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
@@ -384,7 +391,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "rewrite-edn"
-            :version "0.4.7"
+            :version "0.4.8"
             :platforms [:clj]
             :github-release {:repo "borkdude/rewrite-edn"
                              :version-prefix "v"
