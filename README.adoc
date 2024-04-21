@@ -51,6 +51,7 @@ Some projects using rewrite-clj v1
 // no unit tests:
 * https://github.com/lambdaisland/classpath[classpath] {not-canary-tested} - Classpath/classloader/deps.edn related utilities
 * https://github.com/nextjournal/clerk[clerk] {canary-tested} - Local-First Notebooks for Clojure
+* https://github.com/kurtharriger/clj-mergetool[clj-mergetool] {canary-tested} - Smarter git mergetool for clojure and edn
 * https://github.com/weavejester/cljfmt[cljfmt] {canary-tested} - A tool for formatting Clojure code
 * https://github.com/greglook/cljstyle[cljstyle] {canary-tested} - A tool for formatting Clojure code
 * https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] {canary-tested} - Language Server (LSP) for Clojure
