@@ -19,22 +19,24 @@
     "ubuntu"))
 
 ;; matrix params to be used on ci
-(def ^:private all-oses ["ubuntu" "macos" "windows"])
-(def ^:private all-jdks ["8" "11" "17" "21"])
+(def ^:private os-jdks {"ubuntu" ["8" "11" "17" "21"]
+                        ;; macOS on GitHub Actions is now arm-based and does not include jdk8
+                        "macos"   ["11" "17" "21"]
+                        "windows" ["8" "11" "17" "21"]})
+(def ^:private all-oses (keys os-jdks))
 
 (defn- test-tasks []
   (concat [;; run lintish tasks across all oses to verify that they will work for all devs regardless of their os choice
-           {:desc "import-vars" :cmd "bb apply-import-vars check" :oses all-oses :jdks ["8"]}
-           {:desc "lint"        :cmd "bb lint"                    :oses all-oses :jdks ["8"]}
+           {:desc "import-vars" :cmd "bb apply-import-vars check" :oses all-oses :jdks :earliest}
+           {:desc "lint"        :cmd "bb lint"                    :oses all-oses :jdks :earliest}
            ;; test-docs on default clojure version across all oses and jdks
-           {:desc "test-doc"          :cmd "bb test-doc"          :oses all-oses :jdks all-jdks
-            :requires ["npm"]}]
+           {:desc "test-doc"          :cmd "bb test-doc"          :oses all-oses :jdks :all :requires ["npm"]}]
           (for [version ["all"]]
             {:desc (str "clj-" version)
              :cmd (str "bb test-clj --clojure-version " version)
              :oses all-oses
-             :jdks all-jdks})
-          ;; I'm not sure there's much value testing across jdks for ClojureScript tests, for now we'll stick with jdk 8 only
+             :jdks :all})
+          ;; I'm not sure there's much value testing across jdks for ClojureScript tests, for now we'll stick with earliest jdk only
           (for [env [{:param "node" :desc "node"}
                      {:param "chrome-headless" :desc "browser"}]
                 opt [{:param "none"}
@@ -44,7 +46,7 @@
                         (when (:desc opt) (str "-" (:desc opt))))
              :cmd (str "bb test-cljs --env " (:param env) " --optimizations " (:param opt))
              :oses all-oses
-             :jdks ["8"]
+             :jdks :earliest
              :requires ["npm"]})
           ;; shadow-cljs requires a min of jdk 11 so we'll test on that
           [{:desc "shadow-cljs"    :cmd "bb test-shadow-cljs" :oses all-oses :jdks ["11"]
@@ -53,12 +55,15 @@
             :requires ["npm"]}]
           ;; planck does not run on windows, and I don't think it needs a jdk
           [{:desc "cljs-bootstrap" :cmd "bb test-cljs --env planck --optimizations none"
-            :oses ["macos" "ubuntu"] :jdks ["8"] :requires ["planck"]}]))
+            :oses ["macos" "ubuntu"] :jdks :earliest :requires ["planck"]}]))
 
 (defn- ci-test-matrix []
   (for [{:keys [desc cmd oses jdks requires]} (test-tasks)
         os oses
-        jdk jdks]
+        jdk (case jdks
+              :earliest (take 1 (get os-jdks os))
+              :all (get os-jdks os)
+              jdks)]
     {:desc (str desc " " os " jdk" jdk)
      :cmd cmd
      :os os
@@ -105,12 +110,13 @@ By default, will run all tests applicable to your current jdk and os.")
       (let [cur-os (matrix-os)
             cur-jdk (jdk/version)
             cur-major-jdk (str (:major cur-jdk))
+            ci-jdks (get os-jdks cur-os)
             test-list (local-test-list cur-os cur-major-jdk)
             tests-skipped (filter :skip-reasons test-list)
             tests-to-run (remove :skip-reasons test-list)]
-        (when (not (some #{cur-major-jdk} all-jdks))
-          (status/line :warn "CI runs only on jdks %s but you are on jdk %s\nWe'll run tests anyway."
-                       all-jdks (:version cur-jdk)))
+        (when (not (some #{cur-major-jdk} ci-jdks))
+          (status/line :warn "CI runs only on jdks %s on %s OS but you are on jdk %s\nWe'll run tests anyway."
+                       ci-jdks cur-os (:version cur-jdk)))
 
         (status/line :head "Test plan")
         (status/line :detail "Found %d runnable tests for jdk %s on %s:"
