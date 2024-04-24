@@ -298,7 +298,8 @@
            {:name "clj-mergetool"
             :version "0.2.1"
             :platforms [:clj]
-            :github-release {:repo "kurtharriger/clj-mergetool"}
+            :github-release {:repo "kurtharriger/clj-mergetool"
+                             :via :tag}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -T:build test"]}
@@ -322,7 +323,7 @@
                         "bin/test unit"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2024.03.31-19.10.13"
+            :version "2024.04.22-11.50.26"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
