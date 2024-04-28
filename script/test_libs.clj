@@ -272,7 +272,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "2.8.1194"
+            :version "2.8.1201"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
