@@ -61,6 +61,10 @@ CI - We use GitHub Actions for this project
 
 Clojars secrets are protected under the `publish` environment which is only referenced by `publish.yml`.
 
+Codecov.io token is configured as a `CODECOV_TOKEN` secret in this repo.
+Token was generated and populated by clj-commons GitHub org admins who have the privs to do such things.
+Hit them up in Clojurians Slack `#clj-commons` channel if you should ever need their help.
+
 == Expected Oddities
 
 When publishing, you will see both the `tests` workflow triggered and the `publish` workflow triggered (which also invokes the `tests` workflow).
