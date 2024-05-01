@@ -20,14 +20,9 @@ jobs:
         run: bb test-coverage
 
       - name: Upload Code Coverage Results
-        run: |
-          echo "Downloading codecov uploader script"
-          curl -s https://codecov.io/bash > codecov
-          echo "Verifying codedov uploader script"
-          VERSION=$(grep 'VERSION=\".*\"' codecov | cut -d'"' -f2);
-          for i in 1 256 512
-          do
-            sha${i}sum -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
-          done
-          echo "Uploading to codecov"
-          bash codecov -f target/coverage/codecov.json
+      - uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true # optional (default = false)
+          file: ./target/coverage/codecov.json
+          token: ${{ secrets.CODECOV_TOKEN }} # required
+          verbose: true # optional (default = false)
