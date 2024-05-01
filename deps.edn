@@ -19,7 +19,7 @@
            :1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.3"}}}
 
            ;; Clojure pre-release to test against
-           :1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.0-alpha10"}}}
+           :1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.0-alpha11"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
@@ -101,7 +101,7 @@
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.11.3"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.16.0"}
+                               :extra-deps {metosin/malli {:mvn/version "0.16.1"}
                                             io.aviso/pretty {:mvn/version "1.4.4"}}
                                :ns-default lread.apply-import-vars}
 
@@ -136,7 +136,7 @@
            ;;
            ;; Deployment
            ;;
-           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.0"}}
+           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.1"}}
                    :extra-paths ["src" "build"]
                    :ns-default build}
 
