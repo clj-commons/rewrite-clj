@@ -1,14 +1,14 @@
 name: Unit Tests
 
-on:
-  # allow this workflow to be called from other workflows, namely: publish
-  workflow_call:
-  push:
-    branches:
-    - main
-  pull_request:
-    branches:
-    - main
+# on:
+#   # allow this workflow to be called from other workflows, namely: publish
+#   workflow_call:
+#   push:
+#     branches:
+#     - main
+#   pull_request:
+#     branches:
+#     - main
 
 jobs:
   setup:
