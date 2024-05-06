@@ -56,7 +56,7 @@
 
            ;; document block testing
            :test-doc-blocks {:replace-deps {org.clojure/clojure {:mvn/version "1.11.3"}
-                                            com.github.lread/test-doc-blocks  {:mvn/version "1.1.19"}}
+                                            com.github.lread/test-doc-blocks  {:mvn/version "1.1.20"}}
                              :replace-paths []
                              :ns-default lread.test-doc-blocks
                              :exec-args {:docs ["doc/01-user-guide.adoc"
