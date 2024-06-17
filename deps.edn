@@ -19,7 +19,7 @@
            :1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.3"}}}
 
            ;; Clojure pre-release to test against
-           :1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.0-alpha12"}}}
+           :1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.0-beta1"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
@@ -31,7 +31,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2024.05.22"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2024.05.24"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.11.3"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
@@ -136,7 +136,7 @@
            ;;
            ;; Deployment
            ;;
-           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.3"}}
+           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.4"}}
                    :extra-paths ["src" "build"]
                    :ns-default build}
 
