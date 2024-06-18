@@ -227,48 +227,48 @@
     "{:r 1 :u}" :map))
 
 (deftest t-parsing-metadata
-  (are [?s ?t ?mt]
-       (let [s (str ?s " s")
-             n (p/parse-string s)
-             [mta ws sym] (node/children n)]
-         (is (= ?t (node/tag n)))
-         (is (= s (node/string n)))
-         (is (= 's (node/sexpr n)))
-         (is (= {:private true} (meta (node/sexpr n))))
-         (is (= ?mt (node/tag mta)))
-         (is (= :whitespace (node/tag ws)))
-         (is (= :token (node/tag sym)))
-         (is (= 's (node/sexpr sym))))
-    "^:private"          :meta  :token
-    "^{:private true}"   :meta  :map
-    "#^:private"         :meta* :token
-    "#^{:private true}"  :meta* :map))
+  (doseq [[meta-str expected-tag expected-meta-child-tag]
+          [["^:private"          :meta  :token]
+           ["^{:private true}"   :meta  :map]
+           ["#^:private"         :meta* :token]
+           ["#^{:private true}"  :meta* :map]]
+          :let [s (str meta-str " s")
+                n (p/parse-string s)
+                [meta-data ws target-sym] (node/children n)]]
+    (is (= expected-tag (node/tag n)))
+    (is (= s (node/string n)))
+    (is (= 's (node/sexpr n)))
+    (is (= {:private true} (meta (node/sexpr n))))
+    (is (= expected-meta-child-tag (node/tag meta-data)))
+    (is (= :whitespace (node/tag ws)))
+    (is (= :token (node/tag target-sym)))
+    (is (= 's (node/sexpr target-sym)))))
 
 (deftest t-parsing-multiple-metadata-forms
-  (are [?s ?expected-meta-tag ?expected-tag-on-metadata]
-       (let [s (str ?s " s")
-             n (p/parse-string s)
-             [mdata ws inner-n] (node/children n)
-             [inner-mdata inner-ws sym] (node/children inner-n)]
-         ;; outer meta
-         (is (= ?expected-meta-tag (node/tag n)))
-         (is (= {:private true :awe true} (meta (node/sexpr n))))
-         (is (= ?expected-tag-on-metadata (node/tag mdata)))
-         (is (= :whitespace (node/tag ws)))
+  (doseq [[meta-str expected-meta-tag expected-tag-on-metadata]
+          [["^:private ^:awe"                 :meta  :token]
+           ["^{:private true} ^{:awe true}"   :meta  :map]
+           ["#^:private #^:awe"               :meta* :token]
+           ["#^{:private true} #^{:awe true}" :meta* :map]]
+          :let [s (str meta-str " s")
+                n (p/parse-string s)
+                [meta-data ws inner-node] (node/children n)
+                [inner-meta-data inner-ws target-sym] (node/children inner-node)]]
+    ;; outer metadata
+    (is (= expected-meta-tag (node/tag n)))
+    (is (= {:private true :awe true} (meta (node/sexpr n))))
+    (is (= expected-tag-on-metadata (node/tag meta-data)))
+    (is (= :whitespace (node/tag ws)))
 
-         ;; inner meta
-         (is (= ?expected-meta-tag (node/tag inner-n)))
-         (is (= {:awe true} (meta (node/sexpr inner-n))))
-         (is (= ?expected-tag-on-metadata (node/tag inner-mdata)))
-         (is (= :whitespace (node/tag inner-ws)))
+    ;; inner metadata
+    (is (= expected-meta-tag (node/tag inner-node)))
+    (is (= {:awe true} (meta (node/sexpr inner-node))))
+    (is (= expected-tag-on-metadata (node/tag inner-meta-data)))
+    (is (= :whitespace (node/tag inner-ws)))
 
-         ;; symbol
-         (is (= s (node/string n)))
-         (is (= 's (node/sexpr sym))))
-    "^:private ^:awe"                 :meta  :token
-    "^{:private true} ^{:awe true}"   :meta  :map
-    "#^:private #^:awe"               :meta* :token
-    "#^{:private true} #^{:awe true}" :meta* :map))
+    ;; target symbol
+    (is (= s (node/string n)))
+    (is (= 's (node/sexpr target-sym)))))
 
 (deftest t-parsing-reader-macros
   (are [?s ?t ?children]
