@@ -22,9 +22,20 @@
     (b/write-pom {:class-dir class-dir
                   :lib lib
                   :version version
-                  :scm {:tag (format "v%s" version)}
                   :basis basis
-                  :src-dirs ["src"]})
+                  :src-dirs ["src"]
+                  :scm {:url "https://github.com/clj-commons/rewrite-clj"
+                        :connection "scm:git:git@github.com:clj-commons/rewrite-clj.git"
+                        :developerConnection "scm:git:git@github.com:clj-commons/rewrite-clj.git"
+                        :tag (format "v%s" version)}
+                  :pom-data [[:description "Rewrite Clojure code and edn"]
+                             [:url "https://github.com/clj-commons/rewrite-clj"]
+                             [:licenses
+                              [:license
+                               [:name "The MIT License"]
+                               [:url "http://opensource.org/licenses/MIT"]]]
+                             [:properties
+                              [:project.build.sourceEncoding "UTF-8"]]]})
     (b/copy-dir {:src-dirs ["src" "resources"]
                  :target-dir class-dir})
     (b/jar {:class-dir class-dir
