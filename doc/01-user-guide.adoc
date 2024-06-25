@@ -792,6 +792,48 @@ But when converting to a Clojure form, duplicate values in a set are not valid C
 ;; => #{:b :a}
 ----
 
+[[invalid-metadata]]
+=== Invalid Metadata
+Clojure can read metadata that is any of:
+
+[%autowidth]
+|===
+| Type | Example | Equivalent Long Form
+
+| map
+a|`^{:a 1 :b 2} foo`
+a|`^{:a 1 :b 2} foo`
+
+| keyword
+a| `^:private bar`
+a| `^{:private true} bar`
+
+| symbol
+a| `^SomeType baz`
+a| `^{:tag SomeType} baz`
+
+| string
+a|`^"SomeType" qux`
+a| `^{:tag "SomeType"} qux`
+
+|===
+
+Rewrite-clj will happily read and write metdata that is technically invalid.
+When you `sexpr` a metadata node you are also effectively converting it to its long form.
+If you try to `sexpr` a node with invalid metadata you will get an exception:
+
+//#:test-doc-blocks {:reader-cond :clj}
+[source,clojure]
+----
+(try
+  (-> "^(bad metadata) foobar"
+      z/of-string
+      z/sexpr)
+  (catch Throwable e
+    (.getMessage e)))
+;; => "Metadata must be a map, keyword, symbol or string"
+----
+
 [#sexpr-nuances]
 == Sexpr Nuances
 
@@ -863,8 +905,8 @@ Both the zip and node APIs include `sexpr-able?` to check if sexpr is supported 
 ====
 `sexpr-able?` only looks at the current node element type. This means that `sexpr` will still throw when:
 
-1. called on a node with an element type that is `sepxr-able?` but, for whatever reason, has a child node that fails to `sexpr`, see link:#unbalanced-maps[unbalanced maps].
-2. called directly on an link:#unbalanced-maps[unbalanced maps].
+1. called on a node with an element type that is `sepxr-able?` but, for whatever reason, has a child node that fails to `sexpr`, see link:#unbalanced-maps[unbalanced maps] and link:#invalid-metadata[invalid metadata].
+2. called directly on an link:#unbalanced-maps[unbalanced maps] or node with link:#invalid-metadata[invalid metadata].
 ====
 
 [source, clojure]

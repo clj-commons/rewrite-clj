@@ -16,7 +16,12 @@
     (let [[mta data] (node/sexprs children opts)]
       (assert (interop/meta-available? data)
               (str "cannot attach metadata to: " (pr-str data)))
-      (vary-meta data merge (if (map? mta) mta {mta true}))))
+      (vary-meta data merge
+                 (cond (map? mta) mta
+                       (keyword? mta) {mta true}
+                       (symbol? mta) {:tag mta}
+                       (string? mta) {:tag mta}
+                       :else (throw (ex-info "Metadata must be a map, keyword, symbol or string" {}))))))
   (length [_node]
     (+ (count prefix) (node/sum-lengths children)))
   (string [_node]

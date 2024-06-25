@@ -270,6 +270,75 @@
     (is (= s (node/string n)))
     (is (= 's (node/sexpr target-sym)))))
 
+(deftest t-parsing-tag-symbol-metadata
+  (doseq [[s expected-node]
+          [["^MyType foo"         (node/meta-node [(node/token-node 'MyType)
+                                                   (node/spaces 1)
+                                                   (node/token-node 'foo)])]
+           ["^{:tag MyType} foo"  (node/meta-node
+                                    [(node/map-node [(node/keyword-node :tag)
+                                                     (node/spaces 1)
+                                                     (node/token-node 'MyType)])
+                                     (node/spaces 1)
+                                     (node/token-node 'foo)])]
+           ["#^MyType foo"        (node/raw-meta-node [(node/token-node 'MyType)
+                                                       (node/spaces 1)
+                                                       (node/token-node 'foo)])]
+           ["#^{:tag MyType} foo" (node/raw-meta-node
+                                    [(node/map-node [(node/keyword-node :tag)
+                                                     (node/spaces 1)
+                                                     (node/token-node 'MyType)])
+                                     (node/spaces 1)
+                                     (node/token-node 'foo)])]]
+
+          :let [n (p/parse-string s)]]
+    (is (= expected-node n) s)
+    (is (= s (node/string n)))
+    (is (= 'foo (node/sexpr n)) s)
+    (is (= {:tag 'MyType} (meta (node/sexpr n))) s)))
+
+(deftest t-parsing-tag-string-metadata
+  (doseq [[s expected-node]
+          [["^\"MyType\" foo"         (node/meta-node [(node/string-node "MyType")
+                                                       (node/spaces 1)
+                                                       (node/token-node 'foo)])]
+           ["^{:tag \"MyType\"} foo"  (node/meta-node
+                                        [(node/map-node [(node/keyword-node :tag)
+                                                         (node/spaces 1)
+                                                         (node/string-node "MyType")])
+                                         (node/spaces 1)
+                                         (node/token-node 'foo)])]
+           ["#^\"MyType\" foo"        (node/raw-meta-node [(node/string-node "MyType")
+                                                           (node/spaces 1)
+                                                           (node/token-node 'foo)])]
+           ["#^{:tag \"MyType\"} foo" (node/raw-meta-node
+                                        [(node/map-node [(node/keyword-node :tag)
+                                                         (node/spaces 1)
+                                                         (node/string-node "MyType")])
+                                         (node/spaces 1)
+                                         (node/token-node 'foo)])]]
+
+          :let [n (p/parse-string s)]]
+    (is (= expected-node n) s)
+    (is (= s (node/string n)))
+    (is (= 'foo (node/sexpr n)) s)
+    (is (= {:tag "MyType"} (meta (node/sexpr n))) s)))
+
+(deftest t-parsing-invalid-metadata
+  (let [s "^(list not valid) foo"
+        n (p/parse-string s)]
+    (is (= (node/meta-node [(node/list-node [(node/token-node 'list)
+                                             (node/spaces 1)
+                                             (node/token-node 'not)
+                                             (node/spaces 1)
+                                             (node/token-node 'valid)])
+                            (node/spaces 1)
+                            (node/token-node 'foo)])
+           n))
+    (is (= s (node/string n)))
+    (is (thrown-with-msg? ExceptionInfo #"Metadata must be a map, keyword, symbol or string"
+                          (node/sexpr n)))))
+
 (deftest t-parsing-reader-macros
   (are [?s ?t ?children]
        (let [n (p/parse-string ?s)]
