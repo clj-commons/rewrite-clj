@@ -19,9 +19,13 @@ A release with known breaking changes is marked with:
 //   (adjust these in publish.clj as you see fit)
 === Unreleased
 
-* bump `org.clojure/tools.reader` to version `1.4.2` (@lread)
+* bump `org.clojure/tools.reader` to version `1.4.2`
+(@lread)
 * `sexpr` now 1) expands tag metadata to its long form 2) throws on invalid metadata
 https://github.com/clj-commons/rewrite-clj/issues/280[#280]
+(@lread)
+* Add support for Clojure 1.12 vector metadata
+https://github.com/clj-commons/rewrite-clj/issues/279[#279]
 (@lread)
 * `rewrite-clj.paredit/barf-forward` on zipper created with `:track-position? true` now correctly barfs when current node has children
 https://github.com/clj-commons/rewrite-clj/issues/245[#245]

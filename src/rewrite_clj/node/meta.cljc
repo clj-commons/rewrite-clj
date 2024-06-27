@@ -21,6 +21,7 @@
                        (keyword? mta) {mta true}
                        (symbol? mta) {:tag mta}
                        (string? mta) {:tag mta}
+                       (vector? mta) {:param-tags mta}
                        :else (throw (ex-info "Metadata must be a map, keyword, symbol or string" {}))))))
   (length [_node]
     (+ (count prefix) (node/sum-lengths children)))
