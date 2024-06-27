@@ -324,6 +324,74 @@
     (is (= 'foo (node/sexpr n)) s)
     (is (= {:tag "MyType"} (meta (node/sexpr n))) s)))
 
+(deftest t-parsing-clj-1-12-vector-metadata
+  (doseq [[s expected-meta expected-node]
+          [["^[a b c] foo"
+            {:param-tags '[a b c]}
+            (node/meta-node [(node/vector-node [(node/token-node 'a)
+                                                (node/spaces 1)
+                                                (node/token-node 'b)
+                                                (node/spaces 1)
+                                                (node/token-node 'c)])
+                             (node/spaces 1)
+                             (node/token-node 'foo)])]
+
+           ["^[] foo"
+            {:param-tags []}
+            (node/meta-node [(node/vector-node [])
+                             (node/spaces 1)
+                             (node/token-node 'foo)])]
+
+           ["^[_ _] foo"
+            {:param-tags '[_ _]}
+            (node/meta-node [(node/vector-node [(node/token-node '_)
+                                                (node/spaces 1)
+                                                (node/token-node '_)])
+                             (node/spaces 1)
+                             (node/token-node 'foo)])]
+
+           ["^{:param-tags [a b c]} foo"
+            {:param-tags '[a b c]}
+            (node/meta-node
+              [(node/map-node [(node/keyword-node :param-tags)
+                               (node/spaces 1)
+                               (node/vector-node [(node/token-node 'a)
+                                                  (node/spaces 1)
+                                                  (node/token-node 'b)
+                                                  (node/spaces 1)
+                                                  (node/token-node 'c)])])
+               (node/spaces 1)
+               (node/token-node 'foo)])]
+
+           ["#^[a b c] foo"
+            {:param-tags '[a b c]}
+            (node/raw-meta-node [(node/vector-node [(node/token-node 'a)
+                                                    (node/spaces 1)
+                                                    (node/token-node 'b)
+                                                    (node/spaces 1)
+                                                    (node/token-node 'c)])
+                                 (node/spaces 1)
+                                 (node/token-node 'foo)])]
+
+           ["#^{:param-tags [a b c]} foo"
+            {:param-tags '[a b c]}
+            (node/raw-meta-node
+              [(node/map-node [(node/keyword-node :param-tags)
+                               (node/spaces 1)
+                               (node/vector-node [(node/token-node 'a)
+                                                    (node/spaces 1)
+                                                    (node/token-node 'b)
+                                                    (node/spaces 1)
+                                                    (node/token-node 'c)])])
+               (node/spaces 1)
+               (node/token-node 'foo)])]]
+
+          :let [n (p/parse-string s)]]
+    (is (= expected-node n) s)
+    (is (= s (node/string n)))
+    (is (= 'foo (node/sexpr n)) s)
+    (is (= expected-meta (meta (node/sexpr n))) s)))
+
 (deftest t-parsing-invalid-metadata
   (let [s "^(list not valid) foo"
         n (p/parse-string s)]
