@@ -1,5 +1,5 @@
 (ns rewrite-clj.zip.base-test
-  (:require [clojure.test :refer [deftest is are]]
+  (:require [clojure.test :refer [deftest is]]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip :as z]))
 
@@ -64,55 +64,49 @@
 
 
 (deftest t-zipper-creation-for-whitespace-only-nodes
-  (are [?ws ?s]
-       (let [n (node/forms-node [?ws])
+  (doseq [[ws s]
+          [[(node/spaces 3)            "   "]
+           [(node/comment-node "foo")  ";foo"]]]
+       (let [n (node/forms-node [ws])
              loc (z/of-node n)]
          (is (= :forms (z/tag loc)))
          (is (= nil (z/sexpr loc)))
-         (is (= ?s (z/string loc)))
-         (is (= ?s (z/root-string loc))))
-    (node/spaces 3)            "   "
-    (node/comment-node "foo")  ";foo"))
+         (is (= s (z/string loc)))
+         (is (= s (z/root-string loc))))))
 
 (deftest t-length-calculation
-  (are [?s]
-       (let [s ?s
-             loc (z/of-string s)]
-         (is (= (count s) (z/length loc))))
-    "0"
-    "^:private x"
-    "[1 2 [3 4] #{5}]"
-    "{:a 0, :b 1, ::c 3, :ns/x}"
-    "#inst \"2014\""
-    "#_(+ 2 3)"
-    "@(deref x)"
-    "#=(+ 1 2)"))
+  (doseq [s ["0"
+             "^:private x"
+             "[1 2 [3 4] #{5}]"
+             "{:a 0, :b 1, ::c 3, :ns/x}"
+             "#inst \"2014\""
+             "#_(+ 2 3)"
+             "@(deref x)"
+             "#=(+ 1 2)"]]
+    (let [loc (z/of-string s)]
+      (is (= (count s) (z/length loc))))))
 
 (deftest t-sexpr-applies-auto-resolve-opts-to-nested-elements
-  (are [?sexpr-default ?child-sexprs-default ?sexpr-custom ?child-sexprs-custom]
-       (let [s "{:x [[[::a]] #{::myalias2/b} #::myalias{:x 1 :y 2}]}"
-             zloc (z/of-string s)
-             opts {:auto-resolve #(if (= :current %)
-                                    'my.current.ns
-                                    (get {'myalias 'my.aliased.ns} %
-                                         (symbol (str % "-unresolved"))))}
-             zloc-custom-opts (z/of-string s opts)]
-         (is (= ?sexpr-default (z/sexpr zloc)))
-         (is (= ?child-sexprs-default (z/child-sexprs zloc)))
-         (is (= ?sexpr-custom (z/sexpr zloc-custom-opts)))
-         (is (= ?child-sexprs-custom (z/child-sexprs zloc-custom-opts))))
-    {:x [[[:?_current-ns_?/a]]
-         #{:??_myalias2_??/b}
-         {:??_myalias_??/x 1, :??_myalias_??/y 2}]}
-
-    '(:x [[[:?_current-ns_?/a]]
-          #{:??_myalias2_??/b}
-          {:??_myalias_??/x 1, :??_myalias_??/y 2}])
-
-    {:x [[[:my.current.ns/a]]
-         #{:myalias2-unresolved/b}
-         {:my.aliased.ns/x 1, :my.aliased.ns/y 2}]}
-
-    '(:x [[[:my.current.ns/a]]
-          #{:myalias2-unresolved/b}
-          {:my.aliased.ns/x 1, :my.aliased.ns/y 2}])))
+  (let [sexpr-default         {:x [[[:?_current-ns_?/a]]
+                                    #{:??_myalias2_??/b}
+                                    {:??_myalias_??/x 1, :??_myalias_??/y 2}]}
+        child-sexprs-default  '(:x [[[:?_current-ns_?/a]]
+                                     #{:??_myalias2_??/b}
+                                     {:??_myalias_??/x 1, :??_myalias_??/y 2}])
+        sexpr-custom          {:x [[[:my.current.ns/a]]
+                                    #{:myalias2-unresolved/b}
+                                    {:my.aliased.ns/x 1, :my.aliased.ns/y 2}]}
+        child-sexprs-custom   '(:x [[[:my.current.ns/a]]
+                                     #{:myalias2-unresolved/b}
+                                     {:my.aliased.ns/x 1, :my.aliased.ns/y 2}])
+        s "{:x [[[::a]] #{::myalias2/b} #::myalias{:x 1 :y 2}]}"
+        zloc (z/of-string s)
+        opts {:auto-resolve #(if (= :current %)
+                               'my.current.ns
+                               (get {'myalias 'my.aliased.ns} %
+                                    (symbol (str % "-unresolved"))))}
+        zloc-custom-opts (z/of-string s opts)]
+    (is (= sexpr-default (z/sexpr zloc)))
+    (is (= child-sexprs-default (z/child-sexprs zloc)))
+    (is (= sexpr-custom (z/sexpr zloc-custom-opts)))
+    (is (= child-sexprs-custom (z/child-sexprs zloc-custom-opts)))))

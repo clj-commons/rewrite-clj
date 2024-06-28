@@ -1,47 +1,47 @@
 (ns rewrite-clj.node-test
   "This test namespace originated from rewrite-cljs."
-  (:require [clojure.test :refer [deftest is are testing]]
+  (:require [clojure.test :refer [deftest is testing]]
             [rewrite-clj.node :as n]
             [rewrite-clj.node.protocols :as proto]
             [rewrite-clj.parser :as p]))
 
 (deftest nodes-convert-to-strings-and-sexpr-ability
   (testing "easily parseable"
-    (are [?in ?expected-tag ?expected-type ?expected-sexpr-able?]
-      (let [n (p/parse-string ?in)]
-          (is (= ?in (str n)))
-          (is (= ?expected-tag (n/tag n)))
-          (is (= ?expected-type (proto/node-type n)))
-          (is (= ?expected-sexpr-able? (n/sexpr-able? n))))
-      ","               :comma          :comma              false
-      "; comment"       :comment        :comment            false
-      "#! comment"      :comment        :comment            false
-      "@deref"          :deref          :deref              true
-      "#(fn %1)"        :fn             :fn                 true
-      ":my-kw"          :token          :keyword            true
-      "^:meta b"        :meta           :meta               true
-      "#:prefix {:a 1}" :namespaced-map :namespaced-map     true
-      "\n"              :newline        :newline            false
-      "'quoted"         :quote          :quote              true
-      "#booya 32"       :reader-macro   :reader-macro       true
-      "#'myvar"         :var            :reader             true
-      "#\"regex\""      :regex          :regex              true
-      "[1 2 3]"         :vector         :seq                true
-      "\"string\""      :token          :string             true
-      "symbol"          :token          :symbol             true
-      "43"              :token          :token              true
-      "#_ nope"         :uneval         :uneval             false
-      "  "              :whitespace     :whitespace         false))
+    (doseq [[in expected-tag expected-type expected-sexpr-able?]
+            [[","               :comma          :comma              false]
+             ["; comment"       :comment        :comment            false]
+             ["#! comment"      :comment        :comment            false]
+             ["@deref"          :deref          :deref              true]
+             ["#(fn %1)"        :fn             :fn                 true]
+             [":my-kw"          :token          :keyword            true]
+             ["^:meta b"        :meta           :meta               true]
+             ["#:prefix {:a 1}" :namespaced-map :namespaced-map     true]
+             ["\n"              :newline        :newline            false]
+             ["'quoted"         :quote          :quote              true]
+             ["#booya 32"       :reader-macro   :reader-macro       true]
+             ["#'myvar"         :var            :reader             true]
+             ["#\"regex\""      :regex          :regex              true]
+             ["[1 2 3]"         :vector         :seq                true]
+             ["\"string\""      :token          :string             true]
+             ["symbol"          :token          :symbol             true]
+             ["43"              :token          :token              true]
+             ["#_ nope"         :uneval         :uneval             false]
+             ["  "              :whitespace     :whitespace         false]]]
+      (let [n (p/parse-string in)]
+        (is (= in (str n)))
+        (is (= expected-tag (n/tag n)))
+        (is (= expected-type (proto/node-type n)))
+        (is (= expected-sexpr-able? (n/sexpr-able? n))))))
   (testing "map qualifier"
-    (are [?auto-resolved ?prefix ?expected-str]
-      (let [n (n/map-qualifier-node ?auto-resolved ?prefix)]
-        (is (= ?expected-str (str n)))
+    (doseq [[auto-resolved prefix expected-str]
+            [[false "prefix"  ":prefix"]
+             [true  nil       "::"]
+             [true  "nsalias" "::nsalias"]]]
+      (let [n (n/map-qualifier-node auto-resolved prefix)]
+        (is (= expected-str (str n)))
         (is (= :map-qualifier (n/tag n)))
         (is (= :map-qualifier (proto/node-type n)))
-        (is (= true (n/sexpr-able? n))))
-      false "prefix"  ":prefix"
-      true  nil       "::"
-      true  "nsalias" "::nsalias"))
+        (is (= true (n/sexpr-able? n))))))
   (testing "integer"
     (let [n (n/integer-node 42)]
       (is (= :token (n/tag n)))
@@ -52,7 +52,6 @@
     (let [n (p/parse-string-all "5 7")]
       (is (= "5 7" (str n)))
       (is (n/sexpr-able? n)))))
-
 
 (deftest namespaced-keyword
   (is (= ":dill/dall"
@@ -123,59 +122,53 @@
         map-qualifier-current-ns (n/map-qualifier-node true nil)
         map-qualifier-ns-alias (n/map-qualifier-node true "nsmap-alias")]
     (testing "qualified nodes are unaffected by resolver"
-      (are [?result ?node]
-          (do
-            (is (= ?result (-> ?node sexpr-default)))
-            (is (= ?result (-> ?node sexpr-custom))))
-        :my-kw            (n/keyword-node :my-kw)
-        'my-sym           (n/token-node 'my-sym)
-        :_/my-kw          (n/keyword-node :_/my-kw)
-        '_/my-sym         (n/token-node '_/my-sym)
-        :my-prefix/my-kw  (n/keyword-node :my-prefix/my-kw)
-        'my-prefix/my-sym (n/token-node 'my-prefix/my-sym)))
+      (doseq [[result node]
+              [[:my-kw            (n/keyword-node :my-kw)]
+               ['my-sym           (n/token-node 'my-sym)]
+               [:_/my-kw          (n/keyword-node :_/my-kw)]
+               ['_/my-sym         (n/token-node '_/my-sym)]
+               [:my-prefix/my-kw  (n/keyword-node :my-prefix/my-kw)]
+               ['my-prefix/my-sym (n/token-node 'my-prefix/my-sym)]]]
+        (is (= result (-> node sexpr-default)))
+        (is (= result (-> node sexpr-custom)))))
     (testing "auto-resolve qualified key nodes are affected by resolver"
-      (are [?result-default ?result-custom ?node]
-          (do
-            (is (= ?result-default (-> ?node sexpr-default)))
-            (is (= ?result-custom (-> ?node sexpr-custom))))
-        :?_current-ns_?/my-kw :my.current.ns/my-kw   (n/keyword-node :my-kw true)
-        :??_my-alias_??/my-kw :my.aliased.ns/my-kw   (n/keyword-node :my-alias/my-kw true)))
+      (doseq [[result-default result-custom node]
+              [[:?_current-ns_?/my-kw :my.current.ns/my-kw   (n/keyword-node :my-kw true)]
+               [:??_my-alias_??/my-kw :my.aliased.ns/my-kw   (n/keyword-node :my-alias/my-kw true)]]]
+        (is (= result-default (-> node sexpr-default)))
+        (is (= result-custom (-> node sexpr-custom)))))
     (testing "map qualified nodes can be affected by resolver"
-      (are [?result ?node]
-          (do
-            (is (= ?result (-> ?node (n/map-context-apply map-qualifier) sexpr-default)))
-            (is (= ?result (-> ?node (n/map-context-apply map-qualifier) sexpr-custom))) )
-        :nsmap-prefix/my-kw   (n/keyword-node :my-kw)
-        'nsmap-prefix/my-sym  (n/token-node 'my-sym)))
+      (doseq [[result node]
+              [[:nsmap-prefix/my-kw   (n/keyword-node :my-kw)]
+               ['nsmap-prefix/my-sym  (n/token-node 'my-sym)]]]
+        (is (= result (-> node (n/map-context-apply map-qualifier) sexpr-default)))
+        (is (= result (-> node (n/map-context-apply map-qualifier) sexpr-custom)))))
     (testing "map qualified auto-resolve current-ns nodes can be affected by resolver"
-      (are [?result-default ?result-custom ?node]
-          (do
-            (is (= ?result-default (-> ?node (n/map-context-apply map-qualifier-current-ns) sexpr-default)))
-            (is (= ?result-custom (-> ?node (n/map-context-apply map-qualifier-current-ns) sexpr-custom))))
-        :?_current-ns_?/my-kw  :my.current.ns/my-kw  (n/keyword-node :my-kw)
-        '?_current-ns_?/my-sym 'my.current.ns/my-sym (n/token-node 'my-sym)))
+      (doseq [[result-default result-custom node]
+              [[:?_current-ns_?/my-kw  :my.current.ns/my-kw  (n/keyword-node :my-kw)]
+               ['?_current-ns_?/my-sym 'my.current.ns/my-sym (n/token-node 'my-sym)]]]
+        (is (= result-default (-> node (n/map-context-apply map-qualifier-current-ns) sexpr-default)))
+        (is (= result-custom (-> node (n/map-context-apply map-qualifier-current-ns) sexpr-custom)))))
     (testing "map qualified auto-resolve ns-alias nodes can be affected by resolver"
-      (are [?result-default ?result-custom ?node]
-          (do
-            (is (= ?result-default (-> ?node (n/map-context-apply map-qualifier-ns-alias) sexpr-default)))
-            (is (= ?result-custom (-> ?node (n/map-context-apply map-qualifier-ns-alias) sexpr-custom))))
-        :??_nsmap-alias_??/my-kw  :nsmap.aliased.ns/my-kw  (n/keyword-node :my-kw)
-        '??_nsmap-alias_??/my-sym 'nsmap.aliased.ns/my-sym (n/token-node 'my-sym)))
+      (doseq [[result-default result-custom node]
+              [[:??_nsmap-alias_??/my-kw  :nsmap.aliased.ns/my-kw  (n/keyword-node :my-kw)]
+               ['??_nsmap-alias_??/my-sym 'nsmap.aliased.ns/my-sym (n/token-node 'my-sym)]]]
+        (is (= result-default (-> node (n/map-context-apply map-qualifier-ns-alias) sexpr-default)))
+        (is (= result-custom (-> node (n/map-context-apply map-qualifier-ns-alias) sexpr-custom)))))
     (testing "map qualified nodes that are unaffected by resolver"
-      (are [?result ?node]
-          (do
-            (is (= ?result (-> ?node (n/map-context-apply map-qualifier) sexpr-default)))
-            (is (= ?result (-> ?node (n/map-context-apply map-qualifier) sexpr-custom)))
+      (doseq [[result node]
+              [[:my-kw    (n/keyword-node :_/my-kw)]
+               ['my-sym   (n/token-node '_/my-sym)]
+               [:my-prefix/my-kw  (n/keyword-node :my-prefix/my-kw)]
+               ['my-prefix/my-sym (n/token-node 'my-prefix/my-sym)]]]
+        (is (= result (-> node (n/map-context-apply map-qualifier) sexpr-default)))
+        (is (= result (-> node (n/map-context-apply map-qualifier) sexpr-custom)))
 
-            (is (= ?result (-> ?node (n/map-context-apply map-qualifier-current-ns) sexpr-default)))
-            (is (= ?result (-> ?node (n/map-context-apply map-qualifier-current-ns) sexpr-custom)))
+        (is (= result (-> node (n/map-context-apply map-qualifier-current-ns) sexpr-default)))
+        (is (= result (-> node (n/map-context-apply map-qualifier-current-ns) sexpr-custom)))
 
-            (is (= ?result (-> ?node (n/map-context-apply map-qualifier-ns-alias) sexpr-default)))
-            (is (= ?result (-> ?node (n/map-context-apply map-qualifier-ns-alias) sexpr-custom)))  )
-        :my-kw    (n/keyword-node :_/my-kw)
-        'my-sym   (n/token-node '_/my-sym)
-        :my-prefix/my-kw  (n/keyword-node :my-prefix/my-kw)
-        'my-prefix/my-sym (n/token-node 'my-prefix/my-sym)))
+        (is (= result (-> node (n/map-context-apply map-qualifier-ns-alias) sexpr-default)))
+        (is (= result (-> node (n/map-context-apply map-qualifier-ns-alias) sexpr-custom)))))
     (testing "when auto-resolver returns nil, bare or already qualified kw is returned"
       (let [opts {:auto-resolve (fn [_alias])}]
         (is (= :my-kw (-> (n/keyword-node :my-kw true) (n/sexpr opts))))
@@ -187,7 +180,7 @@
         (is (= :foo/my-kw
                (-> (n/keyword-node :foo/my-kw false)
                    (assoc :map-qualifier {:auto-resolved? true :prefix "nsmap-alias"})
-                   (n/sexpr opts)))) ))))
+                   (n/sexpr opts))))))))
 
 (deftest t-sexpr-on-map-qualifier-node
   (testing "with default auto-resolve"

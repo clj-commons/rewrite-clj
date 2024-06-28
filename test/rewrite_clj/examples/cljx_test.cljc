@@ -1,5 +1,5 @@
 (ns rewrite-clj.examples.cljx-test
-  (:require [clojure.test :refer [deftest is are]]
+  (:require [clojure.test :refer [deftest is]]
             [rewrite-clj.zip :as z]))
 
 ;; ## Reader Macro Detection
@@ -17,13 +17,13 @@
                   (.startsWith nm "-")))))))))
 
 (deftest t-cljx-macro-detection
-  (are [?data ?pred]
-       (let [loc (z/of-string ?data)]
-         (is (?pred (cljx-macro? loc))))
-    "#+clj 123"           identity
-    "#-clj 123"           identity
-    "#clj  123"           not
-    "123"                 not))
+  (doseq [[data pred]
+          [["#+clj 123"           identity]
+           ["#-clj 123"           identity]
+           ["#clj  123"           not]
+           ["123"                 not]]]
+    (let [loc (z/of-string data)]
+      (is (pred (cljx-macro? loc))))))
 
 ;; ## Replace Form w/ Spaces
 
@@ -74,14 +74,14 @@
       (remove-reader-macro-symbol zloc))))
 
 (deftest t-reader-macro-handling
-  (are [?data ?result]
-       (let [loc (z/of-string ?data)
-             rloc (handle-reader-macro #{"clj"} loc)]
-         (is (= ?result (z/root-string rloc))))
-    "#+clj 123"        "      123"
-    "#-clj 123"        "         "
-    "#+clx 123"        "         "
-    "#-clx 123"        "      123"))
+  (doseq [[data result]
+          [["#+clj 123"        "      123"]
+           ["#-clj 123"        "         "]
+           ["#+clx 123"        "         "]
+           ["#-clx 123"        "      123"]]]
+    (let [loc (z/of-string data)
+          rloc (handle-reader-macro #{"clj"} loc)]
+      (is (= result (z/root-string rloc))))))
 
 ;; ## cljx
 
@@ -106,22 +106,22 @@
                   "  [x]\n"
                   "  #+debug (println #-compact :debug 'inc x)\n"
                   "  (inc x))")]
-    (are [?profiles ?result]
-         (is (= ?result (cljx-string data ?profiles)))
-      #{}
-      (str "(defn debug-inc\n"
-           "  [x]\n"
-           "                                           \n"
-           "  (inc x))")
+    (doseq [[profiles result]
+            [[#{}
+              (str "(defn debug-inc\n"
+                   "  [x]\n"
+                   "                                           \n"
+                   "  (inc x))")]
 
-      #{:debug}
-      (str "(defn debug-inc\n"
-           "  [x]\n"
-           "          (println           :debug 'inc x)\n"
-           "  (inc x))")
+             [#{:debug}
+              (str "(defn debug-inc\n"
+                   "  [x]\n"
+                   "          (println           :debug 'inc x)\n"
+                   "  (inc x))")]
 
-      #{:debug :compact}
-      (str "(defn debug-inc\n"
-           "  [x]\n"
-           "          (println                  'inc x)\n"
-           "  (inc x))"))))
+             [#{:debug :compact}
+              (str "(defn debug-inc\n"
+                   "  [x]\n"
+                   "          (println                  'inc x)\n"
+                   "  (inc x))")]]]
+      (is (= result (cljx-string data profiles))))))

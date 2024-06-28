@@ -1,7 +1,7 @@
 (ns rewrite-clj.zip-test
   "This test namespace originated from rewrite-cljs."
   (:require [clojure.string :as string]
-            [clojure.test :refer [deftest testing is are]]
+            [clojure.test :refer [deftest testing is]]
             [rewrite-clj.node :as n]
             [rewrite-clj.zip :as z]))
 
@@ -45,20 +45,20 @@
                                  (let [[start end] (z/position-span zloc)]
                                    (assoc acc start {:node (z/node zloc) :end-pos end})))
                                {}))]
-    (are [?pos ?end ?t ?s ?sexpr]
-         (let [{:keys [node end-pos]} (positions ?pos)]
-           (is (= ?t (n/tag node)))
-           (is (= ?s (n/string node)))
-           (is (= ?sexpr (n/sexpr node)))
-           (is (= ?end end-pos)))
-      [1 1]  [3 15] :list   s              '(defn f [x] (println x))
-      [1 2]  [1 6]  :token  "defn"         'defn
-      [1 7]  [1 8]  :token  "f"            'f
-      [2 3]  [2 6]  :vector "[x]"          '[x]
-      [2 4]  [2 5]  :token  "x"            'x
-      [3 3]  [3 14] :list   "(println x)"  '(println x)
-      [3 4]  [3 11] :token  "println"      'println
-      [3 12] [3 13] :token  "x"            'x))
+    (doseq [[pos end t s sexpr]
+            [[[1 1]  [3 15] :list   s              '(defn f [x] (println x))]
+             [[1 2]  [1 6]  :token  "defn"         'defn]
+             [[1 7]  [1 8]  :token  "f"            'f]
+             [[2 3]  [2 6]  :vector "[x]"          '[x]]
+             [[2 4]  [2 5]  :token  "x"            'x]
+             [[3 3]  [3 14] :list   "(println x)"  '(println x)]
+             [[3 4]  [3 11] :token  "println"      'println]
+             [[3 12] [3 13] :token  "x"            'x]]]
+      (let [{:keys [node end-pos]} (positions pos)]
+        (is (= t (n/tag node)))
+        (is (= s (n/string node)))
+        (is (= sexpr (n/sexpr node)))
+        (is (= end end-pos)))))
   ;; root node
   (let [s (str
            ;1234567890
