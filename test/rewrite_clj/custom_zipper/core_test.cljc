@@ -1,5 +1,5 @@
 (ns rewrite-clj.custom-zipper.core-test
-  (:require [clojure.test :refer [deftest is are]]
+  (:require [clojure.test :refer [deftest is]]
             #?(:cljs [clojure.test.check :refer-macros [quick-check]])
             [clojure.test.check.clojure-test :refer [defspec]]
             [clojure.test.check.generators :as gen]
@@ -14,52 +14,52 @@
   (is (= [1 1] (z/position (z/custom-zipper (node/comment-node "hello"))))))
 
 (deftest t-zdown-tracks-position-correctly
-  (are [?type ?pos]
-       (is (= ?pos
-              (-> (z/custom-zipper (?type [(node/token-node "hello")]))
-                  z/down
-                  z/position)))
-    node/forms-node  [1 1]
-    node/fn-node     [1 3]
-    node/quote-node  [1 2]))
+  (doseq [[create-fn pos]
+          [[node/forms-node  [1 1]]
+           [node/fn-node     [1 3]]
+           [node/quote-node  [1 2]]]]
+    (is (= pos
+           (-> (z/custom-zipper (create-fn [(node/token-node "hello")]))
+               z/down
+               z/position)))))
 
 (deftest t-zright-tracks-position-correctly
-  (are [?n ?pos]
-       (let [root (base/of-string "[hello \nworld]" {:track-position? true})
-             zloc (nth (iterate z/next root) ?n)]
-         (is (= ?pos (z/position zloc))))
-    1  [1 2]
-    2  [1 7]
-    3  [1 8]
-    4  [2 1]))
+  (doseq [[n pos]
+          [[1  [1 2]]
+           [2  [1 7]]
+           [3  [1 8]]
+           [4  [2 1]]]]
+    (let [root (base/of-string "[hello \nworld]" {:track-position? true})
+          zloc (nth (iterate z/next root) n)]
+      (is (= pos (z/position zloc))))))
 
 (deftest t-zrightmost-tracks-position-correctly
   (let [root (base/of-string "[hello world]" {:track-position? true})]
     (is (= [1 8] (-> root z/down z/rightmost z/position)))))
 
 (deftest t-zleft-tracks-position-correctly
-  (are [?n ?pos]
-       (let [root (base/of-string "[hello world]" {:track-position? true})
-             zloc (nth (iterate z/left (z/rightmost (z/down root))) ?n)]
-         (is (= ?pos (z/position zloc))))
-    0 [1 8]
-    1 [1 7]
-    2 [1 2]))
+  (doseq [[n pos]
+          [[0 [1 8]]
+           [1 [1 7]]
+           [2 [1 2]]]]
+    (let [root (base/of-string "[hello world]" {:track-position? true})
+          zloc (nth (iterate z/left (z/rightmost (z/down root))) n)]
+      (is (= pos (z/position zloc))))))
 
 (deftest t-zup-tracks-position-correctly
-  (are [?n ?pos]
-       (let [bottom (-> (base/of-string "[x [y [1]]]" {:track-position? true})
-                        z/down
-                        z/right z/right
-                        z/down
-                        z/right z/right
-                        z/down)
-             zloc (nth (iterate z/up bottom) ?n)]
-         (is (= ?pos (z/position zloc))))
-    0  [1 8]
-    1  [1 7]
-    2  [1 4]
-    3  [1 1]))
+  (doseq [[n pos]
+          [[0  [1 8]]
+           [1  [1 7]]
+           [2  [1 4]]
+           [3  [1 1]]]]
+    (let [bottom (-> (base/of-string "[x [y [1]]]" {:track-position? true})
+                     z/down
+                     z/right z/right
+                     z/down
+                     z/right z/right
+                     z/down)
+          zloc (nth (iterate z/up bottom) n)]
+      (is (= pos (z/position zloc))))))
 
 (deftest t-zleftmost-tracks-position-correctly
   (is (= [1 2]
@@ -89,12 +89,12 @@
              z/position))))
 
 (deftest t-zinsert-left-fixes-the-position
-  (are [?n ?pos]
-       (let [root (base/of-string "[hello world]" {:track-position? true})
-             zloc (nth (iterate z/right (z/down root)) ?n)]
-         (is (= ?pos (z/position (z/insert-left zloc 'x)))))
-    0 [1 3]
-    1 [1 8]))
+  (doseq [[n pos]
+          [[0 [1 3]]
+           [1 [1 8]]]]
+    (let [root (base/of-string "[hello world]" {:track-position? true})
+          zloc (nth (iterate z/right (z/down root)) n)]
+      (is (= pos (z/position (z/insert-left zloc 'x)))))))
 
 (def operations
   {:left                  z/left

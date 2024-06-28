@@ -1,70 +1,64 @@
 (ns rewrite-clj.zip.seqz-test
-  (:require [clojure.test :refer [deftest testing is are]]
+  (:require [clojure.test :refer [deftest testing is]]
             [rewrite-clj.zip :as z]))
 
 (deftest t-predicates
-  (are [?s ?p]
-       (do
-         (is (-> ?s z/of-string z/seq?))
-         (is (-> ?s z/of-string ?p)))
-    "[1 2 3]" z/vector?
-    "{:a 1}" z/map?
-    "#:my-prefix {:a 1}" z/namespaced-map?
-    "(+ 2 3)" z/list?
-    "#{1 2}" z/set?))
+  (doseq [[s p]
+          [["[1 2 3]" z/vector?]
+           ["{:a 1}" z/map?]
+           ["#:my-prefix {:a 1}" z/namespaced-map?]
+           ["(+ 2 3)" z/list?]
+           ["#{1 2}" z/set?]]]
+    (is (-> s z/of-string z/seq?))
+    (is (-> s z/of-string p))))
 
 (deftest t-seq
   (testing "map and map-vals are equivalent and update values in maps"
-    (are [?sin ?sout]
-         (do
-           (is (= ?sout (->> ?sin
-                             z/of-string
-                             (z/map-vals #(z/edit % inc))
-                             z/string)))
-           (is (= ?sout (->> ?sin
-                             z/of-string
-                             (z/map #(z/edit % inc))
-                             z/string))))
-      "{:a 0, :b 1}"
-      "{:a 1, :b 2}"
-
-      "#::my-ns-alias{:x 42, ::y 17}"
-      "#::my-ns-alias{:x 43, ::y 18}"))
-
+    (doseq [[sin sout]
+            [["{:a 0, :b 1}"
+              "{:a 1, :b 2}"]
+             ["#::my-ns-alias{:x 42, ::y 17}"
+              "#::my-ns-alias{:x 43, ::y 18}"]]]
+      (is (= sout (->> sin
+                       z/of-string
+                       (z/map-vals #(z/edit % inc))
+                       z/string)))
+      (is (= sout (->> sin
+                       z/of-string
+                       (z/map #(z/edit % inc))
+                       z/string)))))
   (testing "map-keys works for maps"
-    (are [?sin ?sout]
-         (is (= ?sout (->> ?sin
-                           z/of-string
-                           (z/map-keys #(z/edit % name))
-                           z/string)))
-      "{:a 0, :b 1}"
-      "{\"a\" 0, \"b\" 1}"))
+    (let [sin "{:a 0, :b 1}"
+          sout "{\"a\" 0, \"b\" 1}"]
+      (is (= sout (->> sin
+                       z/of-string
+                       (z/map-keys #(z/edit % name))
+                       z/string)))))
   (testing "map works for seqs and preserves whitespace"
     (is (= "[ 5\n6\n7]" (->> "[ 1\n2\n3]"
                              z/of-string
                              (z/map #(z/edit % + 4))
                              z/string))))
   (testing "get on maps and vectors"
-    (are [?sin ?key ?expected-value]
-         (is (= ?expected-value (-> ?sin
-                                    z/of-string
-                                    (z/get ?key)
-                                    z/sexpr)))
-      "{:a 0 :b 1}" :a 0
-      "{:a 3, :b 4}" :b 4
-      "{:x 10 :y 20}" :z nil
-      "[1 2 3]" 1 2))
-
+    (doseq [[sin key expected-value]
+            [["{:a 0 :b 1}" :a 0]
+             ["{:a 3, :b 4}" :b 4]
+             ["{:x 10 :y 20}" :z nil]
+             ["[1 2 3]" 1 2]]]
+      (is (= expected-value (-> sin
+                                z/of-string
+                                (z/get key)
+                                z/sexpr)))))
   (testing "assoc map and vector"
-    (are [?sin ?key ?value ?sout]
-         (is (= ?sout (-> ?sin
-                          z/of-string
-                          (z/assoc ?key ?value)
-                          z/string)))
-      "{:a 0, :b 1}" :a 3 "{:a 3, :b 1}"
-      "{:a 0, :b 1}" :c 2 "{:a 0, :b 1 :c 2}"
-      "{}" :x 0 "{:x 0}"
-      "[1 2 3]" 2 703 "[1 2 703]"))
+    (doseq [[sin key value sout]
+            [["{:a 0, :b 1}" :a 3 "{:a 3, :b 1}"]
+             ["{:a 0, :b 1}" :c 2 "{:a 0, :b 1 :c 2}"]
+             ["{}" :x 0 "{:x 0}"]
+             ["[1 2 3]" 2 703 "[1 2 703]"]]]
+      (is (= sout (-> sin
+                      z/of-string
+                      (z/assoc key value)
+                      z/string)))))
   (testing "out of bounds assoc on vector should throw"
     (is (thrown? #?(:clj IndexOutOfBoundsException :cljs js/Error)
                  (-> "[5 10 15]" z/of-string (z/get 5))))))

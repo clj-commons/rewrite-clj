@@ -1,5 +1,5 @@
 (ns rewrite-clj.zip.walk-test
-  (:require [clojure.test :refer [deftest testing is are]]
+  (:require [clojure.test :refer [deftest testing is]]
             [rewrite-clj.zip :as z]))
 
 (defn- walk-order-tester [walk-fn s]
@@ -144,23 +144,20 @@
         z/root-string)))
 
 (deftest t-zipper-wee-walks
- (are [?sample]
-      (do
-        (is (= ?sample (walker z/postwalk ?sample)) "postwalk")
-        (is (= ?sample (walker z/prewalk ?sample)) "prewalk"))
-   ""
-   ";; comment"
-   "1"
-   "[1]"))
+  (doseq [sample [""
+                  ";; comment"
+                  "1"
+                  "[1]"]]
+    (is (= sample (walker z/postwalk sample)) "postwalk")
+    (is (= sample (walker z/prewalk sample)) "prewalk")))
 
 #?(:clj
    (deftest t-zipper-tree-larger-walks
-     (are [?larger-sample]
-          (let [s (slurp ?larger-sample)]
+     (doseq [larger-sample
+             [;; 11876 lines
+              "https://raw.githubusercontent.com/clojure/clojurescript/fa4b8d853be08120cb864782e4ea48826b9d757e/src/main/cljs/cljs/core.cljs"
+              ;; 4745 lines
+              "https://raw.githubusercontent.com/clojure/clojurescript/fa4b8d853be08120cb864782e4ea48826b9d757e/src/main/clojure/cljs/analyzer.cljc"]]
+          (let [s (slurp larger-sample)]
             (is (= s (walker z/postwalk s)) "postwalk")
-            (is (= s (walker z/prewalk s)) "prewalk"))
-
-       ;; 11876 lines
-       "https://raw.githubusercontent.com/clojure/clojurescript/fa4b8d853be08120cb864782e4ea48826b9d757e/src/main/cljs/cljs/core.cljs"
-       ;; 4745 lines
-       "https://raw.githubusercontent.com/clojure/clojurescript/fa4b8d853be08120cb864782e4ea48826b9d757e/src/main/clojure/cljs/analyzer.cljc")))
+            (is (= s (walker z/prewalk s)) "prewalk")))))

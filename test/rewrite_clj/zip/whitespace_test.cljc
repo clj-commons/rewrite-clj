@@ -1,5 +1,5 @@
 (ns rewrite-clj.zip.whitespace-test
-  (:require [clojure.test :refer [deftest is testing are]]
+  (:require [clojure.test :refer [deftest is testing]]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip :as z]))
 
@@ -27,18 +27,18 @@
         (is (= :token (node/tag n)))
         (is (= 0 (node/sexpr n)))))
     (testing "prepending appending spaces"
-      (are [?left-fn ?right-fn]
-           (do (let [n (-> loc z/down* z/rightmost* (?left-fn 3))]
-                 (is (= " \n0 1   ;comment" (z/root-string n))))
-               (let [n (-> loc z/down* z/rightmost* (?right-fn 3))]
-                 (is (= " \n0 1;comment   " (z/root-string n)))))
-        z/prepend-space     z/append-space
-        z/insert-space-left z/insert-space-right))
+      (doseq [[left-fn right-fn]
+              [[z/prepend-space     z/append-space]
+               [z/insert-space-left z/insert-space-right]]]
+        (let [n (-> loc z/down* z/rightmost* (left-fn 3))]
+          (is (= " \n0 1   ;comment" (z/root-string n))))
+        (let [n (-> loc z/down* z/rightmost* (right-fn 3))]
+          (is (= " \n0 1;comment   " (z/root-string n))))))
     (testing "prepending appending linebreaks"
-      (are [?left-fn ?right-fn]
-           (do (let [n (-> loc z/down* z/rightmost* (?left-fn 3))]
-                 (is (= " \n0 1\n\n\n;comment" (z/root-string n))))
-               (let [n (-> loc z/down* z/rightmost* (?right-fn 3))]
-                 (is (= " \n0 1;comment\n\n\n" (z/root-string n)))))
-        z/prepend-newline     z/append-newline
-        z/insert-newline-left z/insert-newline-right))))
+      (doseq [[left-fn right-fn]
+              [[z/prepend-newline     z/append-newline]
+               [z/insert-newline-left z/insert-newline-right]]]
+        (let [n (-> loc z/down* z/rightmost* (left-fn 3))]
+          (is (= " \n0 1\n\n\n;comment" (z/root-string n))))
+        (let [n (-> loc z/down* z/rightmost* (right-fn 3))]
+          (is (= " \n0 1;comment\n\n\n" (z/root-string n))))))))
