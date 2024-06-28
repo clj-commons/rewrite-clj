@@ -1,6 +1,7 @@
 (ns ^:no-doc rewrite-clj.reader
   (:refer-clojure :exclude [peek next])
-  (:require #?@(:clj [[clojure.java.io :as io]])
+  (:require [clojure.string :as string]
+            #?@(:clj [[clojure.java.io :as io]])
             [clojure.tools.reader.edn :as edn]
             [clojure.tools.reader.impl.commons :as reader-impl-commons]
             [clojure.tools.reader.impl.errors :as reader-impl-errors]
@@ -202,6 +203,54 @@
               (keyword ns name)))
           (reader-impl-errors/throw-invalid reader :keyword token)))
       (reader-impl-errors/throw-single-colon reader))))
+
+(defn- parse-symbol
+  "Parses a string into a vector of the namespace and symbol
+
+  Cribbed from clojure/cljs.tools.reader.impl.commons/parse-symbol merging clj and cljs fns into single implementation
+  Added in equivalnt of TRDR-73 patch to allow array class symbols (e.g. foobar/3)."
+  [^String token]
+  (when-not (or (identical? "" token)
+                (string/ends-with? token ":")
+                (string/starts-with? token "::"))
+    (if-let [ns-idx (string/index-of token "/")]
+      (let [ns (subs token 0 ns-idx)
+            ns-idx (inc ns-idx)]
+          (when-not (== ns-idx (count token))
+            (let [sym (subs token ns-idx)]
+              (cond
+                (contains? #{"1" "2" "3" "4" "5" "6" "7" "8" "9"} sym)
+                [ns sym]
+
+                (and (not (interop/numeric? (nth sym 0)))
+                     (not (identical? "" sym))
+                     (not (string/ends-with? ns ":"))
+                     (or (identical? sym "/")
+                         (nil? (string/index-of sym "/"))))
+                [ns sym]))))
+      (when (or (identical? token "/")
+                  (nil? (string/index-of token "/")))
+          [nil token]))))
+
+(defn read-symbol
+  "Return symbol parsed from `token`.
+
+  Cribbed from clojure/cljs.tools.reader.edn/read-symbol and - adapted to work on string"
+  [^String token]
+  (case token
+    ;; special symbols
+    "nil" nil
+    "true" true
+    "false" false
+    "/" '/
+
+    (or (when-let [p (parse-symbol token)]
+          (symbol (p 0) (p 1)))
+        ;; Throw in same way that tools.reader would when reading a string
+        ;; for exeption compatibility. Some users, like clojure-lsp, currently rely
+        ;; on parsing exception strings. A user having to resort
+        ;; to parsing exception messages is not great, but a separate issue.
+        (reader-impl-errors/throw-invalid nil :symbol token))))
 
 ;; ## Reader Types
 

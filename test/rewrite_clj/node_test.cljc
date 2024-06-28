@@ -24,6 +24,7 @@
              ["[1 2 3]"         :vector         :seq                true]
              ["\"string\""      :token          :string             true]
              ["symbol"          :token          :symbol             true]
+             ["foo/3"           :token          :symbol             true]
              ["43"              :token          :token              true]
              ["#_ nope"         :uneval         :uneval             false]
              ["  "              :whitespace     :whitespace         false]]]
@@ -201,3 +202,21 @@
       (is (= 'my.current.ns (custom-mqn-sexpr "#:: {:a 1 :b 2}")))
       (is (= 'my.aliased.ns (custom-mqn-sexpr "#::my-alias {:a 1 :b 2}")))
       (is (= 'my-alias-nope-unresolved (custom-mqn-sexpr "#::my-alias-nope {:a 1 :b 2}"))))))
+
+(deftest t-create-nodes
+  ;; The *-node creation fns were initially created to serve the parser, and are therefore not
+  ;; always entirely user-friendly, but are often useful.
+  ;; Here's a good place to add some tests as we see fit.
+  (doseq
+   [[n expected-node-type expected-str expected-sexpr]
+    [[(n/token-node (symbol "foobar" "3")) :symbol "foobar/3"        (symbol "foobar" "3")]
+     [(n/token-node (symbol "sym"))        :symbol "sym"             'sym]
+     [(n/token-node '\newline "\\newline") :token  "\\newline"       '\newline]
+     [(n/token-node 42)                    :token  "42"              42]
+     [(n/token-node +42 "+42")             :token  "+42"             42]
+     [(n/token-node "foo")                 :token  "\"foo\""         "foo"]]]
+
+    (testing expected-str
+      (is (= expected-node-type (proto/node-type n)))
+      (is (= expected-str (n/string n)))
+      (is (= expected-sexpr (n/sexpr n))))))

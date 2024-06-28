@@ -39,3 +39,12 @@
   [data]
   #?(:clj (instance? clojure.lang.IMeta data)
      :cljs (implements? IWithMeta data)))
+
+(defn numeric?
+  "Checks whether a given character is numeric
+
+  Cribbed from clojure/cljs.tools.reader.impl.util."
+  [^Character ch]
+  (when ch
+    #?(:clj (Character/isDigit ch)
+       :cljs (gstring/isNumeric ch))))
