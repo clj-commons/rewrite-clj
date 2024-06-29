@@ -208,7 +208,7 @@
   "Parses a string into a vector of the namespace and symbol
 
   Cribbed from clojure/cljs.tools.reader.impl.commons/parse-symbol merging clj and cljs fns into single implementation
-  Added in equivalnt of TRDR-73 patch to allow array class symbols (e.g. foobar/3)."
+  Added in equivalent of TRDR-73 patch to allow array class symbols (e.g. foobar/3)."
   [^String token]
   (when-not (or (identical? "" token)
                 (string/ends-with? token ":")
