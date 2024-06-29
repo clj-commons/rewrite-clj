@@ -287,7 +287,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "clerk"
-            :version "0.15.957"
+            :version "0.16.1016"
             :platforms [:clj]
             :github-release {:repo "nextjournal/clerk"
                              :via :tag
@@ -296,13 +296,13 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test:clj :kaocha/reporter '[kaocha.report/documentation]'"]}
            {:name "clj-mergetool"
-            :version "0.2.1"
+            :version "0.7.0"
             :platforms [:clj]
             :github-release {:repo "kurtharriger/clj-mergetool"
                              :via :tag}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
-            :test-cmds ["clojure -T:build test"]}
+            :test-cmds ["clojure -T:build ci"]}
            {:name "cljfmt"
             :version "0.12.0"
             :platforms [:clj :cljs]
@@ -340,9 +340,8 @@
             :test-cmds ["bin/kaocha --reporter documentation"]}
            {:name "kibit"
             :platforms [:clj]
-            :root "kibit"
-            :version "0.1.8"
-            :github-release {:repo "jonase/kibit"}
+            :version "0.1.11"
+            :github-release {:repo "clj-commons/kibit"}
             :patch-fn project-clj-v1-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test-all"]}
@@ -419,7 +418,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test-clj"]}
            {:name "test-doc-blocks"
-            :version "1.0.166-alpha"
+            :version "1.1.20"
             :platforms [:clj :cljs]
             :note "generates tests under clj, but can also be run under cljs"
             :github-release {:repo "lread/test-doc-blocks"
