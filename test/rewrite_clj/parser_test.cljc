@@ -52,6 +52,7 @@
            ["\\\\"                       \\]
            ["\\a"                        \a]
            ["\\space"                    \space]
+           ["\\u2202"                    \u2202]
            ["\\'"                        \']
            [":1.5"                       :1.5]
            [":1.5.0"                     :1.5.0]
@@ -68,6 +69,15 @@
       (is (= :token (node/tag n)))
       (is (= s (node/string n)))
       (is (= r (node/sexpr n))))))
+
+(deftest t-parsing-clojure-1-12-array-class-tokens
+  (doseq [dimension (range 1 10)]
+    (let [s (str "foobar/" dimension)
+          n (p/parse-string s)]
+      (is (= :token (node/tag n)))
+      (is (= s (node/string n)))
+      (is (= (symbol "foobar" (str dimension))
+             (node/sexpr n))))))
 
 (deftest t-parsing-garden-selectors
   ;; https://github.com/noprompt/garden
@@ -564,6 +574,8 @@
            ["\"abc"                 #".*EOF.*"]
            ["#\"abc"                #".*Unexpected EOF.*"]
            ["(def x 0]"             #".*Unmatched delimiter.*"]
+           ["foobar/0"              #".*Invalid symbol: foobar/0"]  ;; array class dimension can be 1 to 9
+           ["foobar/11"             #".*Invalid symbol: foobar/11"] ;; array class dimension can be 1 to 9
            ["##wtf"                 #".*Invalid token: ##wtf"]
            ["#="                    #".*:eval node expects 1 value.*"]
            ["#^"                    #".*:meta node expects 2 values.*"]
@@ -581,7 +593,7 @@
            ["#:: token"             #".*namespaced map expects a map*"]
            ["#::alias [a]"          #".*namespaced map expects a map*"]
            ["#:prefix [a]"          #".*namespaced map expects a map.*"]]]
-       (is (thrown-with-msg? ExceptionInfo p (p/parse-string s)))))
+       (is (thrown-with-msg? ExceptionInfo p (p/parse-string s)) s)))
 
 (deftest t-sexpr-exceptions
   (doseq [s ["#_42"                 ;; reader ignore/discard

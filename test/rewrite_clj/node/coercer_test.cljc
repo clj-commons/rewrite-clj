@@ -23,6 +23,7 @@
 
              ;; symbol/keyword/string/...
              ['symbol                :token      :symbol]
+             [(symbol "ns" "3")      :token      :symbol]
              ['namespace/symbol      :token      :symbol]
              [:keyword               :token      :keyword]
              [:1.5.1                 :token      :keyword]
