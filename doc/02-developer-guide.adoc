@@ -323,29 +323,6 @@ You can optionally:
 * `bb -lint-kondo` to run only clj-kondo linting
 * `bb -lint-eastwood` to run only the eastwood linting
 
-== API diffs
-Rewrite-clj v1's primary goals include remaining compatible with rewrite-clj v0 and rewrite-cljs and avoiding breaking changes.
-
-To generate reports on differences between rewrite-clj v0, rewrite-cljs and
-rewrite-clj v1 APIs, run:
-
-----
-bb doc-api-diffs
-----
-
-WARNING: This task currently needs love, see https://github.com/clj-commons/rewrite-clj/issues/132[#132].
-
-Run this script manually on an as-needed basis, and certainly before any official release.
-Generated reports are to be checked in to version control.
-
-Reports are generated to `doc/generated/api-diffs/` and include manually written notes from `doc/diff-notes/`.
-
-These reports are referenced from other docs, so if you rename files, be sure to search for links.
-
-Makes use of https://github.com/lread/diff-apis[diff-apis].
-Delete `.diff-apis/.cache` if you need a clean run.
-
-
 == Cljdoc Preview
 Before a release, it can be comforting to preview what docs will look like on https://cljdoc.org/[cljdoc].
 

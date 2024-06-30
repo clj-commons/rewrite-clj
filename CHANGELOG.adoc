@@ -34,6 +34,9 @@ A release with known breaking changes is marked with:
 {issue}279[#279] ({lread})
 * `rewrite-clj.paredit/barf-forward` on zipper created with `:track-position? true` now correctly barfs when current node has children
 {issue}245[#245] ({lread}, thanks for the issue {person}p4ulcristian[@p4ulcristian]!)
+* docs
+** Turf API diff reports for now
+{issue}132[#132] ({lread})
 
 === v1.1.47 - 2023-03-25 [[v1.1.47]]
 
