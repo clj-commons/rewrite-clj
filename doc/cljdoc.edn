@@ -5,13 +5,7 @@
   ["Developer Guide" {:file "doc/02-developer-guide.adoc"}]
   ["Design" {}
    ["Merging rewrite-clj and rewrite-cljs" {:file "doc/design/01-merging-rewrite-clj-and-rewrite-cljs.adoc"}
-    ["Namespaced Elements" {:file "doc/design/namespaced-elements.adoc"}]]
-   ["API Differences" {}
-    ["rwt-clj v0 vs rwt-cljs" {:file "doc/generated/api-diffs/rewrite-clj-v0-lang-clj-and-rewrite-cljs-lang-cljs.adoc"}]
-    ["rwt-clj v0 vs rwt-clj v1" {:file "doc/generated/api-diffs/rewrite-clj-v0-lang-clj-and-rewrite-clj-v1-lang-clj.adoc"}]
-    ["rwt-cljs vs rwt-clj v1"  {:file "doc/generated/api-diffs/rewrite-cljs-lang-cljs-and-rewrite-clj-v1-lang-cljs.adoc"}]
-    ["rwt-clj v1 clj vs cljs all"  {:file "doc/generated/api-diffs/rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj.adoc"}]
-    ["rwt-clj v1 clj vs cljs public" {:file "doc/generated/api-diffs/rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj-documented-only.adoc"}]]]
+    ["Namespaced Elements" {:file "doc/design/namespaced-elements.adoc"}]]]
   ["Frequently Asked Questions" {:file "doc/03-faq.adoc"}]
   ["Contributing" {:file "CONTRIBUTING.md"}]
   ["Code of Conduct" {:file "CODE_OF_CONDUCT.md"}]

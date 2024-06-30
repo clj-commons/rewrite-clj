@@ -126,14 +126,6 @@
            :gen-reflection {:main-opts ["-m" "sci-test.generate-reflection-file"]}
 
            ;;
-           ;; Document rewrite-clj* differences (needs love!)
-           ;;
-           :diff-apis {:extra-paths ["script/resources"]
-                       :extra-deps {lread/diff-apis {:git/url "https://github.com/lread/diff-apis"
-                                                     :sha "cd8096e0b5e0c0ea4850cb9eafe2d085d8912442"}}
-                       :main-opts ["-m" "diff-apis.main" "projects"]}
-
-           ;;
            ;; Deployment
            ;;
            :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.4"}}

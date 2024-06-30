@@ -32,7 +32,6 @@
          test-doc          {:task test-doc/-main          :doc "test doc code blocks"}
          test-libs         {:task test-libs/-main         :doc "(list|run|outdated) - verify that libs using rewrite-clj* work with current rewrite-clj"}
          outdated          {:task outdated/-main          :doc "report on outdated Clojure and npm dependencies"}
-         doc-api-diffs     {:task doc-api-diffs/-main     :doc "generate diff docs for rewrite-clj* APIs"}
          doc-update-readme {:task doc-update-readme/-main :doc "honour our contributors in README"}
          cljdoc-preview    {:task cljdoc-preview/-main    :doc "preview what docs will look like on cljdoc, use --help for args"}
          ci-unit-tests     {:task ci-unit-tests/-main     :doc "run/list continuous integration unit tests, use --help for args"}

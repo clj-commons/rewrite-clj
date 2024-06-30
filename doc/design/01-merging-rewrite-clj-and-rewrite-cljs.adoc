@@ -47,18 +47,6 @@ We will, though, carry over rewrite-cljs's higher level positional functions.
 == Changes
 See link:../../CHANGELOG.adoc[change log].
 
-=== Detailed API diffs
-
-I've used https://github.com/lread/diff-apis[diff-apis] to compare apis.
-Normally I would have excluded any apis tagged with `:no-doc` metadata, but because many folks used undocumented features in rewrite-clj v0 and rewrite-cljs, I have done a complete comparison of all publics - except where noted.
-Each report contains some observations under the "Notes" header.
-
-* link:../generated/api-diffs/rewrite-clj-v0-lang-clj-and-rewrite-cljs-lang-cljs.adoc[rewrite-clj v0 vs rewrite-cljs] API differences between the projects on which rewrite-clj v1 is based.
-* link:../generated/api-diffs/rewrite-clj-v0-lang-clj-and-rewrite-clj-v1-lang-clj.adoc[rewrite-clj v0 vs rewrite-clj v1] how different is rewrite-clj v1 from rewrite-clj v0?
-* link:../generated/api-diffs/rewrite-cljs-lang-cljs-and-rewrite-clj-v1-lang-cljs.adoc[rewrite-cljs vs rewrite-clj v1] how different is rewrite-clj v1 from rewrite-cljs?
-* link:../generated/api-diffs/rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj.adoc[rewrite-clj v1] a look at how cljs and clj sides of rewrite-clj v1 differ
-* link:../generated/api-diffs/rewrite-clj-v1-lang-cljs-and-rewrite-clj-v1-lang-clj-documented-only.adoc[rewrite-clj v1 documented apis only] a look at how cljs and clj sides of rewrite-clj v1 differ for documented apis.
-
 === Feature Differences
 No ability to read from files when using rewrite-clj v1 from ClojureScript.
 
