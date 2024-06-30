@@ -1,8 +1,8 @@
 #!/usr/bin/env bb
 
 (ns cljdoc-preview
-  (:require [babashka.curl :as curl]
-            [babashka.fs :as fs]
+  (:require [babashka.fs :as fs]
+            [babashka.http-client :as http]
             [build-shared]
             [clojure.java.browse :as browse]
             [clojure.string :as string]
@@ -14,7 +14,7 @@
 ;; constants
 ;;
 
-(def cljdoc-root-temp-dir "/tmp/cljdoc-preview")
+(def cljdoc-root-temp-dir "./.cljdoc-preview")
 (def cljdoc-db-dir (str cljdoc-root-temp-dir  "/db"))
 (def cljdoc-container {:name "cljdoc-server"
                        :image "cljdoc/cljdoc"
@@ -129,7 +129,7 @@
   (let [url (str "http://localhost:" (:port container))]
     (loop []
       (if-not (try
-                (curl/get url)
+                (http/get url)
                 url
                 (catch Exception _e
                   (Thread/sleep 4000)))
@@ -182,7 +182,7 @@
 
 (defn view-in-browser [url]
   (status/line :head "opening %s in browser" url)
-  (when (not= 200 (:status (curl/get url {:throw false})))
+  (when (not= 200 (:status (http/get url {:throw false})))
     (status/die 1 "Could not reach:\n%s\nDid you run the ingest command yet?" url))
   (browse/browse-url url))
 
