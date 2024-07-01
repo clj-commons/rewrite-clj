@@ -834,6 +834,25 @@ If you try to `sexpr` a node with invalid metadata you will get an exception:
 ;; => "Metadata must be a map, keyword, symbol or string"
 ----
 
+[[invalid-escaped-characters]]
+=== Invalid Escaped Characters
+
+In Clojure, some escaped characters in strings are not valid.
+Rewrite-clj doesn't much care, it will happily read and write strings with invalid escaped chars.
+If you `sexpr` a node with such a string, you will get an exception:
+
+//#:test-doc-blocks {:reader-cond :clj}
+[source,clojure]
+----
+(try
+  (-> "\"some string is wrong here \\x\""
+      z/of-string
+      z/sexpr)
+  (catch Throwable e
+    (.getMessage e)))
+;; => "Unsupported escape character: \\x."
+----
+
 [#sexpr-nuances]
 == Sexpr Nuances
 
@@ -905,8 +924,8 @@ Both the zip and node APIs include `sexpr-able?` to check if sexpr is supported 
 ====
 `sexpr-able?` only looks at the current node element type. This means that `sexpr` will still throw when:
 
-1. called on a node with an element type that is `sepxr-able?` but, for whatever reason, has a child node that fails to `sexpr`, see link:#unbalanced-maps[unbalanced maps] and link:#invalid-metadata[invalid metadata].
-2. called directly on an link:#unbalanced-maps[unbalanced maps] or node with link:#invalid-metadata[invalid metadata].
+1. called on a node with an element type that is `sepxr-able?` but, for whatever reason, has a child node that fails to `sexpr`, see link:#unbalanced-maps[unbalanced maps], link:#invalid-metadata[invalid metadata], and link:#invalid-escaped-characters[invalid escaped characters].
+2. called directly on an link:#unbalanced-maps[unbalanced maps] or node with link:#invalid-metadata[invalid metadata] or node with link:#invalid-escaped-characters[invalid escaped characters].
 ====
 
 [source, clojure]
