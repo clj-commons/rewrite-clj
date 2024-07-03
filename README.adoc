@@ -28,7 +28,7 @@ A library that reads and writes Clojure, ClojureScript and https://github.com/ed
 
 Rewrite-clj v1 has been successfully and widely adopted.
 
-See https://github.com/clj-commons/rewrite-clj/projects/1[project page for current priorities].
+See https://github.com/orgs/clj-commons/projects/1[project page for current priorities].
 
 == Docs
 
