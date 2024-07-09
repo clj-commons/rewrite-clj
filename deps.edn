@@ -27,6 +27,27 @@
            :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.132"}}}
 
            ;;
+           ;; REPL to support bb dev-jvm & dev-cljs tasks, see script/dev_repl.clj
+           ;;
+           :nrepl
+           {:extra-deps {nrepl/nrepl {:mvn/version "1.2.0"}
+                         cider/cider-nrepl {:mvn/version "0.49.1"}}
+            :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
+
+           :nrepl/jvm
+           {:extra-deps {refactor-nrepl/refactor-nrepl {:mvn/version "3.10.0"}}
+            :main-opts  ["-m" "nrepl.cmdline"
+                         "--middleware" "[refactor-nrepl.middleware/wrap-refactor cider.nrepl/cider-middleware]"
+                         "-i"]}
+
+           :nrepl/cljs ;; note shadow-cljs does its own thing, this is for a REPL with
+                       ;; support for plain old ClojureScript
+           {:extra-deps {cider/piggieback {:mvn/version "0.5.3"}}
+            :main-opts ["-m" "nrepl.cmdline"
+                        "--middleware" "[cider.nrepl/cider-middleware cider.piggieback/wrap-cljs-repl]"
+                        "-i"]}
+
+           ;;
            ;; Linting
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources

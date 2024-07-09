@@ -17,6 +17,8 @@
          ;; commands
          download-deps     {:task download-deps/-main     :doc "bring down Clojure deps"}
          apply-import-vars {:task apply-import-vars/-main :doc "(check|gen-code) - export APIs statically from templates"}
+         dev-jvm           {:task dev-repl/dev-jvm        :doc "launch jvm nREPL for development, --help for usage"}
+         dev-cljs          {:task dev-repl/dev-cljs       :doc "launch cljs nREPL for development, --help for usage"}
          lint              {:task lint/-main              :doc "[--rebuild] lint source code using clj-kondo, eastwood"}
          -lint-kondo       {:task lint-kondo/-main        :doc "[--rebuild]"}
          -lint-eastwood    {:task lint-eastwood/-main}

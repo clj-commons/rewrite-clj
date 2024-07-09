@@ -166,6 +166,26 @@ bb apply-import-vars check
 The check command will exit with 0 if no changes are required, otherwise it will exit with 1.
 Our build script will run the check command and fail the build if there are any pending changes that have not been applied.
 
+== REPLs
+
+To launch a nREPL server:
+
+----
+bb dev-jvm
+----
+
+From your IDE, cider connect clj to this REPL server.
+
+
+For a nREPL server that also includes ClojureScript support:
+
+----
+bb dev-cljs
+----
+
+From your IDE, cider connect cljs to this REPL server.
+
+
 == Testing During Development
 Your personal preference will likely be different, but during maintenance and refactoring, I found running tests continuously for Clojure and ClojureScript helpful.
 
