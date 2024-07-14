@@ -43,6 +43,7 @@ See https://github.com/orgs/clj-commons/projects/1[project page for current prio
 
 Some projects using rewrite-clj v1
 
+* https://github.com/fabricate-site/adorn[adorn] {canary-tested} - Extensible conversion of Clojure code to Hiccup forms
 * https://github.com/xsc/ancient-clj[ancient-clj] {canary-tested} - Version Metadata Retrieval for Maven Artifacts
 * https://github.com/liquidz/antq[antq] {canary-tested} - Point out your outdated dependencies
 // we already do sci testing and borkdude runs his own copies of rewrite-clj tests against bb:
