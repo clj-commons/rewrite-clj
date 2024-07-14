@@ -263,7 +263,18 @@
 ;; lib defs
 ;;
 
-(def libs [{:name "ancient-clj"
+(def libs [{:name "adorn"
+            :version "0.1.131-alpha"
+            :platforms [:clj :cljs]
+            :github-release {:repo "fabricate-site/adorn"
+                             :via :tag
+                             :version-prefix "v"}
+            :patch-fn deps-edn-v1-patch
+            :show-deps-fn cli-deps-tree
+            ;; TODO: cljs tests were spitting out lots of warnings and errors when I tried,
+            ;; revisit next version bump
+            :test-cmds ["clojure -X:dev:test"]}
+           {:name "ancient-clj"
             :version "2.0.0"
             :platforms [:clj]
             :github-release {:repo "xsc/ancient-clj"
