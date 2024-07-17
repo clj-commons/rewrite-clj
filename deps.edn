@@ -160,7 +160,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.8.1201"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.8.1206"}
                                    org.slf4j/slf4j-simple {:mvn/version "2.0.13"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.11.1"}}
