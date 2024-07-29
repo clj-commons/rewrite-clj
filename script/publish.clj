@@ -60,12 +60,15 @@
       string/trim
       seq))
 
+(defn- local-branch? []
+  (let [{:keys [exit]} (t/shell {:continue true :out :string :err :out}
+                                "git rev-parse --symbolic-full-name @{u}")]
+    (not (zero? exit))))
+
 (defn- unpushed-commits? []
   (let [{:keys [exit :out]} (t/shell {:continue true :out :string}
                                      "git cherry -v")]
-    (if (zero? exit)
-      (-> out string/trim seq)
-      (status/die 1 "Failed to check for unpushed commits, are you on an unpushed branch?"))))
+    (and (zero? exit) (-> out string/trim seq))))
 
 (defn- commit-matches-default-head? []
   (let [repo-head-sha (-> (t/shell {:out :string} (format "git ls-remote https://github.com/%s.git main" (build-shared/lib-github-coords)))
@@ -106,7 +109,7 @@
      {:check "no uncommitted code"
       :result (if (uncommitted-code?) :fail :pass)}
      {:check "no unpushed commits"
-      :result (if (unpushed-commits?) :fail :pass)}
+      :result (if (or (local-branch?) (unpushed-commits?)) :fail :pass)}
      {:check "in synch with project repo HEAD"
       :result (if (commit-matches-default-head?) :pass :fail)}
      {:check "changelog has unreleased section"
