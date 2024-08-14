@@ -68,7 +68,7 @@
   (node-type [_node] :deref)
   (printable-only?[_node] false)
   (sexpr* [_node opts]
-    (list* 'deref (node/sexprs children opts)))
+    (list* 'clojure.core/deref (node/sexprs children opts)))
   (length [_node]
     (inc (node/sum-lengths children)))
   (string [_node]
