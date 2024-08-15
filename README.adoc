@@ -58,6 +58,7 @@ Some projects using rewrite-clj v1
 * https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] {canary-tested} - Language Server (LSP) for Clojure
 // repo is not version tagged:
 * https://github.com/mauricioszabo/duck-repled[duck-repled] {not-canary-tested} - Transform your REPL interation into Pathom queries
+* https://github.com/jonase/kibit[kibit] {canary-tested} - There's a function for that!
 // repo is not version tagged:
 * https://github.com/kit-clj/kit[kit] {not-canary-tested} - Lightweight, modular framework for scalable web development in Clojure
 * https://github.com/FiV0/kusonga[kusonga] {canary-tested} - Renaming and moving namespaces in Clojure(script)
@@ -76,7 +77,6 @@ Some projects using rewrite-clj v0 and/or rewrite-cljs
 * https://github.com/magnars/confair[confair] {not-canary-tested} - A configuration library for Clojure
 // tests rely on datomic-pro
 * https://github.com/ivarref/gen-fn[gen-fn] {not-canary-tested} - Generate Datomic function literals from regular Clojure namespaces
-* https://github.com/jonase/kibit[kibit] {canary-tested} - There's a function for that!
 * https://github.com/xsc/lein-ancient[lein-ancient] {canary-tested} - Check your Projects for outdated Dependencies
 * https://github.com/benedekfazekas/mranderson[mranderson] {canary-tested} - Dependency inlining and shadowing
 * https://github.com/jstepien/mutant[mutant] {canary-tested} - Mutation testing for Clojure
