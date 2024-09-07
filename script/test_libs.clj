@@ -157,7 +157,7 @@
  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
               ;; we remove and add tools.reader because project.clj has pedantic? :abort enabled
               :removals #{'rewrite-clj 'org.clojure/tools.reader}
-              :additions [['org.clojure/tools.reader "1.4.2"]
+              :additions [['org.clojure/tools.reader "1.5.0"]
                           ['rewrite-clj rewrite-clj-version]]}))
 
 ;;
@@ -193,7 +193,7 @@
         (string/replace #"rewrite-clj \"(\d+\.)+.*\""
                         (format "rewrite-clj \"%s\"" rewrite-clj-version))
         (string/replace #"org.clojure/tools.reader \"(\d+\.)+.*\""
-                        "org.clojure/tools.reader \"1.4.2\"")
+                        "org.clojure/tools.reader \"1.5.0\"")
         (->> (spit p)))))
 
 ;;
@@ -227,7 +227,7 @@
                         (format "rewrite-clj \"%s\"" rewrite-clj-version))
         ;; pedantic is enabled for CI, so adjust to match rewrite-clj so we don't fail
         (string/replace #"org.clojure/tools.reader \"(\d+\.)+.*\""
-                        "org.clojure/tools.reader \"1.4.2\"")
+                        "org.clojure/tools.reader \"1.5.0\"")
         (->> (spit p)))))
 
 ;;
@@ -283,7 +283,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "2.8.1201"
+            :version "2.9.1221"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -334,7 +334,7 @@
                         "bin/test unit"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2024.04.22-11.50.26"
+            :version "2024.08.05-18.16.00"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps

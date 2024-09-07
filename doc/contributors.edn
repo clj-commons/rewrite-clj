@@ -66,7 +66,7 @@
    :contributions [:issue]}
   {:github-id "immoh"
    :contributions [:issue]}
-  {:github-id "matanster"
+  {:github-id "matanox"
    :contributions [:issue]}
   {:github-id "SevereOverfl0w"
    :contributions [:issue]}
@@ -102,8 +102,14 @@
    :contributions [:code-rewrite-clj-v1]}
   {:github-id "ikappaki"
    :contributions [:issue]}
-  {:github-id "BTowersCoding"
-   :contributions [:doc]}]
+  {:github-id "bobbicodes"
+   :contributions [:doc]}
+  {:github-id "p4ulcristian"
+   :contributions [:issue]}
+  {:github-id "mrkam2"
+   :contributions [:issue]}
+  {:github-id "frenchy64"
+   :contributions [:issue]}]
  :founders
  [{:github-id "xsc"
    :contributions [:original-author :doc :design :issue :review :support :code-rewrite-clj-v0]}

@@ -24,6 +24,11 @@ A release with known breaking changes is marked with:
 //   (adjust these in publish.clj as you see fit)
 === Unreleased
 
+* bump `org.clojure/tools.reader` to version `1.5.0`
+({lread})
+
+=== v1.1.48 - 2024-08-15 [[v1.1.48]]
+
 * bump `org.clojure/tools.reader` to version `1.4.2`
 ({lread})
 * `sexpr` now 1) expands tag metadata to its long form 2) throws on invalid metadata
@@ -39,6 +44,8 @@ A release with known breaking changes is marked with:
 {issue}132[#132] ({lread})
 ** Rewrite-clj can rewrite invalid escaped chars but will throw on `sexpr`
 {issue}295[#295] ({lread})
+
+https://github.com/clj-commons/rewrite-clj/compare/v1.1.47\...v1.1.48[commit log]
 
 === v1.1.47 - 2023-03-25 [[v1.1.47]]
 
