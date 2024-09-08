@@ -114,6 +114,7 @@ A big thank you to all the people who have contributed to rewrite-clj!
 --
 image:eraserhd.png[eraserhd,role="left",width=250,link="https://github.com/eraserhd"]
 image:vemv.png[vemv,role="left",width=250,link="https://github.com/vemv"]
+image:frenchy64.png[frenchy64,role="left",width=250,link="https://github.com/frenchy64"]
 image:kkinnear.png[kkinnear,role="left",width=250,link="https://github.com/kkinnear"]
 image:mainej.png[mainej,role="left",width=250,link="https://github.com/mainej"]
 image:plexus.png[plexus,role="left",width=250,link="https://github.com/plexus"]
@@ -138,7 +139,6 @@ image:drorbemet.png[drorbemet,role="left",width=250,link="https://github.com/dro
 image:expez.png[expez,role="left",width=250,link="https://github.com/expez"]
 image:fazzone.png[fazzone,role="left",width=250,link="https://github.com/fazzone"]
 image:ferdinand-beyer.png[ferdinand-beyer,role="left",width=250,link="https://github.com/ferdinand-beyer"]
-image:frenchy64.png[frenchy64,role="left",width=250,link="https://github.com/frenchy64"]
 image:green-coder.png[green-coder,role="left",width=250,link="https://github.com/green-coder"]
 image:guoyongxin.png[guoyongxin,role="left",width=250,link="https://github.com/guoyongxin"]
 image:ikappaki.png[ikappaki,role="left",width=250,link="https://github.com/ikappaki"]

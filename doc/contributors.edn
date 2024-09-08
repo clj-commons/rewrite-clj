@@ -109,7 +109,7 @@
   {:github-id "mrkam2"
    :contributions [:issue]}
   {:github-id "frenchy64"
-   :contributions [:issue]}]
+   :contributions [:code-rewrite-clj-v1 :doc :issue]}]
  :founders
  [{:github-id "xsc"
    :contributions [:original-author :doc :design :issue :review :support :code-rewrite-clj-v0]}
