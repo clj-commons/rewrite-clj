@@ -66,6 +66,7 @@ Some projects using rewrite-clj v1
 * https://github.com/pink-gorilla/reval[reval] {canary-tested} -reproduceable eval - namespace eval and storage with browser ui
 * https://github.com/borkdude/rewrite-edn[rewrite-edn] {canary-tested} - Utility lib on top of rewrite-clj with common operations to update EDN while preserving whitespace and comments
 * https://github.com/matthewdowney/rich-comment-tests[rich-comment-tests] {canary-tested} - Turns rich comment forms into tests
+* https://github.com/NoahTheDuke/splint[splint] {canary-tested} - A Clojure linter focused on style and code shape
 * https://github.com/lread/test-doc-blocks[test-doc-blocks] {canary-tested} - Test AsciiDoc and CommonMark code blocks found in articles and docstrings
 * https://github.com/nubank/umschreiben-clj[umschreiben-clj] {canary-tested} - Rewrite utilities for refactoring clojure files
 * https://github.com/kkinnear/zprint[zprint] {canary-tested} - Executables, uberjar, and library to beautifully format Clojure and Clojurescript source code and s-expressions

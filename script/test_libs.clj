@@ -437,6 +437,14 @@
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test-clj"]}
+           {:name "splint"
+            :version "1.17.0"
+            :platforms [:clj]
+            :github-release {:repo "NoahTheDuke/splint"
+                             :version-prefix "v"}
+            :patch-fn deps-edn-v1-patch
+            :show-deps-fn cli-deps-tree
+            :test-cmds ["clojure -M:dev:test:runner"]}
            {:name "test-doc-blocks"
             :version "1.1.20"
             :platforms [:clj :cljs]
