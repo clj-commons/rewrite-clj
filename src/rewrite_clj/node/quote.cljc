@@ -110,7 +110,7 @@
   [children]
   (if (sequential? children)
     (->node
-      :unquote "~" 'unquote
+      :unquote "~" 'clojure.core/unquote
       children)
     (recur [children])))
 
@@ -135,6 +135,6 @@
   [children]
   (if (sequential? children)
     (->node
-      :unquote-splicing "~@" 'unquote-splicing
+      :unquote-splicing "~@" 'clojure.core/unquote-splicing
       children)
     (recur [children])))

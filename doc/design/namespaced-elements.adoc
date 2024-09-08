@@ -102,6 +102,11 @@ The following rewrite-clj nodes throw an exception for `sexpr` which is sensible
 - whitespace
 - uneval, which is rewrite-clj's term for `#_`
 
+The following nodes have different `sexpr` representations than if you called `read-string`:
+
+- read eval
+- syntax quote
+
 === Sexpr support for namespaced elements in rewrite-clj v0 and rewrite-cljs
 _Auto-resolved_ keywords have been around https://groups.google.com/g/clojure/c/i770QaIFiF0/m/v63cZgrlBwAJ[since at least Clojure 1.0, which was released in May 2009].
 https://github.com/clojure/clojure/blob/master/changes.md#12-support-for-working-with-maps-with-qualified-keys[Namespaced maps were introduced in Clojure 1.9, released in December 2017].

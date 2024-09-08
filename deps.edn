@@ -137,7 +137,7 @@
 
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                   :sha "5adc46b18efa8661c9c86bb79c0876265cf6612a"}}}
+                                                   :sha "27318786f077d491c9cbc0c9d99e5781d9a9ef83"}}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 

@@ -1,10 +1,9 @@
 (ns ^{:doc "Tests for EDN parser."
       :author "Yannick Scherer"}
  rewrite-clj.parser-test
-  (:refer-clojure :exclude [read-string])
   (:require [clojure.string :as string]
-            [clojure.test :refer [deftest is]]
-            [clojure.tools.reader.edn :refer [read-string]]
+            [clojure.test :refer [deftest is testing]]
+            [clojure.tools.reader :as rdr]
             [rewrite-clj.node :as node]
             [rewrite-clj.parser :as p])
   #?(:clj (:import [clojure.lang ExceptionInfo]
@@ -130,29 +129,40 @@
        :default (is (Double/isNaN e)))))
 
 (deftest t-parsing-reader-prefixed-data
-  (doseq [[s t ws sexpr]
-          [["@sym"        :deref            []              '(deref sym)]
-           ["@  sym"      :deref            [:whitespace]   '(deref sym)]
-           ["'sym"        :quote            []              '(quote sym)]
-           ["'  sym"      :quote            [:whitespace]   '(quote sym)]
-           ["`sym"        :syntax-quote     []              '(quote sym)]
-           ["`  sym"      :syntax-quote     [:whitespace]   '(quote sym)]
-           ["~sym"        :unquote          []              '(unquote sym)]
-           ["~  sym"      :unquote          [:whitespace]   '(unquote sym)]
-           ["~@sym"       :unquote-splicing []              '(unquote-splicing sym)]
-           ["~@  sym"     :unquote-splicing [:whitespace]   '(unquote-splicing sym)]
-           ["#=sym"       :eval             []              '(eval 'sym)]
-           ["#=  sym"     :eval             [:whitespace]   '(eval 'sym)]
-           ["#'sym"       :var              []              '(var sym)]
-           ["#'\nsym"     :var              [:newline]      '(var sym)]]]
-    (let [n (p/parse-string s)
-          children (node/children n)
-          c (map node/tag children)]
-      (is (= t (node/tag n)))
-      (is (= :token (last c)))
-      (is (= sexpr (node/sexpr n)))
-      (is (= 'sym (node/sexpr (last children))))
-      (is (= ws (vec (butlast c)))))))
+  (doseq [[ s         t                 ws            sexpr        ltag   lcld]
+          [["@sym"    :deref            []            '@sym        :token 'sym]
+           ["@  sym"  :deref            [:whitespace] '@sym        :token 'sym]
+           ["'sym"    :quote            []            ''sym        :token 'sym]
+           ["'  sym"  :quote            [:whitespace] ''sym        :token 'sym]
+           ["`sym"    :syntax-quote     []            ''sym        :token 'sym]
+           ["`  sym"  :syntax-quote     [:whitespace] ''sym        :token 'sym]
+           ["~sym"    :unquote          []            '~sym        :token 'sym]
+           ["~  sym"  :unquote          [:whitespace] '~sym        :token 'sym]
+           ["~@sym"   :unquote-splicing []            '~@sym       :token 'sym]
+           ["~@  sym" :unquote-splicing [:whitespace] '~@sym       :token 'sym]
+           ["~ @sym"  :unquote          [:whitespace] '~ @sym      :deref '@sym]
+           ["#=sym"   :eval             []            '(eval 'sym) :token 'sym]
+           ["#=  sym" :eval             [:whitespace] '(eval 'sym) :token 'sym]
+           ["#'sym"   :var              []            '#'sym       :token 'sym]
+           ["#'\nsym" :var              [:newline]    '#'sym       :token 'sym]]]
+    (testing (pr-str s)
+      (let [n (p/parse-string s)
+            children (node/children n)
+            c (map node/tag children)]
+        (is (= t (node/tag n)) "tag")
+        (is (= ltag (last c)) "ltag")
+        (is (= sexpr (node/sexpr n)) "sexpr")
+        (is (= s (node/string n)) "string")
+        ;; ` and #= return different sexpr's than via clojure.core/read-string
+        (when-not (#{:syntax-quote :eval} t)
+          (is (= sexpr
+                 #?(:cljs (rdr/read-string s)
+                    :default (binding [rdr/*read-eval* false] (rdr/read-string s)))
+                 #?@(:cljs []
+                     :default [(binding [*read-eval* false] (read-string s))]))
+              "read-string"))
+        (is (= lcld (node/sexpr (last children))) "lcld")
+        (is (= ws (vec (butlast c))) "ws")))))
 
 (deftest t-eval
   (let [n (p/parse-string "#=(+ 1 2)")]
@@ -223,7 +233,8 @@
              fq (frequencies (map node/tag children))]
          (is (= t (node/tag n)))
          (is (= (string/trim s) (node/string n)))
-         (is (= (node/sexpr n) (read-string s)))
+         (is (= (node/sexpr n) #?(:cljs (rdr/read-string s)
+                                  :default (binding [rdr/*read-eval* false] (rdr/read-string s)))))
          (is (= w (:whitespace fq 0)))
          (is (= c (:token fq 0))))))
 

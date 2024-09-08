@@ -1062,7 +1062,7 @@ a|<unsupported operation>
 
 2+a|*Deref* `:deref`
 a|`@form`
-a|`(deref form)`
+a|`(clojure.core/deref form)`
 
 2+a|*Metadata* `:meta`
 a|`^{:a 1 :b 2} [1 2 3]`
@@ -1098,7 +1098,11 @@ a|`(quote symbol)`
 
 2+a|*Syntax unquote* `:unquote`
 a|`~symbol`
-a|`(unquote symbol)`
+a|`(clojure.core/unquote symbol)`
+
+2+a|*Unquote splicing* `:unquote-spliciing`
+a|`~@symbol`
+a|`(clojure.core/unquote-splicing symbol)`
 
 2+a|*Tagged literal* `:reader-macro`
 a|`#foo/bar [1 2 3]`
@@ -1181,7 +1185,7 @@ a|`'#::my-ns-alias{my-symbol 1}`
 
 ==== Rewrite-clj Default Auto-Resolve Handling
 
-When calling `sepxr` on an auto-resolved keyword or symbol node, rewrite-clj will resolve:
+When calling `sexpr` on an auto-resolved keyword or symbol node, rewrite-clj will resolve:
 
 * the current namespace to `?\_current-ns_?`
 * namespaced alias `x` to `??\_x_??`
@@ -1201,6 +1205,8 @@ To illustrate:
 (-> (p/parse-string "#::my-alias{:a 1 :b 2 s1 3}") n/sexpr)
 ;; => #:??_my-alias_??{s1 3, :b 2, :a 1}
 ----
+
+Currently, symbols under syntax quote are never resolved.
 
 [#custom-auto-resolve]
 ==== Custom Auto-Resolve Handling
