@@ -44,7 +44,7 @@
     (if (:help opts)
       (usage-help)
       (do (status/line :head "Launching Clojure %s nREPL" (name flavor))
-          (process/exec "clj" (str "-M:1.11:test-common:nrepl:nrepl/" (case flavor
+          (process/exec "clj" (str "-M:1.12:test-common:nrepl:nrepl/" (case flavor
                                                                         :cljs "cljs:cljs"
                                                                         :jvm  "jvm"))
                         "-h" (:host opts)
