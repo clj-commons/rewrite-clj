@@ -29,7 +29,7 @@
 (def args-usage "Valid args: [options]
 
 Options:
-  -v, --clojure-version VERSION  Test with Clojure [1.10, 1.11, 1.12] [default: 1.11]
+  -v, --clojure-version VERSION  Test with Clojure [1.10, 1.11, 1.12] [default: 1.12]
   --help                         Show this help")
 
 
