@@ -214,8 +214,8 @@
 ;;
 ;; refactor-nrepl
 ;;
-
-(defn- refactor-nrepl-patch
+;; uncomment we we re-enable
+#_(defn- refactor-nrepl-patch
   "custom because my generic does not handle ^:inline-dep syntax"
   [{:keys [home-dir rewrite-clj-version]}]
   (status/line :detail "=> Patching deps")
