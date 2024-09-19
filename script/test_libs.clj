@@ -419,7 +419,8 @@
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
-           {:name "refactor-nrepl"
+           ;; temporarily disable, see https://github.com/clojure-emacs/refactor-nrepl/issues/409
+           #_{:name "refactor-nrepl"
             :version "3.10.0"
             :platforms [:clj]
             :github-release {:repo "clojure-emacs/refactor-nrepl"
