@@ -50,7 +50,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2024.08.29"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2024.09.27"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.12.0"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
@@ -158,7 +158,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.9.1227"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.9.1232"}
                                    org.slf4j/slf4j-simple {:mvn/version "2.0.16"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.12.0"}}

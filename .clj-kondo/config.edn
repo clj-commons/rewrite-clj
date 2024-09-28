@@ -15,6 +15,7 @@
  {:discouraged-var {clojure.test/are {:message "We're not fans of clojure.test/are, use doseq instead"}}
   :redundant-str-call {:level :warning}
   :redundant-fn-wrapper {:level :warning}
+  :redundant-ignore {:level :warning}
   :unused-value {:level :warning}
   :aliased-namespace-symbol {:level :warning}
   :unknown-require-option {:level :off} ;; overcome a wee bug in 2020-10-05 version
