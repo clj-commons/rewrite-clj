@@ -292,7 +292,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
-            :version "2.9.1221"
+            :version "2.9.1232"
             :platforms [:clj]
             :github-release {:repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
@@ -439,7 +439,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test-clj"]}
            {:name "splint"
-            :version "1.17.0"
+            :version "1.17.1"
             :platforms [:clj]
             :github-release {:repo "NoahTheDuke/splint"
                              :version-prefix "v"}
