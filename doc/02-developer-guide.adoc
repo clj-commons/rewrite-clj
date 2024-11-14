@@ -42,13 +42,8 @@ https://scoop.sh/[Scoop] offers an easy way to install tools.
 @littleli is doing a great job  w/maintaining https://github.com/littleli/scoop-clojure[scoop apps for Clojure, Babashka and other tools] and this is how I installed Babashka.
 
 ==== Clojure
-We all choose our own paths, but for me, using https://github.com/borkdude/deps.clj[deps.clj] instead of https://github.com/clojure/tools.deps.alpha/wiki/clj-on-Windows[Clojure's PowerShell Module] offered me no fuss no muss Clojure on Windows and GitHub Actions on Windows.
-I decided to install deps.clj not through scoop but through https://github.com/borkdude/deps.clj#windows[the deps.clj `install.ps1` script].
-This makes it simple to treat `deps.exe` as if it were the official `clojure` via a simple rename:
-
-----
-Rename-Item $HOME\deps.clj\deps.exe clojure.exe
-----
+Now that the Clojure core team is recommends https://github.com/casselc/clj-msi[clj-msi] life is easier.
+If you are not already installing via `clj-msi` on Windows, you'll want to do so.
 
 ==== GraalVM
 You'll have your own preference, but I find it convenient to install GraalVM on Windows via scoop.
