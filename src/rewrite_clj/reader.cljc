@@ -223,13 +223,13 @@
                 [ns sym]
 
                 (and (not (interop/numeric? (nth sym 0)))
-                     (not (identical? "" sym))
+                     (not (= "" sym))
                      (not (string/ends-with? ns ":"))
-                     (or (identical? sym "/")
+                     (or (= sym "/")
                          (nil? (string/index-of sym "/"))))
                 [ns sym]))))
-      (when (or (identical? token "/")
-                  (nil? (string/index-of token "/")))
+      (when (or (= token "/")
+                (nil? (string/index-of token "/")))
           [nil token]))))
 
 (defn read-symbol
