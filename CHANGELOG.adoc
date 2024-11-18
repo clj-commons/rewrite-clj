@@ -24,12 +24,16 @@ A release with known breaking changes is marked with:
 //   (adjust these in publish.clj as you see fit)
 === Unreleased
 
+=== v1.1.49 - 2024-11-18 [[v1.1.49]]
+
 * Fix parsing of `b//` symbol
 {issue}323[#323] ({borkdude})
 * bump `org.clojure/tools.reader` to version `1.5.0`
 ({lread})
 * `sexpr` now better matches clojure `read-string` for `~`, `@` and `~@`
 {issue}305[#305] ({person}frenchy64[@frenchy64])
+
+https://github.com/clj-commons/rewrite-clj/compare/v1.1.48\...v1.1.49[commit log]
 
 === v1.1.48 - 2024-08-15 [[v1.1.48]]
 
