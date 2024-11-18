@@ -63,7 +63,8 @@
            ["sym'"                       'sym']
            ["sym'sym"                    'sym'sym]
            ["sym:sym"                    'sym:sym]
-           ["\"string\""                 "string"]]]
+           ["\"string\""                 "string"]
+           ["b//"                        'b//]]]
     (let [n (p/parse-string s)]
       (is (= :token (node/tag n)))
       (is (= s (node/string n)))
