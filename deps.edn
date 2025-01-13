@@ -28,8 +28,8 @@
            ;; REPL to support bb dev-jvm & dev-cljs tasks, see script/dev_repl.clj
            ;;
            :nrepl
-           {:extra-deps {nrepl/nrepl {:mvn/version "1.3.0"}
-                         cider/cider-nrepl {:mvn/version "0.50.2"}}
+           {:extra-deps {nrepl/nrepl {:mvn/version "1.3.1"}
+                         cider/cider-nrepl {:mvn/version "0.52.0"}}
             :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
 
            :nrepl/jvm
@@ -40,7 +40,7 @@
 
            :nrepl/cljs ;; note shadow-cljs does its own thing, this is for a REPL with
                        ;; support for plain old ClojureScript
-           {:extra-deps {cider/piggieback {:mvn/version "0.5.3"}}
+           {:extra-deps {cider/piggieback {:mvn/version "0.6.0"}}
             :main-opts ["-m" "nrepl.cmdline"
                         "--middleware" "[cider.nrepl/cider-middleware cider.piggieback/wrap-cljs-repl]"
                         "-i"]}
@@ -99,7 +99,7 @@
                              :main-opts ["-m" "cognitect.test-runner"]}
 
            ;; figwheel for clojurescript testing during dev
-           :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.18"}}
+           :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.19"}}
                       :override-deps {org.clojure/clojure {:mvn/version "1.12.0"}}
                       :extra-paths ["target" "test"]
                       :main-opts ["-m" "figwheel.main" "-b" "fig" "-r"]}
@@ -120,7 +120,7 @@
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.12.0"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.16.4"}
+                               :extra-deps {metosin/malli {:mvn/version "0.17.0"}
                                             io.aviso/pretty {:mvn/version "1.4.4"}}
                                :ns-default lread.apply-import-vars}
 
@@ -137,7 +137,7 @@
 
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test {:git/url "https://github.com/lread/sci-test.git"
-                                                   :sha "27318786f077d491c9cbc0c9d99e5781d9a9ef83"}}}
+                                                   :sha "1708b6b5d247be903baf9d3052728a0dc7f540c8"}}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 
@@ -147,7 +147,7 @@
            ;;
            ;; Deployment
            ;;
-           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.5"}}
+           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.6"}}
                    :extra-paths ["src" "build"]
                    :ns-default build}
 
@@ -158,7 +158,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.11.1250"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.11.1264"}
                                    org.slf4j/slf4j-simple {:mvn/version "2.0.16"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.12.0"}}
