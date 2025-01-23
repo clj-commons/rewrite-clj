@@ -99,7 +99,7 @@
                              :main-opts ["-m" "cognitect.test-runner"]}
 
            ;; figwheel for clojurescript testing during dev
-           :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.19"}}
+           :fig-test {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.20"}}
                       :override-deps {org.clojure/clojure {:mvn/version "1.12.0"}}
                       :extra-paths ["target" "test"]
                       :main-opts ["-m" "figwheel.main" "-b" "fig" "-r"]}
