@@ -343,7 +343,7 @@
                         "bin/test unit"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2024.11.08-17.49.29"
+            :version "2025.01.22-23.28.23"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
