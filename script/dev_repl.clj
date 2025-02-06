@@ -1,9 +1,14 @@
 (ns dev-repl
   (:require [babashka.cli :as cli]
             [babashka.process :as process]
+            [clojure.string :as str]
             [lread.status-line :as status]))
 
 (def cli-spec {:help {:desc "This usage help"}
+
+               :flowstorm {:alias :f
+                           :coerce :boolean
+                           :desc "Enable flowstorm"}
 
                ;; cider nrepl pass through opts
                :host {:ref "<ADDR>"
@@ -22,7 +27,7 @@
 
 (defn- usage-help[]
   (status/line :head "Usage help")
-  (status/line :detail (cli/format-opts {:spec cli-spec :order [:host :bind :port :help]})))
+  (status/line :detail (cli/format-opts {:spec cli-spec :order [:flowstorm :host :bind :port :help]})))
 
 (defn- usage-fail [msg]
   (status/line :error msg)
@@ -40,16 +45,20 @@
 
 
 (defn launch-repl [flavor args]
-  (let [opts (parse-opts args)]
-    (if (:help opts)
+  (let [{:keys [flowstorm host bind port help]} (parse-opts args)]
+    (if help
       (usage-help)
-      (do (status/line :head "Launching Clojure %s nREPL" (name flavor))
-          (process/exec "clj" (str "-M:1.12:test-common:nrepl:nrepl/" (case flavor
-                                                                        :cljs "cljs:cljs"
-                                                                        :jvm  "jvm"))
-                        "-h" (:host opts)
-                        "-b" (:bind opts)
-                        "-p" (:port opts))))))
+      (let [aliases (cond-> [(case flavor
+                               :cljs "nrepl/cljs:cljs"
+                               :jvm  "nrepl/jvm")]
+                      flowstorm (conj "flowstorm"))]
+        (status/line :head "Launching Clojure %s nREPL" (name flavor))
+        (when flowstorm
+          (status/line :detail "Flowstorm support is enabled"))
+        (process/exec "clj" (str "-M:1.12:test-common:nrepl:" (str/join ":" aliases))
+                      "-h" host
+                      "-b" bind
+                      "-p" port)))))
 
 ;; Entry points
 (defn dev-jvm [& args]

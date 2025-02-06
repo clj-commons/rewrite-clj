@@ -32,6 +32,13 @@
                          cider/cider-nrepl {:mvn/version "0.52.0"}}
             :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
 
+           :flowstorm
+           {;; for disabling the official compiler
+            :classpath-overrides {org.clojure/clojure nil}
+            :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.0-3"}
+                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.1.1"}}
+            :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
+
            :nrepl/jvm
            {:extra-deps {refactor-nrepl/refactor-nrepl {:mvn/version "3.10.0"}}
             :jvm-opts ["-Djdk.attach.allowAttachSelf"]
