@@ -1,31 +1,35 @@
 (ns rewrite-clj.zip.test-helper
   "It can be tricky and error prone to navigate to a desired location in a zipper.
   These helpers allow us to mark our desired location with a special ⊚ character
-  and spit out that same character to reflect the location."
+  and spit out that same character to reflect the location.
+  The ◬ character at start of string to indicates root :forms node location."
   (:require [clojure.string :as str]
             [rewrite-clj.node :as n]
             [rewrite-clj.zip :as z]))
 
 (defn pos-and-s
-  "Given s that includes a single loc prefix ⊚, return map with
-  - `:s` s without loc prefix
+  "Given `s` that includes a single loc prefix ⊚, return map with
+  - `:s` s without loc prefix char
   - `:pos`
-    - `:row` row of prefix
-    - `:col` col or prefix"
+    - `:row` row of prefix char
+    - `:col` col or prefix char"
   [s]
-  (let [[row col] (-> s
-                      (str/replace #"(?s)⊚.*" "")
-                      (str/split #"\n" -1)
-                      ((juxt count #(-> % last count inc))))]
-    {:s (str/replace s "⊚" "") :pos {:row row :col col}}))
-
+  (when-let [marker-ndx (str/index-of s "⊚")]
+    (let [[row col] (-> (subs s 0 marker-ndx)
+                        (str/split #"\n" -1)
+                        ((juxt count #(-> % last count inc) )))]
+      {:s (str/replace s "⊚" "") :pos {:row row :col col}})))
 
 (defn of-locmarked-string
   "Return zloc for string `s` located at node prefixed with ⊚ marker.
   Use ◬ as first char to locate to root forms node."
   [s opts]
-  (if (str/starts-with? s "◬")
+
+  (cond
+    (str/starts-with? s "◬")
     (z/of-string* (subs s 1) opts)
+
+    (str/includes? s "⊚")
     (let [{:keys [pos s]} (pos-and-s s)
           {target-row :row target-col :col} pos
           zloc (z/of-string* s opts)]
@@ -36,10 +40,12 @@
             zloc
 
             (z/end? zloc)
-            (throw (ex-info (str "Oops, of-locmarked-string failed to locate to ⊚ marked found at [row col]:" [target-row target-col]) {}))
+            (throw (ex-info (str "Oops, of-locmarked-string failed to locate to node at ⊚ mark found at [row col]:" [target-row target-col]) {}))
 
             :else
-            (recur (z/next* zloc))))))))
+            (recur (z/next* zloc))))))
+    :else
+    (throw (ex-info "s needs to start with ◬, or include a single ⊚" {}))))
 
 (defn- row-num [zloc]
   (loop [zloc (z/prev* zloc)
