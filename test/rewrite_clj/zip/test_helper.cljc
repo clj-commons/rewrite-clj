@@ -60,10 +60,10 @@
         (inc cols)
 
         left
-        (recur left (+ cols (z/length left)))
+        (recur left (long (+ cols (z/length left))))
 
         up
-        (recur up (+ cols (-> up z/node n/leader-length)))
+        (recur up (long (+ cols (-> up z/node n/leader-length))))
 
         :else
         (inc cols)))))
