@@ -23,9 +23,9 @@
                ["[1 2 3 4⊚;; comment\n]"  "[1 2 3 4⊚;; comment\nx]"]
                ["⊚;; unterminated cmt"    "⊚;; unterminated cmtx"] ;; an odd thing to do, but allowed
                ["⊚;; comment\n"           "⊚;; comment\nx"]]]
-        (testing in
-          (let [zloc (th/of-locmarked-string in zopts)]
-            (is (= expected (th/root-locmarked-string (z/insert-right zloc 'x))))))))))
+        (let [zloc (th/of-locmarked-string in zopts)]
+          (is (= expected (th/root-locmarked-string (z/insert-right zloc 'x)))
+              in))))))
 
 (deftest t-insert-rigth-contrived
   (doseq [zopts zipper-opts]
@@ -49,9 +49,9 @@
                ["⊚\n[1 2 3 4]"           "x⊚\n[1 2 3 4]"]
                ["⊚;; comment\n"          "x ⊚;; comment\n"]
                ["⊚;; unterminated cmt"   "x ⊚;; unterminated cmt"]]]
-        (testing in
-          (let [zloc (th/of-locmarked-string in zopts)]
-            (is (= expected (th/root-locmarked-string (z/insert-left zloc 'x))))))))))
+        (let [zloc (th/of-locmarked-string in zopts)]
+          (is (= expected (th/root-locmarked-string (z/insert-left zloc 'x)))
+              in))))))
 
 (deftest t-insert-left-contrived
   (doseq [zopts zipper-opts]
@@ -76,9 +76,9 @@
                ["⊚[;; comment\n1 2 3 4]" "⊚[x ;; comment\n1 2 3 4]"]
                ["◬;; unterminated cmt"   "◬x ;; unterminated cmt"]
                ["◬;; comment\n"          "◬x ;; comment\n"]]]
-        (testing in
-          (let [zloc (th/of-locmarked-string in zopts)]
-            (is (= expected (th/root-locmarked-string (z/insert-child zloc 'x))))))))))
+        (let [zloc (th/of-locmarked-string in zopts)]
+          (is (= expected (th/root-locmarked-string (z/insert-child zloc 'x)))
+              in))))))
 
 (deftest t-append-child
   (doseq [zopts zipper-opts]
@@ -94,9 +94,9 @@
                ["◬;; unterminated cmt"   "◬;; unterminated cmtx"] ;; odd to do but allowed
                ["◬#! unterminated cmt"   "◬#! unterminated cmtx"] ;; try alternate comment syntax
                ["◬;; comment\n"          "◬;; comment\nx"]]]
-        (testing in
-          (let [zloc (th/of-locmarked-string in zopts)]
-            (is (= expected (th/root-locmarked-string (z/append-child zloc 'x))))))))))
+        (let [zloc (th/of-locmarked-string in zopts)]
+          (is (= expected (th/root-locmarked-string (z/append-child zloc 'x)))
+              in))))))
 
 (deftest t-different-node-types-that-allow-insertion
   (doseq [zopts zipper-opts]
@@ -110,9 +110,9 @@
                ["#=(1 ⊚2)"   "#=(1 x ⊚2 y)"]
                ["#_(1 ⊚2)"   "#_(1 x ⊚2 y)"]
                ["@(f ⊚2)"    "@(f x ⊚2 y)"]]]
-        (testing in
-          (let [zloc (th/of-locmarked-string in zopts)]
-            (is (= expected (-> zloc
-                                (z/insert-left 'x)
-                                (z/insert-right 'y)
-                                (th/root-locmarked-string))))))))))
+        (let [zloc (th/of-locmarked-string in zopts)]
+          (is (= expected (-> zloc
+                              (z/insert-left 'x)
+                              (z/insert-right 'y)
+                              (th/root-locmarked-string)))
+              in))))))
