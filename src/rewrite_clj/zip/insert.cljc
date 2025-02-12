@@ -24,7 +24,7 @@
   If `item` is not already a node, an attempt will be made to coerce it to one.
 
   Will insert spaces around `item` if necessary.
-  Does not test `item` itself for whitespace.
+  There is no consideration on whitespaceness of `item` itself.
 
   Use [[rewrite-clj.zip/insert-right*]] to insert without adding any whitespace."
   [zloc item]
@@ -42,11 +42,10 @@
 
 (defn insert-left
   "Return zipper with `item` inserted to the left of the current node in `zloc`, without moving location.
-  Will insert a space if necessary.
   If `item` is not already a node, an attempt will be made to coerce it to one.
 
   Will insert spaces around `item` if necessary.
-  Does not test `item` itself for whitespace.
+  There is no consideration on whitespaceness of `item` itself.
 
   Use [[insert-left*]] to insert without adding any whitespace."
   [zloc item]
@@ -64,11 +63,10 @@
 
 (defn insert-child
   "Return `zloc` with `item` inserted as the first child of the current node in `zloc`, without moving location.
-  Will insert a space if necessary.
   If `item` is not already a node, an attempt will be made to coerce it to one.
 
   Will insert space after `item` if necessary.
-  Does not test `item` itself for whitespace.
+  There is no consideration on whitespaceness of `item` itself.
 
   Use [[insert-child*]] to insert without adding any whitespace."
   [zloc item]
@@ -83,11 +81,10 @@
 
 (defn append-child
   "Return `zloc` with `item` inserted as the last child of the current node in `zloc`, without moving location.
-  Will insert a space if necessary.
   If `item` is not already a node, an attempt will be made to coerce it to one.
 
   Will insert space before `item` if necessary.
-  Does not test `item` itself for whitespace.
+  There is no consideration on whitespaceness of `item` itself.
 
   Use [[append-child*]] to append without adding any whitespace."
   [zloc item]
