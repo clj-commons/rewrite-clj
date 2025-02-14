@@ -52,8 +52,14 @@
          rows 0]
     (if (not zloc)
       (inc rows)
-      (if (or (z/linebreak? zloc) (n/comment? (z/node zloc)))
+      (cond
+        (z/linebreak? zloc)
+        (recur (z/prev* zloc) (long (+ rows (z/length zloc))))
+
+        (n/comment? (z/node zloc))
         (recur (z/prev* zloc) (inc rows))
+
+        :else
         (recur (z/prev* zloc) rows)))))
 
 (defn- col-num [zloc]

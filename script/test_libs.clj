@@ -412,15 +412,11 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "rewrite-edn"
-            ;; very temporarily use sha of my PR that addresses failure
-            ;; move back to release when PR is merged
-            :version "5659a1f650514d18c2356edeca16662e860ddd92"
+            :version "0.4.9"
             :platforms [:clj]
             :github-release {:repo "borkdude/rewrite-edn"
-                             ;; very temporarily use sha of PR that addresses failure
-                             ;; :version-prefix "v"
-                             ;; :via :tag
-                             :via :sha}
+                             :version-prefix "v"
+                             :via :tag}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}

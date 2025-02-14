@@ -36,7 +36,7 @@
            {;; for disabling the official compiler
             :classpath-overrides {org.clojure/clojure nil}
             :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.0-3"}
-                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.1.1"}}
+                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.1.2"}}
             :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
 
            :nrepl/jvm
@@ -156,7 +156,7 @@
            ;;
            ;; Deployment
            ;;
-           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.6"}}
+           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.7"}}
                    :extra-paths ["src" "build"]
                    :ns-default build}
 
