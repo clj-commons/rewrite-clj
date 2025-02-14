@@ -54,7 +54,7 @@
       (inc rows)
       (cond
         (z/linebreak? zloc)
-        (recur (z/prev* zloc) (+ rows (z/length zloc)))
+        (recur (z/prev* zloc) (long (+ rows (z/length zloc))))
 
         (n/comment? (z/node zloc))
         (recur (z/prev* zloc) (inc rows))
