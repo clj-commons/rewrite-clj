@@ -501,10 +501,11 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn insert-right
-  "Return zipper with `item` inserted to the right of the current node in `zloc`, without moving location.
+  "Return `zloc` with `item` inserted to the right of the current node in `zloc`, without moving location.
   If `item` is not already a node, an attempt will be made to coerce it to one.
 
-  Will insert a space if necessary.
+  Will insert spaces around `item` if necessary.
+  There is no consideration on whitespaceness of `item` itself.
 
   Use [[rewrite-clj.zip/insert-right*]] to insert without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/insert-right zloc item))
@@ -512,26 +513,32 @@
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn insert-left
   "Return zipper with `item` inserted to the left of the current node in `zloc`, without moving location.
-  Will insert a space if necessary.
   If `item` is not already a node, an attempt will be made to coerce it to one.
+
+  Will insert spaces around `item` if necessary.
+  There is no consideration on whitespaceness of `item` itself.
 
   Use [[insert-left*]] to insert without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/insert-left zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn insert-child
-  "Return zipper with `item` inserted as the first child of the current node in `zloc`, without moving location.
-  Will insert a space if necessary.
+  "Return `zloc` with `item` inserted as the first child of the current node in `zloc`, without moving location.
   If `item` is not already a node, an attempt will be made to coerce it to one.
+
+  Will insert space after `item` if necessary.
+  There is no consideration on whitespaceness of `item` itself.
 
   Use [[insert-child*]] to insert without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/insert-child zloc item))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
 (defn append-child
-  "Return zipper with `item` inserted as the last child of the current node in `zloc`, without moving.
-  Will insert a space if necessary.
+  "Return `zloc` with `item` inserted as the last child of the current node in `zloc`, without moving location.
   If `item` is not already a node, an attempt will be made to coerce it to one.
+
+  Will insert space before `item` if necessary.
+  There is no consideration on whitespaceness of `item` itself.
 
   Use [[append-child*]] to append without adding any whitespace."
   [zloc item] (rewrite-clj.zip.insert/append-child zloc item))
