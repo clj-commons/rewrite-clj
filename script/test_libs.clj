@@ -40,7 +40,7 @@
         opts (if token
                {:headers {"Authorization" (format "Bearer %s" token)}}
                {})]
-    (case  (:via github-release)
+    (case (:via github-release)
       ;; no official release
       :sha
       (-> (curl/get (format "https://api.github.com/repos/%s/git/refs/heads/master" (:repo github-release))
@@ -75,6 +75,7 @@
                                (:repo github-release)
                                (or (:version-prefix github-release) "")
                                version))]
+    (status/line :detail "Downloading lib release from: %s" download-url)
     (io/make-parents target)
     (io/copy
      (:body (curl/get download-url {:as :stream}))
@@ -411,11 +412,15 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "rewrite-edn"
-            :version "0.4.8"
+            ;; very temporarily use sha of my PR that addresses failure
+            ;; move back to release when PR is merged
+            :version "5659a1f650514d18c2356edeca16662e860ddd92"
             :platforms [:clj]
             :github-release {:repo "borkdude/rewrite-edn"
-                             :version-prefix "v"
-                             :via :tag}
+                             ;; very temporarily use sha of PR that addresses failure
+                             ;; :version-prefix "v"
+                             ;; :via :tag
+                             :via :sha}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
