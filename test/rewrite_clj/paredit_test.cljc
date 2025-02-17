@@ -120,7 +120,7 @@ First line
                 (pe/kill-at-pos {:row 1 :col 1}) z/root-string))))
 
 (deftest kill-one-at-pos
-  (let [sample "[10 20 30]" ]
+  (let [sample "[10 20 30]"]
     (is (= "[10 30]"
            (-> (z/of-string sample {:track-position? true})
                (pe/kill-one-at-pos {:row 1 :col 4}) ; at whitespace
@@ -172,7 +172,6 @@ First line
     (is (= "\" world\""
            (-> (pe/kill-one-at-pos sample {:row 1 :col 2}) z/root-string)))))
 
-
 (deftest kill-one-at-pos-in-multiline-string
   (let [sample (z/of-string "\"foo bar do\n lorem\"" {:track-position? true})]
     (is (= "\" bar do\n lorem\""
@@ -181,8 +180,6 @@ First line
            (-> (pe/kill-one-at-pos sample {:row 2 :col 1}) z/root-string)))
     (is (= "\"foo bar \n lorem\""
            (-> (pe/kill-one-at-pos sample {:row 1 :col 10}) z/root-string)))))
-
-
 
 (deftest slurp-forward-and-keep-loc-rightmost
   (doseq [opts zipper-opts]
@@ -346,12 +343,12 @@ First line
 (deftest barf-forward-and-keep-loc
   (doseq [opts zipper-opts]
     (testing (zipper-opts-desc opts)
-  (let [res (-> "[[1 2 3] 4]"
+      (let [res (-> "[[1 2 3] 4]"
                     (z/of-string opts)
-                z/down z/down z/right; position at 2
-                pe/barf-forward)]
-    (is (= "[[1 2] 3 4]" (-> res z/root-string)))
-    (is (= "2" (-> res z/string)))))))
+                    z/down z/down z/right; position at 2
+                    pe/barf-forward)]
+        (is (= "[[1 2] 3 4]" (-> res z/root-string)))
+        (is (= "2" (-> res z/string)))))))
 
 (deftest barf-forward-on-elem-with-children
   (doseq [opts zipper-opts]
@@ -565,7 +562,6 @@ First line
          (-> (z/of-string "(\"Hello World\")" {:track-position? true})
              (pe/split-at-pos {:row 1 :col 9})
              z/root-string))))
-
 
 (deftest join-simple
   (doseq [opts zipper-opts]
