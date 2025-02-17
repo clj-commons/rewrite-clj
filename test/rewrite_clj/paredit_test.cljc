@@ -9,9 +9,12 @@
 
 (def zipper-opts [{} {:track-position? true}])
 
+(defn- zipper-opts-desc [opts]
+  (str "zipper opts " opts))
+
 (deftest kill-to-end-of-sexpr
   (doseq [opts zipper-opts]
-    (testing (str "opts " opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2 3 4]"
                     (z/of-string opts)
                     z/down z/right*
@@ -21,7 +24,7 @@
 
 (deftest kill-to-end-of-line
   (doseq [opts zipper-opts]
-    (testing (str "opts " opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2] ; useless comment"
                     (z/of-string opts)
                     z/right*
@@ -31,7 +34,7 @@
 
 (deftest kill-to-wipe-all-sexpr-contents
   (doseq [opts [{}] #_zipper-opts]
-    (testing (str "opts " opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2 3 4]"
                     (z/of-string opts)
                     z/down
@@ -41,7 +44,7 @@
 
 (deftest kill-to-wipe-all-sexpr-contents-in-nested-seq
   (doseq [opts zipper-opts]
-    (testing (str "opts " opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[[1 2 3 4]]"
                     (z/of-string opts)
                     z/down
@@ -51,7 +54,7 @@
 
 (deftest kill-when-left-is-sexpr
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2 3 4] 2"
                     (z/of-string opts)
                     z/right*
@@ -61,7 +64,7 @@
 
 (deftest kill-it-all
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2 3 4] 5"
                     (z/of-string opts)
                     pe/kill)]
@@ -117,7 +120,7 @@ First line
                 (pe/kill-at-pos {:row 1 :col 1}) z/root-string))))
 
 (deftest kill-one-at-pos
-  (let [sample "[10 20 30]" ]
+  (let [sample "[10 20 30]"]
     (is (= "[10 30]"
            (-> (z/of-string sample {:track-position? true})
                (pe/kill-one-at-pos {:row 1 :col 4}) ; at whitespace
@@ -169,7 +172,6 @@ First line
     (is (= "\" world\""
            (-> (pe/kill-one-at-pos sample {:row 1 :col 2}) z/root-string)))))
 
-
 (deftest kill-one-at-pos-in-multiline-string
   (let [sample (z/of-string "\"foo bar do\n lorem\"" {:track-position? true})]
     (is (= "\" bar do\n lorem\""
@@ -179,11 +181,9 @@ First line
     (is (= "\"foo bar \n lorem\""
            (-> (pe/kill-one-at-pos sample {:row 1 :col 10}) z/root-string)))))
 
-
-
 (deftest slurp-forward-and-keep-loc-rightmost
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[[1 2] 3 4]"
                     (z/of-string opts)
                     z/down z/down z/right
@@ -193,7 +193,7 @@ First line
 
 (deftest slurp-forward-and-keep-loc-leftmost
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[[1 2] 3 4]"
                     (z/of-string opts)
                     z/down z/down
@@ -203,7 +203,7 @@ First line
 
 (deftest slurp-forward-from-empty-sexpr
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[[] 1 2 3]"
                     (z/of-string opts)
                     z/down
@@ -213,7 +213,7 @@ First line
 
 (deftest slurp-forward-from-whitespace-node
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[[1 2] 3 4]"
                     (z/of-string opts)
                     z/down z/down z/right*
@@ -223,7 +223,7 @@ First line
 
 (deftest slurp-forward-nested
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[[[1 2]] 3 4]"
                     (z/of-string opts)
                     z/down z/down z/down
@@ -233,7 +233,7 @@ First line
 
 (deftest slurp-forward-nested-silly
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[[[[[1 2]]]] 3 4]"
                     (z/of-string opts)
                     z/down z/down z/down z/down z/down
@@ -243,7 +243,7 @@ First line
 
 (deftest slurp-forward-when-last-is-sexpr
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 [2 [3 4]] 5]"
                     (z/of-string opts)
                     z/down z/right z/down ;at 2
@@ -253,7 +253,7 @@ First line
 
 (deftest slurp-forward-keep-linebreak
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [sample "
 (let [dill]
   {:a 1}
@@ -267,7 +267,7 @@ First line
 
 (deftest slurp-forward-fully
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (is (= "[1 [2 3 4]]" (-> (z/of-string "[1 [2] 3 4]" opts)
                                z/down z/right z/down
                                pe/slurp-forward-fully
@@ -275,7 +275,7 @@ First line
 
 (deftest slurp-backward-and-keep-loc-leftmost
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2 [3 4]]"
                     (z/of-string opts)
                     z/down z/rightmost z/down
@@ -285,7 +285,7 @@ First line
 
 (deftest slurp-backward-and-keep-loc-rightmost
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2 [3 4]]"
                     (z/of-string opts)
                     z/down z/rightmost z/down z/rightmost
@@ -295,7 +295,7 @@ First line
 
 (deftest slurp-backward-from-empty-sexpr
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2 3 4 []]"
                     (z/of-string opts)
                     z/down z/rightmost
@@ -305,7 +305,7 @@ First line
 
 (deftest slurp-backward-nested
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2 [[3 4]]]"
                     (z/of-string opts)
                     z/down z/rightmost z/down z/down z/rightmost
@@ -315,7 +315,7 @@ First line
 
 (deftest slurp-backward-nested-silly
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2 [[[3 4]]]]"
                     (z/of-string opts)
                     z/down z/rightmost z/down z/down z/down z/rightmost
@@ -325,7 +325,7 @@ First line
 
 (deftest slurp-backward-keep-linebreaks-and-comments
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2 ;dill\n [3 4]]"
                     (z/of-string opts)
                     z/down z/rightmost z/down
@@ -334,7 +334,7 @@ First line
 
 (deftest slurp-backward-fully
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (is (= "[[1 2 3 4] 5]" (-> (z/of-string "[1 2 3 [4] 5]" opts)
                                  z/down z/rightmost z/left z/down
                                  pe/slurp-backward-fully
@@ -342,17 +342,17 @@ First line
 
 (deftest barf-forward-and-keep-loc
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
-  (let [res (-> "[[1 2 3] 4]"
+    (testing (zipper-opts-desc opts)
+      (let [res (-> "[[1 2 3] 4]"
                     (z/of-string opts)
-                z/down z/down z/right; position at 2
-                pe/barf-forward)]
-    (is (= "[[1 2] 3 4]" (-> res z/root-string)))
-    (is (= "2" (-> res z/string)))))))
+                    z/down z/down z/right; position at 2
+                    pe/barf-forward)]
+        (is (= "[[1 2] 3 4]" (-> res z/root-string)))
+        (is (= "2" (-> res z/string)))))))
 
 (deftest barf-forward-on-elem-with-children
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (doseq [[s next-count expected-string expected-root-string]
               [["((x) 1)"                1 "(x)"    "((x)) 1"]
                ["((x)1)"                 1 "(x)"    "((x)) 1"]
@@ -369,7 +369,7 @@ First line
 
 (deftest barf-forward-at-leftmost
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[[1 2 3] 4]"
                     (z/of-string opts)
                     z/down z/down
@@ -379,7 +379,7 @@ First line
 
 (deftest barf-forward-at-rightmost-moves-out-of-sexrp
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[[1 2 3] 4]"
                     (z/of-string opts)
                     z/down z/down z/rightmost; position at 3
@@ -389,7 +389,7 @@ First line
 
 (deftest barf-forward-at-rightmost-which-is-a-whitespace-haha
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[[1 2 3 ] 4]"
                     (z/of-string opts)
                     z/down z/down z/rightmost*; position at space at the end
@@ -399,7 +399,7 @@ First line
 
 (deftest barf-forward-at-when-only-one
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[[1] 2]"
                     (z/of-string opts)
                     z/down z/down
@@ -409,7 +409,7 @@ First line
 
 (deftest barf-backward-and-keep-current-loc
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 [2 3 4]]"
                     (z/of-string opts)
                     z/down z/rightmost z/down z/rightmost ; position at 4
@@ -419,7 +419,7 @@ First line
 
 (deftest barf-backward-at-leftmost-moves-out-of-sexpr
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 [2 3 4]]"
                     (z/of-string opts)
                     z/down z/rightmost z/down ; position at 2
@@ -429,7 +429,7 @@ First line
 
 (deftest wrap-around
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (is (= "(1)" (-> (z/of-string "1" opts) (pe/wrap-around :list) z/root-string)))
       (is (= "[1]" (-> (z/of-string "1" opts) (pe/wrap-around :vector) z/root-string)))
       (is (= "{1}" (-> (z/of-string "1" opts) (pe/wrap-around :map) z/root-string)))
@@ -437,7 +437,7 @@ First line
 
 (deftest wrap-around-keeps-loc
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "1"
                     (z/of-string opts)
                     (pe/wrap-around :list))]
@@ -445,7 +445,7 @@ First line
 
 (deftest wrap-around-keeps-newlines
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (is (= "[[1]\n 2]" (-> (z/of-string "[1\n 2]" opts)
                              z/down
                              (pe/wrap-around :vector)
@@ -453,7 +453,7 @@ First line
 
 (deftest wrap-around-fn
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (is (= "(-> (#(+ 1 1)))" (-> (z/of-string "(-> #(+ 1 1))" opts)
                                    z/down z/right
                                    (pe/wrap-around :list)
@@ -461,7 +461,7 @@ First line
 
 (deftest wrap-fully-forward-slurp
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (is (= "[1 [2 3 4]]"
              (-> (z/of-string "[1 2 3 4]" opts)
                  z/down z/right
@@ -470,7 +470,7 @@ First line
 
 (deftest splice-killing-backward
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> (z/of-string "(foo (let ((x 5)) (sqrt n)) bar)" opts)
                     z/down z/right z/down z/right z/right
                     pe/splice-killing-backward)]
@@ -479,7 +479,7 @@ First line
 
 (deftest splice-killing-forward
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> (z/of-string "(a (b c d e) f)" opts)
                     z/down z/right z/down z/right z/right
                     pe/splice-killing-forward)]
@@ -488,7 +488,7 @@ First line
 
 (deftest splice-killing-forward-at-leftmost
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> (z/of-string "(a (b c d e) f)" opts)
                     z/down z/right z/down
                     pe/splice-killing-forward)]
@@ -497,7 +497,7 @@ First line
 
 (deftest split
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2]"
                     (z/of-string opts)
                     z/down
@@ -507,7 +507,7 @@ First line
 
 (deftest split-includes-node-at-loc-as-left
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2 3 4]"
                     (z/of-string opts)
                     z/down z/right
@@ -517,7 +517,7 @@ First line
 
 (deftest split-at-whitespace
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2 3 4]"
                     (z/of-string opts)
                     z/down z/right z/right*
@@ -527,7 +527,7 @@ First line
 
 (deftest split-includes-comments-and-newlines
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [sexpr "
 [1 ;dill
  2 ;dall
@@ -547,7 +547,7 @@ First line
 
 (deftest split-when-only-one-returns-self
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (is (= "[1]" (-> (z/of-string "[1]" opts)
                        z/down
                        pe/split
@@ -563,10 +563,9 @@ First line
              (pe/split-at-pos {:row 1 :col 9})
              z/root-string))))
 
-
 (deftest join-simple
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [res (-> "[1 2] [3 4]"
                     (z/of-string opts)
                 ;z/down
@@ -577,7 +576,7 @@ First line
 
 (deftest join-with-comments
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (let [sexpr "
 [[1 2] ; the first stuff
  [3 4] ; the second stuff
@@ -593,7 +592,7 @@ First line
 
 (deftest join-strings
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (is (= "(\"Hello World\")" (-> (z/of-string "(\"Hello \" \"World\")" opts)
                                      z/down z/rightmost
                                      pe/join
@@ -601,7 +600,7 @@ First line
 
 (deftest raise
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (is (= "[1 3]"
              (-> (z/of-string "[1 [2 3 4]]" opts)
                  z/down z/right z/down z/right
@@ -610,7 +609,7 @@ First line
 
 (deftest move-to-prev-flat
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (is (= "(+ 2 1)" (-> "(+ 1 2)"
                            (z/of-string opts)
                            z/down
@@ -620,7 +619,7 @@ First line
 
 (deftest move-to-prev-when-prev-is-seq
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (is (= "(+ 1 (+ 2 3 4))" (-> "(+ 1 (+ 2 3) 4)"
                                    (z/of-string opts)
                                    z/down
@@ -630,7 +629,7 @@ First line
 
 (deftest move-to-prev-out-of-seq
   (doseq [opts zipper-opts]
-    (testing (str "opts" opts)
+    (testing (zipper-opts-desc opts)
       (is (= "(+ 1 4 (+ 2 3))" (-> "(+ 1 (+ 2 3) 4)"
                                    (z/of-string opts)
                                    z/down
