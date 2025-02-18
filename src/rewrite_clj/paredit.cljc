@@ -51,12 +51,10 @@
       (rest nodes)
       nodes)))
 
-
 (defn- remove-ws-or-comment [zloc]
   (if-not (ws/whitespace-or-comment? zloc)
     zloc
     (recur (z/remove* zloc))))
-
 
 (defn- create-seq-node
   "Creates a sequence node of given type `t` with node values of `v`"
@@ -75,23 +73,18 @@
 ;; Paredit functions
 ;;*****************************
 
-
-
-
 (defn kill
   "Kill all sibling nodes to the right of the current node in `zloc`.
 
   - `[1 2| 3 4] => [1 2|]`"
   [zloc]
   (let [left (z/left* zloc)]
-     (-> zloc
-         (u/remove-right-while (constantly true))
-         z/remove*
-         (#(if left
+    (-> zloc
+        (u/remove-right-while (constantly true))
+        z/remove*
+        (#(if left
             (global-find-by-node % (z/node left))
             %)))))
-
-
 
 (defn- kill-in-string-node [zloc pos]
   (if (= (z/string zloc) "\"\"")
@@ -121,8 +114,6 @@
               (z/insert-right* % (nd/newlines 1))
               %))))))
 
-
-
 (defn kill-at-pos
   "In string and comment aware kill
 
@@ -147,8 +138,6 @@
         :else                                                (kill candidate)))
     zloc))
 
-
-
 (defn- find-word-bounds
   [v col]
   (when (<= col (count v))
@@ -162,23 +151,20 @@
           count
           (+  col))]))
 
-
 (defn- remove-word-at
   [v col]
   (when-let [[start end] (find-word-bounds v col)]
     (str (subs v 0 start)
          (subs v end))))
 
-
-
 (defn- kill-word-in-comment-node [zloc pos]
   (let [col-bounds (-> zloc z/node meta :col)]
-  (-> zloc
-      (z/replace (-> zloc
-                     z/node
-                     :s
-                     (remove-word-at (- (:col pos) col-bounds))
-                     nd/comment-node)))))
+    (-> zloc
+        (z/replace (-> zloc
+                       z/node
+                       :s
+                       (remove-word-at (- (:col pos) col-bounds))
+                       nd/comment-node)))))
 
 (defn- kill-word-in-string-node [zloc pos]
   (let [bounds (-> zloc z/node meta)
@@ -186,15 +172,13 @@
         col (if (= 0 row-idx)
               (- (:col pos) (:col bounds))
               (:col pos))]
-  (-> zloc
-      (z/replace (-> zloc
-                     z/node
-                     :lines
-                     (update-in [row-idx]
-                                #(remove-word-at % col))
-                     nd/string-node)))))
-
-
+    (-> zloc
+        (z/replace (-> zloc
+                       z/node
+                       :lines
+                       (update-in [row-idx]
+                                  #(remove-word-at % col))
+                       nd/string-node)))))
 
 (defn kill-one-at-pos
   "In string and comment aware kill for one node/word at `pos` in `zloc`.
@@ -217,30 +201,26 @@
           kill-in-node? (not (and (= (:row pos) bounds-row)
                                   (<= (:col pos) bounds-col)))]
       (cond
-       (and kill-in-node? (string-node? candidate)) (kill-word-in-string-node candidate pos)
-       (and kill-in-node? (ws/comment? candidate)) (kill-word-in-comment-node candidate pos)
-       (not (z/leftmost? candidate)) (-> (z/remove candidate)
-                                         (global-find-by-node (-> candidate z/left z/node)))
-       :else (z/remove candidate)))
+        (and kill-in-node? (string-node? candidate)) (kill-word-in-string-node candidate pos)
+        (and kill-in-node? (ws/comment? candidate)) (kill-word-in-comment-node candidate pos)
+        (not (z/leftmost? candidate)) (-> (z/remove candidate)
+                                          (global-find-by-node (-> candidate z/left z/node)))
+        :else (z/remove candidate)))
     zloc))
-
 
 (defn- find-slurpee-up [zloc f]
   (loop [l (z/up zloc)
          n 1]
     (cond
-     (nil? l) nil
-     (not (nil? (f l))) [n (f l)]
-     (nil? (z/up l)) nil
-     :else (recur (z/up l) (inc n)))))
+      (nil? l) nil
+      (not (nil? (f l))) [n (f l)]
+      (nil? (z/up l)) nil
+      :else (recur (z/up l) (inc n)))))
 
 (defn- find-slurpee [zloc f]
   (if (empty-seq? zloc)
     [(f zloc) 0]
     (some-> zloc (find-slurpee-up f) reverse)))
-
-
-
 
 (defn slurp-forward
   "Pull in next right outer node (if none at first level, tries next etc) into
@@ -275,10 +255,9 @@
         num-slurps (some-> curr-slurpee (nodes-by-dir z/right) count inc)]
 
     (->> zloc
-          (iterate slurp-forward)
-          (take num-slurps)
-          last)))
-
+         (iterate slurp-forward)
+         (take num-slurps)
+         last)))
 
 (defn slurp-backward
   "Pull in prev left outer node (if none at first level, tries next etc) into
@@ -317,10 +296,9 @@
         num-slurps (some-> curr-slurpee (nodes-by-dir z/left) count inc)]
 
     (->> zloc
-          (iterate slurp-backward)
-          (take num-slurps)
-          last)))
-
+         (iterate slurp-backward)
+         (take num-slurps)
+         last)))
 
 (defn barf-forward
   "Push out the rightmost node of the current S-expression into outer right form.
@@ -339,12 +317,11 @@
         (-> barfee-loc
             (u/remove-left-while ws/whitespace-or-comment?)
             (u/remove-right-while ws/whitespace?)
-             u/remove-and-move-up
+            u/remove-and-move-up
             (z/insert-right (z/node barfee-loc))
             ((partial reduce z/insert-right) preserves)
             (#(or (global-find-by-node % (z/node zloc))
-                 (global-find-by-node % (z/node barfee-loc)))))))))
-
+                  (global-find-by-node % (z/node barfee-loc)))))))))
 
 (defn barf-backward
   "Push out the leftmost node of the current S-expression into outer left form.
@@ -366,7 +343,6 @@
             ((partial reduce z/insert-left) preserves)
             (#(or (global-find-by-node % (z/node zloc))
                   (global-find-by-node % (z/node barfee-loc)))))))))
-
 
 (defn wrap-around
   "Wrap current node with a given type `t` where `t` can be one of `:vector`, `:list`, `:set`, `:map` `:fn`.
@@ -396,7 +372,6 @@
   "See [[rewrite-clj.zip/splice]]"
   z/splice)
 
-
 (defn- splice-killing
   [zloc f]
   (if-not (z/up zloc)
@@ -425,7 +400,6 @@
       (-> zloc z/up z/remove)
       zloc)))
 
-
 (defn split
   "Split current s-sexpression in two at given node `zloc`
 
@@ -447,7 +421,6 @@
               (#(or (global-find-by-node % (z/node zloc))
                     (global-find-by-node % (last lefts))))))))))
 
-
 (defn- split-string [zloc pos]
   (let [bounds (-> zloc z/node meta)
         row-idx (- (:row pos) (:row bounds))
@@ -462,9 +435,8 @@
                         (update-in [row-idx] #(subs % 0 split-col)))))
         (z/insert-right (nd/string-node
                          (-> (drop row-idx lines)
-                               vec
+                             vec
                              (update-in [0] #(subs % split-col))))))))
-
 
 (defn split-at-pos
   "In string aware split
@@ -486,20 +458,19 @@
 
 (defn- join-seqs [left right]
   (let [lefts (-> left z/node nd/children)
-            ws-nodes (-> (z/right* left) (nodes-by-dir z/right* ws/whitespace-or-comment?))
-            rights (-> right z/node nd/children)]
+        ws-nodes (-> (z/right* left) (nodes-by-dir z/right* ws/whitespace-or-comment?))
+        rights (-> right z/node nd/children)]
 
-        (-> right
-            z/remove*
-            remove-ws-or-comment
-            z/up
-            (z/insert-left (create-seq-node :vector
-                                            (concat lefts
-                                                    ws-nodes
-                                                    rights)))
-            z/remove
-            (global-find-by-node (first rights)))))
-
+    (-> right
+        z/remove*
+        remove-ws-or-comment
+        z/up
+        (z/insert-left (create-seq-node :vector
+                                        (concat lefts
+                                                ws-nodes
+                                                rights)))
+        z/remove
+        (global-find-by-node (first rights)))))
 
 (defn- join-strings [left right]
   (-> right
@@ -517,14 +488,12 @@
   (let [left (some-> zloc z/left)
         right (if (some-> zloc z/node nd/whitespace?) (z/right zloc) zloc)]
 
-
     (if-not (and left right)
       zloc
       (cond
-       (and (z/seq? left) (z/seq? right)) (join-seqs left right)
-       (and (string-node? left) (string-node? right)) (join-strings left right)
-       :else zloc))))
-
+        (and (z/seq? left) (z/seq? right)) (join-seqs left right)
+        (and (string-node? left) (string-node? right)) (join-strings left right)
+        :else zloc))))
 
 (defn raise
   "Delete siblings and raise node at zloc one level up
@@ -535,7 +504,6 @@
     (-> containing
         (z/replace (z/node zloc)))
     zloc))
-
 
 (defn move-to-prev
   "Move node at current location to the position of previous location given a depth first traversal
