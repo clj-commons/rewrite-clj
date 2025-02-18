@@ -71,7 +71,8 @@
                                                         ;; we rely on clj-kondo for that
                                                         :ignored-faults {:deprecations {rewrite-clj.regression-test true
                                                                                         rewrite-clj.zip.whitespace-test true
-                                                                                        rewrite-clj.zip-test true}}}]}
+                                                                                        rewrite-clj.zip-test true
+                                                                                        rewrite-clj.paredit-test true}}}]}
 
            ;;
            ;; Test support

@@ -2,7 +2,8 @@
   "Paredit zipper operations for Clojure/ClojureScript/EDN.
 
   You might find inspiration from examples here: http://pub.gajendra.net/src/paredit-refcard.pdf"
-  (:require [rewrite-clj.custom-zipper.utils :as u]
+  (:require [rewrite-clj.custom-zipper.core :as zraw]
+            [rewrite-clj.custom-zipper.utils :as u]
             [rewrite-clj.node :as nd]
             [rewrite-clj.zip :as z]
             [rewrite-clj.zip.findz :as fz]
@@ -15,8 +16,34 @@
 ;; Helpers
 ;;*****************************
 
+(defn- take-upto
+  ;; taken from weavejester/medley
+  "Returns a lazy sequence of successive items from coll up to and including
+  the first item for which `(pred item)` returns true. Returns a transducer
+  when no collection is provided."
+  ([pred]
+   (fn [rf]
+     (fn
+       ([] (rf))
+       ([result] (rf result))
+       ([result x]
+        (let [result (rf result x)]
+          (if (pred x)
+            (ensure-reduced result)
+            result))))))
+  ([pred coll]
+   (lazy-seq
+    (when-let [s (seq coll)]
+      (let [x (first s)]
+        (cons x (when-not (pred x) (take-upto pred (rest s)))))))))
+
+;; TODO: because we skip over comments, we will consider a seq with comments as empty
+;; And a seq with whitespace as empty
 (defn- empty-seq? [zloc]
-  (and (z/seq? zloc) (not (seq (z/sexpr zloc)))))
+  (and (z/seq? zloc)
+       (not (z/down zloc))
+       ;; TODO: why do I need this extra test?
+       (not (some-> zloc z/down z/right))))
 
 (defn- move-n [loc f n]
   (if (= 0 n)
@@ -57,6 +84,12 @@
            f
            (nodes-by-dir f ws/whitespace-or-comment?))
        (filterv #(or (nd/linebreak? %) (nd/comment? %)))))
+
+(defn- nav-via [zloc fns]
+  (reduce (fn [zloc f]
+            (f zloc))
+          zloc
+          fns))
 
 (defn- remove-first-if-ws [nodes]
   (when (seq nodes)
@@ -232,97 +265,288 @@
             (z/remove candidate))))
     zloc))
 
-(defn- find-slurpee-up [zloc f]
-  (loop [l (z/up zloc)
-         n 1]
-    (cond
-      (nil? l) nil
-      (not (nil? (f l))) [n (f l)]
-      (nil? (z/up l)) nil
-      :else (recur (z/up l) (inc n)))))
+(defn- find-slurp-locs-up
+  "Return map with
+  - `:sluper-loc` - found sequence to slurp into
+  - `:slurpee-loc` - found node that we will slurp
+  - `:route` - vector of fns to navigate from slurper-loc to zloc"
+  [zloc f]
+  (let [ups (->> zloc
+                 z/up
+                 (iterate z/up)
+                 (take-while z/up)
+                 (take-while identity)
+                 (take-upto f))]
+    (when-let [slurpee-loc (-> ups last f)]
+      (let [slurper-loc (last ups)
+            route (->> ups
+                      reverse
+                      rest
+                      (mapcat (fn [uzloc]
+                                (apply conj
+                                       [z/down*]
+                                       (repeat (-> uzloc zraw/lefts count) z/right*))))
+                      (into []))
+            route (apply conj route
+                         z/down* (repeat (-> zloc zraw/lefts count) z/right*))]
+        {:slurper-loc slurper-loc :slurpee-loc slurpee-loc :route route}))))
 
-(defn- find-slurpee [zloc f]
+(defn- find-slurp-locs [zloc f {:keys [from]}]
+  ;; if slurping into an empty sequence
+  (if (and (= :current from) (z/seq? zloc) (f zloc))
+    {:slurper-loc zloc :slurpee-loc (f zloc) :route []}
+    (some-> zloc (find-slurp-locs-up f))))
+
+(defn ^{:added "1.1.50"} slurp-forward-into
+  "Return `zloc` with node to the right of nearest eligible sequence slurped into that sequence else `zloc` unchanged.
+
+  Optional `opts` specify:
+  - `:from`
+    - `:parent` (default) starts search from parent of `zloc` then upward
+    - `:current` starts search from `zloc` then upward to allow slurping into empty sequences
+
+  Generic behavior:
+  - `[1 [2 |3 4] 5 6] => [1 [2 |3 4 5] 6]` Slurp into parent
+  - `[[[|1 2]]] 3   => [[[|1 2]] 3]` Slurp into ancestor
+
+  With `:from :current`:
+  - `[[1 |[]]] 2 3 => [[1 |[]] 2] 3` Slurp into ancestor (same as generic behavior)
+  - `[1 |[]] 2 3 => [1 |[] 2] 3` Slurp into parent
+  - `[1 |[] 2] 3 => [1 |[2]] 3` Slurp into current empty sequence
+  - `[1 |[2]] 3  => [1 |[2] 3]` Slurp into parent
+  - `[1 |[2] 3]  => [1 |[2 3]]` Slurp into current non-empty sequence
+
+  With `:from :parent` (default):
+  - `[[1 |[]]] 2 3 => [[1 |[]] 2] 3` Slurp into ancestor (same as generic behavior)
+  - `[1 |[]] 2 3 => [1 |[] 2] 3` Slurp into parent
+  - `[1 |[] 2] 3 => [1 |[] 2 3]` Slurp into parent"
+  ([zloc]
+   (slurp-forward-into zloc {:from :parent}))
+  ([zloc opts]
+   (let [{:keys [slurper-loc slurpee-loc route]} (find-slurp-locs zloc z/right opts)]
+     (if-not slurper-loc
+       zloc
+       (let [also-slurp (linebreak-and-comment-nodes slurper-loc z/right*)
+             also-slurp (if (and (seq also-slurp) (nd/comment? (first also-slurp)))
+                          (into [(nd/spaces 1)] also-slurp)
+                          also-slurp)]
+         (-> slurper-loc
+             (u/remove-right-while ws/whitespace-or-comment?)  ;; remove ws lb comments before slurpee
+             u/remove-right                                    ;; remove slurpee
+             (reduce-into-zipper z/append-child* also-slurp)   ;; slurp in saved linebreaks and comments
+             (z/append-child (z/node slurpee-loc))             ;; slurp in slurpee
+             (nav-via route)))))))
+
+(defn ^{:deprecated "1.1.49"} slurp-forward
+  "DEPRECATED: we recommend [[slurp-forward-into]] instead for more control.
+
+  Return `zloc` with node to the right of nearest eligible sequence slurped into that sequence else `zloc` unchanged.
+
+  If there is no node to the right of parent sequence, searches upward until it finds one, if any.
+
+  - `[1 [2 |3 4] 5 6] => [1 [2 |3 4 5] 6]`
+  - `[[[|1 2 3]]] 4` => [[[|1 2 3 ]]] 4]
+  - `[1 2 |[3] 4] 5 => [1 2 |[3] 4 5]`
+
+  If located at an empty seq will ultimately slurp into that empty seq and locate to the slurped node:
+
+  - `[1 2 |[]] 3` => `[1 2 |[] 3]`
+  - `[1 2 |[] 3] => [1 2 [|3]]`"
+  [zloc]
   (if (empty-seq? zloc)
-    [(f zloc) 0]
-    (some-> zloc (find-slurpee-up f) reverse)))
+    (let [zloc (slurp-forward-into zloc {:from :current})]
+      (if (not (empty-seq? zloc))
+        (z/down zloc)
+        zloc))
+    (slurp-forward-into zloc {:from :parent})))
 
-(defn slurp-forward
-  "Pull in next right outer node (if none at first level, tries next etc) into
-  current S-expression
+(defn ^{:added "1.1.50"} slurp-forward-fully-into
+  "Return `zloc` with all right sibling nodes of nearest eligible sequence slurped into that sequence else `zloc` unchanged.
 
-  - `[1 2 [|3] 4 5] => [1 2 [|3 4] 5]`"
+  See also [[slurp-forward-into]].
+
+  Optional `opts` specify:
+  - `:from`
+    - `:parent` (default) starts search from parent of `zloc` then upward
+    - `:current` starts search from `zloc` then upward to allow slurping into empty sequences
+
+  Generic behavior:
+  - `[1 [2 |3 4] 5 6] 7 => [1 [2 |3 4 5 6]] 7` Slurp from parent
+  - `[[[|1 2]] 3 4] 5   => [[[|1 2 3 5]]] 5` Slurp from ancestor
+
+  With `:from :current`:
+  - `[1 |[] 2 3] 4 5 => [1 |[2 3]] 4 5` Slurp into current empty sequence
+  - `[1 |[2 3]] 4 5  => [1 |[2 3 4 5]]` Slurp into current non-empty sequence
+
+  With `:from :parent` (default):
+  - `[[1 |[]] 2 3] 4 5 => [[1 |[] 2 3] 4 5` Slurp into parent"
+  ([zloc]
+   (slurp-forward-fully-into zloc {:from :parent}))
+  ([zloc opts]
+   (let [{:keys [slurpee-loc route]} (find-slurp-locs zloc z/right opts)]
+     (if (not slurpee-loc)
+       zloc
+       (let [n-siblings (->> slurpee-loc
+                             (iterate z/right)
+                             (take-while identity)
+                             count)
+             n-downs (->> route
+                          (filter #(= z/down* %))
+                          count)
+             n-slurps (if (and (= :current (:from opts)) (z/seq? zloc))
+                        (* (inc n-downs) n-siblings)
+                        (* n-downs n-siblings))]
+         (->> zloc
+              (iterate #(slurp-forward-into % opts))
+              (take (inc n-slurps))
+              last))))))
+
+
+(defn ^{:deprecated "1.1.49"} slurp-forward-fully
+  "DEPRECATED: We recommend [[slurp-forward-fully-into]]] for more control.
+
+  Return `zloc` with all right sibling nodes of nearest eligible sequence slurped into that sequence else `zloc` unchanged.
+
+  Fully pull in first slurpable and all of its right siblings.
+
+  - `[1 2 [|3] 4 5] 6  => [1 2 [|3 4 5]] 6`
+  - `[[[|1 2]] 3 4] 5  => [[[|1 2 3 5]]] 5` Slurp from ancestor
+
+
+  If located at an empty seq will ultimately slurp into that empty seq and locate to the first slurped node.
+
+  - `[[1 2 |[]] 3 4] 5 => [[1 2 [|3 4]]] 5`"
   [zloc]
-  (let [[slurpee-loc n-ups] (find-slurpee zloc z/right)]
-    (if-not slurpee-loc
-      zloc
-      (let [slurper-loc (move-n zloc z/up n-ups)
-            preserves (->> (-> slurper-loc
-                               z/right*
-                               (nodes-by-dir z/right* #(not (= (z/node slurpee-loc) (z/node %)))))
-                           (filter #(or (nd/linebreak? %) (nd/comment? %))))]
-        (-> slurper-loc
-            (u/remove-right-while ws/whitespace-or-comment?)
-            u/remove-right
-            ((partial reduce z/append-child) preserves)
-            (z/append-child (z/node slurpee-loc))
-            (#(if (empty-seq? zloc)
-                (-> % z/down (u/remove-left-while ws/whitespace?))
-                (global-find-by-node % (z/node zloc)))))))))
+  (if (empty-seq? zloc)
+    (let [zloc (slurp-forward-fully-into zloc {:from :current})]
+      (if (not (empty-seq? zloc))
+        (-> zloc z/down)
+        zloc))
+    (slurp-forward-fully-into zloc {:from :parent})))
 
-(defn slurp-forward-fully
-  "Pull in all right outer-nodes into current S-expression, but only the ones at the same level
-  as the the first one.
+(defn ^{:added "1.1.50"} slurp-backward-into
+  "Returns `zloc` with node to the left of nearest eligible sequence slurped into that sequence else `zloc` unchanged.
 
-  - `[1 2 [|3] 4 5] => [1 2 [|3 4 5]]`"
+  Optional `opts` specify:
+  - `:from`
+    - `:parent` (default) starts search from parent of `zloc` then upward
+    - `:current` starts search from `zloc` then upward to allow slurping into empty sequences
+
+  Generic behavior:
+  - `[1 2 [3 |4 5] 6] => [1 [2 |3 4 5] 6]` Slurp into parent
+  - `1 [[[|2 3]]]   => [1[[|2 3]]]` Slurp into ancestor
+
+  With `:from :current`:
+  - `1 2 [[|[] 3]] => 1 [2 [3 |[]]]` Slurp into ancestor (same as generic behavior)
+  - `1 2 [|[] 3]   => 1 [2 |[] 3]` Slurp into parent
+  - `1 [2 |[] 3]   => 1 [|[2] 3]` Slurp into current empty sequence
+  - `1 [|[2] 3]    => [1 |[2] 3]` Slurp into parent
+  - `[1 |[2] 3]    => [|[1 2] 3]` Slurp into current non-empty sequence
+
+  With `:from :parent` (default):
+  - `1 2 [[3 |[]]] => 1 [2 [3 |[]]]` Slurp into ancestor (same as generic behavior)
+  - `1 2 [|[] 3]   => 1 [2 |[] 3]` Slurp into parent
+  - `1 [2 |[] 3]   => [1 2 |[] 3]` Slurp into parent"
+  ([zloc]
+   (slurp-backward-into zloc {:from :parent}))
+  ([zloc opts]
+   (let [{:keys [slurper-loc slurpee-loc route]} (find-slurp-locs zloc z/left opts)]
+     (if (not slurper-loc)
+       zloc
+       (let [also-slurp (linebreak-and-comment-nodes slurper-loc z/left*)
+             route (if (seq route)
+                     ;; compensate for inserted item, we need to skip over it
+                     (apply conj [(first route)] z/right (rest route))
+                     route)]
+         (-> slurper-loc
+             (u/remove-left-while ws/whitespace-or-comment?)
+             u/remove-left
+             (reduce-into-zipper z/insert-child* also-slurp)
+             (z/insert-child (z/node slurpee-loc))
+             (nav-via route)))))))
+
+(defn ^{:deprecated "1.1.49"} slurp-backward
+  "DEPRECATED: we recommend [[slurp-backward-into]] for more control.
+
+  Returns `zloc` with node to the left of nearest eligible sequence slurped into that sequence else `zloc` unchanged.
+
+  Pull in the node to right of the current node's parent sequence.
+  If there is no node to the right of parent sequence, searches upward until it finds one, if any.
+
+  - `[1 2 [3 |4 5] 6] => [1 [2 3 |4 5] 6]`
+  - `1 [[[|2 3 4]]]   => [1 [[|1 2 3 ]]]`
+  - `[1 2 |[3] 4] 5   => [1 2 |[3] 4 5]`
+
+  If located at an empty seq will ultimately slurp into that empty seq and locate to the slurped node:
+
+  - `1 [|[] 2 3]  => [1 |[] 2 3]`
+  - `[1 |[] 2 3]  => [|[1] 2 3]`"
   [zloc]
-  (let [curr-slurpee (some-> zloc (find-slurpee z/right) first)
-        num-slurps (some-> curr-slurpee (nodes-by-dir z/right) count inc)]
+  (if (empty-seq? zloc)
+    (let [zloc (slurp-backward-into zloc {:from :current})]
+      (if (not (empty-seq? zloc))
+        (z/down zloc)
+        zloc))
+    (slurp-backward-into zloc {:from :parent})))
 
-    (->> zloc
-         (iterate slurp-forward)
-         (take num-slurps)
-         last)))
+(defn ^{:added "1.1.50"} slurp-backward-fully-into
+  "Returns `zloc` with all left sibling nodes of nearest eligible sequnece slurped into that sequence else `zloc`
 
-(defn slurp-backward
-  "Pull in prev left outer node (if none at first level, tries next etc) into
-  current S-expression
+  See also [[slurp-backward-into]].
 
-  - `[1 2 [|3] 4 5] => [1 [2 |3] 4 5]`"
+  Optional `opts` specify:
+  - `:from`
+    - `:parent` (default) starts search from parent of `zloc` then upward
+    - `:current` starts search from `zloc` then upward to allow slurping into empty sequences
+
+  Generic behavior:
+  - `1 [2 3 [4 |5 6] 7] => 1 [[2 3 4 |5 6] 7]` Slurp from parent
+  - `1 [2 3 [[|4 5]]]   => 1 [[[2 3 |4 5]]]` Slurp from ancestor
+
+  With `:from :current`:
+  - `1 2 [3 4 |[] 5] => 1 2 [|[3 4] 5]` Slurp into current empty sequence
+  - `1 2 [|[3 4] 5]  => [|[1 2 3 4] 5]` Slurp into current non-empty sequence
+
+  With `:from :parent` (default):
+  - `1 2 [[|[]] 3 4]  => [[1 2 |[] 2 3]` Slurp into parent"
+  ([zloc]
+   (slurp-backward-fully-into zloc {:from :parent}))
+  ([zloc opts]
+   (let [{:keys [slurpee-loc route]} (find-slurp-locs zloc z/left opts)]
+     (if (not slurpee-loc)
+       zloc
+       (let [n-siblings (->> slurpee-loc
+                             (iterate z/left)
+                             (take-while identity)
+                             count)
+             n-downs (->> route
+                          (filter #(= z/down* %))
+                          count)
+             n-slurps (if (and (= :current (:from opts)) (z/seq? zloc))
+                        (* (inc n-downs) n-siblings)
+                        (* n-downs n-siblings))]
+          (->> zloc
+              (iterate #(slurp-backward-into % opts))
+              (take (inc n-slurps))
+              last))))))
+
+(defn ^{:deprecated "1.1.49"} slurp-backward-fully
+  "DEPRECATED: We recommend instead [[slurp-backward-fully-into]] for more control.
+
+  Returns `zloc` with all left sibling nodes of nearest eligible sequnece slurped into that sequence else `zloc`.
+
+  - `1 [2 3 [|4] 5 6] => 1 [[2 3 |4] 5 6]`
+
+  If located at an empty seq will ultimately slurp into that empty seq and locate to the first slurped node.
+
+  - `1 [[2 3 |[]] 4 5] => 1 [[[|2 3]] 4 5]`"
   [zloc]
-  (if-let [[slurpee-loc _] (find-slurpee zloc z/left)]
-    (let [preserves (->> (-> slurpee-loc
-                             z/right*
-                             (nodes-by-dir z/right* ws/whitespace-or-comment?))
-                         (filter #(or (nd/linebreak? %) (nd/comment? %))))]
-      (-> slurpee-loc
-          (u/remove-left-while ws/whitespace-not-linebreak?)
-          (#(if (and (z/left slurpee-loc)
-                     (not (ws/linebreak? (z/left* %))))
-              (ws/insert-space-left %)
-              %))
-          (u/remove-right-while ws/whitespace-or-comment?)
-          z/remove*
-          z/next
-          ((partial reduce z/insert-child) preserves)
-          (z/insert-child (z/node slurpee-loc))
-          (#(if (empty-seq? zloc)
-              (-> % z/down (u/remove-right-while ws/linebreak?))
-              (global-find-by-node % (z/node zloc))))))
-    zloc))
-
-(defn slurp-backward-fully
-  "Pull in all left outer-nodes into current S-expression, but only the ones at the same level
-  as the the first one.
-
-  - `[1 2 [|3] 4 5] => [[1 2 |3] 4 5]`"
-  [zloc]
-  (let [curr-slurpee (some-> zloc (find-slurpee z/left) first)
-        num-slurps (some-> curr-slurpee (nodes-by-dir z/left) count inc)]
-
-    (->> zloc
-         (iterate slurp-backward)
-         (take num-slurps)
-         last)))
+  (if (empty-seq? zloc)
+    (let [zloc (slurp-backward-fully-into zloc {:from :current})]
+      (if (not (empty-seq? zloc))
+        (-> zloc z/down)
+        zloc))
+    (slurp-backward-fully-into zloc {:from :parent})))
 
 (defn barf-forward
   "Push out the rightmost node of the current S-expression into outer right form.
@@ -390,7 +614,8 @@
   (-> zloc
       (z/insert-left (create-seq-node t nil))
       z/left
-      slurp-forward-fully))
+      (slurp-forward-fully-into {:from :current})
+      z/down))
 
 (def splice
   "See [[rewrite-clj.zip/splice]]"
