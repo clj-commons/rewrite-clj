@@ -446,19 +446,22 @@
                              (update-in [0] #(subs % split-col))))))))
 
 (defn split-at-pos
-  "In string aware split
-
-  Perform split at given position `pos` Like split, but if inside string splits string into two strings.
+  "In-string aware split. Returns `zloc` with node found at `pos` split.
+  If `pos` is inside a string, splits string into two strings else calls [[split]].
 
   - `zloc` location is (inclusive) starting point for `pos` depth-first search
   - `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are
   1-based and relative to the start of the source code the zipper represents.
 
-  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking)."
+  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking).
+
+  - `[1 2 |3 4 5]       => [1 2 |3] [4 5]`
+  - `(\"Hello |World\") => (|\"Hello\" \"World\")`"
   [zloc pos]
   (if-let [candidate (z/find-last-by-pos zloc pos)]
-    (let [pos (fz/pos-as-map pos)]
-      (if (string-node? candidate)
+    (let [pos (fz/pos-as-map pos)
+          candidate-pos (fz/pos-as-map (-> candidate z/position fz/pos-as-map))]
+      (if (and (string-node? candidate) (not= pos candidate-pos))
         (split-string candidate pos)
         (split candidate)))
     zloc))

@@ -213,8 +213,11 @@
 (deftest split-at-pos-test
   ;; for this pos fn test, ⊚ in `s` represents character row/col the the `pos`
   ;; ⊚ in `expected` is at zipper node granularity
-  (doseq [[s                              expected]
-          [["(\"Hello ⊚World\")"          "(⊚\"Hello \" \"World\")"]]]
+  (doseq [[s                                       expected]
+          [["(\"Hello ⊚World\" 42)"                "(⊚\"Hello \" \"World\" 42)"]
+           ["(\"⊚Hello World\" 101)"               "(⊚\"\" \"Hello World\" 101)"]
+           ["(\"H⊚ello World\" 101)"               "(⊚\"H\" \"ello World\" 101)"]
+           ["(⊚\"Hello World\" 101)"               "(⊚\"Hello World\") (101)"]]]
     (let [{:keys [pos s]} (th/pos-and-s s)
           zloc (z/of-string* s {:track-position? true})]
       (doseq [pos [pos [(:row pos) (:col pos)]]]
