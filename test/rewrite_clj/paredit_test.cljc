@@ -58,25 +58,34 @@
   ;; for this pos fn test, ⊚ in `s` represents character row/col the the `pos`
   ;; ⊚ in `expected` is at zipper node granularity
   (doseq [[s                              expected]
-          [["[10⊚ 20 30]"                 "[⊚10 30]"]
+          [["(+ ⊚100 200)"                "(⊚+ 200)"]
+           ["(foo ⊚(bar do))"             "(⊚foo)"]
+           ["[10⊚ 20 30]"                 "[⊚10 30]"]      ;; searches forward for node
            ["[10 ⊚20 30]"                 "[⊚10 30]"]
-           ["[[10]⊚ 20 30]"               "[⊚[10] 30]"]
-           ["[[10] ⊚20 30]"               "[⊚[10] 30]"]
+           ["[[10]⊚ 20 30]"               "[⊚[10] 30]"]    ;; searches forward for node
+           ["[[10] ⊚20 30]"               "[⊚[10] 30]"]    ;; navigates left after delete when possible
+           ["[10] [⊚20 30]"               "[10] ⊚[30]"]
            ["[⊚10\n 20\n 30]"             "⊚[20\n 30]"]
            ["[10\n⊚ 20\n 30]"             "[⊚10\n 30]"]
            ["[10\n 20\n⊚ 30]"             "[10\n ⊚20]"]
+           ["[⊚10 20 30]"                 "⊚[20 30]"]
+           ["⊚[10 20 30]"                 "◬"]
+
            ;; in comment
-           ["; hello⊚ world"              "⊚; hello "]
-           ["; hello ⊚world"              "⊚; hello "]
-           ["; hello worl⊚d"              "⊚; hello "]
-           [";⊚ hello world"              "⊚;  world"]
+           ["; hello⊚ world"              "⊚; hello world"]   ;; only kill word if word spans pos
+           ["; hello ⊚world"              "⊚; hello "]        ;; at w of world, kill it
+           ["; ⊚hello world"              "⊚;  world"]        ;; at h of hello, kill it
+           ["; hello worl⊚d"              "⊚; hello "]        ;; at d of world, kill it
+           [";⊚ hello world"              "⊚; hello world"]   ;; not in any word, no-op          ;;
+
            ;; in string
-           ["\"hello⊚ world\""            "⊚\"hello \""]
+           ["\"hello⊚ world\""            "⊚\"hello world\""] ;; not in word, no-op
            ["\"hello ⊚world\""            "⊚\"hello \""]
            ["\"hello worl⊚d\""            "⊚\"hello \""]
            ["\"⊚hello world\""            "⊚\" world\""]
            ["\"⊚foo bar do\n lorem\""     "⊚\" bar do\n lorem\""]
-           ["\"foo bar do\n⊚ lorem\""     "⊚\"foo bar do\n \""]
+           ["\"foo bar do\n⊚ lorem\""     "⊚\"foo bar do\n lorem\""] ;; not in word, no-op
+           ["\"foo bar do\n ⊚lorem\""     "⊚\"foo bar do\n \""]
            ["\"foo bar ⊚do\n lorem\""     "⊚\"foo bar \n lorem\""]]]
     (let [{:keys [pos s]} (th/pos-and-s s)
           zloc (z/of-string* s {:track-position? true})]

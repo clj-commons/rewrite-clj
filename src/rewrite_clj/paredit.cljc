@@ -6,6 +6,7 @@
             [rewrite-clj.node :as nd]
             [rewrite-clj.zip :as z]
             [rewrite-clj.zip.findz :as fz]
+            [rewrite-clj.zip.removez :as rz]
             [rewrite-clj.zip.whitespace :as ws]))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -146,26 +147,36 @@
     zloc))
 
 (defn- find-word-bounds
-  [v col]
-  (when (<= col (count v))
-    [(->> (seq v)
+  "Return `[start-col end-col]` of word spanning 1-based `col` in `s`.
+  Else nil if `col` is not in a word."
+  [s col]
+  (when (and (> col 0)
+             (<= col (count s))
+             (not (#{\space \newline} (nth s (dec col)))))
+    [(->> s
           (take col)
           reverse
-          (take-while #(not (= % \space))) count (- col))
-     (->> (seq v)
+          (take-while #(not (= % \space)))
+          count
+          (- col)
+          inc)
+     (->> s
           (drop col)
           (take-while #(not (or (= % \space) (= % \newline))))
           count
           (+  col))]))
 
 (defn- remove-word-at
-  [v col]
-  (when-let [[start end] (find-word-bounds v col)]
-    (str (subs v 0 start)
-         (subs v end))))
+  "Return `s` with word at 1-based `col` removed.
+  If no word at `col` returns `s` unchanged"
+  [s col]
+  (if-let [[start end] (find-word-bounds s col)]
+    (str (subs s 0 (dec start))
+         (subs s end))
+    s))
 
 (defn- kill-word-in-comment-node [zloc pos]
-  (let [col-bounds (-> zloc z/node meta :col)]
+  (let [col-bounds (-> zloc z/position fz/pos-as-map :col)]
     (-> zloc
         (z/replace (-> zloc
                        z/node
@@ -174,7 +185,7 @@
                        nd/comment-node)))))
 
 (defn- kill-word-in-string-node [zloc pos]
-  (let [bounds (-> zloc z/node meta)
+  (let [bounds (-> zloc z/position fz/pos-as-map)
         row-idx (- (:row pos) (:row bounds))
         col (if (= 0 row-idx)
               (- (:col pos) (:col bounds))
@@ -188,31 +199,37 @@
                        nd/string-node)))))
 
 (defn kill-one-at-pos
-  "In string and comment aware kill for one node/word at `pos` in `zloc`.
+  "Return `zloc` with node/word found at `pos` removed.
 
-  - `zloc` location is (inclusive) starting point for `pos` depth-first search
-  - `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are
+  If `pos` is:
+  - inside a string or comment, removes word at `pos`, if at whitespace, no-op.
+  - otherwise removes node and moves left, or if no left node removes via [[rewrite-clj.zip/remove]].
+  If `pos` locates to whitespace between nodes, skips right to find node.
+
+  `zloc` location is (exclusive) starting point for `pos` search
+  `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are
   1-based and relative to the start of the source code the zipper represents.
 
   Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking).
 
-  - `(+ |100 100) => (+ |100)`
-  - `(for |(bar do)) => (foo)`
+  - `(+ |100 200)     => (|+ 200)`
+  - `(foo |(bar do))  => (foo)`
+  - `[|10 20 30]`     => |[20 30]`
   - `\"|hello world\" => \"| world\"`
-  - ` ; |hello world => ;  |world`"
+  - `; |hello world   => ;  |world`"
   [zloc pos]
   (if-let [candidate (->> (z/find-last-by-pos zloc pos)
                           (ws/skip z/right* ws/whitespace?))]
     (let [pos (fz/pos-as-map pos)
-          [bounds-row bounds-col] (z/position candidate)
-          kill-in-node? (not (and (= (:row pos) bounds-row)
-                                  (<= (:col pos) bounds-col)))]
+          candidate-pos (-> candidate z/position fz/pos-as-map)
+          kill-in-node? (not (and (= (:row pos) (:row candidate-pos))
+                                  (<= (:col pos) (:col candidate-pos))))]
       (cond
         (and kill-in-node? (string-node? candidate)) (kill-word-in-string-node candidate pos)
         (and kill-in-node? (ws/comment? candidate)) (kill-word-in-comment-node candidate pos)
-        (not (z/leftmost? candidate)) (-> (z/remove candidate)
-                                          (global-find-by-node (-> candidate z/left z/node)))
-        :else (z/remove candidate)))
+        :else
+        (or (rz/remove-and-move-left candidate)
+            (z/remove candidate))))
     zloc))
 
 (defn- find-slurpee-up [zloc f]
