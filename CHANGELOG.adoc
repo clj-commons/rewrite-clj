@@ -37,6 +37,38 @@ A release with known breaking changes is marked with:
 {issue}350[#350] ({lread})
 ** `kill-one-at-pos` word deletion in string/comment off-by-one error fixed
 {issue}343[#343] ({lread})
+** Address design flaw of `slurp` functions
++
+|===
+| Deprecated | Replacement
+
+| `slurp-forward`
+| `slurp-forward-into`
+
+| `slurp-forward-fully`
+| `slurp-forward-fully-into`
+
+| `slurp-backward`
+| `slurp-backward-into`
+
+| `slurp-backward-fully`
+| `slurp-backward-fully-into`
+|===
+{issue}339[#339] ({lread})
+** stop adding space char when preserving slurped newlines
+{issue}345[#345] ({lread})
+** review ambiguous `-slurp-`*`-fully` fn behaviour
+{issue}341[#341] ({lread})
+** when slurping don't consider a node with `#_ uneval` nodes empty
+{issue}338[#338] ({lread})
+** when slurping don't throw on rewrite-clj parseable, but invalid clojure, i.e., `{:a}`
+{issue}336[#336] ({lread})
+** slurping forward fully no longer throws when slurping into an empty seq that is the last item in a seq
+{issue}335[#335] ({lread})
+** slurping backward at empty-seq at start of a seq no longer throws
+{issue}334[#334] ({lread})
+** slurping forward now slurps when at empty seq at end of a seq
+{issue}333[#333] ({lread})
 
 === v1.1.49 - 2024-11-18 [[v1.1.49]]
 

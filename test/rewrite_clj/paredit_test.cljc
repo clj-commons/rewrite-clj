@@ -96,46 +96,181 @@
 (deftest slurp-forward-test
   (doseq [opts zipper-opts]
     (testing (zipper-opts-desc opts)
-      (doseq [[s                                       expected]
-              [["[[1 ⊚2] 3 4]"                         "[[1 ⊚2 3] 4]"]
-               ["[[⊚1 2] 3 4]"                         "[[⊚1 2 3] 4]"]
-               ["[⊚[] 1 2 3]"                          "[[⊚1] 2 3]"]
-               ["[[1⊚ 2] 3 4]"                         "[[1⊚ 2 3] 4]"]
-               ["[[[⊚1 2]] 3 4]"                       "[[[⊚1 2] 3] 4]"]
-               ["[[[[[⊚1 2]]]] 3 4]"                   "[[[[[⊚1 2]]] 3] 4]"]
-               ["[1 [⊚2 [3 4]] 5]"                     "[1 [⊚2 [3 4] 5]]"]
-               ["\n(let [⊚dill]\n  {:a 1}\n  {:b 2})"  "\n(let [⊚dill \n{:a 1}]\n  {:b 2})"]]]
+      (doseq [[s expected]
+              [["[[1 ⊚2] 3 4]"                        "[[1 ⊚2 3] 4]"]
+               ["[[⊚1 2] 3 4]"                        "[[⊚1 2 3] 4]"]
+               ["[[1⊚ 2] 3 4]"                        "[[1⊚ 2 3] 4]"]
+               ["[⊚[] 1 2 3]"                         "[[⊚1] 2 3]"]
+               ["[⊚[1] 2 3]"                          "[⊚[1] 2 3]"]
+               ["[⊚[1] 2 3] 4"                        "[⊚[1] 2 3 4]"]
+               ["[[1⊚ 2] 3 4]"                        "[[1⊚ 2 3] 4]"]
+               ["[[[⊚1 2]] 3 4]"                      "[[[⊚1 2] 3] 4]"]
+               ["[[[[[⊚1 2]]]] 3 4]"                  "[[[[[⊚1 2]]] 3] 4]"]
+               ["[1 [⊚2 [3 4]] 5]"                    "[1 [⊚2 [3 4] 5]]"]
+               ["[[1 [⊚2]] 3 4]"                      "[[1 [⊚2] 3] 4]"]
+               ["(get ⊚:x) :a"                        "(get ⊚:x :a)"]
+               ["(get ⊚{}) :a"                        "(get ⊚{} :a)"]
+               ["(get ⊚{} :a)"                        "(get {⊚:a})"]
+               ["(get ⊚{:a} :b)"                      "(get ⊚{:a} :b)"]
+               ["⊚[#_uneval] :a"                      "⊚[#_uneval] :a"]
+               ["[⊚#_uneval] :a"                      "[⊚#_uneval :a]"]
+               ["(a ⊚[    ] b) c"                     "(a [    ⊚b]) c"]
+               ["(a [  ⊚b   ] c) d"                   "(a [  ⊚b   c]) d"]
+               ["(let [⊚dill]\n  {:a 1}\n  {:b 2})"   "(let [⊚dill\n{:a 1}]\n  {:b 2})"]
+               ["(a [⊚foo]\n#_b  c)"                  "(a [⊚foo\n#_b]  c)"]
+               ["(a ⊚b c);; comment\n(d e f)"         "(a ⊚b c ;; comment\n(d e f))"]]]
         (let [zloc (th/of-locmarked-string s opts)]
           (is (= s (th/root-locmarked-string zloc)) "(sanity) before changes")
           (is (= expected (-> zloc pe/slurp-forward th/root-locmarked-string))))))))
 
-(deftest slurp-forward-fully-test
+(deftest slurp-foward-into-test
   (doseq [opts zipper-opts]
-    (testing (zipper-opts-desc opts)
-      (is (= "[1 [⊚2 3 4]]" (-> (th/of-locmarked-string "[1 [⊚2] 3 4]" opts)
-                                pe/slurp-forward-fully
-                                th/root-locmarked-string))))))
+    (testing (str "zipper opts " opts)
+      (doseq [[s                                      expected-from-parent               expected-from-current]
+              [["[[1 ⊚2] 3 4]"                        "[[1 ⊚2 3] 4]"                     :ditto]
+               ["[[⊚1 2] 3 4]"                        "[[⊚1 2 3] 4]"                     :ditto]
+               ["[[1⊚ 2] 3 4]"                        "[[1⊚ 2 3] 4]"                     :ditto]
+               ["[⊚[] 1 2 3]"                         "[⊚[] 1 2 3]"                      "[⊚[1] 2 3]"]
+               ["[⊚[1] 2 3]"                          "[⊚[1] 2 3]"                       "[⊚[1 2] 3]"]
+               ["[[⊚1] 2 3]"                          "[[⊚1 2] 3]"                       :ditto]
+               ["[[1⊚ 2] 3 4]"                        "[[1⊚ 2 3] 4]"                     :ditto]
+               ["[[[⊚1 2]] 3 4]"                      "[[[⊚1 2] 3] 4]"                   :ditto]
+               ["[[[[[⊚1 2]]]] 3 4]"                  "[[[[[⊚1 2]]] 3] 4]"               :ditto]
+               ["[1 [⊚2 [3 4]] 5]"                    "[1 [⊚2 [3 4] 5]]"                 :ditto]
+               ["[[1 [⊚2]] 3 4]"                      "[[1 [⊚2] 3] 4]"                   :ditto]
+               ["[:a :b [:c :d :e [⊚:f]]] :g"         "[:a :b [:c :d :e [⊚:f]] :g]"      :ditto]
+               ["(get ⊚:x) :a"                        "(get ⊚:x :a)"                     :ditto]
+               ["(get ⊚{}) :a"                        "(get ⊚{} :a)"                     :ditto]
+               ["(get ⊚{} :a)"                        "(get ⊚{} :a)"                     "(get ⊚{:a})"]
+               ["(get ⊚{:a} :b)"                      "(get ⊚{:a} :b)"                   "(get ⊚{:a :b})"]
+               ["⊚[#_uneval] :a"                      "⊚[#_uneval] :a"                   "⊚[#_uneval :a]"]
+               ["[⊚#_uneval] :a"                      "[⊚#_uneval :a]"                   "[⊚#_uneval :a]"]
+               ["(a ⊚[    ] b) c"                     "(a ⊚[    ] b c)"                  "(a ⊚[    b]) c"]
+               ["(a [  ⊚b   ] c) d"                   "(a [  ⊚b   c]) d"                 :ditto]
+               ["(let [⊚dill]\n  {:a 1}\n  {:b 2})"   "(let [⊚dill\n{:a 1}]\n  {:b 2})"  :ditto]
+               ["(a [⊚foo]\n#_b  c)"                  "(a [⊚foo\n#_b]  c)"               :ditto
+               ["(a ⊚b c);; comment\n(d e f)"         "(a ⊚b c ;; comment\n(d e f))"     :ditto]]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)
+                res-from-parent (pe/slurp-forward-into zloc {:from :parent})
+                res-default (pe/slurp-forward-into zloc)
+                res-from-current (pe/slurp-forward-into zloc {:from :current})]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) s before change")
+            (is (= expected-from-parent (th/root-locmarked-string res-default)) "root-string after default slurp")
+            (is (= expected-from-parent (th/root-locmarked-string res-from-parent)) "root-string after from parent")
+            (if (= :ditto expected-from-current)
+              (is (= expected-from-parent (th/root-locmarked-string res-from-current)) "root-string after from current same as from parent")
+              (is (= expected-from-current (th/root-locmarked-string res-from-current)) "root-string after from current"))))))))
 
-(deftest slurp-backward-test
+(deftest slurp-foward-fully-into-test
   (doseq [opts zipper-opts]
-    (testing (zipper-opts-desc opts)
+    (testing (str "zipper opts " opts)
+      (doseq [[s                                      expected-from-parent          expected-from-current ]
+              [["[1 [⊚2] 3 4]"                        "[1 [⊚2 3 4]]"                :ditto]
+               ["[1 ⊚[] 2 3 4] 5"                     "[1 ⊚[] 2 3 4 5]"             "[1 ⊚[2 3 4]] 5"]
+               ["[[[1 ⊚[] 2 3 4] 5 6] 7] 8"           "[[[1 ⊚[] 2 3 4 5 6]] 7] 8"   "[[[1 ⊚[2 3 4]] 5 6] 7] 8" ]
+               ["[[1 ⊚[]] 3 4]"                       "[[1 ⊚[] 3 4]]"               "[[1 ⊚[3 4]]]"]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)
+                res-from-parent (pe/slurp-forward-fully-into zloc {:from :parent})
+                res-default (pe/slurp-forward-fully-into zloc)
+                res-from-current (pe/slurp-forward-fully-into zloc {:from :current})]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) s before change")
+            (is (= expected-from-parent (th/root-locmarked-string res-default)) "root-string after default slurp")
+            (is (= expected-from-parent (th/root-locmarked-string res-from-parent)) "root-string after from parent")
+            (if (= :ditto expected-from-current)
+              (is (= expected-from-parent (th/root-locmarked-string res-from-current)) "root-string after from current same as from parent")
+              (is (= expected-from-current (th/root-locmarked-string res-from-current)) "root-string after from current"))))))))
+
+(deftest slurp-foward-fully-test ;; deprecated but we still need to test
+  (doseq [opts zipper-opts]
+    (testing (str "zipper opts " opts)
       (doseq [[s                                      expected]
-              [["[1 2 [⊚3 4]]"                        "[1 [2 ⊚3 4]]"]
-               ["[1 2 [3 ⊚4]]"                        "[1 [2 3 ⊚4]]"]
-               ["[1 2 3 4 ⊚[]]"                       "[1 2 3 [⊚4]]"]
-               ["[1 2 [[3 ⊚4]]]"                      "[1 [2 [3 ⊚4]]]"
-                ["[1 2 [[[3 ⊚4]]]]"                    "[1 [2 [[3 ⊚4]]]]"]
-                ["[1 2 ;dill\n [⊚3 4]]"                "[1 [2 ;dill\n ⊚3 4]]"]]]]
-        (let [zloc (th/of-locmarked-string s opts)]
-          (is (= s (th/root-locmarked-string zloc)) "(sanity) before changes")
-          (is (= expected (-> zloc pe/slurp-backward th/root-locmarked-string))))))))
+              [["[1 [⊚2] 3 4]"                        "[1 [⊚2 3 4]]"]
+               ["[1 ⊚[] 2 3 4]"                       "[1 [⊚2 3 4]]"]
+               ["[[[1 ⊚[] 2 3 4] 5] 6] 7"             "[[[1 [⊚2 3 4]] 5] 6] 7"]
+               ["[[1 ⊚[]] 3 4]"                       "[[1 [⊚3 4]]]"]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)
+                res (pe/slurp-forward-fully zloc)]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) s before change")
+            (is (= expected (th/root-locmarked-string res)) "root-string after")))))))
 
-(deftest slurp-backward-fully-test
+(deftest slurp-backward-into-test
   (doseq [opts zipper-opts]
-    (testing (zipper-opts-desc opts)
-      (is (= "[[1 2 3 ⊚4] 5]" (-> (th/of-locmarked-string "[1 2 3 [⊚4] 5]" opts)
-                                  pe/slurp-backward-fully
-                                  th/root-locmarked-string))))))
+    (testing (str "zipper opts " opts)
+      (doseq [[s                       expected-from-parent         expected-from-current]
+              [["[1 2 [⊚3 4]]"         "[1 [2 ⊚3 4]]"               :ditto]
+               ["[1 2 [3 ⊚4]]"         "[1 [2 3 ⊚4]]"               :ditto]
+               ["[1 2 3 4 ⊚[]]"        "[1 2 3 4 ⊚[]]"              "[1 2 3 ⊚[4]]"]
+               ["[1 2 [[3 ⊚4]]]"       "[1 [2 [3 ⊚4]]]"             :ditto]
+               ["[1 2 [[[3 ⊚4]]]]"     "[1 [2 [[3 ⊚4]]]]"           :ditto]
+               [":a [⊚[] :b]"          "[:a ⊚[] :b]"                :ditto]
+               ["[:a ⊚[] :b]"          "[:a ⊚[] :b]"                "[⊚[:a] :b]"]
+               ["[⊚:a [] :b]"          "[⊚:a [] :b]"                :ditto]
+               ["[1 2 \n \n [⊚3 4]]"   "[1 [2\n\n⊚3 4]]"            :ditto]
+               ["[1 2 ;dill\n [⊚3 4]]" "[1 [2 ;dill\n⊚3 4]]"        :ditto]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)
+                res-from-parent (pe/slurp-backward-into zloc {:from :parent})
+                res-default (pe/slurp-backward-into zloc)
+                res-from-current (pe/slurp-backward-into zloc {:from :current})]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) s before change")
+            (is (= expected-from-parent (th/root-locmarked-string res-default)) "root-string after default slurp")
+            (is (= expected-from-parent (th/root-locmarked-string res-from-parent)) "root-string after from parent")
+            (if (= :ditto expected-from-current)
+              (is (= expected-from-parent (th/root-locmarked-string res-from-current)) "root-string after from current same as from parent")
+              (is (= expected-from-current (th/root-locmarked-string res-from-current)) "root-string after from current"))))))))
+
+(deftest slurp-backward-test ;; deprecated but we still need to test
+  (doseq [opts zipper-opts]
+    (testing (str "zipper opts " opts)
+      (doseq [[s                       expected]
+              [["[1 2 [⊚3 4]]"         "[1 [2 ⊚3 4]]"]
+               ["[1 2 [3 ⊚4]]"         "[1 [2 3 ⊚4]]"]
+               ["[1 2 3 4 ⊚[]]"        "[1 2 3 [⊚4]]"]
+               ["[1 2 [[3 ⊚4]]]"       "[1 [2 [3 ⊚4]]]"]
+               ["[1 2 [[[3 ⊚4]]]]"     "[1 [2 [[3 ⊚4]]]]"]
+               [":a [⊚[] :b]"          "[:a ⊚[] :b]"]
+               ["[:a ⊚[] :b]"          "[[⊚:a] :b]"]
+               ["[⊚:a [] :b]"          "[⊚:a [] :b]"]
+               ["[1 2 \n \n [⊚3 4]]"   "[1 [2\n\n⊚3 4]]"]
+               ["[1 2 ;dill\n [⊚3 4]]" "[1 [2 ;dill\n⊚3 4]]"]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)
+                res (pe/slurp-backward zloc)]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) s before change")
+            (is (= expected (th/root-locmarked-string res)) "root-string after")))))))
+
+(deftest slurp-backward-fully-into-test
+  (doseq [opts zipper-opts]
+    (testing (str "zipper opts " opts)
+      (doseq [[s                          expected-from-parent    expected-from-current]
+              [["[1 2 3 [⊚4] 5]"          "[[1 2 3 ⊚4] 5]"        :ditto]
+               ["[1 2 3 4 ⊚[] 5]"         "[1 2 3 4 ⊚[] 5]"       "[⊚[1 2 3 4] 5]"]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)
+                res-from-parent (pe/slurp-backward-fully-into zloc {:from :parent})
+                res-default (pe/slurp-backward-fully-into zloc)
+                res-from-current (pe/slurp-backward-fully-into zloc {:from :current})]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) s before change")
+            (is (= expected-from-parent (th/root-locmarked-string res-default)) "root-string after default slurp")
+            (is (= expected-from-parent (th/root-locmarked-string res-from-parent)) "root-string after from parent")
+            (if (= :ditto expected-from-current)
+              (is (= expected-from-parent (th/root-locmarked-string res-from-current)) "root-string after from current same as from parent")
+              (is (= expected-from-current (th/root-locmarked-string res-from-current)) "root-string after from current"))))))))
+
+(deftest slurp-backward-fully-test ;; deprecated but we still need to test
+  (doseq [opts zipper-opts]
+    (testing (str "zipper opts " opts)
+      (doseq [[s                          expected]
+              [["[1 2 3 [⊚4] 5]"          "[[1 2 3 ⊚4] 5]"]
+               ["[1 2 3 4 ⊚[] 5]"         "[[⊚1 2 3 4] 5]"]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)
+                res (pe/slurp-backward-fully zloc)]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) s before change")
+            (is (= expected (th/root-locmarked-string res)) "root-string after")))))))
 
 (deftest barf-forward-test
   (doseq [opts zipper-opts]
@@ -183,10 +318,17 @@
 (deftest wrap-fully-forward-slurp-test
   (doseq [opts zipper-opts]
     (testing (zipper-opts-desc opts)
-      (is (= "[1 [⊚2 3 4]]"
-             (-> (th/of-locmarked-string "[1 ⊚2 3 4]" opts)
-                 (pe/wrap-fully-forward-slurp :vector)
-                 th/root-locmarked-string))))))
+      (doseq [[s               t           expected]
+              [["[1 ⊚2 3 4]"   :vector     "[1 [⊚2 3 4]]"]
+               ["[1 ⊚2 3 4]"   :map        "[1 {⊚2 3 4}]"]
+               ["[1 ⊚2 3 4]"   :list       "[1 (⊚2 3 4)]"]
+               ["[1 ⊚2 3 4]"   :set        "[1 #{⊚2 3 4}]"]
+               ["[1 ⊚2]"       :list       "[1 (⊚2)]"]
+               ["⊚[]"          :list       "(⊚[])"]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
+            (is (= expected (-> zloc (pe/wrap-fully-forward-slurp t) th/root-locmarked-string)) "string after")))))))
 
 (deftest splice-killing-backward-test
   (doseq [opts zipper-opts]

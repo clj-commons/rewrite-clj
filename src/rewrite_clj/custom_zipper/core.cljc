@@ -101,6 +101,11 @@
   [zloc]
   (map first (:left zloc)))
 
+(defn-switchable rights
+  "Returns a seq of the left siblings of current node in `zloc`."
+  [zloc]
+  (map first (:right zloc)))
+
 (defn-switchable down
   "Returns zipper with the location at the leftmost child of current node in `zloc`, or
   nil if no children."

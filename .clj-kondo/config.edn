@@ -26,7 +26,12 @@
   :unused-referred-var
   {:exclude {clojure.test.check [quick-check]}}
   :deprecated-var
-  {:exclude {rewrite-clj.zip.base/->string
+  {:exclude {rewrite-clj.paredit/slurp-forward        {:namespaces [rewrite-clj.paredit-test]}
+             rewrite-clj.paredit/slurp-forward-fully  {:namespaces [rewrite-clj.paredit-test]}
+             rewrite-clj.paredit/slurp-backward       {:namespaces [rewrite-clj.paredit-test]}
+             rewrite-clj.paredit/slurp-backward-fully {:namespaces [rewrite-clj.paredit-test]}
+
+             rewrite-clj.zip.base/->string
              {:namespaces [rewrite-clj.zip]}
              rewrite-clj.zip.base/->root-string
              {:namespaces [rewrite-clj.zip]}
