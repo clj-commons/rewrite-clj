@@ -30,9 +30,9 @@ A release with known breaking changes is marked with:
 ** `pos` arguments now accept vector `[row col]` in addition to map `{:row :col}`
 {issue}344[#344] ({lread})
 ** `join` now takes type of left sequences
-{issue}321[321] ({lread}, thanks for the issue {person}openvest[@openvest]!)
+{issue}321[#321] ({lread}, thanks for the issue {person}openvest[@openvest]!)
 ** `join` no longer removes comments that were between joined strings
-{issue}351[351] ({lread})
+{issue}351[#351] ({lread})
 
 === v1.1.49 - 2024-11-18 [[v1.1.49]]
 
