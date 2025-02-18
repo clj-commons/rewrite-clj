@@ -17,7 +17,6 @@
 (defn- empty-seq? [zloc]
   (and (z/seq? zloc) (not (seq (z/sexpr zloc)))))
 
-;; helper
 (defn- move-n [loc f n]
   (if (= 0 n)
     loc
@@ -45,16 +44,24 @@
         (take-while p?)
         (map z/node))))
 
+(defn- reduce-into-zipper
+  "A thread-first-friendly reducer"
+  [zloc f items]
+  (reduce f zloc items))
+
+(defn- linebreak-and-comment-nodes
+  "Return vector of all linebreak and comment nodes from whitespace and comment nodes from `zloc` moving via `f` "
+  [zloc f]
+  (->> (-> zloc
+           f
+           (nodes-by-dir f ws/whitespace-or-comment?))
+       (filterv #(or (nd/linebreak? %) (nd/comment? %)))))
+
 (defn- remove-first-if-ws [nodes]
   (when (seq nodes)
     (if (nd/whitespace? (first nodes))
       (rest nodes)
       nodes)))
-
-(defn- remove-ws-or-comment [zloc]
-  (if-not (ws/whitespace-or-comment? zloc)
-    zloc
-    (recur (z/remove* zloc))))
 
 (defn- create-seq-node
   "Creates a sequence node of given type `t` with node values of `v`"
@@ -457,33 +464,44 @@
     zloc))
 
 (defn- join-seqs [left right]
-  (let [lefts (-> left z/node nd/children)
+  (let [rights (-> right z/node nd/children)
         ws-nodes (-> (z/right* left) (nodes-by-dir z/right* ws/whitespace-or-comment?))
-        rights (-> right z/node nd/children)]
-
-    (-> right
-        z/remove*
-        remove-ws-or-comment
-        z/up
-        (z/insert-left (create-seq-node :vector
-                                        (concat lefts
-                                                ws-nodes
-                                                rights)))
-        z/remove
-        (global-find-by-node (first rights)))))
+        ws-nodes (if (seq ws-nodes)
+                   ws-nodes
+                   [(nd/spaces 1)])
+        zloc (-> left
+                 (reduce-into-zipper z/append-child* ws-nodes)
+                 (reduce-into-zipper z/append-child* rights))]
+    (-> zloc
+        (u/remove-right-while ws/whitespace-or-comment?)
+        z/right*
+        u/remove-and-move-left
+        z/down
+        z/rightmost*
+        (move-n z/left* (dec (count rights))))))
 
 (defn- join-strings [left right]
-  (-> right
-      z/remove*
-      remove-ws-or-comment
-      (z/replace (nd/string-node (str (-> left z/node nd/sexpr)
-                                      (-> right z/node nd/sexpr))))))
+  (let [cmts-and-nls (linebreak-and-comment-nodes left z/right*)
+        cmts-and-nls (when (seq cmts-and-nls)
+                       (into [(nd/spaces 1)] cmts-and-nls))]
+    (-> right
+        z/remove*
+        z/left
+        (u/remove-right-while ws/whitespace-or-comment?)
+        ;; sexpr is safe on strings
+        (z/replace (nd/string-node (str (-> left z/node nd/sexpr)
+                                        (-> right z/node nd/sexpr))))
+        (reduce-into-zipper z/insert-right* (reverse cmts-and-nls)))))
 
 (defn join
-  "Join S-expression to the left and right of current loc. Also works for strings.
+  "Returns `zloc` with sequence to the left joined to sequence to the right.
+  Also works for strings.
+  If sequence types differ, uses sequence type to the left.
 
-  - `[[1 2] |[3 4]] => [[1 2 3 4]]`
-  - `[\"Hello \" | \"World\"] => [\"Hello World\"]`"
+  - `[1 2] |[3 4]            => [1 2 |3 4]`
+  - `[1 2]| [3 4]            => [1 2 |3 4]`
+  - `{:a 1} |(:b 2)          => `{:a 1 :b 2}`
+  - `[\"Hello\" | \"World\"] => [|\"HelloWorld\"]`"
   [zloc]
   (let [left (some-> zloc z/left)
         right (if (some-> zloc z/node nd/whitespace?) (z/right zloc) zloc)]

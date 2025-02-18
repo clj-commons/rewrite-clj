@@ -214,7 +214,7 @@
   ;; for this pos fn test, ⊚ in `s` represents character row/col the the `pos`
   ;; ⊚ in `expected` is at zipper node granularity
   (doseq [[s                              expected]
-          [["(\"Hello ⊚World\")"          "(⊚\"Hello \" \"World\")" ]]]
+          [["(\"Hello ⊚World\")"          "(⊚\"Hello \" \"World\")"]]]
     (let [{:keys [pos s]} (th/pos-and-s s)
           zloc (z/of-string* s {:track-position? true})]
       (doseq [pos [pos [(:row pos) (:col pos)]]]
@@ -226,9 +226,18 @@
     (testing (zipper-opts-desc opts)
       (doseq [[s                                                            expected]
               [["[1 2]⊚ [3 4]"                                              "[1 2 ⊚3 4]"]
-               ["\n[[1 2]⊚ ; the first stuff\n [3 4] ; the second stuff\n]" "\n[[1 2 ; the first stuff\n ⊚3 4]; the second stuff\n]"]
+               ["#{1 2} ⊚[3 4]"                                             "#{1 2 ⊚3 4}"]
+               ["(1 2)⊚ {3 4}"                                              "(1 2 ⊚3 4)"]
+               ["{:a 1} ⊚(:b 2)"                                            "{:a 1 ⊚:b 2}"]
+               ["[foo]⊚[bar]"                                               "[foo ⊚bar]"]
+               ["[foo]   ⊚[bar]"                                            "[foo   ⊚bar]"]
+               ["\n[[1 2]⊚ ; the first stuff\n [3 4] ; the second stuff\n]" "\n[[1 2 ; the first stuff\n ⊚3 4] ; the second stuff\n]"]
                ;; strings
-               ["(\"Hello \" ⊚\"World\")"                                   "(⊚\"Hello World\")"]]]
+               ["(\"Hello \" ⊚\"World\")"                                   "(⊚\"Hello World\")"]
+               ["(⊚\"Hello \" \"World\")" "(⊚\"Hello \" \"World\")"]
+               ["(\"Hello \" ;; comment\n;; comment2\n⊚\"World\")"
+                "(⊚\"Hello World\" ;; comment\n;; comment2\n)"]
+               ["\"foo\"⊚\"bar\""         "⊚\"foobar\""]]]
         (let [zloc (th/of-locmarked-string s opts)]
           (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
           (is (= expected (-> zloc pe/join th/root-locmarked-string)) "string after"))))))
