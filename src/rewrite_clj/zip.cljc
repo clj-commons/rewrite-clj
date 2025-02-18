@@ -486,17 +486,30 @@
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-last-by-pos
-  "Return `zloc` located to the last node spanning position `pos` that satisfies predicate `p?` else `nil`.
-   Search is depth-first from the current node.
+  "Return `zloc` located at the last node spanning position `pos` that satisfies the predicate `p?`, else `nil`.
 
-  NOTE: Does not ignore whitespace/comment nodes."
+  - `zloc` location is (inclusive) starting point for `pos` depth-first search
+  - `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are 1-based and relative to the
+  start of the form represented by the zipper.
+  - `p?` is optional and defaults to `(constantly true)`
+
+  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking).
+
+  NOTE: Whitespace and comment nodes are included in the search."
   ([zloc pos] (rewrite-clj.zip.findz/find-last-by-pos zloc pos))
   ([zloc pos p?] (rewrite-clj.zip.findz/find-last-by-pos zloc pos p?)))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.findz
 (defn find-tag-by-pos
-  "Return `zloc` located to the last node spanning position `pos` with tag `t` else `nil`.
-  Search is depth-first from the current node."
+  "Return `zloc` located at the last node spanning position `pos` with tag `t`, else `nil`.
+
+  - `zloc` location is (inclusive) starting point for `pos` depth-first search
+  - `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are 1-based and relative to the
+  start of the form represented by the zipper.
+
+  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking).
+
+  NOTE: Whitespace and comment nodes are included in the search."
   [zloc pos t] (rewrite-clj.zip.findz/find-tag-by-pos zloc pos t))
 
 ;; DO NOT EDIT FILE, automatically imported from: rewrite-clj.zip.insert
