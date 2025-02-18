@@ -50,7 +50,9 @@
             ["⊚\"\""                         "◬"]]]]
     (let [{:keys [pos s]} (th/pos-and-s s)
           zloc (z/of-string* s {:track-position? true})]
-      (is (= expected (-> zloc (pe/kill-at-pos pos) th/root-locmarked-string))))))
+      (doseq [pos [pos [(:row pos) (:col pos)]]]
+        (testing (str s " @pos " pos)
+          (is (= expected (-> zloc (pe/kill-at-pos pos) th/root-locmarked-string))))))))
 
 (deftest kill-one-at-pos-test
   ;; for this pos fn test, ⊚ in `s` represents character row/col the the `pos`
@@ -78,7 +80,9 @@
            ["\"foo bar ⊚do\n lorem\""     "⊚\"foo bar \n lorem\""]]]
     (let [{:keys [pos s]} (th/pos-and-s s)
           zloc (z/of-string* s {:track-position? true})]
-      (is (= expected (-> zloc (pe/kill-one-at-pos pos) th/root-locmarked-string))))))
+      (doseq [pos [pos [(:row pos) (:col pos)]]]
+        (testing (str s " @pos " pos)
+          (is (= expected (-> zloc (pe/kill-one-at-pos pos) th/root-locmarked-string))))))))
 
 (deftest slurp-forward-test
   (doseq [opts zipper-opts]
@@ -207,10 +211,15 @@
           (is (= expected (-> zloc pe/split th/root-locmarked-string)) "string after"))))))
 
 (deftest split-at-pos-test
-  (is (= "(⊚\"Hello \" \"World\")"
-         (-> (th/of-locmarked-string "⊚(\"Hello World\")" {:track-position? true})
-             (pe/split-at-pos {:row 1 :col 9})
-             th/root-locmarked-string))))
+  ;; for this pos fn test, ⊚ in `s` represents character row/col the the `pos`
+  ;; ⊚ in `expected` is at zipper node granularity
+  (doseq [[s                              expected]
+          [["(\"Hello ⊚World\")"          "(⊚\"Hello \" \"World\")" ]]]
+    (let [{:keys [pos s]} (th/pos-and-s s)
+          zloc (z/of-string* s {:track-position? true})]
+      (doseq [pos [pos [(:row pos) (:col pos)]]]
+        (testing (str s " @pos " pos)
+          (is (= expected (-> zloc (pe/split-at-pos pos) th/root-locmarked-string))))))))
 
 (deftest join-test
   (doseq [opts zipper-opts]

@@ -16,8 +16,14 @@
            (additional node)))
     #(= (base/tag %) t)))
 
+(defn pos-as-vec [pos]
+  (if (map? pos) [(:row pos) (:col pos)] pos))
+
+(defn pos-as-map [pos]
+  (if (map? pos) pos (zipmap [:row :col] pos)))
+
 (defn- position-in-range? [zloc pos]
-  (let [[r c] (if (map? pos) [(:row pos) (:col pos)] pos)]
+  (let [[r c] (pos-as-vec pos)]
     (when (or (<= r 0) (<= c 0))
       (throw (ex-info "zipper row and col positions are ones-based" {:pos pos})))
     (let [[[zstart-row zstart-col][zend-row zend-col]] (zraw/position-span zloc)]
@@ -44,10 +50,16 @@
         (first))))
 
 (defn find-last-by-pos
-  "Return `zloc` located to the last node spanning position `pos` that satisfies predicate `p?` else `nil`.
-   Search is depth-first from the current node.
+  "Return `zloc` located at the last node spanning position `pos` that satisfies the predicate `p?`, else `nil`.
 
-  NOTE: Does not ignore whitespace/comment nodes."
+  - `zloc` location is (inclusive) starting point for `pos` depth-first search
+  - `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are 1-based and relative to the
+  start of the form represented by the zipper.
+  - `p?` is optional and defaults to `(constantly true)`
+
+  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking).
+
+  NOTE: Whitespace and comment nodes are included in the search."
   ([zloc pos] (find-last-by-pos zloc pos (constantly true)))
   ([zloc pos p?]
    (->> zloc
@@ -102,8 +114,15 @@
         (find-next zloc f))))
 
 (defn find-tag-by-pos
-  "Return `zloc` located to the last node spanning position `pos` with tag `t` else `nil`.
-  Search is depth-first from the current node."
+  "Return `zloc` located at the last node spanning position `pos` with tag `t`, else `nil`.
+
+  - `zloc` location is (inclusive) starting point for `pos` depth-first search
+  - `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are 1-based and relative to the
+  start of the form represented by the zipper.
+
+  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking).
+
+  NOTE: Whitespace and comment nodes are included in the search."
   ([zloc pos t]
    (find-last-by-pos zloc pos #(= (base/tag %) t))))
 

@@ -5,6 +5,7 @@
   (:require [rewrite-clj.custom-zipper.utils :as u]
             [rewrite-clj.node :as nd]
             [rewrite-clj.zip :as z]
+            [rewrite-clj.zip.findz :as fz]
             [rewrite-clj.zip.whitespace :as ws]))
 
 #?(:clj (set! *warn-on-reflection* true))
@@ -130,16 +131,20 @@
   - if inside string kills to end of string and stops there
   - If inside comment kills to end of line (not including linebreak)
 
-  `pos` should provide `{:row :col }` which are relative to the start of the given form the zipper represents
-  `zloc` must be positioned at a node previous (given depth first) to the node at given pos"
+  - `zloc` location is (inclusive) starting point for `pos` depth-first search
+  - `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are
+  1-based and relative to the start of the source code the zipper represents.
+
+  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking)."
   [zloc pos]
   (if-let [candidate (z/find-last-by-pos zloc pos)]
-    (cond
-     (string-node? candidate)                             (kill-in-string-node candidate pos)
-     (ws/comment? candidate)                              (kill-in-comment-node candidate pos)
-     (and (empty-seq? candidate)
-          (> (:col pos) (-> candidate z/node meta :col))) (z/remove candidate)
-     :else                                                (kill candidate))
+    (let [pos (fz/pos-as-map pos)]
+      (cond
+        (string-node? candidate)                             (kill-in-string-node candidate pos)
+        (ws/comment? candidate)                              (kill-in-comment-node candidate pos)
+        (and (empty-seq? candidate)
+             (> (:col pos) (-> candidate z/node meta :col))) (z/remove candidate)
+        :else                                                (kill candidate)))
     zloc))
 
 
@@ -194,6 +199,12 @@
 (defn kill-one-at-pos
   "In string and comment aware kill for one node/word at `pos` in `zloc`.
 
+  - `zloc` location is (inclusive) starting point for `pos` depth-first search
+  - `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are
+  1-based and relative to the start of the source code the zipper represents.
+
+  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking).
+
   - `(+ |100 100) => (+ |100)`
   - `(for |(bar do)) => (foo)`
   - `\"|hello world\" => \"| world\"`
@@ -201,7 +212,8 @@
   [zloc pos]
   (if-let [candidate (->> (z/find-last-by-pos zloc pos)
                           (ws/skip z/right* ws/whitespace?))]
-    (let [[bounds-row bounds-col] (z/position candidate)
+    (let [pos (fz/pos-as-map pos)
+          [bounds-row bounds-col] (z/position candidate)
           kill-in-node? (not (and (= (:row pos) bounds-row)
                                   (<= (:col pos) bounds-col)))]
       (cond
@@ -457,17 +469,19 @@
 (defn split-at-pos
   "In string aware split
 
-  Perform split at given position `pos` Like split, but:
+  Perform split at given position `pos` Like split, but if inside string splits string into two strings.
 
-  - if inside string splits string into two strings
+  - `zloc` location is (inclusive) starting point for `pos` depth-first search
+  - `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are
+  1-based and relative to the start of the source code the zipper represents.
 
-  `pos` should provide `{:row :col }` which are relative to the start of the given form the zipper represents
-  `zloc` must be positioned at a node previous (given depth first) to the node at given pos"
+  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking)."
   [zloc pos]
   (if-let [candidate (z/find-last-by-pos zloc pos)]
-    (if (string-node? candidate)
-      (split-string candidate pos)
-      (split candidate))
+    (let [pos (fz/pos-as-map pos)]
+      (if (string-node? candidate)
+        (split-string candidate pos)
+        (split candidate)))
     zloc))
 
 (defn- join-seqs [left right]
