@@ -85,6 +85,20 @@
                     left-ws-trim
                     right-ws-trim-keep-trailing-linebreak))
 
+(defn remove-and-move-left
+  "Return `zloc` with current node removed, and located to node left of removed node.
+  If no left node, returns `nil`.
+
+  Currently internal, and likely not generic enough to expose, review update as necessary should we want to expose to public API."
+  [zloc]
+  (when (m/left zloc)
+    (->> zloc
+         left-ws-trim
+         right-ws-trim
+         u/remove-and-move-left
+         ;; TODO: needed?
+         (ws/skip-whitespace zraw/left))))
+
 (defn remove-preserve-newline
   "Same as [[remove]] but preserves newlines.
    Specifically: will trim all whitespace - or whitespace up to first linebreak if present."
