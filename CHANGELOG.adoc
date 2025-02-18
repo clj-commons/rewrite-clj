@@ -33,6 +33,8 @@ A release with known breaking changes is marked with:
 {issue}321[#321] ({lread}, thanks for the issue {person}openvest[@openvest]!)
 ** `join` no longer removes comments that were between joined strings
 {issue}351[#351] ({lread})
+** `split-at-pos` no longer throws on split at string opening quote
+{issue}350[#350] ({lread})
 
 === v1.1.49 - 2024-11-18 [[v1.1.49]]
 
