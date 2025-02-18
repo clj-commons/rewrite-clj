@@ -27,7 +27,7 @@ A release with known breaking changes is marked with:
 * `rewrite-clj.zip/insert-right` and `rewrite-clj.zip/append-child` no longer insert a space when inserting/appending after a comment node.
 {issue}346[#346] ({lread})
 * `rewrite.clj.paredit`
-** `pos` arguments now accepts vector `[row col]` in addition to map `{:row :col}`
+** `pos` arguments now accept vector `[row col]` in addition to map `{:row :col}`
 {issue}344[#344] ({lread})
 
 === v1.1.49 - 2024-11-18 [[v1.1.49]]
