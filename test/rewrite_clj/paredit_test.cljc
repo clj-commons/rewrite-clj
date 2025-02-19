@@ -46,28 +46,45 @@
 (deftest kill-at-pos-test
   ;; for this pos fn test, ⊚ in `s` represents character row/col for the `pos`
   ;; ⊚ in `expected` is at zipper node granularity
-  (doseq [[s                                expected]
-          [["[⊚] 5"                         "◬5"] ;; TODO: questionable, our pos is now at :forms root node
-           ["; dill⊚dall"                   "⊚; dill"]
-           ["(str \"He⊚llo \" \"World!\")"  "(str ⊚\"He\" \"World!\")"]
-           [(str "(str \""
-                 "First line\n"
-                 "  Second⊚ Line\n"
-                 "    Third Line\n"
-                 "        \")")             (str "(str ⊚\""
-                                                 "First line\n"
-                                                 "  Second\")")]
-           [(str "\n"
-                 "(println \"Hello⊚\n"
-                 "         There"
-                 "         World\")")
-            "\n(println ⊚\"Hello\")"
-
-            ["⊚\"\""                         "◬"]]]]
-    (let [{:keys [pos s]} (th/pos-and-s s)
+  (doseq [[sloc                                                                 expected]
+          [["2 [⊚] 5"                                                           "2⊚ "]
+           ["2 ⊚[] 5"                                                           "2⊚ "]
+           ["2⊚ [] 5"                                                           "⊚2"]
+           ["⊚2 [] 5"                                                           "◬"]
+           ["41; dill⊚dall\n42"                                                 "41⊚; dill\n42"]
+           ["(str \"He⊚llo \" \"World!\")"                                      "(str ⊚\"He\" \"World!\")" ]
+           ["(str \"\nSecond line\n  Third⊚ Line\n    Fourth Line\n        \")" "(str ⊚\"\nSecond line\n  Third\")"]
+           ["\n(println \"Hello⊚\n         There\n         World\")"            "\n(println ⊚\"Hello\")"]
+           ["42 ⊚\"\""                                                          "42⊚ "]
+           ["42 \"⊚\""                                                          "42⊚ "]
+           ["7 ⊚\"foo\""                                                        "7⊚ "]
+           ["7 \"foo⊚\""                                                        "7⊚ "]
+           ["7 \"⊚foo\""                                                        "7 ⊚\"\""]
+           ["\"\n⊚ \""                                                          "⊚\"\n\""]
+           ["\"f⊚oo\""                                                          "⊚\"f\""]
+           ["[:foo⊚ \"Hello World\"]"                                           "[⊚:foo]"]
+           ["[:foo ⊚\"Hello World\"]"                                           "[:foo⊚ ]"]
+           ["[:foo \"Hello ⊚World\"]"                                           "[:foo ⊚\"Hello \"]"]
+           ["foo ⊚; dingo"                                                      "foo⊚ "]
+           ["foo ;⊚; dingo"                                                     "foo ⊚;"]
+           ["[1 2 3] ⊚;; dingo"                                                 "[1 2 3]⊚ "]
+           ["[1 2 3] ;⊚; dingo"                                                 "[1 2 3] ⊚;"]
+           ["[1 2 3]⊚ ;; dingo"                                                 "⊚[1 2 3]"]
+           ["[1 2 3]⊚;; dingo"                                                  "⊚[1 2 3]"]
+           [";; ding⊚o\ndog\n"                                                  "⊚;; ding\ndog\n"]
+           [";; dingo⊚\ndog\n"                                                  "⊚;; dingo\ndog\n"]
+           ["[1⊚ 2 3 4]"                                                        "[⊚1]"]
+           ["[1⊚   2 3 4]"                                                      "[⊚1]"]
+           ["[⊚;a comment\n \n]"                                                "⊚[]"]
+           ["[\n ⊚\n ;a comment\n]"                                             "[\n⊚ ]"]
+           ["42 ;; A comment⊚ of some length"                                   "42 ⊚;; A comment"]
+           ["⊚[]"                                                               "◬"]
+           ["[⊚]"                                                               "◬"]
+           ["[\n⊚ ]"                                                            "[⊚\n]"]]]
+    (let [{:keys [pos s]} (th/pos-and-s sloc)
           zloc (z/of-string* s {:track-position? true})]
       (doseq [pos [pos [(:row pos) (:col pos)]]]
-        (testing (str s " @pos " pos)
+        (testing (str (pr-str sloc) " @pos " pos)
           (is (= expected (-> zloc (pe/kill-at-pos pos) th/root-locmarked-string))))))))
 
 (deftest kill-one-at-pos-test
@@ -86,23 +103,27 @@
            ["[10\n 20\n⊚ 30]"             "[10\n ⊚20]"]
            ["[⊚10 20 30]"                 "⊚[20 30]"]
            ["⊚[10 20 30]"                 "◬"]
+           ["32 [⊚]"                      "⊚32"]
 
            ;; in comment
-           ["; hello⊚ world"              "⊚; hello world"]   ;; only kill word if word spans pos
-           ["; hello ⊚world"              "⊚; hello "]        ;; at w of world, kill it
-           ["; ⊚hello world"              "⊚;  world"]        ;; at h of hello, kill it
-           ["; hello worl⊚d"              "⊚; hello "]        ;; at d of world, kill it
-           [";⊚ hello world"              "⊚; hello world"]   ;; not in any word, no-op          ;;
+           ["2 ; hello⊚ world"            "2 ⊚; hello world"]   ;; only kill word if word spans pos
+           ["2 ; hello ⊚world"            "2 ⊚; hello "]        ;; at w of world, kill it
+           ["2 ; ⊚hello world"            "2 ⊚;  world"]        ;; at h of hello, kill it
+           ["2 ; hello worl⊚d"            "2 ⊚; hello "]        ;; at d of world, kill it
+           ["2 ;⊚ hello world"            "2 ⊚; hello world"]   ;; not in any word, no-op
+           ["2 ⊚; hello world"            "⊚2"]                 ;; kill comment node when at start of comment
 
            ;; in string
-           ["\"hello⊚ world\""            "⊚\"hello world\""] ;; not in word, no-op
-           ["\"hello ⊚world\""            "⊚\"hello \""]
-           ["\"hello worl⊚d\""            "⊚\"hello \""]
-           ["\"⊚hello world\""            "⊚\" world\""]
-           ["\"⊚foo bar do\n lorem\""     "⊚\" bar do\n lorem\""]
-           ["\"foo bar do\n⊚ lorem\""     "⊚\"foo bar do\n lorem\""] ;; not in word, no-op
-           ["\"foo bar do\n ⊚lorem\""     "⊚\"foo bar do\n \""]
-           ["\"foo bar ⊚do\n lorem\""     "⊚\"foo bar \n lorem\""]]]
+           ["3 \"hello⊚ world\""            "3 ⊚\"hello world\""] ;; not in word, no-op
+           ["3 \"hello ⊚world\""            "3 ⊚\"hello \""]
+           ["3 \"hello worl⊚d\""            "3 ⊚\"hello \""]
+           ["3 \"⊚hello world\""            "3 ⊚\" world\""]
+           ["3 ⊚\"hello world\""            "⊚3"]                 ;; at start quote, kill node
+           ["3 \"hello world⊚\""            "⊚3"]                 ;; at end quote, kill node
+           ["3 \"⊚foo bar do\n lorem\""     "3 ⊚\" bar do\n lorem\""]
+           ["3 \"foo bar do\n⊚ lorem\""     "3 ⊚\"foo bar do\n lorem\""] ;; not in word, no-op
+           ["3 \"foo bar do\n ⊚lorem\""     "3 ⊚\"foo bar do\n \""]
+           ["3 \"foo bar ⊚do\n lorem\""     "3 ⊚\"foo bar \n lorem\""]]]
     (let [{:keys [pos s]} (th/pos-and-s s)
           zloc (z/of-string* s {:track-position? true})]
       (doseq [pos [pos [(:row pos) (:col pos)]]]

@@ -2,7 +2,8 @@
   "Paredit zipper operations for Clojure/ClojureScript/EDN.
 
   You might find inspiration from examples here: http://pub.gajendra.net/src/paredit-refcard.pdf"
-  (:require [rewrite-clj.custom-zipper.core :as zraw]
+  (:require [clojure.string :as str]
+            [rewrite-clj.custom-zipper.core :as zraw]
             [rewrite-clj.custom-zipper.utils :as u]
             [rewrite-clj.node :as nd]
             [rewrite-clj.zip :as z]
@@ -133,56 +134,62 @@
     (or (u/remove-and-move-left zloc)
         (z/remove* zloc))))
 
-(defn- kill-in-string-node [zloc pos]
-  (if (= (z/string zloc) "\"\"")
-    (z/remove zloc)
-    (let [bounds (-> zloc z/node meta)
-          row-idx (- (:row pos) (:row bounds))
-          sub-length (if-not (= (:row pos) (:row bounds))
-                       (dec (:col pos))
-                       (- (:col pos) (inc (:col bounds))))]
+(defn- kill-in-string-node [zloc [kill-row kill-col]]
+  (let [[elem-row elem-col] (z/position zloc)
+        lines-ndx (- kill-row elem-row)
+        sub-length (if (= kill-row elem-row)
+                     (- kill-col (inc elem-col))
+                     (dec kill-col))
+        cur-lines (-> zloc z/node :lines)
+        new-lines (-> (take (inc lines-ndx) cur-lines)
+                      vec
+                      (update-in [lines-ndx] #(subs % 0 sub-length)))]
+    (z/replace zloc (nd/string-node new-lines))))
 
-      (-> (take (inc row-idx) (-> zloc z/node :lines))
-          vec
-          (update-in [row-idx] #(subs % 0 sub-length))
-          (#(z/replace zloc (nd/string-node %)))))))
-
-(defn- kill-in-comment-node [zloc pos]
-  (let [col-bounds (-> zloc z/node meta :col)]
-    (if (= (:col pos) col-bounds)
-      (z/remove zloc)
-      (-> zloc
-          (z/replace (-> zloc
-                         z/node
-                         :s
-                         (subs 0 (- (:col pos) col-bounds 1))
-                         nd/comment-node))
-          (#(if (z/right* %)
-              (z/insert-right* % (nd/newlines 1))
-              %))))))
+(defn- kill-in-comment-node [zloc [_kill-row kill-col]]
+  (let [[_elem-row elem-col] (z/position zloc)
+        cur-comment (-> zloc z/node :s)
+        ;; comments contain their newline, preserve it if present
+        suffix (when (str/ends-with? cur-comment "\n") "\n")
+        new-comment (str (subs cur-comment 0 (-> kill-col (- elem-col) dec)) suffix)]
+    (z/replace zloc (nd/comment-node new-comment))))
 
 (defn kill-at-pos
-  "In string and comment aware kill
+  "Return `zloc` with found item starting at `pos` removed to its natural end.
 
-  Perform kill for given position `pos` Like [[kill]], but:
+  If `pos` is:
 
-  - if inside string kills to end of string and stops there
-  - If inside comment kills to end of line (not including linebreak)
+  - inside a string, removes all characters in string starting at `pos` to the end of the string
+  - is inside a comment, removes all characters in comment starting at `pos` to the end of line
+  (not including comment linebreak, if present)
+  - otherwise, executes [[kill]] at node found from `pos`
 
-  - `zloc` location is (inclusive) starting point for `pos` depth-first search
-  - `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are
+  `zloc` location is (inclusive) starting point for `pos` search
+  `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are
   1-based and relative to the start of the source code the zipper represents.
 
-  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking)."
+  Throws if `zloc` was not created with [position tracking](/doc/01-user-guide.adoc#position-tracking).
+
+  - `[:foo \"Hello |World\"]`        => [:foo |\"Hello \"]`
+  - `42 ;; A comment| of some length => 42 |;; A comment`
+  - `[:foo |\"Hello World\"]         => [|:foo ]`"
   [zloc pos]
   (if-let [candidate (z/find-last-by-pos zloc pos)]
-    (let [pos (fz/pos-as-map pos)]
+    (let [pos (fz/pos-as-vec pos)
+          [candidate-pos candidate-end-pos] (-> candidate z/position-span)
+          candidate-end-pos (update candidate-end-pos 1 dec)]
       (cond
-        (string-node? candidate)                             (kill-in-string-node candidate pos)
-        (ws/comment? candidate)                              (kill-in-comment-node candidate pos)
-        (and (empty-seq? candidate)
-             (> (:col pos) (-> candidate z/node meta :col))) (z/remove candidate)
-        :else                                                (kill candidate)))
+        (and (string-node? candidate)
+             (not= candidate-pos pos)
+             (not= candidate-end-pos pos))
+        (kill-in-string-node candidate pos)
+
+        (and (ws/comment? candidate)
+             (not= candidate-pos pos))
+        (kill-in-comment-node candidate pos)
+
+        :else
+        (kill candidate)))
     zloc))
 
 (defn- find-word-bounds
@@ -214,26 +221,26 @@
          (subs s end))
     s))
 
-(defn- kill-word-in-comment-node [zloc pos]
-  (let [col-bounds (-> zloc z/position fz/pos-as-map :col)]
+(defn- kill-word-in-comment-node [zloc [_kill-row kill-col]]
+  (let [[_elem-row elem-col] (z/position zloc)]
     (-> zloc
         (z/replace (-> zloc
                        z/node
                        :s
-                       (remove-word-at (- (:col pos) col-bounds))
+                       (remove-word-at (- kill-col elem-col))
                        nd/comment-node)))))
 
-(defn- kill-word-in-string-node [zloc pos]
-  (let [bounds (-> zloc z/position fz/pos-as-map)
-        row-idx (- (:row pos) (:row bounds))
-        col (if (= 0 row-idx)
-              (- (:col pos) (:col bounds))
-              (:col pos))]
+(defn- kill-word-in-string-node [zloc [kill-row kill-col]]
+  (let [[elem-row elem-col] (z/position zloc)
+        row-ndx (- kill-row elem-row)
+        col (if (= 0 row-ndx)
+              (- kill-col elem-col)
+              kill-col)]
     (-> zloc
         (z/replace (-> zloc
                        z/node
                        :lines
-                       (update-in [row-idx]
+                       (update-in [row-ndx]
                                   #(remove-word-at % col))
                        nd/string-node)))))
 
@@ -245,7 +252,7 @@
   - otherwise removes node and moves left, or if no left node removes via [[rewrite-clj.zip/remove]].
   If `pos` locates to whitespace between nodes, skips right to find node.
 
-  `zloc` location is (exclusive) starting point for `pos` search
+  `zloc` location is (inclusive) starting point for `pos` search
   `pos` can be a `{:row :col}` map or a `[row col]` vector. The `row` and `col` values are
   1-based and relative to the start of the source code the zipper represents.
 
@@ -259,13 +266,19 @@
   [zloc pos]
   (if-let [candidate (->> (z/find-last-by-pos zloc pos)
                           (ws/skip z/right* ws/whitespace?))]
-    (let [pos (fz/pos-as-map pos)
-          candidate-pos (-> candidate z/position fz/pos-as-map)
-          kill-in-node? (not (and (= (:row pos) (:row candidate-pos))
-                                  (<= (:col pos) (:col candidate-pos))))]
+    (let [pos (fz/pos-as-vec pos)
+          [candidate-pos candidate-end-pos] (-> candidate z/position-span)
+          candidate-end-pos (update candidate-end-pos 1 dec)]
       (cond
-        (and kill-in-node? (string-node? candidate)) (kill-word-in-string-node candidate pos)
-        (and kill-in-node? (ws/comment? candidate)) (kill-word-in-comment-node candidate pos)
+        (and (string-node? candidate)
+             (not= candidate-pos pos)
+             (not= candidate-end-pos pos))
+        (kill-word-in-string-node candidate pos)
+
+        (and (ws/comment? candidate)
+             (not= candidate-pos pos))
+        (kill-word-in-comment-node candidate pos)
+
         :else
         (or (rz/remove-and-move-left candidate)
             (z/remove candidate))))
