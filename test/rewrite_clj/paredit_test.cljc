@@ -291,31 +291,55 @@
 (deftest barf-forward-test
   (doseq [opts zipper-opts]
     (testing (zipper-opts-desc opts)
-      (doseq [[s                          expected]
-              [["[[⊚1 2 3] 4]"            "[[⊚1 2] 3 4]"]
-               ["[[1 ⊚2 3] 4]"            "[[1 ⊚2] 3 4]"]
-               ["[[1 2 ⊚3] 4]"            "[[1 2] ⊚3 4]"]
-               ["[[1 2 3⊚ ] 4]"           "[[1 2] ⊚3 4]"]
-               ["[[⊚1] 2]"                "[[] ⊚1 2]"]
-               ["(⊚(x) 1)"                "(⊚(x)) 1"]
-               ["(⊚(x)1)"                 "(⊚(x)) 1"]
-               ["(⊚(x)(y))"               "(⊚(x)) (y)"]
-               ["[⊚{:a 1} {:b 2} {:c 3}]" "[⊚{:a 1} {:b 2}] {:c 3}"]
-               ["[{:a 1} ⊚{:b 2} {:c 3}]" "[{:a 1} ⊚{:b 2}] {:c 3}"]
-               ["[{:a 1} {:b 2} ⊚{:c 3}]" "[{:a 1} {:b 2}] ⊚{:c 3}"]]]
-        (let [zloc (th/of-locmarked-string s opts)]
-          (is (= s (th/root-locmarked-string zloc)) "string before")
-          (is (= expected (-> zloc pe/barf-forward th/root-locmarked-string)) "string after"))))))
+      (doseq [[s                                                   expected]
+              [["[[1 ⊚2 3] 4]"                                     "[[1 ⊚2] 3 4]"]
+               ["[[⊚1 2 3] 4]"                                     "[[⊚1 2] 3 4]" ]
+               ["[[1 2 ⊚3] 4]"                                     "[[1 2] ⊚3 4]"]
+               ["[[1 2 3⊚ ] 4]"                                    "[[1 2] ⊚3 4]"]
+               ["[[1 2⊚ 3] 4]"                                     "[[1 2] ⊚3 4]"]
+               ["[[⊚1] 2]"                                         "[[] ⊚1 2]"]
+               ["(⊚(x) 1)"                                         "(⊚(x)) 1"]
+               ["(⊚(x)1)"                                          "(⊚(x)) 1"]
+               ["(⊚(x)(y))"                                        "(⊚(x)) (y)"]
+               ["[⊚{:a 1} {:b 2} {:c 3}]"                          "[⊚{:a 1} {:b 2}] {:c 3}"]
+               ["[{:a 1} ⊚{:b 2} {:c 3}]"                          "[{:a 1} ⊚{:b 2}] {:c 3}"]
+               ["[{:a 1} {:b 2} ⊚{:c 3}]"                          "[{:a 1} {:b 2}] ⊚{:c 3}"]
+               ["[⊚1 ;; comment\n2]"                               "[⊚1];; comment\n2"]
+               ["[1 ⊚;; comment\n2]"                               "[1];; comment\n⊚2"]
+               ["[1 ;; comment\n⊚2]"                               "[1];; comment\n⊚2"]
+               ["[1 ;; comment\n⊚2]"                               "[1];; comment\n⊚2"]
+               ["[1 ;; cmt1\n;; cmt2\n⊚2]"                         "[1];; cmt1\n;; cmt2\n⊚2"]
+               ["[1 \n   \n;; cmt1\n  \n;; cmt2\n   \n\n  ⊚2]"     "[1]\n\n;; cmt1\n\n;; cmt2\n\n\n⊚2"]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
+            (is (= expected (-> zloc pe/barf-forward th/root-locmarked-string)) "root string after")))))))
 
 (deftest barf-backward-test
   (doseq [opts zipper-opts]
     (testing (zipper-opts-desc opts)
-      (doseq [[s                          expected]
-              [["[1 [2 3 ⊚4]]"            "[1 2 [3 ⊚4]]"]
-               ["[1 [⊚2 3 4]]"            "[1 ⊚2 [3 4]]"]]]
-        (let [zloc (th/of-locmarked-string s opts)]
-          (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
-          (is (= expected (-> zloc pe/barf-backward th/root-locmarked-string)) "string after"))))))
+      (doseq [[s                                                   expected]
+              [["[1 [2 ⊚3 4]]"                                    "[1 2 [⊚3 4]]"]
+               ["[1 [2 3 ⊚4]]"                                    "[1 2 [3 ⊚4]]"]
+               ["[1 [⊚2 3 4]]"                                    "[1 ⊚2 [3 4]]"]
+               ["[1 [2⊚ 3 4]]"                                    "[1 ⊚2 [3 4]]"]
+               ["[1 [⊚ 2 3 4]]"                                   "[1 ⊚2 [3 4]]"]
+               ["[1 [⊚2]]"                                        "[1 ⊚2 []]"]
+               ["(1 ⊚(x))"                                        "1 (⊚(x))"]
+               ["(1⊚(x))"                                         "1 (⊚(x))"]
+               ["((x)⊚(y))"                                       "(x) (⊚(y))"]
+               ["[{:a 1} {:b 2} ⊚{:c 3}]"                         "{:a 1} [{:b 2} ⊚{:c 3}]"]
+               ["[{:a 1} ⊚{:b 2} {:c 3}]"                         "{:a 1} [⊚{:b 2} {:c 3}]"]
+               ["[⊚{:a 1} {:b 2} {:c 3}]"                         "⊚{:a 1} [{:b 2} {:c 3}]"]
+               ["[1 ;; comment\n⊚2]"                              "1 ;; comment\n[⊚2]"]
+               ["[1 ⊚;; comment\n2]"                              "⊚1 ;; comment\n[2]"]
+               ["[⊚1 ;; comment\n2]"                              "⊚1 ;; comment\n[2]"]
+               ["[⊚1 ;; cmt1\n;; cmt2\n2]"                        "⊚1 ;; cmt1\n;; cmt2\n[2]"]
+               ["[⊚1 \n   \n;; cmt1\n  \n;; cmt2\n   \n\n  2]"    "⊚1 \n\n;; cmt1\n\n;; cmt2\n\n\n[2]"]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
+            (is (= expected (-> zloc pe/barf-backward th/root-locmarked-string)) "root string after")))))))
 
 (deftest wrap-around-test
   (doseq [opts zipper-opts]
