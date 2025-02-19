@@ -555,48 +555,65 @@
     (slurp-backward-fully-into zloc {:from :parent})))
 
 (defn barf-forward
-  "Push out the rightmost node of the current S-expression into outer right form.
+  "Returns `zloc` with rightmost node of the parent sequence pushed right out of the sequence.
 
-  - `[1 2 [|3 4] 5] => [1 2 [|3] 4 5]`"
+  Comments and newlines preceding barfed node are also barfed.
+
+  - `[1 2 [|3 4] 5] => [1 2 [|3] 4 5]`
+  - `[1 2 [|3] 4 5] => [1 2 [] |3 4 5]`"
   [zloc]
-  (let [barfee-loc (z/rightmost zloc)]
-
-    (if-not (z/up zloc)
-      zloc
-      (let [preserves (->> (-> barfee-loc
-                               z/left*
-                               (nodes-by-dir z/left* ws/whitespace-or-comment?))
-                           (filter #(or (nd/linebreak? %) (nd/comment? %)))
-                           reverse)]
-        (-> barfee-loc
-            (u/remove-left-while ws/whitespace-or-comment?)
-            (u/remove-right-while ws/whitespace?)
-            u/remove-and-move-up
-            (z/insert-right (z/node barfee-loc))
-            ((partial reduce z/insert-right) preserves)
-            (#(or (global-find-by-node % (z/node zloc))
-                  (global-find-by-node % (z/node barfee-loc)))))))))
+  (if-not (z/up zloc)
+    zloc
+    (let [barfee-loc (z/rightmost zloc)
+          also-barf (linebreak-and-comment-nodes barfee-loc z/left*)
+          adjust-location (fn [zloc-barf-seq]
+                            (let [left-sibs (count (zraw/lefts zloc))
+                                  barf-loc (if (z/whitespace-or-comment? zloc)
+                                             (or (z/right zloc) (z/left zloc))
+                                             zloc)]
+                              (if (= barfee-loc barf-loc)
+                                (z/right zloc-barf-seq)
+                                (-> zloc-barf-seq z/down (move-n z/right* left-sibs)))))
+          adjust-ws (fn [zloc-before-also-barf]
+                      (if (and (seq also-barf)
+                               (some-> zloc-before-also-barf z/right* z/whitespace?))
+                        (u/remove-right zloc-before-also-barf)
+                        zloc-before-also-barf))]
+      (-> barfee-loc
+          (u/remove-left-while ws/whitespace-or-comment?)
+          (u/remove-right-while ws/whitespace?)
+          u/remove-and-move-up
+          (z/insert-right (z/node barfee-loc))
+          adjust-ws
+          (reduce-into-zipper z/insert-right* also-barf)
+          adjust-location))))
 
 (defn barf-backward
-  "Push out the leftmost node of the current S-expression into outer left form.
+  "Returns `zloc` with leftmost node of the parent sequence pushed left out of the sequence.
 
-  - `[1 2 [3 |4] 5] => [1 2 3 [|4] 5]`"
+  - `[1 2 [3 |4] 5] => [1 2 3 [|4] 5]`
+  - `[1 2 3 [|4] 5] => [1 2 3 |4 [] 5]`"
   [zloc]
-  (let [barfee-loc (z/leftmost zloc)]
-    (if-not (z/up zloc)
-      zloc
-      (let [preserves (->> (-> barfee-loc
-                               z/right*
-                               (nodes-by-dir z/right* ws/whitespace-or-comment?))
-                           (filter #(or (nd/linebreak? %) (nd/comment? %))))]
-        (-> barfee-loc
-            (u/remove-left-while ws/whitespace?)
-            (u/remove-right-while ws/whitespace-or-comment?) ;; probably insert space when on same line !
-            z/remove*
-            (z/insert-left (z/node barfee-loc))
-            ((partial reduce z/insert-left) preserves)
-            (#(or (global-find-by-node % (z/node zloc))
-                  (global-find-by-node % (z/node barfee-loc)))))))))
+  (if-not (z/up zloc)
+    zloc
+    (let [barfee-loc (z/leftmost zloc)
+          also-barf (linebreak-and-comment-nodes barfee-loc z/right*)
+          adjust-location (fn [zloc-barf-seq]
+                            (let [right-sibs (count (zraw/rights zloc))
+                                  barf-loc (if (z/whitespace-or-comment? zloc)
+                                             (or (z/left zloc) (z/right zloc))
+                                             zloc)]
+
+                              (if (= barfee-loc barf-loc)
+                                (z/left zloc-barf-seq)
+                                (-> zloc-barf-seq z/down* z/rightmost* (move-n z/left* right-sibs)))))]
+      (-> barfee-loc
+          (u/remove-left-while ws/whitespace?)
+          (u/remove-right-while ws/whitespace-or-comment?)
+          u/remove-and-move-up
+          (z/insert-left (z/node barfee-loc))
+          (reduce-into-zipper z/insert-left* also-barf)
+          adjust-location))))
 
 (defn wrap-around
   "Wrap current node with a given type `t` where `t` can be one of `:vector`, `:list`, `:set`, `:map` `:fn`.
