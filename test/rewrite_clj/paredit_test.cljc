@@ -17,15 +17,31 @@
   (doseq [opts zipper-opts]
     (testing (zipper-opts-desc opts)
       (doseq [[s                             expected]
-              [["[1⊚ 2 3 4]"                 "[⊚1]"]
-               ["[1 2]⊚ ; useless comment"   "⊚[1 2]"]
+              [["⊚1 2 3 4"                   "◬"]
+               ["  ⊚1 2 3 4"                 "⊚  "]
                ["[⊚1 2 3 4]"                 "⊚[]"]
+               ["[   ⊚1 2 3 4]"              "[⊚   ]"] ;; 3 spaces are parsed as one node
+               ["⊚[]"                        "◬"]
+               ["[1⊚ 2 3 4]"                 "[⊚1]"]
+               ["[1 ⊚2 3 4]"                 "[1⊚ ]"]
+               ["[1 2 ⊚3 4]"                 "[1 2⊚ ]"]
+               ["[1 2 3 ⊚4]"                 "[1 2 3⊚ ]"]
+               ["[1 2]⊚ ; some comment"      "⊚[1 2]"]
                ["[⊚[1 2 3 4]]"               "⊚[]"]
                ["[1 2 3 4]⊚ 2"               "⊚[1 2 3 4]"]
-               ["⊚[1 2 3 4] 5"               "◬"]]]
-        (let [zloc (th/of-locmarked-string s opts)]
-          (is (= s (th/root-locmarked-string zloc)) "(sanity) before changes")
-          (is (= expected (-> zloc pe/kill th/root-locmarked-string))))))))
+               ["⊚[1 2 3 4] 5"               "◬"]
+               ["[1 [2 3]⊚ 4 5]"             "[1 ⊚[2 3]]"]
+               ["[1 [2 [3 [4]]]⊚ 5 6]"       "[1 ⊚[2 [3 [4]]]]"]
+               ["[1\n[2⊚\n[3\n4]\n5]]"       "[1\n[⊚2]]"]
+               ["[1\n[2\n[3 \n⊚  4]\n5]]"    "[1\n[2\n[3 ⊚\n]\n5]]"]
+               ["[ \n  \n  \n ⊚1 2 3 4]"     "[ \n  \n  \n⊚ ]"]
+               ["[ ⊚\n  \n 1 2 3 4]"         "[⊚ ]"]
+               ["[ \n  ⊚\n 1 2 3 4]"         "[ \n⊚  ]"] ;; multiple spaces are a single node
+               ["[ \n⊚  \n 1 2 3 4]"         "[ ⊚\n]"]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) before changes")
+            (is (= expected (-> zloc pe/kill th/root-locmarked-string)))))))))
 
 (deftest kill-at-pos-test
   ;; for this pos fn test, ⊚ in `s` represents character row/col for the `pos`

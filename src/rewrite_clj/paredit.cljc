@@ -110,22 +110,28 @@
 (defn- string-node? [zloc]
   (= (some-> zloc z/node type) (type (nd/string-node " "))))
 
+(defn- remove-right-sibs
+  [zloc]
+  (u/remove-right-while zloc (constantly true)))
+
 ;;*****************************
 ;; Paredit functions
 ;;*****************************
 
 (defn kill
-  "Kill all sibling nodes to the right of the current node in `zloc`.
+  "Returns `zloc` with the current node and all sibling nodes to the right removed.
+  Locates `zloc` to node left of deleted node, else if no left node removes current node via [[rewrite-clj.zip/remove*]].
 
-  - `[1 2| 3 4] => [1 2|]`"
+  Makes no automatic whitespace adjustments.
+
+  - `[1 |2 3 4]  => [1| ]`
+  - `[1 2 |3 4]  => [1 2| ]`
+  - `[|1 2 3 4]  => |[]`
+  - `[ |1 2 3 4]  => [| ]`"
   [zloc]
-  (let [left (z/left* zloc)]
-    (-> zloc
-        (u/remove-right-while (constantly true))
-        z/remove*
-        (#(if left
-            (global-find-by-node % (z/node left))
-            %)))))
+  (let [zloc (remove-right-sibs zloc)]
+    (or (u/remove-and-move-left zloc)
+        (z/remove* zloc))))
 
 (defn- kill-in-string-node [zloc pos]
   (if (= (z/string zloc) "\"\"")
