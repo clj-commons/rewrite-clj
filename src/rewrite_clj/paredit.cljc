@@ -686,25 +686,38 @@
       zloc)))
 
 (defn split
-  "Split current s-sexpression in two at given node `zloc`
+  "Return `zloc` with parent sequence split into to two sequences at current node.
+  Location is retained. If split would result in empty seq, returns `zloc` unchanged.
 
-  -  `[1 2 |3 4 5] => [1 2 3] [4 5]`"
+  -  `[1 2 |3 4 5]       => [1 2 |3] [4 5]`
+  -  `{|:a 1 :b 2}       => {|:a} {:1 :b 2}`
+  -  `#{:a |:b :c}       => #{:a |:b} #{:c}`
+  -  `(foo |bar baz boo) => (foo |:bar) (baz boop)`
+  -  `[1 2 3 4 |5]       => [1 2 3 4 |5]` unchanged"
   [zloc]
   (let [parent-loc (z/up zloc)]
     (if-not parent-loc
       zloc
       (let [t (z/tag parent-loc)
-            lefts (reverse (remove-first-if-ws (rest (nodes-by-dir (z/right zloc) z/left*))))
-            rights (remove-first-if-ws (nodes-by-dir (z/right zloc) z/right*))]
-
+            lefts (-> zloc
+                      z/right
+                      (nodes-by-dir z/left*)
+                      rest
+                      remove-first-if-ws
+                      reverse)
+            rights (-> zloc
+                       z/right
+                       (nodes-by-dir z/right*)
+                       remove-first-if-ws)]
         (if-not (and (seq lefts) (seq rights))
           zloc
           (-> parent-loc
               (z/insert-left (create-seq-node t lefts))
               (z/insert-left (create-seq-node t rights))
-              z/remove
-              (#(or (global-find-by-node % (z/node zloc))
-                    (global-find-by-node % (last lefts))))))))))
+              rz/remove-and-move-left
+              z/left
+              z/down
+              z/rightmost))))))
 
 (defn- split-string [zloc pos]
   (let [bounds (-> zloc z/node meta)

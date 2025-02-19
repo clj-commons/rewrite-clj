@@ -413,14 +413,21 @@
     (testing (zipper-opts-desc opts)
       (doseq [[s                                       expected]
               [["[⊚1 2]"                               "[⊚1] [2]"]
+               ["[1 2 ⊚3 4 5]"                         "[1 2 ⊚3] [4 5]"]
                ["[1 ⊚2 3 4]"                           "[1 ⊚2] [3 4]"]
                ["[1 2⊚ 3 4]"                           "[1 ⊚2] [3 4]"]
-               ["[⊚1]"                                 "[⊚1]"] ;; no-op
+               ["[⊚1 2 3 4 5]"                         "[⊚1] [2 3 4 5]"]
+               ["[⊚1]"                                 "[⊚1]"]         ;; no-op
+               ["[1 2 3 4 ⊚5]"                         "[1 2 3 4 ⊚5]"] ;; no-op
+               ["{⊚:a 1 :b 2}"                         "{⊚:a} {1 :b 2}"]
+               ["(foo ⊚bar baz boop)"                  "(foo ⊚bar) (baz boop)"]
+               ["#{:a ⊚:b :c}"                         "#{:a ⊚:b} #{:c}"]
                ["[⊚1 ;dill\n]"                         "[⊚1 ;dill\n]"] ;; no-op
                ["\n[1 ;dill\n ⊚2 ;dall\n 3 ;jalla\n]"  "\n[1 ;dill\n ⊚2 ;dall\n] [3 ;jalla\n]"]]]
-        (let [zloc (th/of-locmarked-string s opts)]
-          (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
-          (is (= expected (-> zloc pe/split th/root-locmarked-string)) "string after"))))))
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
+            (is (= expected (-> zloc pe/split th/root-locmarked-string)) "string after")))))))
 
 (deftest split-at-pos-test
   ;; for this pos fn test, ⊚ in `s` represents character row/col the the `pos`
