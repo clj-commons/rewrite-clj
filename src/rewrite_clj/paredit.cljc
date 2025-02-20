@@ -51,18 +51,13 @@
     loc
     (->> loc (iterate f) (take (inc n)) last)))
 
-(defn- top
-  [zloc]
-  (->> zloc
-       (iterate z/up)
+(defn- count-moves [zloc f]
+  (->> (iterate f zloc)
        (take-while identity)
-       last))
+       count))
 
-(defn- global-find-by-node
-  [zloc n]
-  (-> zloc
-      top
-      (z/find z/next* #(= (meta (z/node %)) (meta n)))))
+(defn- thread-friendly-skip [zloc f p?]
+  (ws/skip f p? zloc))
 
 (defn- nodes-by-dir
   ([zloc f] (nodes-by-dir zloc f constantly))
@@ -420,7 +415,6 @@
               (take (inc n-slurps))
               last))))))
 
-
 (defn ^{:deprecated "1.1.49"} slurp-forward-fully
   "DEPRECATED: We recommend [[slurp-forward-fully-into]]] for more control.
 
@@ -657,33 +651,56 @@
   "See [[rewrite-clj.zip/splice]]"
   z/splice)
 
-(defn- splice-killing
-  [zloc f]
-  (if-not (z/up zloc)
-    zloc
-    (-> zloc
-        (f (constantly true))
-        z/up
-        splice
-        (global-find-by-node (z/node zloc)))))
-
 (defn splice-killing-backward
-  "Remove left siblings of current given node in S-Expression and unwrap remaining into enclosing S-expression
+  "Return `zloc` with current and right siblings spliced into parent sequence.
 
-  - `(foo (let ((x 5)) |(sqrt n)) bar) => (foo (sqrt n) bar)`"
+  - `(a (b c |d e f) g) => (a |d e f g)`
+  - `(foo (let ((x 5)) |(sqrt n)) bar) => (foo |(sqrt n) bar)`"
   [zloc]
-  (splice-killing zloc u/remove-left-while))
+  (cond
+    (not (z/up zloc))
+    zloc
+
+    (empty-seq? (z/up zloc))
+    (let [zloc-parent (z/up zloc)]
+      (or
+        (some-> zloc-parent z/left (u/remove-right-while z/whitespace?) u/remove-right)
+        (some-> zloc-parent z/right (u/remove-left-while z/whitespace?) u/remove-left)
+        (-> zloc-parent z/remove)))
+
+    :else
+    (-> zloc
+        (u/remove-left-while (constantly true))
+        z/up
+        splice)))
 
 (defn splice-killing-forward
-  "Remove current given node and its right siblings in S-Expression and unwrap remaining into enclosing S-expression
+  "Return `zloc` with left siblings spliced into parent sequence.
 
-  - `(a (b c |d e) f) => (a b |c f)`"
+  - `(a (b c |d e f) g) => (a b |c g)`"
   [zloc]
-  (if (and (z/up zloc) (not (z/leftmost? zloc)))
-    (splice-killing (z/left zloc) u/remove-right-while)
-    (if (z/up zloc)
-      (-> zloc z/up z/remove)
-      zloc)))
+  (cond
+    (not (z/up zloc))
+    zloc
+
+    (or (z/leftmost? zloc) (empty-seq? (z/up zloc)))
+    (let [zloc-parent (z/up zloc)]
+      (or
+        (some-> zloc-parent z/left (u/remove-right-while z/whitespace?) u/remove-right)
+        (some-> zloc-parent z/right (u/remove-left-while z/whitespace?) u/remove-left)
+        (-> zloc-parent z/remove)))
+
+    :else
+    (let [n-right-sibs-parent (-> zloc z/up (count-moves z/right))
+          zloc (-> zloc
+                   kill
+                   (thread-friendly-skip z/left* z/whitespace?))
+          n-left-sibs-seq (count-moves zloc z/left)]
+        (-> zloc
+            z/up
+            splice
+            z/rightmost
+            (move-n z/left (inc (- n-right-sibs-parent n-left-sibs-seq)))))))
 
 (defn split
   "Return `zloc` with parent sequence split into to two sequences at current node.
@@ -719,20 +736,20 @@
               z/down
               z/rightmost))))))
 
-(defn- split-string [zloc pos]
-  (let [bounds (-> zloc z/node meta)
-        row-idx (- (:row pos) (:row bounds))
+(defn- split-string [zloc [split-row split-col]]
+  (let [[elem-row elem-col] (z/position zloc)
+        lines-ndx (- split-row elem-row)
         lines (-> zloc z/node :lines)
-        split-col (if-not (= (:row pos) (:row bounds))
-                    (dec (:col pos))
-                    (- (:col pos) (inc (:col bounds))))]
+        split-col (if-not (= split-row elem-row)
+                    (dec split-col)
+                    (- split-col (inc elem-col)))]
     (-> zloc
         (z/replace (nd/string-node
-                    (-> (take (inc row-idx) lines)
+                    (-> (take (inc lines-ndx) lines)
                         vec
-                        (update-in [row-idx] #(subs % 0 split-col)))))
+                        (update-in [lines-ndx] #(subs % 0 split-col)))))
         (z/insert-right (nd/string-node
-                         (-> (drop row-idx lines)
+                         (-> (drop lines-ndx lines)
                              vec
                              (update-in [0] #(subs % split-col))))))))
 
@@ -750,9 +767,12 @@
   - `(\"Hello |World\") => (|\"Hello\" \"World\")`"
   [zloc pos]
   (if-let [candidate (z/find-last-by-pos zloc pos)]
-    (let [pos (fz/pos-as-map pos)
-          candidate-pos (fz/pos-as-map (-> candidate z/position fz/pos-as-map))]
-      (if (and (string-node? candidate) (not= pos candidate-pos))
+    (let [pos (fz/pos-as-vec pos)
+          [candidate-pos candidate-end-pos] (-> candidate z/position-span)
+          candidate-end-pos (update candidate-end-pos 1 dec)]
+      (if (and (string-node? candidate)
+               (not= pos candidate-pos)
+               (not= pos candidate-end-pos))
         (split-string candidate pos)
         (split candidate)))
     zloc))

@@ -1,5 +1,6 @@
 (ns rewrite-clj.paredit-test
   (:require [clojure.test :refer [deftest is testing]]
+            [rewrite-clj.node :as n]
             [rewrite-clj.paredit :as pe]
             [rewrite-clj.zip :as z]
             [rewrite-clj.zip.test-helper :as th]))
@@ -391,22 +392,55 @@
             (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
             (is (= expected (-> zloc (pe/wrap-fully-forward-slurp t) th/root-locmarked-string)) "string after")))))))
 
+;; TODO what about comments?
 (deftest splice-killing-backward-test
   (doseq [opts zipper-opts]
-    (testing (zipper-opts-desc opts)
-      (let [res (-> (th/of-locmarked-string "(foo (let ((x 5)) ⊚(sqrt n)) bar)" opts)
-                    pe/splice-killing-backward)]
-        (is (= "(foo ⊚(sqrt n) bar)" (th/root-locmarked-string res)))))))
+    (testing (str "zipper opts" opts)
+      (doseq [[s                                              expected]
+              [["(foo (let ((x 5)) ⊚(sqrt n)) bar)"           "(foo ⊚(sqrt n) bar)"]
+               ["(  a  (  b  c  ⊚d  e  f)  g)"                "(  a  ⊚d  e  f  g)"]
+               ["(  [a]  (  [b]  [c]  ⊚[d]  [e]  [f])  [g])"  "(  [a]  ⊚[d]  [e]  [f]  [g])"]
+               ["(  [a]  (  [b]  [c]  [d]  [e]  ⊚[f])  [g])"  "(  [a]  ⊚[f]  [g])"]
+               ["(  (⊚ )  [g])"                               "(  ⊚[g])"]
+               ["(  [a]  (⊚ ))"                               "(  ⊚[a])"]
+               ["(  (⊚ ))"                                    "⊚()"]
+               ["[⊚1]"                                        "⊚1"]
+               ["[⊚1 2]"                                      "⊚1 2"]
+               ["[1 2 ⊚3 4 5]"                                "⊚3 4 5"]
+               ["[1 2⊚ 3 4 5]"                                "⊚3 4 5"]
+               ["[1 2 3 4 5⊚ ]"                               "◬"]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)
+                res (pe/splice-killing-backward zloc)]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) s before change")
+            (is (= expected (th/root-locmarked-string res)) "root-string after")))))))
 
+;; TODO what about comments?
 (deftest splice-killing-forward-test
   (doseq [opts zipper-opts]
-    (testing (zipper-opts-desc opts)
-      (doseq [[s                          expected]
-              [["(a (b c ⊚d e) f)"        "(a b ⊚c f)"]
-               ["(a (⊚b c d e) f)"        "(⊚a f)"]]]
-        (let [zloc (th/of-locmarked-string s opts)]
-          (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
-          (is (= expected (-> zloc pe/splice-killing-forward th/root-locmarked-string)) "string after"))))))
+    (testing (str "zipper opts" opts)
+      (doseq [[s                                              expected]
+              [["(a (b c ⊚d e f) g)"                          "(a b ⊚c g)"]
+               ["(a (⊚b c d e) f)"                            "(⊚a f)"]
+               ["(  a  (  b  c  ⊚d  e  f)  g)"                "(  a  b  ⊚c  g)"]
+               ["(  [a]  (  [b]  [c]  ⊚[d]  [e]  [f])  [g])"  "(  [a]  [b]  ⊚[c]  [g])"]
+               ["(  [a]  (  ⊚[b]  [c]  [d]  [e]  [f])  [g])"  "(  ⊚[a]  [g])"]
+               ["(  (  ⊚[b]  [c]  [d]  [e]  [f])  [g])"       "(  ⊚[g])"]
+               ["(  [a]  (  ⊚[b]  [c]  [d]  [e]  [f]))"       "(  ⊚[a])"]
+               ["(  (  ⊚[b]  [c]  [d]  [e]  [f]))"            "⊚()"]
+               ["(  (⊚ )  [g])"                               "(  ⊚[g])"]
+               ["(  [a]  (⊚ ))"                               "(  ⊚[a])"]
+               ["(  (⊚ ))"                                    "⊚()"]
+               ["[⊚1]"                                        "◬"]
+               ["[⊚1 2]"                                      "◬"]
+               ["[1 2 ⊚3 4 5]"                                "1 ⊚2"]
+               ["[1 2⊚ 3 4 5]"                                "1 ⊚2"]
+               ["[ ⊚1 2 3 4 5 ]"                              "◬"]]]
+        (testing s
+          (let [zloc (th/of-locmarked-string s opts)
+                res (pe/splice-killing-forward zloc)]
+            (is (= s (th/root-locmarked-string zloc)) "(sanity) s before change")
+            (is (= expected (th/root-locmarked-string res)) "root-string after")))))))
 
 (deftest split-test
   (doseq [opts zipper-opts]
@@ -436,6 +470,8 @@
           [["(\"Hello ⊚World\" 42)"                "(⊚\"Hello \" \"World\" 42)"]
            ["(\"⊚Hello World\" 101)"               "(⊚\"\" \"Hello World\" 101)"]
            ["(\"H⊚ello World\" 101)"               "(⊚\"H\" \"ello World\" 101)"]
+           ["(\"Hello World⊚\" 101)"               "(⊚\"Hello World\") (101)"]
+           ["bingo bango (\"Hello\n Wor⊚ld\" 101)" "bingo bango (⊚\"Hello\n Wor\" \"ld\" 101)"]
            ["(⊚\"Hello World\" 101)"               "(⊚\"Hello World\") (101)"]]]
     (let [{:keys [pos s]} (th/pos-and-s s)
           zloc (z/of-string* s {:track-position? true})]
@@ -485,3 +521,52 @@
         (let [zloc (th/of-locmarked-string s opts)]
           (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
           (is (= expected (-> zloc pe/move-to-prev th/root-locmarked-string)) "string after"))))))
+
+(deftest ops-on-changed-zipper-test
+  (doseq [opts zipper-opts]
+    (testing (str "zipper opts " opts)
+      ;; create our zipper dynamically to avoid any reader metadata
+      ;; we used to rely on this metadata and it was a problem
+      ;; see https://github.com/clj-commons/rewrite-clj/issues/256
+      (let [zloc (-> (z/of-node (n/forms-node
+                                  [(n/token-node 'foo) (n/spaces 1)
+                                   (n/list-node
+                                     [(n/token-node 'bar) (n/spaces 1)
+                                      (n/token-node 'baz) (n/spaces 1)
+                                      (n/vector-node
+                                        [(n/token-node 1) (n/spaces 1)
+                                         (n/token-node 2)])
+                                      (n/spaces 1)
+                                      (n/vector-node
+                                        [(n/token-node 3) (n/spaces 1)
+                                         (n/token-node 4)])
+                                      (n/spaces 1)
+                                      (n/keyword-node :bip) (n/spaces 1)
+                                      (n/keyword-node :bop)])
+                                   (n/spaces 1)
+                                   (n/token-node :bap)])
+                                opts)
+                     z/right z/down z/right z/right z/down)]
+        ;;               1         2         3         4
+        ;;      12345678901234567890123456789012345678901
+        (is (= "foo (bar baz [⊚1 2] [3 4] :bip :bop) :bap" (th/root-locmarked-string zloc)) "(sanity) before")
+        (is (= "foo (bar baz ⊚1 [2] [3 4] :bip :bop) :bap" (-> zloc pe/barf-backward th/root-locmarked-string)))
+        (is (= "foo (bar baz [⊚1] 2 [3 4] :bip :bop) :bap" (-> zloc pe/barf-forward th/root-locmarked-string)))
+        (is (= "foo (bar baz [1 2 ⊚3 4] :bip :bop) :bap" (-> zloc z/up z/right pe/join th/root-locmarked-string)))
+        (is (= "foo (bar baz ⊚[] [3 4] :bip :bop) :bap" (-> zloc pe/kill th/root-locmarked-string)))
+        (when (:track-position? opts)
+          (is (= "foo (bar baz [1 2] [3 4]⊚ ) :bap" (-> zloc (pe/kill-at-pos {:row 1 :col 28}) th/root-locmarked-string))))
+        (is (= "foo (bar baz ⊚1 [2] [3 4] :bip :bop) :bap" (-> zloc pe/move-to-prev th/root-locmarked-string)))
+        (is (= "foo (bar baz ⊚1 [3 4] :bip :bop) :bap" (-> zloc pe/raise th/root-locmarked-string)))
+        (is (= "foo (bar [baz ⊚1 2] [3 4] :bip :bop) :bap" (-> zloc pe/slurp-backward th/root-locmarked-string)))
+        (is (= "foo ([bar baz ⊚1 2] [3 4] :bip :bop) :bap" (-> zloc pe/slurp-backward-fully th/root-locmarked-string)))
+        (is (= "foo (bar baz [⊚1 2 [3 4]] :bip :bop) :bap" (-> zloc pe/slurp-forward th/root-locmarked-string)))
+        (is (= "foo (bar baz [1 2] [⊚3 4 :bip :bop]) :bap" (-> zloc z/up z/right z/down pe/slurp-forward-fully th/root-locmarked-string)))
+        (is (= "foo (bar baz ⊚1 2 [3 4] :bip :bop) :bap" (-> zloc z/up pe/splice th/root-locmarked-string)))
+        (is (= "foo (bar baz ⊚2 [3 4] :bip :bop) :bap" (-> zloc z/right pe/splice-killing-backward th/root-locmarked-string)))
+        (is (= "foo (bar baz ⊚2 [3 4] :bip :bop) :bap" (-> zloc z/right pe/splice-killing-backward th/root-locmarked-string)))
+        (is (= "foo (bar baz [⊚1] [2] [3 4] :bip :bop) :bap" (-> zloc pe/split th/root-locmarked-string)))
+        (when (:track-position? opts)
+          (is (= "foo (bar baz [1 2] [⊚3] [4] :bip :bop) :bap" (-> zloc (pe/split-at-pos {:row 1 :col 22}) th/root-locmarked-string))))
+        (is (= "foo (bar baz [#{⊚1} 2] [3 4] :bip :bop) :bap" (-> zloc (pe/wrap-around :set) th/root-locmarked-string)))
+        (is (= "foo (bar baz [{⊚1 2}] [3 4] :bip :bop) :bap" (-> zloc (pe/wrap-fully-forward-slurp :map) th/root-locmarked-string)))))))
