@@ -29,14 +29,14 @@
            ;;
            :nrepl
            {:extra-deps {nrepl/nrepl {:mvn/version "1.3.1"}
-                         cider/cider-nrepl {:mvn/version "0.52.0"}}
+                         cider/cider-nrepl {:mvn/version "0.52.1"}}
             :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
 
            :flowstorm
            {;; for disabling the official compiler
             :classpath-overrides {org.clojure/clojure nil}
-            :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.0-3"}
-                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.1.2"}}
+            :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.0-4"}
+                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.2.0"}}
             :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
 
            :nrepl/jvm
@@ -59,7 +59,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2025.01.16"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2025.02.20"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.12.0"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
@@ -168,8 +168,8 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.11.1264"}
-                                   org.slf4j/slf4j-simple {:mvn/version "2.0.16"} ;; to rid ourselves of logger warnings
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.11.1269"}
+                                   org.slf4j/slf4j-simple {:mvn/version "2.0.17"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.12.0"}}
                       :main-opts ["-m" "antq.core"
