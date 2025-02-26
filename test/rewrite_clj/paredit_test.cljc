@@ -3,7 +3,8 @@
             [rewrite-clj.node :as n]
             [rewrite-clj.paredit :as pe]
             [rewrite-clj.zip :as z]
-            [rewrite-clj.zip.test-helper :as th]))
+            [rewrite-clj.zip.test-helper :as th]
+            [rewrite-clj.node :as nd]))
 
 ;; special positional markers recognized by test-helper fns
 ;; ⊚ - node location
@@ -164,34 +165,43 @@
 (deftest slurp-foward-into-test
   (doseq [opts zipper-opts]
     (testing (str "zipper opts " opts)
-      (doseq [[s                                      expected-from-parent               expected-from-current]
-              [["[[1 ⊚2] 3 4]"                        "[[1 ⊚2 3] 4]"                     :ditto]
-               ["[[⊚1 2] 3 4]"                        "[[⊚1 2 3] 4]"                     :ditto]
-               ["[[1⊚ 2] 3 4]"                        "[[1⊚ 2 3] 4]"                     :ditto]
-               ["[⊚[] 1 2 3]"                         "[⊚[] 1 2 3]"                      "[⊚[1] 2 3]"]
-               ["[⊚[1] 2 3]"                          "[⊚[1] 2 3]"                       "[⊚[1 2] 3]"]
-               ["[[⊚1] 2 3]"                          "[[⊚1 2] 3]"                       :ditto]
-               ["[[1⊚ 2] 3 4]"                        "[[1⊚ 2 3] 4]"                     :ditto]
-               ["[[[⊚1 2]] 3 4]"                      "[[[⊚1 2] 3] 4]"                   :ditto]
-               ["[[[[[⊚1 2]]]] 3 4]"                  "[[[[[⊚1 2]]] 3] 4]"               :ditto]
-               ["[1 [⊚2 [3 4]] 5]"                    "[1 [⊚2 [3 4] 5]]"                 :ditto]
-               ["[[1 [⊚2]] 3 4]"                      "[[1 [⊚2] 3] 4]"                   :ditto]
-               ["[:a :b [:c :d :e [⊚:f]]] :g"         "[:a :b [:c :d :e [⊚:f]] :g]"      :ditto]
-               ["(get ⊚:x) :a"                        "(get ⊚:x :a)"                     :ditto]
-               ["(get ⊚{}) :a"                        "(get ⊚{} :a)"                     :ditto]
-               ["(get ⊚{} :a)"                        "(get ⊚{} :a)"                     "(get ⊚{:a})"]
-               ["(get ⊚{:a} :b)"                      "(get ⊚{:a} :b)"                   "(get ⊚{:a :b})"]
-               ["⊚[#_uneval] :a"                      "⊚[#_uneval] :a"                   "⊚[#_uneval :a]"]
-               ["[⊚#_uneval] :a"                      "[⊚#_uneval :a]"                   "[⊚#_uneval :a]"]
-               ["(a ⊚[    ] b) c"                     "(a ⊚[    ] b c)"                  "(a ⊚[    b]) c"]
-               ["(a [  ⊚b   ] c) d"                   "(a [  ⊚b   c]) d"                 :ditto]
-               ["(let [⊚dill]\n  {:a 1}\n  {:b 2})"   "(let [⊚dill\n{:a 1}]\n  {:b 2})"  :ditto]
-               ["(a [⊚foo]\n#_b  c)"                  "(a [⊚foo\n#_b]  c)"               :ditto
-               ["(a ⊚b c);; comment\n(d e f)"         "(a ⊚b c ;; comment\n(d e f))"     :ditto]]]]
+      (doseq [[s                                         expected-from-parent                    expected-from-current]
+              [["[[1 ⊚2] 3 4]"                           "[[1 ⊚2 3] 4]"                          :ditto]
+               ["[[⊚1 2] 3 4]"                           "[[⊚1 2 3] 4]"                          :ditto]
+               ["[[1⊚ 2] 3 4]"                           "[[1⊚ 2 3] 4]"                          :ditto]
+               ["[⊚[] 1 2 3]"                            "[⊚[] 1 2 3]"                           "[⊚[1] 2 3]"]
+               ["[⊚[1] 2 3]"                             "[⊚[1] 2 3]"                            "[⊚[1 2] 3]"]
+               ["[[⊚1] 2 3]"                             "[[⊚1 2] 3]"                            :ditto]
+               ["[[1⊚ 2] 3 4]"                           "[[1⊚ 2 3] 4]"                          :ditto]
+               ["[[[⊚1 2]] 3 4]"                         "[[[⊚1 2] 3] 4]"                        :ditto]
+               ["[[[[[⊚1 2]]]] 3 4]"                     "[[[[[⊚1 2]]] 3] 4]"                    :ditto]
+               ["[1 [⊚2 [3 4]] 5]"                       "[1 [⊚2 [3 4] 5]]"                      :ditto]
+               ["[[1 [⊚2]] 3 4]"                         "[[1 [⊚2] 3] 4]"                        :ditto]
+               ["[:a :b [:c :d :e [⊚:f]]] :g"            "[:a :b [:c :d :e [⊚:f]] :g]"           :ditto]
+               ["(get ⊚:x) :a"                           "(get ⊚:x :a)"                          :ditto]
+               ["(get ⊚{}) :a"                           "(get ⊚{} :a)"                          :ditto]
+               ["(get ⊚{} :a)"                           "(get ⊚{} :a)"                          "(get ⊚{:a})"]
+               ["(get ⊚{:a} :b)"                         "(get ⊚{:a} :b)"                        "(get ⊚{:a :b})"]
+               ["⊚[#_uneval] :a"                         "⊚[#_uneval] :a"                        "⊚[#_uneval :a]"]
+               ["[⊚#_uneval] :a"                         "[⊚#_uneval :a]"                        "[⊚#_uneval :a]"]
+               ["(a ⊚[    ] b) c"                        "(a ⊚[    ] b c)"                       "(a ⊚[    b]) c"]
+               ["(a [  ⊚b   ] c) d"                      "(a [  ⊚b   c]) d"                      :ditto]
+               ["(let [⊚dill]\n  {:a 1}\n  {:b 2})"      "(let [⊚dill\n{:a 1}]\n  {:b 2})"       :ditto]
+               ["(a [⊚foo]\n#_b  c)"                     "(a [⊚foo\n#_b]  c)"                    :ditto]
+               ["(a ⊚b c);; comment\n(d e f)"            "(a ⊚b c ;; comment\n(d e f))"          :ditto]
+               ["[:left '[foo⊚ bar]  :right]"            "[:left '[foo⊚ bar :right]]"            :ditto]
+               ["[:left ''''[foo⊚ bar]  :right]"         "[:left ''''[foo⊚ bar :right]]"         :ditto]
+               ["[:left ''''[foo ⊚'bar]  :right]"        "[:left ''''[foo ⊚'bar :right]]"        :ditto]
+               ["[:left ''''[foo ⊚'[bar]]  :right]"      "[:left ''''[foo ⊚'[bar] :right]]"      :ditto]
+               ["[:left ''''[foo ⊚'[bar]]  :right]"      "[:left ''''[foo ⊚'[bar] :right]]"      :ditto]
+               ["[:left ''''[foo ⊚'[bar] :baz] :right]"  "[:left ''''[foo ⊚'[bar] :baz :right]]" "[:left ''''[foo ⊚'[bar :baz]] :right]"]
+               ["[:left ''''[foo '⊚[bar] :baz] :right]"  "[:left ''''[foo '⊚[bar] :baz :right]]" "[:left ''''[foo '⊚[bar :baz]] :right]"]
+               ]]
+
         (testing s
-          (let [zloc (th/of-locmarked-string s opts)
-                res-from-parent (pe/slurp-forward-into zloc {:from :parent})
-                res-default (pe/slurp-forward-into zloc)
+          (let [zloc             (th/of-locmarked-string s opts)
+                res-from-parent  (pe/slurp-forward-into zloc {:from :parent})
+                res-default      (pe/slurp-forward-into zloc)
                 res-from-current (pe/slurp-forward-into zloc {:from :current})]
             (is (= s (th/root-locmarked-string zloc)) "(sanity) s before change")
             (is (= expected-from-parent (th/root-locmarked-string res-default)) "root-string after default slurp")
@@ -199,6 +209,52 @@
             (if (= :ditto expected-from-current)
               (is (= expected-from-parent (th/root-locmarked-string res-from-current)) "root-string after from current same as from parent")
               (is (= expected-from-current (th/root-locmarked-string res-from-current)) "root-string after from current"))))))))
+
+
+(comment
+  (-> "[:left ''''[foo ⊚'[bar] :baz] :right]"
+      (th/of-locmarked-string {})
+      (pe/slurp-forward-into {:from :current})
+      (th/root-locmarked-string))
+  ;; => "[:left ''''[foo ⊚'[bar :baz]] :right]"
+
+  ;; => "[:left ''''⊚[foo '[bar :baz]] :right]"
+
+  (-> "[:left ''''[foo '⊚[bar] :baz] :right]"
+      (th/of-locmarked-string {})
+      (pe/slurp-forward-into {:from :parent})
+      (th/root-locmarked-string))
+  ;; => "[:left ''''[foo '⊚[bar] :baz] :right]"
+
+
+  (nd/reader-macro-node [(n/token-node 3) (n/token-node 3)])
+
+
+  (n/meta-node (n/map-node [:foo (n/spaces 1) 42])
+               (n/vector-node [(n/token-node 1)]))
+
+  (n/uneval-node [(n/token-node 3) (n/token-node 2)] )
+
+
+  (-> "#_#_#_ 1 2 3"
+      z/of-string
+      z/down
+      z/down)
+
+  (-> "#_ 1 #_ 2"
+      z/of-string
+      z/right)
+
+  (-> "#^{:foo 42} [2]"
+      z/of-string
+      z/tag)
+
+  (-> "#?clj:")
+
+  (-> "[:left ''''[foo ⊚'[bar] :baz] :right]")
+
+  :eoc)
+
 
 (deftest slurp-foward-fully-into-test
   (doseq [opts zipper-opts]
@@ -570,3 +626,17 @@
           (is (= "foo (bar baz [1 2] [⊚3] [4] :bip :bop) :bap" (-> zloc (pe/split-at-pos {:row 1 :col 22}) th/root-locmarked-string))))
         (is (= "foo (bar baz [#{⊚1} 2] [3 4] :bip :bop) :bap" (-> zloc (pe/wrap-around :set) th/root-locmarked-string)))
         (is (= "foo (bar baz [{⊚1 2}] [3 4] :bip :bop) :bap" (-> zloc (pe/wrap-fully-forward-slurp :map) th/root-locmarked-string)))))))
+
+
+(comment
+  (-> "#?(:clj  (Clojure expression)
+   :cljs (ClojureScript expression)
+   :cljr (Clojure CLR expression)
+   :default (fallthrough expression))"
+      z/of-string
+      z/tag)
+
+  (-> "#foo"
+      )
+
+  :eoc)
