@@ -673,7 +673,7 @@
            "  (println x))")
         positions (->> (p/parse-string-all s)
                        (nodes-with-meta))]
-    (doseq [[pos end t s sexpr]
+    (doseq [[pos     end    t       s              sexpr]
             [[[1 1]  [3 15] :list   s              '(defn f [x] (println x))]
              [[1 2]  [1 6]  :token  "defn"         'defn]
              [[1 7]  [1 8]  :token  "f"            'f]
@@ -687,17 +687,52 @@
         (is (= s (node/string node)))
         (is (= sexpr (node/sexpr node)))
         (is (= end end-pos)))))
-  ;; root node
-  (let [s (str
-           ;1234567890
-           "(def a 1)\n"
-           "(def b\n"
-           "  2)")
-        n (p/parse-string-all s)
-        start-pos ((juxt :row :col) (meta n))
-        end-pos ((juxt :end-row :end-col) (meta n))]
-    (is (= [1 1] start-pos))
-    (is (= [3 5] end-pos))))
+  (testing "root node"
+    (let [s (str
+              ;1234567890
+             "(def a 1)\n"
+             "(def b\n"
+             "  2)")
+          n (p/parse-string-all s)
+          start-pos ((juxt :row :col) (meta n))
+          end-pos ((juxt :end-row :end-col) (meta n))]
+      (is (= [1 1] start-pos))
+      (is (= [3 5] end-pos))))
+  (testing "nodes at eof" ;; in response to https://github.com/clj-commons/rewrite-clj/issues/367
+    (doseq [[all-meta last-meta s s-last-node]
+            [[{:row 1 :col 1 :end-row 1 :end-col 2}
+              {:row 1 :col 1 :end-row 1 :end-col 2}
+              "x"
+              "x"]
+             [{:row 1 :col 1 :end-row 1 :end-col 4}
+              {:row 1 :col 1 :end-row 1 :end-col 4}
+              "123"
+              "123"]
+             [{:row 1 :col 1 :end-row 1 :end-col 5}
+              {:row 1 :col 1 :end-row 1 :end-col 5}
+              ":foo"
+              ":foo"]
+             [{:row 1 :col 1 :end-row 1 :end-col 7}
+              {:row 1 :col 1 :end-row 1 :end-col 7}
+              "[:foo]"
+              "[:foo]"]
+             [{:row 1 :col 1 :end-row 2 :end-col 4}
+              {:row 2 :col 3 :end-row 2 :end-col 4}
+              "  \n  x"
+              "x"]
+             [{:row 1 :col 1 :end-row 2 :end-col 6}
+              {:row 2 :col 4 :end-row 2 :end-col 6}
+              "  \n  x  "
+              "  "]]]
+      (testing s
+        (let [all-nodes (p/parse-string-all s)
+              last-node (-> all-nodes
+                            node/children
+                            last)]
+          (is (= s (node/string all-nodes)))
+          (is (= s-last-node (node/string last-node)))
+          (is (= all-meta (meta all-nodes)))
+          (is (= last-meta (meta last-node))))))))
 
 (deftest t-os-specific-line-endings
   (doseq [[in expected]
