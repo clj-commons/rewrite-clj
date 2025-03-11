@@ -26,7 +26,7 @@ A release with known breaking changes is marked with:
 
 * `rewrite-clj.zip/insert-right` and `rewrite-clj.zip/append-child` no longer insert a space when inserting/appending after a comment node.
 {issue}346[#346] ({lread})
-* `:end-col` metadata now correct for keywords at end of content
+* bump `clojure/tools.reader` to correct `:end-col` metadata for keywords at end of content
 {issue}367[#367] ({lread})
 * `rewrite.clj.paredit`
 ** now supports paredit ops on new/changed nodes in a zipper
