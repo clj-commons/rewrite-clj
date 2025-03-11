@@ -55,7 +55,7 @@ jobs:
       ## instead of using lein bundled with github actions image.
       ## Upcoming 2.11.2 might fix, can optionally revisit in the future.
       - name: Install Lein
-        uses: DeLaGuardo/setup-clojure@13.1
+        uses: DeLaGuardo/setup-clojure@13.2
         with:
           lein: 2.10.0
 
