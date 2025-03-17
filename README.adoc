@@ -19,7 +19,7 @@ https://cljdoc.org/d/{project-mvn-coords}/CURRENT[image:https://cljdoc.org/badge
 https://codecov.io/gh/{project-src-coords}[image:https://codecov.io/gh/{project-src-coords}/branch/main/graph/badge.svg[Code Coverage]]
 https://clojurians.slack.com/messages/CHB5Q2XUJ[image:https://img.shields.io/badge/slack-join_chat-brightgreen.svg[Join chat]]
 https://clojars.org/rewrite-clj[image:https://img.shields.io/clojars/v/rewrite-clj.svg[Clojars project]]
-https://babashka.org[image:https://raw.githubusercontent.com/babashka/babashka/master/logo/built-in-badge.svg[bb built-in]]
+https://book.babashka.org#badges[image:https://raw.githubusercontent.com/babashka/babashka/master/logo/built-in-badge.svg[bb built-in]]
 link:#contributors[image:https://img.shields.io/badge/all_contributors-{num-contributors}-blueviolet.svg?style=flat[Contributors]]
 
 A library that reads and writes Clojure, ClojureScript and https://github.com/edn-format/edn[EDN] from Clojure and ClojureScript in a whitespace and comment preserving way.
