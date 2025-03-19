@@ -36,7 +36,7 @@
            {;; for disabling the official compiler
             :classpath-overrides {org.clojure/clojure nil}
             :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.0-9"}
-                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.2.1"}}
+                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.2.2"}}
             :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
 
            :nrepl/jvm
@@ -168,7 +168,7 @@
            ;;
            ;; Maintenance support
            ;;
-           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.11.1269"}
+           :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.11.1276"}
                                    org.slf4j/slf4j-simple {:mvn/version "2.0.17"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.12.0"}}
