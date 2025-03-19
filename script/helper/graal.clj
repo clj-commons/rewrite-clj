@@ -97,7 +97,6 @@
                                    (str "-H:ReflectionConfigurationFiles=" graal-reflection-fname))
                                  "--verbose"
                                  "--no-fallback"
-                                 "--report-unsupported-elements-at-runtime"
                                  "-cp" (str classpath java.io.File/pathSeparator "classes")
                                  (str "-J-Xmx" native-image-xmx)
                                  entry-class]
