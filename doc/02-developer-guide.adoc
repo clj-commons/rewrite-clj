@@ -12,7 +12,7 @@ We make use of planck for cljs bootstrap (aka cljs self-hosted) testing.
 Planck is currently not available for Windows.
 
 We test that rewrite-clj operates as expected when natively compile via GraalVM.
-Automated testing is setup using GraalVM for JDK 23.
+Automated testing is setup using GraalVM for JDK 24.
 At this time we only test against the Community Edition.
 
 == Prerequisites
@@ -21,7 +21,7 @@ At this time we only test against the Community Edition.
 * Clojure v1.10.1.697 or above for `clojure` command
 ** Note that rewrite-clj v1 itself supports Clojure v1.8 and above
 * Babashka v0.3.7 or above
-* Current release of GraalVM for JDK 23, if you want to run GraalVM native image tests
+* Current release of GraalVM for JDK 24, if you want to run GraalVM native image tests
 
 === Windows Notes
 
