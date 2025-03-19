@@ -19,10 +19,10 @@
     "ubuntu"))
 
 ;; matrix params to be used on ci
-(def ^:private os-jdks {"ubuntu" ["8" "11" "17" "21" "24"]
+(def ^:private os-jdks {"ubuntu" ["8" "11" "17" "21" "23"]
                         ;; macOS on GitHub Actions is now arm-based and does not include jdk8
-                        "macos"   ["11" "17" "21" "24"]
-                        "windows" ["8" "11" "17" "21" "24"]})
+                        "macos"   ["11" "17" "21" "23"]
+                        "windows" ["8" "11" "17" "21" "23"]})
 (def ^:private all-oses (keys os-jdks))
 
 (defn- test-tasks []
