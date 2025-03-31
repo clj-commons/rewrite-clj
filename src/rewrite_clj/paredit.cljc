@@ -5,12 +5,12 @@
   (:require [clojure.string :as str]
             [rewrite-clj.custom-zipper.core :as zraw]
             [rewrite-clj.custom-zipper.utils :as u]
+            [rewrite-clj.interop :as interop]
             [rewrite-clj.node :as nd]
             [rewrite-clj.zip :as z]
             [rewrite-clj.zip.findz :as fz]
             [rewrite-clj.zip.removez :as rz]
-            [rewrite-clj.zip.whitespace :as ws]
-            [rewrite-clj.zip.test-helper :as th]))
+            [rewrite-clj.zip.whitespace :as ws]))
 
 #?(:clj (set! *warn-on-reflection* true))
 
@@ -38,6 +38,25 @@
     (when-let [s (seq coll)]
       (let [x (first s)]
         (cons x (when-not (pred x) (take-upto pred (rest s)))))))))
+
+(defn- bookmark
+  "Bookmarks node at `zloc` and returns a unique bookmark-id for later search."
+  [zloc bookmark-val]
+  (z/replace zloc (vary-meta (z/node zloc) assoc :rewrite-clj/bookmark bookmark-val)))
+
+(defn- clear-bookmark
+  [zloc]
+  (z/replace zloc (vary-meta (z/node zloc) dissoc :rewrite-clj/bookmark)))
+
+(defn- find-bookmark
+  "Navigates node bookmarked by `bookmark-node` starting at `zloc` and removes bookmark"
+  [zloc bookmark-id]
+  (z/find zloc z/next* #(= bookmark-id (-> % z/node meta :rewrite-clj/bookmark))))
+
+(defn- find-and-clear-bookmark
+  [zloc bookmark-id]
+  (when-let [zloc (find-bookmark zloc bookmark-id)]
+    (clear-bookmark zloc)))
 
 ;; TODO: because we skip over comments, we will consider a seq with comments as empty
 ;; And a seq with whitespace as empty
@@ -280,32 +299,6 @@
             (z/remove candidate))))
     zloc))
 
-(defn- find-slurp-locs-up-old
-  "Return map with
-  - `:sluper-loc` - found sequence to slurp into
-  - `:slurpee-loc` - found node that we will slurp
-  - `:route` - vector of fns to navigate from slurper-loc to zloc"
-  [zloc f]
-  (let [ups (->> zloc
-                 z/up
-                 (iterate z/up)
-                 (take-while z/up)
-                 (take-while identity)
-                 (take-upto f))]
-    (when-let [slurpee-loc (-> ups last f)]
-      (let [slurper-loc (last ups)
-            route (->> ups
-                       reverse
-                       rest
-                       (mapcat (fn [uzloc]
-                                 (apply conj
-                                        [z/down*]
-                                        (repeat (-> uzloc zraw/lefts count) z/right*))))
-                       (into []))
-            route (apply conj route
-                         z/down* (repeat (-> zloc zraw/lefts count) z/right*))]
-        {:slurper-loc slurper-loc :slurpee-loc slurpee-loc :route route}))))
-
 (defn- decorator-loc? [zloc]
   (-> zloc z/tag #{:quote :deref :eval :unquote :var :unquote-splicing }))
 
@@ -323,134 +316,6 @@
          last)
     zloc))
 
-
-
-(comment
-  (require '[rewrite-clj.zip.test-helper :as th])
-
-  #_#_ [foo] [bar] 'x
-
-  ;; slurp into current
-
-  ;; loc
-  ;; - at decoration
-  ;; - in ws decoration
-  ;; - at decorated elem
-  ;; - at undecorated elem
-
-  ;; elem
-  ;; - seq
-  ;; - not seq
-
-  ;; slurper candidates
-  ;; - decorated
-  ;; - undecorated
-
-  ;; slurper
-  ;; - current
-  ;; - parent
-  ;; - grandparent
-  ;; - no viable
-
-  ;; slurpee
-  ;; - decorated
-  ;; - undecorated
-
-
-  ;; [:a '| :b :c] :d
-
-  ;; [:a '| [:b] :c] :d
-
-
-  ;; '[:a '| :b :c] :d
-
-  ;; '[:a ' |[:b]] :d
-
-  ;; ok. found slurper is '[:a ' |[:b]]  and slurpee is :d
-  ;; collect also-slurp at z/right* to sluper-loc
-  ;; remove ws/comment after slurper-loc
-  ;; z/down* to seq
-  ;; append also-slurp
-  ;; append slurpee
-  ;; z/down* z/right* z/right* (seq to elem root) z/down* z/right* (elem root to zloc)
-
-  ;; '[:a ' |\n[:b] :c] :d
-
-  ;; for slurping into current
-  ;; sluper is ' \n[:b] and slurpee is :d
-  ;; collect also-slurp at z/right* to sluper-loc
-  ;; remove ws/comment after slurper-loc
-  ;; z/down* z/right* z/right* to seq
-  ;; append also-slurp
-  ;; append slurpee
-  ;; z/left* to zloc (seq to zloc)
-
-
-
-  (-> "foo [''[' '⊚d]] :roo"
-      (th/of-locmarked-string {})
-      elem-root
-      z/string)
-
-  (-> "#my-var foo 32"
-      z/of-string
-      z/tag)
-
-  (-> "#:foo {{a} b %} c"
-      z/of-string
-      z/down
-      z/right
-      z/down
-      z/down
-      slurp-forward
-      z/root-string)
-
-  ;; slurping
-  ;; if parent is seq (from :parent)
-  ;; nav up to find holder node (could be self, could be some parent)
-  ;; right elem? then we have slurpee
-  ;; remove and save slurpee and leading nodes
-  ;; nav back down to seq
-  ;; insert saved slurpee (minus whitespace)
-  ;; restore location
-
-  ;; from :current
-  ;; what if (|'[foo] b)? do we slurp b into foo? or
-  ;; must we be at ('|[foo])? seems former is reasonable?
-  ;; search down through holder nodes for seq
-  ;; can we now executre parent alg above?
-  ;; and then restore location (might need to nav up through holder nodes)
-
-
-
-  ;;
-  :eoc)
-
-(defn- down-route-for [zloc-up]
-  (apply conj
-         [z/down*]
-         (repeat (-> zloc-up zraw/lefts count) z/right*)))
-
-(defn- down-routes-for [zlocs-ups]
-  (->> zlocs-ups
-       (mapcat down-route-for)
-       (into [])))
-
-(defn- up-routes-for [zlocs-downs]
-  (apply conj (into [] (repeat (-> zlocs-downs count) z/up*))
-         (repeat (-> zlocs-downs last zraw/lefts count) z/right*)))
-
-(defn- slurp-seq-target? [zloc]
-  (or (z/seq? zloc)
-      (= :fn (z/tag zloc))))
-
-(defn- ups [zloc take-fn pred?]
-  (->> zloc
-       (iterate z/up)
-       (take-while z/up) ;; don't navigate up to root node
-       (take-while identity)
-       (take-fn pred?)))
-
 (defn- decorator-down [zloc]
   (or (z/down zloc) (some-> zloc z/right z/down) (some-> zloc z/left z/down)))
 
@@ -463,67 +328,19 @@
 (defn- decoration-ws? [zloc]
   (and (z/whitespace? zloc) (decorator-loc? (z/up zloc))))
 
-;; what about if I am at a comment within a decoration?
-;; wait. this is not possible for our nodes. possible for clojure, but not our nodes.
+(defn- slurp-seq-target? [zloc]
+  (or (z/seq? zloc)
+      (= :fn (z/tag zloc))))
 
-
-;; slurp from parent of elem-root
-;; (potentially) slurp into elem
-;; restore position with route->zloc
-#_(defn- elem-locs-old
-  "An element can be wrapped with decorator nodes, like `'foo` or `''foo`.
-  Return `:elem-root-loc`, `:elem-loc`, `:route-elem-root->zloc`, `:route-elem->zloc`."
-  [zloc]
-  (cond
-    (decoration? zloc)
-    ;; search up for root
-    ;; search right and down for elem
-    (let [ups-locs (->> (ups zloc take-while decoration?)
-                   (into []))
-          zloc-down (-> zloc z/skip-whitespace z/down)
-          down-locs (->> (downs zloc-down take-upto (complement decoration?))
-                         (into [zloc]))
-          elem-root-loc (last ups-locs)]
-      (def elem-root-loc elem-root-loc)
-      (def down-locs down-locs)
-      {:elem-root-loc elem-root-loc
-       :elem-loc (if (= 1 (count down-locs))
-                   (-> zloc z/skip-whitespace)
-                   (last down-locs))
-       :route-elem-root->zloc (-> ups-locs reverse rest down-routes-for)
-       :route-elem->zloc (if (= 1 (count down-locs))
-                           (repeat (- (count (-> zloc z/skip-whitespace zraw/lefts))
-                                      (count (zraw/lefts zloc)))
-                                      z/left*)
-                           (up-routes-for down-locs))
-       ;; TODO: could probably? be smarter about route calc here
-       :route-elem-root->elem (-> (downs elem-root-loc take-upto (complement decoration?))
-                                  rest
-                                  reverse
-                                  down-routes-for)})
-    (decorator-loc? (z/up zloc))
-    ;; elem is zloc
-    ;; search up for root
-    (let [ups (->> (ups (z/up zloc) take-while decorator-loc?)
-                   (into [zloc]))]
-      {:elem-root-loc (last ups)
-       :elem-loc zloc
-       :route-elem-root->zloc (-> ups reverse rest down-routes-for)
-       :route-elem->zloc []
-       ;; TODO: could probably? be smarter about route calc here
-       :route-elem-root->elem (-> (downs elem-root-loc take-upto (complement decoration?))
-                                  rest
-                                  reverse
-                                  down-routes-for)})
-    :else
-    ;; undecorated elem
-    {:elem-root-loc zloc
-     :elem-loc zloc
-     :route-elem-root->zloc []
-     :route-elem->zloc []
-     :route-elem-root->elem []}))
+(defn- ups [zloc take-fn pred?]
+  (->> zloc
+       (iterate z/up)
+       (take-while z/up) ;; don't navigate up to root node
+       (take-while identity)
+       (take-fn pred?)))
 
 (defn- elem-locs
+  ;; TODO: review, maybe can simplify, code used to track routes...
   "An element can be wrapped with decorator nodes, like `'foo` or `''foo` or `'\n ' foo`."
   [zloc]
   (cond
@@ -536,496 +353,76 @@
       {:elem-root-loc elem-root-loc
        :elem-loc (if (= 1 (count down-locs))
                    zloc-elem-or-down
-                   (last down-locs))
-       :route-elem-root->zloc (-> ups-locs reverse rest down-routes-for)
-       :route-elem->zloc (if (= 1 (count down-locs))
-                           (repeat (- (count (-> zloc-elem-or-down zraw/lefts))
-                                      (count (zraw/lefts zloc)))
-                                      z/left*)
-                           (up-routes-for (-> (into [] (rest down-locs))
-                                              (conj zloc))))
-       ;; TODO: could probably? be smarter about route calc here
-       :route-elem-root->elem (-> (downs elem-root-loc take-upto (complement decorator-loc?))
-                                  rest
-                                  down-routes-for)})
+                   (last down-locs))})
     (decorator-loc? zloc)
     (let [ups-locs (->> (ups zloc take-while decorator-loc?))
           down-locs (->> (downs zloc take-upto (complement decorator-loc?)))
           elem-root-loc (last ups-locs)]
       {:elem-root-loc elem-root-loc
-       :elem-loc (last down-locs)
-       :route-elem-root->zloc (-> ups-locs reverse rest down-routes-for)
-       :route-elem->zloc (-> down-locs rest up-routes-for)
-       ;; TODO: could probably? be smarter about route calchere
-       :route-elem-root->elem (-> (downs elem-root-loc take-upto (complement decorator-loc?))
-                                  rest
-                                  down-routes-for)})
+       :elem-loc (last down-locs)})
 
     (decorator-loc? (z/up zloc))
     (let [ups (->> (ups (z/up zloc) take-while decorator-loc?)
                    (into [zloc]))
           elem-root-loc (last ups)]
       {:elem-root-loc elem-root-loc
-       :elem-loc zloc
-       :route-elem-root->zloc (-> ups reverse rest down-routes-for)
-       :route-elem->zloc []
-       ;; TODO: could probably? be smarter about route calc here
-       :route-elem-root->elem (-> (downs elem-root-loc take-upto (complement decorator-loc?))
-                                  rest
-                                  reverse
-                                  down-routes-for)})
+       :elem-loc zloc})
     :else
     {:elem-root-loc zloc
-     :elem-loc zloc
-     :route-elem-root->zloc []
-     :route-elem->zloc []
-     :route-elem-root->elem []}))
+     :elem-loc zloc}))
 
+(defn- to-elem-loc [zloc]
+  (:elem-loc (elem-locs zloc)))
 
-(comment
-  (require '[rewrite-clj.zip.test-helper :as th])
-
-  (defn erez [m]
-    (-> m
-        (update :elem-root-loc z/string)
-        (update :elem-loc z/string)))
-
-
-  (-> "[:left ''''[foo ⊚'[bar] :baz] :right]"
-      (th/of-locmarked-string {})
-      elem-locs
-      erez)
-  ;; => {:elem-root-loc "'[bar]",
-  ;;     :elem-loc "[bar]",
-  ;;     :route-elem-root->zloc [],
-  ;;     :route-elem->zloc [#function[rewrite-clj.zip/up*]],
-  ;;     :route-elem-root->elem [#function[rewrite-clj.zip/down*]]}
-
-  (-> "[:left ''''[foo '⊚[bar] :baz] :right]"
-      (th/of-locmarked-string {})
-      elem-locs
-      erez)
-  ;; => {:elem-root-loc "'[bar]",
-  ;;     :elem-loc "[bar]",
-  ;;     :route-elem-root->zloc [#function[rewrite-clj.zip/down*]],
-  ;;     :route-elem->zloc [],
-  ;;     :route-elem-root->elem [#function[rewrite-clj.zip/down*]]}
-
-
-  (-> "'[:a ' ⊚\n[:b] :c] :d"
-      (th/of-locmarked-string {})
-      elem-locs
-      erez)
-  ;; => {:elem-root-loc "' \n[:b]",
-  ;;     :elem-loc "[:b]",
-  ;;     :route-elem-root->zloc
-  ;;     [#function[rewrite-clj.zip/down*] #function[rewrite-clj.zip/right*]],
-  ;;     :route-elem->zloc (#function[rewrite-clj.zip/left*]),
-  ;;     :route-elem-root->elem
-  ;;     [#function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]]}
-
-  (-> "'[:a ''''\n ⊚\n'[:b] :c] :d"
-      (th/of-locmarked-string {})
-      elem-locs
-      erez)
-  ;; => {:elem-root-loc "''''\n \n'[:b]",
-  ;;     :elem-loc "[:b]",
-  ;;     :route-elem-root->zloc
-  ;;     [#function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]],
-  ;;     :route-elem->zloc
-  ;;     [#function[rewrite-clj.zip/up*]
-  ;;      #function[rewrite-clj.zip/up*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]],
-  ;;     :route-elem-root->elem
-  ;;     [#function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/down*]]}
-
-  (-> "'[:a ⊚''''\n \n'[:b] :c] :d"
-      (th/of-locmarked-string {})
-      elem-locs
-      erez)
-
-
-  ;; slurp
-  ;; find slurp candidate by looking upward
-  ;;  find slurper-loc
-  ;;  find slurpee-loc
-  ;;  find slurp-seq
-  ;; add slurpee-loc to slurp-seq
-  ;; add also-slurp to slurp-seq
-  ;; set location
-
-
-
-
-  (-> "[:left ''''[foo ⊚'[bar] :baz] :right]"
-      (th/of-locmarked-string {})
-      elem-locs
-      erez)
-  ;; => {:elem-root-loc "'[bar]",
-  ;;     :elem-loc "[bar]",
-  ;;     :route-elem-root->zloc [],
-  ;;     :route-elem->zloc
-  ;;     [#function[rewrite-clj.zip/up*] #function[rewrite-clj.zip/up*]],
-  ;;     :route-elem-root->elem [#function[rewrite-clj.zip/down*]]}
-
-
-
-  (-> "@⊚  ' \n  foo"
-      (th/of-locmarked-string {})
-      elem-locs
-      erez)
-  ;; => {:elem-root-loc "@  ' \n  foo",
-  ;;     :elem-loc "foo",
-  ;;     :route-elem-root->zloc [#function[rewrite-clj.zip/down*]],
-  ;;     :route-elem->zloc
-  ;;     [#function[rewrite-clj.zip/up*]
-  ;;      #function[rewrite-clj.zip/up*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]]}
-
-  ;; what do I need?
-  ;; a way to navigate to elem-root from zloc
-  ;; a way to restore zloc from... elem-root loc.. this is always down/rights
-  ;; a way to navigate to elem-root->elem, can this be done without a path? For quotes, deref, sure.
-  ;;  But what about metadata? ^{:a 1 b 2} foo? We can't slurp foo into {:a 1 :b 2} without semantically invalidating our tree
-  ;; a way to navigate from elem back to zloc, maybe elem->elem-root->zloc?
-
-  (mapv z/string fups)
-  ;; => [" " "' []"]
-
-
-  (mapv z/string fdowns)
-  ;; => [" "]
-
-  (up-routes-for fdowns)
-  ;; => [#function[rewrite-clj.zip/up*]
-  ;;     #function[rewrite-clj.zip/up*]
-  ;;     #function[rewrite-clj.zip/right*]
-  ;;     #function[rewrite-clj.zip/right*]
-  ;;     #function[rewrite-clj.zip/right*]]
-
-
-  (-> "⊚'  ' \n  foo"
-      (th/of-locmarked-string {})
-      z/down
-      z/tag
-      )
-
-(-> "⊚' foo"
-    (th/of-locmarked-string {})
-    z/down
-    (downs take-upto (complement decorator-loc?))
-    (into []))
-
-  ;; => {:elem-root-loc nil,
-  ;;     :elem-loc "foo",
-  ;;     :route-elem-root->zloc [],
-  ;;     :route-elem->zloc
-  ;;     [#function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]]}
-
-
-  (-> "⊚'foo"
-      (th/of-locmarked-string {})
-      (decorator-loc?))
-
-  :eoc)
+(defn- to-elem-root-loc [zloc]
+  (:elem-root-loc (elem-locs zloc)))
 
 (defn- find-slurp-locs-up
   "Return map with
   - `:sluper-loc` - found logical node to slurp into, this might, and might not be what we actually slurp into,
   ex. for `'[|foo] 3` our slurper-loc is `'[foo]` and we'll slurp into `3` into `[foo]`, not quote node `'[foo]`.
-  - `:slurpee-loc` - found location of that we will slurp
-  - `:route-slurper->seq` - route from slurper to seq we slurp into
-  - `:route-seq->zloc` - route from seq to zloc (to restore position)"
+  - `:slurpee-loc` - found location of that we will slurp"
   [zloc f]
   ;; hmmm...
   ;; need to start our search at elem-root, correct?
   ;; and need to restore our position in elem afterwards, yes?
 
   (when (slurp-seq-target? (z/up zloc))
-    (let [{:keys [elem-root-loc _elem-loc _route-elem-root->elem route-elem-root->zloc route-elem->zloc]} (elem-locs zloc)
+    (let [elem-root-loc (elem-root zloc) 
           ups (ups (z/up elem-root-loc) take-upto f)]
       (when-let [slurpee-loc (-> ups last f)]
         (let [ups (-> ups reverse)
-              slurper-loc (first ups)
-              route (into [] (rest ups))
-              ;; OK, we have a right (or left) search for seq we can slurp into..
-              route-slurper->seq (if (slurp-seq-target? slurper-loc)
-                                   []
-                                   (->> route
-                                        (take-upto slurp-seq-target?)
-                                        down-routes-for))
-              route (conj route zloc)
-              ;; OK, now... from the seq how do we get back to our zloc?
-              route-seq->elem-root-loc (->> route
-                                            (drop (count route-slurper->seq))
-                                            down-routes-for)
-              route-seq->zloc (apply conj route-seq->elem-root-loc route-elem-root->zloc)]
+              slurper-loc (first ups)]
           {:slurper-loc slurper-loc
-           :slurpee-loc slurpee-loc
-           :route-slurper->seq route-slurper->seq
-           :route-seq->zloc route-seq->zloc})))))
+           :slurpee-loc slurpee-loc})))))
 
 (defn- find-slurp-locs [zloc f {:keys [from]}]
-  (let [{:keys [elem-root-loc elem-loc route-elem-root->elem route-elem->zloc route-elem-root->zloc]} (elem-locs zloc)]
+  (let [{:keys [elem-root-loc elem-loc]} (elem-locs zloc)]
     (if (and (= :current from) (slurp-seq-target? elem-loc) (f elem-root-loc))
       {:slurper-loc elem-root-loc
-       :slurpee-loc (f elem-root-loc)
-       :route-slurper->seq route-elem-root->elem
-       :route-seq->zloc route-elem->zloc}
+       :slurpee-loc (f elem-root-loc)}
       (let [ups (ups (z/up elem-root-loc) take-upto f)]
         (when-let [slurpee-loc (-> ups last f)]
           (let [ups (-> ups reverse)
-                slurper-loc (first ups)
-                route (into [] (rest ups))
-                ;; OK, we have found a right (or left) seq we can slurp into..
-                route-slurper->seq (if (slurp-seq-target? slurper-loc)
-                                     []
-                                     (->> route
-                                          (take-upto slurp-seq-target?)
-                                          down-routes-for))
-                route (conj route elem-root-loc)
-                ;; OK, now... from the slurp seq how do we get back to our zloc?
-                route-seq->elem-root-loc (->> route
-                                              (drop (count route-slurper->seq))
-                                              down-routes-for)
-                route-seq->zloc (apply conj route-seq->elem-root-loc route-elem-root->zloc)]
+                slurper-loc (first ups)]
             {:slurper-loc slurper-loc
-             :slurpee-loc slurpee-loc
-             :route-slurper->seq route-slurper->seq
-             :route-seq->zloc route-seq->zloc}))))))
+             :slurpee-loc slurpee-loc}))))))
 
 (comment
-  (defn rez [r]
-    (-> r
-        (update :slurper-loc z/string)
-        (update :slurpee-loc z/string)))
-
-  (conj [] 1 2 )
-
-  (require '[flow-storm.api :as f])
-
-  (f/local-connect)
-
   (require '[rewrite-clj.zip.test-helper :as th])
 
-  (-> "[:left ''''[foo '⊚[bar] :baz] :right]"
+  (defn- srez [rez]
+    (-> rez
+        (update :slurper-loc z/string)
+        (update :slurpee-loc z/string)))
+  
+  (-> "[[[⊚1 2]] 3 4]"
       (th/of-locmarked-string {})
-      elem-locs
-      erez)
-  ;;     :route-elem-root->zloc [#function[rewrite-clj.zip/down*]],
-  ;;     :route-elem->zloc [],
-  ;;     :route-elem-root->elem [#function[rewrite-clj.zip/down*]]}
-
-  (-> "[:left ''''[foo '⊚[bar] :baz] :right]"
-      (th/of-locmarked-string {})
-      (find-slurp-locs z/right {:from :parent})
-      rez)
-  ;; => {:slurper-loc "''''[foo '[bar] :baz]",
-  ;;     :slurpee-loc ":right",
-  ;;     :route-slurper->seq
-  ;;     [#function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]],
-  ;;     :route-seq->zloc
-  ;;     [#function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/down*]]}
-
-  (-> "[:left ''''[foo ⊚'[bar] :baz] :right]"
-      (th/of-locmarked-string {})
-      (find-slurp-locs z/right {:from :parent})
-      rez)
-
-  (-> (th/of-locmarked-string "[:left '⊚ [] :right] :moo" {})
       (find-slurp-locs z/right {:from :current})
-      rez)
-  ;; => {:slurper-loc "' []",
-  ;;     :slurpee-loc ":right",
-  ;;     :route-slurper->seq [#function[rewrite-clj.zip/down*]],
-  ;;     :route-seq->zloc (#function[rewrite-clj.zip/left*])}
+      srez)
+  ;; => {:slurper-loc "[[1 2]]", :slurpee-loc "3"}
 
-  ;; the model for decorated nodes is super awkward for paredit
-  ;; we typically have one real child node with optional whitespace nodes
-  ;; the whitespace nodes are siblings of the child node.
-  ;; my tracking assumed up or down first followed by rights*, but because I might be positioned at a sibling,
-  ;; I might need to track lefts*
-  ;; should I generalize tracking?
-  ;; should I fall back to marking nodes and searching
-
-  (-> (th/of-locmarked-string "[:left '⊚[] :right] :moo" {})
-      elem-locs
-      erez)
-
-  (-> fups reverse rest down-routes-for)
-
-  (mapv z/string fups)
-  ;; => [" " "'\n []"]
-
-  (mapv z/string fdowns)
-  ;; => [" "]
-
-  (-> (th/of-locmarked-string "[:left '⊚ [] :right] :moo" {})
-      z/right)
-
-  ;; hmmm what should this do? bring in :moo, I think.
-  (-> (th/of-locmarked-string "[:left ⊚'foo :right] :moo" {})
-      (find-slurp-locs-up z/right)
-      rez)
-  ;; => {:slurper-loc "[:left 'foo :right]",
-  ;;     :slurpee-loc ":moo",
-  ;;     :route-slurper->seq [],
-  ;;     :route-seq->zloc
-  ;;     [#function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]]}
-
-  ;; => {:slurper-loc "[:left 'foo :right]",
-  ;;     :slurpee-loc ":moo",
-  ;;     :route-slurper->seq [],
-  ;;     :route-seq->zloc
-  ;;     [#function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]]}
-
-  (-> (th/of-locmarked-string "''[ ''[:left ⊚foo :right]] :moo" {})
-      (find-slurp-locs-up z/right)
-      rez)
-  ;; => {:slurper-loc "''[ ''[:left foo :right]]",
-  ;;     :slurpee-loc ":moo",
-  ;;     :route-slurper->seq
-  ;;     [#function[rewrite-clj.zip/down*] #function[rewrite-clj.zip/down*]],
-  ;;     :route-seq->zloc
-  ;;     [#function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]]}
-
-  (into [:a] [:b :c])
-
-  (mapv z/string fups2)
-  ;; => ["'[]"]
-
-  (-> "[[1 [⊚2]] 3 4]" #_"[[[⊚1 2]] 3 4]" #_"[:left '[foo biz ⊚bar] :right]"
-      (th/of-locmarked-string {})
-      (find-slurp-locs-up z/right)
-      rez)
-  ;; => {:slurper-loc "[1 [2]]",
-  ;;     :slurpee-loc "3",
-  ;;     :route-slurper->seq [],
-  ;;     :route-seq->zloc
-  ;;     [#function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/down*]]}
-
-  ;;     :slurpee-loc "3",
-  ;;     :route-slurper->seq [],
-  ;;     :route-seq->zloc
-  ;;     [#function[rewrite-clj.zip/down*] #function[rewrite-clj.zip/down*]]}
-
-;; => {:slurper-loc "[[1 2]]",
-  ;;     :slurpee-loc "3",
-  ;;     :route-slurper->seq [#function[rewrite-clj.zip/down*]],
-  ;;     :route-seq->zloc [#function[rewrite-clj.zip/down*]]}
-
-  (->> oops
-       rest
-       (take-while (complement slurp-seq-target?))
-       reverse
-       (mapv z/string))
-  ;; => ["'[foo bar]"]
-
-;; => {:slurper-loc "'[foo biz bar]",
-  ;;     :slurpee-loc ":right",
-  ;;     :route-slurper->seq [],
-  ;;     :route-seq->zloc
-  ;;     [#function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]]}
-
-;; hmm... :fn node is slurpable but not designated as a seq
-  (-> "#(1 2 %)"
-      z/of-string
-      z/seq?)
-  ;; => false
-
-  (->> ups
-       rest
-       (drop 3)
-       (into [:zloc])
-       reverse
-       down-routes-for)
-
-  (->> ups
-       (map z/tag))
-
-  (-> (th/of-locmarked-string "[boo '⊚foo :right]" {})
-      (find-slurp-locs-up z/right)
-      rez)
-  ;; => {:slurper-loc nil, :slurpee-loc nil}
-
-  (-> (th/of-locmarked-string "[:left [boo '[⊚foo bar]] :right]" {})
-      (find-slurp-locs-up z/right)
-      rez)
-  ;; => {:slurper-loc "[boo '[foo bar]]",
-  ;;     :slurpee-loc ":right",
-  ;;     :route-slurpler->seq
-  ;;     [#function[rewrite-clj.zip/down*]
-  ;;      #function[rewrite-clj.zip/right*]
-  ;;      #function[rewrite-clj.zip/right*]],
-  ;;     :route-seq->zloc [#function[rewrite-clj.zip/down*]]}
-
-;; => {:slurper-loc "'[foo bar]",
-  ;;     :slurpee-loc ":right",
-  ;;     :route [#function[rewrite-clj.zip/down*] #function[rewrite-clj.zip/down*]]}
-
-  (-> (th/of-locmarked-string "[:left [⊚foo bar] :right]" {})
-      (find-slurp-locs-up z/right)
-      rez)
-  ;; => {:slurper-loc "[foo bar]",
-  ;;     :slurpee-loc ":right",
-  ;;     :route [#function[rewrite-clj.zip/down*]]}
-
-  (-> (th/of-locmarked-string "[:left ''[⊚foo bar] :right]" {})
-      (find-slurp-locs-up z/right)
-      rez)
-  ;; => {:slurper-loc "[foo bar]",
-  ;;     :slurpee-loc ":right",
-  ;;     :route [#function[rewrite-clj.zip/down*]]}
-
-  :eoc)
+  )
 
 (defn ^{:added "1.1.50"} slurp-forward-into
   "Return `zloc` with node to the right of nearest eligible sequence slurped into that sequence else `zloc` unchanged.
@@ -1053,7 +450,9 @@
   ([zloc]
    (slurp-forward-into zloc {:from :parent}))
   ([zloc opts]
-   (let [{:keys [slurper-loc slurpee-loc route-slurper->seq route-seq->zloc]} (find-slurp-locs zloc z/right opts)]
+   (let [bookmark-orig-loc (interop/gen-uuid)
+         bookmarked-zloc (bookmark zloc bookmark-orig-loc)
+         {:keys [slurper-loc slurpee-loc]} (find-slurp-locs bookmarked-zloc z/right opts)]
      (if-not slurper-loc
        zloc
        (let [also-slurp (linebreak-and-comment-nodes slurper-loc z/right*)
@@ -1063,10 +462,11 @@
          (-> slurper-loc
              (u/remove-right-while ws/whitespace-or-comment?)  ;; remove ws lb comments before slurpee
              u/remove-right                                    ;; remove slurpee
-             (nav-via route-slurper->seq)
+             to-elem-loc                                       ;; nav to slurp seq
              (reduce-into-zipper z/append-child* also-slurp)   ;; slurp in saved linebreaks and comments
              (z/append-child (z/node slurpee-loc))             ;; slurp in slurpee
-             (nav-via route-seq->zloc)))))))
+             to-elem-root-loc
+             (find-and-clear-bookmark bookmark-orig-loc)))))))
 
 (defn ^{:deprecated "1.1.49"} slurp-forward
   "DEPRECATED: we recommend [[slurp-forward-into]] instead for more control.
@@ -1114,23 +514,26 @@
   ([zloc]
    (slurp-forward-fully-into zloc {:from :parent}))
   ([zloc opts]
-   (let [{:keys [slurpee-loc route-seq->zloc]} (find-slurp-locs zloc z/right opts)]
+   (let [{:keys [slurpee-loc slurper-loc]} (find-slurp-locs zloc z/right opts)]
      (if (not slurpee-loc)
        zloc
        (let [n-siblings (->> slurpee-loc
                              (iterate z/right)
                              (take-while identity)
                              count)
-             n-downs (->> route-seq->zloc
-                          (filter #(= z/down* %))
-                          count)
-             n-slurps (if (and (= :current (:from opts)) (z/seq? zloc))
-                        (* (inc n-downs) n-siblings)
-                        (* n-downs n-siblings))]
+             slurp-depth (->> (ups (to-elem-root-loc zloc) take-while #(not= % slurper-loc))
+                              (remove decorator-loc?)
+                              count)
+             n-slurps (if (and (= :current (:from opts))
+                               (-> zloc to-elem-loc slurp-seq-target?))
+                        (* (inc slurp-depth) n-siblings)
+                        (* slurp-depth n-siblings))]
          (->> zloc
               (iterate #(slurp-forward-into % opts))
               (take (inc n-slurps))
               last))))))
+
+
 
 (defn ^{:deprecated "1.1.49"} slurp-forward-fully
   "DEPRECATED: We recommend [[slurp-forward-fully-into]]] for more control.
@@ -1180,22 +583,22 @@
   ([zloc]
    (slurp-backward-into zloc {:from :parent}))
   ([zloc opts]
-   (let [{:keys [slurper-loc slurpee-loc route-slurper->seq route-seq->zloc]} (find-slurp-locs zloc z/left opts)]
+   (let [bookmark-orig-loc (interop/gen-uuid)
+         bookmarked-zloc (bookmark zloc bookmark-orig-loc)
+         {:keys [slurper-loc slurpee-loc]} (find-slurp-locs bookmarked-zloc z/left opts)]
      (if (not slurper-loc)
        zloc
-       (let [also-slurp (linebreak-and-comment-nodes slurper-loc z/left*)
-             route-seq->zloc (if (seq route-seq->zloc)
-                     ;; compensate for inserted item, we need to skip over it
-                     ;; TODO: consider allow restoring loc from leftmost
-                     (apply conj [(first route-seq->zloc)] z/right (rest route-seq->zloc))
-                     route-seq->zloc)]
+       (let [also-slurp (linebreak-and-comment-nodes slurper-loc z/left*)]
          (-> slurper-loc
              (u/remove-left-while ws/whitespace-or-comment?)
              u/remove-left
-             (nav-via route-slurper->seq)
+             to-elem-loc
              (reduce-into-zipper z/insert-child* also-slurp)
              (z/insert-child (z/node slurpee-loc))
-             (nav-via route-seq->zloc)))))))
+             to-elem-root-loc
+             (find-and-clear-bookmark bookmark-orig-loc)))))))
+
+
 
 (defn ^{:deprecated "1.1.49"} slurp-backward
   "DEPRECATED: we recommend [[slurp-backward-into]] for more control.
@@ -1244,19 +647,19 @@
   ([zloc]
    (slurp-backward-fully-into zloc {:from :parent}))
   ([zloc opts]
-   (let [{:keys [slurpee-loc route-seq->zloc]} (find-slurp-locs zloc z/left opts)]
+   (let [{:keys [slurpee-loc slurper-loc]} (find-slurp-locs zloc z/left opts)]
      (if (not slurpee-loc)
        zloc
        (let [n-siblings (->> slurpee-loc
                              (iterate z/left)
                              (take-while identity)
                              count)
-             n-downs (->> route-seq->zloc
-                          (filter #(= z/down* %))
-                          count)
+             slurp-depth (->> (ups (to-elem-root-loc zloc) take-while #(not= % slurper-loc))
+                              (remove decorator-loc?)
+                              count)
              n-slurps (if (and (= :current (:from opts)) (z/seq? zloc))
-                        (* (inc n-downs) n-siblings)
-                        (* n-downs n-siblings))]
+                        (* (inc slurp-depth) n-siblings)
+                        (* slurp-depth n-siblings))]
           (->> zloc
               (iterate #(slurp-backward-into % opts))
               (take (inc n-slurps))

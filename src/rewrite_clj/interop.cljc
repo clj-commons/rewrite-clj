@@ -48,3 +48,11 @@
   (when ch
     #?(:clj (Character/isDigit ch)
        :cljs (gstring/isNumeric ch))))
+
+(defn gen-uuid
+  "Returns a pseudo random UUID string"
+  []
+  #?(;; random-uuid was introduced in clojure 1.11, can't use it yet.
+     :clj (java.util.UUID/randomUUID)
+     ;; cljs has had random-uuid since forever
+     :cljs (random-uuid)))
