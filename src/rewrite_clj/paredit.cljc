@@ -138,6 +138,62 @@
   [zloc]
   (u/remove-right-while zloc (constantly true)))
 
+(defn- decorator-loc? [zloc]
+  (-> zloc z/tag #{:quote :deref :eval :unquote :var :unquote-splicing }))
+
+(defn- downs [zloc take-fn pred?]
+  (->> zloc
+       (iterate z/down)
+       (take-while identity)
+       (take-fn pred?)))
+
+(defn- decoration-ws? [zloc]
+  (and (z/whitespace? zloc) (decorator-loc? (z/up zloc))))
+
+(defn- ups [zloc take-fn pred?]
+  (->> zloc
+       (iterate z/up)
+       (take-while z/up) ;; don't navigate up to root node
+       (take-while identity)
+       (take-fn pred?)))
+
+(defn- to-elem-root-loc
+  "Locates to root element of node. Returns `zloc` if undecorated, else root decoration for node.
+  - `|a` -> `|a`
+  - `'|a` -> `|'a`"
+  [zloc]
+  (if-let [start (cond
+                   (decorator-loc? zloc)
+                   zloc
+                   (decorator-loc? (z/up zloc))
+                   (z/up zloc))]
+    (->> start
+         (iterate z/up)
+         (take-while z/up)
+         (take-while identity)
+         (take-while decorator-loc?)
+         last)
+    zloc))
+
+(defn- to-elem-loc
+  "Locates to undecorated target element of node. Returns `zloc` if undecorated.
+  - `|a` -> `|a`
+  - `'|a` -> `'|a`
+  - `|'a` -> `'|a`"
+  [zloc]
+  (cond
+    (decoration-ws? zloc)
+    (let [zloc-elem-or-down (-> zloc z/skip-whitespace)
+          down-locs (->> (downs zloc-elem-or-down take-upto (complement decorator-loc?)))]
+      (if (= 1 (count down-locs))
+        zloc-elem-or-down
+        (last down-locs)))
+    (decorator-loc? zloc)
+    (-> (downs zloc take-upto (complement decorator-loc?))
+        last)
+    :else
+    zloc))
+
 ;;*****************************
 ;; Paredit functions
 ;;*****************************
@@ -156,6 +212,25 @@
   (let [zloc (remove-right-sibs zloc)]
     (or (u/remove-and-move-left zloc)
         (z/remove* zloc))))
+
+(comment
+  (require '[rewrite-clj.zip.test-helper :as th])
+
+  (-> "'a ⊚'b 'c"
+      (th/of-locmarked-string {})
+      kill
+      th/root-locmarked-string)
+  ;; => "'a⊚ "
+
+  (-> "'a '⊚b 'c"
+      (th/of-locmarked-string {})
+      kill
+      th/root-locmarked-string)
+  ;; => Execution error (AssertionError) at rewrite-clj.node.protocols/assert-sexpr-count (protocols.cljc:177).
+  ;;    Assert failed: can only contain 1 non-whitespace form.
+  ;;    (= (count (without-whitespace nodes)) c)
+
+  :eoc)
 
 (defn- kill-in-string-node [zloc [kill-row kill-col]]
   (let [[elem-row elem-col] (z/position zloc)
@@ -307,101 +382,13 @@
             (z/remove candidate))))
     zloc))
 
-(defn- decorator-loc? [zloc]
-  (-> zloc z/tag #{:quote :deref :eval :unquote :var :unquote-splicing }))
-
-(defn- elem-root [zloc]
-  (if-let [start (cond
-                   (decorator-loc? zloc)
-                   zloc
-                   (decorator-loc? (z/up zloc))
-                   (z/up zloc))]
-    (->> start
-         (iterate z/up)
-         (take-while z/up)
-         (take-while identity)
-         (take-while decorator-loc?)
-         last)
-    zloc))
-
-(defn- downs [zloc take-fn pred?]
-  (->> zloc
-       (iterate z/down)
-       (take-while identity)
-       (take-fn pred?)))
-
-(defn- decoration-ws? [zloc]
-  (and (z/whitespace? zloc) (decorator-loc? (z/up zloc))))
-
 (defn- slurp-seq-target? [zloc]
   (or (z/seq? zloc)
       (= :fn (z/tag zloc))))
 
-(defn- ups [zloc take-fn pred?]
-  (->> zloc
-       (iterate z/up)
-       (take-while z/up) ;; don't navigate up to root node
-       (take-while identity)
-       (take-fn pred?)))
-
-(defn- elem-locs
-  "An element can be wrapped with decorator nodes, like `'foo` or `''foo` or `'\n ' foo`."
-  [zloc]
-  (cond
-    (decoration-ws? zloc)
-    (let [ups-locs (->> (ups (z/up zloc) take-while decorator-loc?)
-                   (into [zloc]))
-          zloc-elem-or-down (-> zloc z/skip-whitespace)
-          down-locs (->> (downs zloc-elem-or-down take-upto (complement decorator-loc?)))
-          elem-root-loc (last ups-locs)]
-      {:elem-root-loc elem-root-loc
-       :elem-loc (if (= 1 (count down-locs))
-                   zloc-elem-or-down
-                   (last down-locs))})
-    (decorator-loc? zloc)
-    (let [ups-locs (->> (ups zloc take-while decorator-loc?))
-          down-locs (->> (downs zloc take-upto (complement decorator-loc?)))
-          elem-root-loc (last ups-locs)]
-      {:elem-root-loc elem-root-loc
-       :elem-loc (last down-locs)})
-
-    (decorator-loc? (z/up zloc))
-    (let [ups (->> (ups (z/up zloc) take-while decorator-loc?)
-                   (into [zloc]))
-          elem-root-loc (last ups)]
-      {:elem-root-loc elem-root-loc
-       :elem-loc zloc})
-    :else
-    {:elem-root-loc zloc
-     :elem-loc zloc}))
-
-(defn- to-elem-loc [zloc]
-  (:elem-loc (elem-locs zloc)))
-
-(defn- to-elem-root-loc [zloc]
-  (:elem-root-loc (elem-locs zloc)))
-
-(defn- find-slurp-locs-up
-  "Return map with
-  - `:sluper-loc` - found logical node to slurp into, this might, and might not be what we actually slurp into,
-  ex. for `'[|foo] 3` our slurper-loc is `'[foo]` and we'll slurp into `3` into `[foo]`, not quote node `'[foo]`.
-  - `:slurpee-loc` - found location of that we will slurp"
-  [zloc f]
-  ;; hmmm...
-  ;; need to start our search at elem-root, correct?
-  ;; and need to restore our position in elem afterwards, yes?
-
-  (when (slurp-seq-target? (z/up zloc))
-    (let [elem-root-loc (elem-root zloc) 
-          ups (ups (z/up elem-root-loc) take-upto f)]
-      (when-let [slurpee-loc (-> ups last f)]
-        (let [ups (-> ups reverse)
-              slurper-loc (first ups)]
-          {:slurper-loc slurper-loc
-           :slurpee-loc slurpee-loc})))))
-
 (defn- find-slurp-locs [zloc f {:keys [from]}]
-  (let [{:keys [elem-root-loc elem-loc]} (elem-locs zloc)]
+  (let [elem-root-loc (to-elem-root-loc zloc)
+        elem-loc (to-elem-loc zloc)]
     (if (and (= :current from) (slurp-seq-target? elem-loc) (f elem-root-loc))
       {:slurper-loc elem-root-loc
        :slurpee-loc (f elem-root-loc)}
