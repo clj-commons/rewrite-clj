@@ -693,49 +693,54 @@
             (reduce-into-zipper z/insert-right* also-barf)
             (find-and-clear-bookmark bookmark-id))))))
 
-(comment
-  (require '[rewrite-clj.zip.test-helper :as th])
-
-  (-> #_"[[1 2 3⊚ ] 4]" #_ "''['''a '⊚''b] '''d"
-      "''['''a '⊚ ''b] '''d"
-      (th/of-locmarked-string {})
-      barf-forward
-      th/root-locmarked-string)
-
-  (-> "[[1 2 ⊚3 ] 4]" #_"''['''a '⊚''b] '''d"
-      (th/of-locmarked-string {})
-      (count-moves z/right)
-      dec)
-
-
-  :eoc)
-
 (defn barf-backward
   "Returns `zloc` with leftmost node of the parent sequence pushed left out of the sequence.
 
   - `[1 2 [3 |4] 5] => [1 2 3 [|4] 5]`
   - `[1 2 3 [|4] 5] => [1 2 3 |4 [] 5]`"
   [zloc]
-  (if-not (z/up zloc)
-    zloc
-    (let [barfee-loc (z/leftmost zloc)
-          also-barf (linebreak-and-comment-nodes barfee-loc z/right*)
-          adjust-location (fn [zloc-barf-seq]
-                            (let [right-sibs (count (zraw/rights zloc))
-                                  barf-loc (if (z/whitespace-or-comment? zloc)
-                                             (or (z/left zloc) (z/right zloc))
-                                             zloc)]
+  (let [elem-root-loc (to-elem-root-loc zloc)]
+    (if (not (z/up elem-root-loc))
+      zloc
+      (let [barfing-self-from-ws? (and (and (z/whitespace-or-comment? zloc)
+                                            (not (decoration-ws? zloc))
+                                            (z/right zloc)
+                                            (not (-> zloc z/left z/left))))
+            bookmark-id (interop/gen-uuid)
+            barfee-loc (if barfing-self-from-ws?
+                         (-> zloc z/leftmost (set-bookmark bookmark-id))
+                         (-> zloc (set-bookmark bookmark-id) to-elem-root-loc z/leftmost))
+            also-barf (linebreak-and-comment-nodes barfee-loc z/right*)]
+        (-> barfee-loc
+            (u/remove-left-while ws/whitespace?)
+            (u/remove-right-while ws/whitespace-or-comment?)
+            u/remove-and-move-up
+            to-elem-root-loc
+            (z/insert-left (z/node barfee-loc))
+            to-elem-loc
+            (reduce-into-zipper z/insert-left* also-barf)
+            to-elem-root-loc
+            z/up
+            (find-and-clear-bookmark bookmark-id))))))
 
-                              (if (= barfee-loc barf-loc)
-                                (z/left zloc-barf-seq)
-                                (-> zloc-barf-seq z/down* z/rightmost* (move-n z/left* right-sibs)))))]
-      (-> barfee-loc
-          (u/remove-left-while ws/whitespace?)
-          (u/remove-right-while ws/whitespace-or-comment?)
-          u/remove-and-move-up
-          (z/insert-left (z/node barfee-loc))
-          (reduce-into-zipper z/insert-left* also-barf)
-          adjust-location))))
+(comment
+  (require '[rewrite-clj.zip.test-helper :as th])
+
+  (-> "[1 [⊚ 2 3 4]]"
+    #_  "[1 [2⊚ 3 4]]"
+    #_"[1 [⊚2 3 4]]"
+    #_ "[1 [2 3 ⊚4]]"
+    #_"[1 [2 ⊚3 4]]" #_"[[1 2 3⊚ ] 4]" #_ "''['''a '⊚''b] '''d"
+     #_ "'''['⊚ ''a ' ''b] '''d"
+      (th/of-locmarked-string {})
+      barf-backward
+      th/root-locmarked-string)
+
+  (require '[flow-storm.api :as fs-api])
+  (fs-api/local-connect)
+
+
+  :eoc)
 
 (defn wrap-around
   "Wrap current node with a given type `t` where `t` can be one of `:vector`, `:list`, `:set`, `:map` `:fn`.

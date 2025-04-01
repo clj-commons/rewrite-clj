@@ -394,7 +394,11 @@
                ["[1 ⊚;; comment\n2]"                              "⊚1 ;; comment\n[2]"]
                ["[⊚1 ;; comment\n2]"                              "⊚1 ;; comment\n[2]"]
                ["[⊚1 ;; cmt1\n;; cmt2\n2]"                        "⊚1 ;; cmt1\n;; cmt2\n[2]"]
-               ["[⊚1 \n   \n;; cmt1\n  \n;; cmt2\n   \n\n  2]"    "⊚1 \n\n;; cmt1\n\n;; cmt2\n\n\n[2]"]]]
+               ["[⊚1 \n   \n;; cmt1\n  \n;; cmt2\n   \n\n  2]"    "⊚1 \n\n;; cmt1\n\n;; cmt2\n\n\n[2]"]
+               ["''['''a ⊚'''b '''c] '''d"                        "'''a ''[⊚'''b '''c] '''d"]
+               ["'''a ''[⊚'''b '''c] '''d"                        "'''a ⊚'''b ''['''c] '''d"]
+               ["''['''a '⊚ ''b '''c] '''d"                        "'''a ''['⊚ ''b '''c] '''d"]
+               ["'''a ''['⊚ ''b '''c] '''d"                        "'''a '⊚ ''b ''['''c] '''d"] ]]
         (testing s
           (let [zloc (th/of-locmarked-string s opts)]
             (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
