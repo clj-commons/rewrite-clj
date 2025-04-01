@@ -207,9 +207,11 @@
   - `[1 |2 3 4]  => [1| ]`
   - `[1 2 |3 4]  => [1 2| ]`
   - `[|1 2 3 4]  => |[]`
-  - `[ |1 2 3 4]  => [| ]`"
+  - `[ |1 2 3 4]  => [| ]`
+  - `['a 'b |'c 'd] => ['a 'b| ]`
+  - `['a 'b '|c 'd] => ['a 'b| ]`"
   [zloc]
-  (let [zloc (remove-right-sibs zloc)]
+  (let [zloc (-> zloc to-elem-root-loc remove-right-sibs)]
     (or (u/remove-and-move-left zloc)
         (z/remove* zloc))))
 
@@ -226,9 +228,7 @@
       (th/of-locmarked-string {})
       kill
       th/root-locmarked-string)
-  ;; => Execution error (AssertionError) at rewrite-clj.node.protocols/assert-sexpr-count (protocols.cljc:177).
-  ;;    Assert failed: can only contain 1 non-whitespace form.
-  ;;    (= (count (without-whitespace nodes)) c)
+  ;; => "'a⊚ "
 
   :eoc)
 

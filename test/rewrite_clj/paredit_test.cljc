@@ -38,7 +38,9 @@
                ["[ \n  \n  \n ⊚1 2 3 4]"     "[ \n  \n  \n⊚ ]"]
                ["[ ⊚\n  \n 1 2 3 4]"         "[⊚ ]"]
                ["[ \n  ⊚\n 1 2 3 4]"         "[ \n⊚  ]"] ;; multiple spaces are a single node
-               ["[ \n⊚  \n 1 2 3 4]"         "[ ⊚\n]"]]]
+               ["[ \n⊚  \n 1 2 3 4]"         "[ ⊚\n]"]
+               ["['a 'b ⊚'c 'd]"             "['a 'b⊚ ]"]
+               ["['a 'b '⊚c 'd]"             "['a 'b⊚ ]"]]]
         (testing s
           (let [zloc (th/of-locmarked-string s opts)]
             (is (= s (th/root-locmarked-string zloc)) "(sanity) before changes")
