@@ -215,23 +215,6 @@
     (or (u/remove-and-move-left zloc)
         (z/remove* zloc))))
 
-(comment
-  (require '[rewrite-clj.zip.test-helper :as th])
-
-  (-> "'a ⊚'b 'c"
-      (th/of-locmarked-string {})
-      kill
-      th/root-locmarked-string)
-  ;; => "'a⊚ "
-
-  (-> "'a '⊚b 'c"
-      (th/of-locmarked-string {})
-      kill
-      th/root-locmarked-string)
-  ;; => "'a⊚ "
-
-  :eoc)
-
 (defn- kill-in-string-node [zloc [kill-row kill-col]]
   (let [[elem-row elem-col] (z/position zloc)
         lines-ndx (- kill-row elem-row)

@@ -83,7 +83,9 @@
            ["42 ;; A comment⊚ of some length"                                   "42 ⊚;; A comment"]
            ["⊚[]"                                                               "◬"]
            ["[⊚]"                                                               "◬"]
-           ["[\n⊚ ]"                                                            "[⊚\n]"]]]
+           ["[\n⊚ ]"                                                            "[⊚\n]"]
+           ["['a 'b ⊚'c 'd]"                                                    "['a 'b⊚ ]"]
+           ["['a 'b '⊚c 'd]"                                                    "['a 'b⊚ ]"]]]
     (let [{:keys [pos s]} (th/pos-and-s sloc)
           zloc (z/of-string* s {:track-position? true})]
       (doseq [pos [pos [(:row pos) (:col pos)]]]
