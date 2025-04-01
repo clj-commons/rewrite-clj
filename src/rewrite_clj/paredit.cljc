@@ -58,13 +58,26 @@
   (when-let [zloc (find-bookmark zloc bookmark-id)]
     (clear-bookmark zloc)))
 
-;; TODO: because we skip over comments, we will consider a seq with comments as empty
-;; And a seq with whitespace as empty
 (defn- empty-seq? [zloc]
   (and (z/seq? zloc)
-       (not (z/down zloc))
-       ;; TODO: why do I need this extra test?
-       (not (some-> zloc z/down z/right))))
+       (not (z/down zloc))))
+
+;; TODO: because we skip over comments, we will consider a seq with comments as empty
+;; Is that we we want?
+(comment
+  (require '[rewrite-clj.zip.test-helper :as th])
+
+  (-> "[  ;foo\n ]"
+      (z/of-string)
+      empty-seq?)
+  ;; => true
+
+  (-> "[  \n ]"
+      (z/of-string)
+      empty-seq?)
+  ;; => true
+
+  :eoc)
 
 (defn- move-n [loc f n]
   (if (= 0 n)
@@ -523,8 +536,6 @@
               (take (inc n-slurps))
               last))))))
 
-
-
 (defn ^{:deprecated "1.1.49"} slurp-forward-fully
   "DEPRECATED: We recommend [[slurp-forward-fully-into]]] for more control.
 
@@ -587,8 +598,6 @@
              (z/insert-child (z/node slurpee-loc))
              to-elem-root-loc
              (find-and-clear-bookmark bookmark-orig-loc)))))))
-
-
 
 (defn ^{:deprecated "1.1.49"} slurp-backward
   "DEPRECATED: we recommend [[slurp-backward-into]] for more control.
