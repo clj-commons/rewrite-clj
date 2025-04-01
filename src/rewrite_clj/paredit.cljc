@@ -662,31 +662,53 @@
   - `[1 2 [|3 4] 5] => [1 2 [|3] 4 5]`
   - `[1 2 [|3] 4 5] => [1 2 [] |3 4 5]`"
   [zloc]
-  (if-not (z/up zloc)
-    zloc
-    (let [barfee-loc (z/rightmost zloc)
-          also-barf (linebreak-and-comment-nodes barfee-loc z/left*)
-          adjust-location (fn [zloc-barf-seq]
-                            (let [left-sibs (count (zraw/lefts zloc))
-                                  barf-loc (if (z/whitespace-or-comment? zloc)
-                                             (or (z/right zloc) (z/left zloc))
-                                             zloc)]
-                              (if (= barfee-loc barf-loc)
-                                (z/right zloc-barf-seq)
-                                (-> zloc-barf-seq z/down (move-n z/right* left-sibs)))))
-          adjust-ws (fn [zloc-before-also-barf]
-                      (if (and (seq also-barf)
-                               (some-> zloc-before-also-barf z/right* z/whitespace?))
-                        (u/remove-right zloc-before-also-barf)
-                        zloc-before-also-barf))]
-      (-> barfee-loc
-          (u/remove-left-while ws/whitespace-or-comment?)
-          (u/remove-right-while ws/whitespace?)
-          u/remove-and-move-up
-          (z/insert-right (z/node barfee-loc))
-          adjust-ws
-          (reduce-into-zipper z/insert-right* also-barf)
-          adjust-location))))
+  (let [elem-root-loc (to-elem-root-loc zloc)]
+    (if (or (not (z/up elem-root-loc))
+            (and (z/whitespace? elem-root-loc) (not (z/right elem-root-loc))))
+      zloc
+      ;; - when on leading ws to barfed out node, we locate to barfed out node
+      ;; - otherwise we preserve original location location
+      (let [barfing-self-from-leading-ws? (and (z/whitespace-or-comment? zloc)
+                                               (not (decoration-ws? zloc))
+                                               (z/right zloc)
+                                               (not (-> zloc z/right z/right)))
+            bookmark-id (interop/gen-uuid)
+            barfee-loc (if barfing-self-from-leading-ws?
+                         (-> zloc z/right (set-bookmark bookmark-id))
+                         (-> zloc (set-bookmark bookmark-id) to-elem-root-loc z/rightmost))
+            also-barf (linebreak-and-comment-nodes barfee-loc z/left*)
+            adjust-ws (fn [zloc-before-also-barf]
+                        (if (and (seq also-barf)
+                                 (some-> zloc-before-also-barf z/right* z/whitespace?))
+                          (u/remove-right zloc-before-also-barf)
+                          zloc-before-also-barf))]
+        (-> barfee-loc
+            (u/remove-left-while ws/whitespace-or-comment?)
+            (u/remove-right-while ws/whitespace?)
+            u/remove-and-move-up
+            to-elem-root-loc
+            (z/insert-right (z/node barfee-loc))
+            adjust-ws
+            to-elem-loc
+            (reduce-into-zipper z/insert-right* also-barf)
+            (find-and-clear-bookmark bookmark-id))))))
+
+(comment
+  (require '[rewrite-clj.zip.test-helper :as th])
+
+  (-> #_"[[1 2 3⊚ ] 4]" #_ "''['''a '⊚''b] '''d"
+      "''['''a '⊚ ''b] '''d"
+      (th/of-locmarked-string {})
+      barf-forward
+      th/root-locmarked-string)
+
+  (-> "[[1 2 ⊚3 ] 4]" #_"''['''a '⊚''b] '''d"
+      (th/of-locmarked-string {})
+      (count-moves z/right)
+      dec)
+
+
+  :eoc)
 
 (defn barf-backward
   "Returns `zloc` with leftmost node of the parent sequence pushed left out of the sequence.

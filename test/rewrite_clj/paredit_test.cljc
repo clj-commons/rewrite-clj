@@ -244,6 +244,7 @@
   (doseq [opts zipper-opts]
     (testing (str "zipper opts " opts)
       (doseq [[s                                      expected]
+              ;; TODO: Add decorator node tests
               [["[1 [⊚2] 3 4]"                        "[1 [⊚2 3 4]]"]
                ["[1 ⊚[] 2 3 4]"                       "[1 [⊚2 3 4]]"]
                ["[[[1 ⊚[] 2 3 4] 5] 6] 7"             "[[[1 [⊚2 3 4]] 5] 6] 7"]
@@ -314,6 +315,7 @@
   (doseq [opts zipper-opts]
     (testing (str "zipper opts " opts)
       (doseq [[s                          expected-from-parent    expected-from-current]
+              ;; TODO: Add decorator node tests
               [["[1 2 3 [⊚4] 5]"          "[[1 2 3 ⊚4] 5]"        :ditto]
                ["[1 2 3 4 ⊚[] 5]"         "[1 2 3 4 ⊚[] 5]"       "[⊚[1 2 3 4] 5]"]]]
         (testing s
@@ -346,8 +348,9 @@
       (doseq [[s                                                   expected]
               [["[[1 ⊚2 3] 4]"                                     "[[1 ⊚2] 3 4]"]
                ["[[⊚1 2 3] 4]"                                     "[[⊚1 2] 3 4]" ]
+               ["[[1⊚ 2 3] 4]"                                     "[[1⊚ 2] 3 4]" ]
                ["[[1 2 ⊚3] 4]"                                     "[[1 2] ⊚3 4]"]
-               ["[[1 2 3⊚ ] 4]"                                    "[[1 2] ⊚3 4]"]
+               ["[[1 2 3⊚ ] 4]"                                    "[[1 2 3⊚ ] 4]"]
                ["[[1 2⊚ 3] 4]"                                     "[[1 2] ⊚3 4]"]
                ["[[⊚1] 2]"                                         "[[] ⊚1 2]"]
                ["(⊚(x) 1)"                                         "(⊚(x)) 1"]
@@ -361,7 +364,11 @@
                ["[1 ;; comment\n⊚2]"                               "[1];; comment\n⊚2"]
                ["[1 ;; comment\n⊚2]"                               "[1];; comment\n⊚2"]
                ["[1 ;; cmt1\n;; cmt2\n⊚2]"                         "[1];; cmt1\n;; cmt2\n⊚2"]
-               ["[1 \n   \n;; cmt1\n  \n;; cmt2\n   \n\n  ⊚2]"     "[1]\n\n;; cmt1\n\n;; cmt2\n\n\n⊚2"]]]
+               ["[1 \n   \n;; cmt1\n  \n;; cmt2\n   \n\n  ⊚2]"     "[1]\n\n;; cmt1\n\n;; cmt2\n\n\n⊚2"]
+               ["''['''a ⊚'''b '''c] '''d"                         "''['''a ⊚'''b] '''c '''d" ]
+               ["''['''a ⊚'''b] '''c '''d"                         "''['''a] ⊚'''b '''c '''d" ]
+               ["''['''a '⊚ ''b '''c] '''d"                        "''['''a '⊚ ''b] '''c '''d" ]
+               ["''['''a '⊚ ''b] '''c '''d"                        "''['''a] '⊚ ''b '''c '''d" ]]]
         (testing s
           (let [zloc (th/of-locmarked-string s opts)]
             (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
