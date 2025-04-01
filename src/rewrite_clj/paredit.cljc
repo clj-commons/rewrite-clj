@@ -39,8 +39,8 @@
       (let [x (first s)]
         (cons x (when-not (pred x) (take-upto pred (rest s)))))))))
 
-(defn- bookmark
-  "Bookmarks node at `zloc` and returns a unique bookmark-id for later search."
+(defn- set-bookmark
+  "Bookmarks `bookmark-val` node at `zloc`."
   [zloc bookmark-val]
   (z/replace zloc (vary-meta (z/node zloc) assoc :rewrite-clj/bookmark bookmark-val)))
 
@@ -100,12 +100,6 @@
            f
            (nodes-by-dir f ws/whitespace-or-comment?))
        (filterv #(or (nd/linebreak? %) (nd/comment? %)))))
-
-(defn- nav-via [zloc fns]
-  (reduce (fn [zloc f]
-            (f zloc))
-          zloc
-          fns))
 
 (defn- remove-first-if-ws [nodes]
   (when (seq nodes)
@@ -340,7 +334,6 @@
        (take-fn pred?)))
 
 (defn- elem-locs
-  ;; TODO: review, maybe can simplify, code used to track routes...
   "An element can be wrapped with decorator nodes, like `'foo` or `''foo` or `'\n ' foo`."
   [zloc]
   (cond
@@ -451,7 +444,7 @@
    (slurp-forward-into zloc {:from :parent}))
   ([zloc opts]
    (let [bookmark-orig-loc (interop/gen-uuid)
-         bookmarked-zloc (bookmark zloc bookmark-orig-loc)
+         bookmarked-zloc (set-bookmark zloc bookmark-orig-loc)
          {:keys [slurper-loc slurpee-loc]} (find-slurp-locs bookmarked-zloc z/right opts)]
      (if-not slurper-loc
        zloc
@@ -584,7 +577,7 @@
    (slurp-backward-into zloc {:from :parent}))
   ([zloc opts]
    (let [bookmark-orig-loc (interop/gen-uuid)
-         bookmarked-zloc (bookmark zloc bookmark-orig-loc)
+         bookmarked-zloc (set-bookmark zloc bookmark-orig-loc)
          {:keys [slurper-loc slurpee-loc]} (find-slurp-locs bookmarked-zloc z/left opts)]
      (if (not slurper-loc)
        zloc
