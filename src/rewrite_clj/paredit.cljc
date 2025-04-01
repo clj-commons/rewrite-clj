@@ -346,7 +346,8 @@
   - `; |hello world   => ;  |world`"
   [zloc pos]
   (if-let [candidate (->> (z/find-last-by-pos zloc pos)
-                          (ws/skip z/right* ws/whitespace?))]
+                          (ws/skip z/right* ws/whitespace?)
+                          to-elem-root-loc)]
     (let [pos (fz/pos-as-vec pos)
           [candidate-pos candidate-end-pos] (-> candidate z/position-span)
           candidate-end-pos (update candidate-end-pos 1 dec)]

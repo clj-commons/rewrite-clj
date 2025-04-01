@@ -109,6 +109,8 @@
            ["[⊚10 20 30]"                 "⊚[20 30]"]
            ["⊚[10 20 30]"                 "◬"]
            ["32 [⊚]"                      "⊚32"]
+           ["'a ⊚'b 'c 'd"                "⊚'a 'c 'd"]
+           ["'a '⊚b 'c 'd"                "⊚'a 'c 'd"]
 
            ;; in comment
            ["2 ; hello⊚ world"            "2 ⊚; hello world"]   ;; only kill word if word spans pos
