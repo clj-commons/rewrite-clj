@@ -124,6 +124,7 @@
   "Creates a sequence node of given type `t` with node values of `v`"
   [t v]
   (case t
+    ;; TODO: should we include :fn?
     :list (nd/list-node v)
     :vector (nd/vector-node v)
     :map (nd/map-node v)
