@@ -310,9 +310,6 @@
          last)
     zloc))
 
-(defn- decorator-down [zloc]
-  (or (z/down zloc) (some-> zloc z/right z/down) (some-> zloc z/left z/down)))
-
 (defn- downs [zloc take-fn pred?]
   (->> zloc
        (iterate z/down)
