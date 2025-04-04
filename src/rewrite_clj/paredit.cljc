@@ -138,8 +138,33 @@
   [zloc]
   (u/remove-right-while zloc (constantly true)))
 
-(defn- decorator-loc? [zloc]
-  (-> zloc z/tag #{:quote :deref :eval :unquote :var :unquote-splicing }))
+(defn- decorator-loc?
+  "Some nodes can be decorated with user-provided content.
+  In some cases this content is just whitespace, ex. `' a`, whitespace is significant to rewrite-clj, so
+  we retain it.
+  TODO ADDRESS: In other cases the decoration includes user provided syntax, ex. `^{:a 1} b`"
+  [zloc]
+  (-> zloc z/tag #{:quote             ; 'a
+                   :deref             ; @a
+                   :eval              ; #=a
+                   :syntax-quote      ; `a
+                   :unquote           ; ~a
+                   :unquote-splicing  ; ~@a
+                   :var               ; #'a
+                   }))
+;; TODO: What about?
+;; :meta         ; ^a b, ^{:a 1} b
+;; :reader-macro ; #foo bar
+;; :reader-macro ; #? (:clj 1 :cljs 2) - not distinguised at this time
+;; :reader-macro ; #?@ (:clj [1] :cljs [2]) - not distinguised at this time
+
+;; ops like wrap might be ok on decorator content, but slurp and barf will be problematic
+;;
+
+(comment
+  (-> "#?@(:clj 1 :cljs 2)" z/of-string z/tag)
+
+  :eoc)
 
 (defn- downs [zloc take-fn pred?]
   (->> zloc
