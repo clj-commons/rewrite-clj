@@ -413,10 +413,20 @@
                ["⊚1"             :map        "{⊚1}"]
                ["⊚1"             :set        "#{⊚1}"]
                ["[⊚1\n 2]"       :vector     "[[⊚1]\n 2]"]
-               ["(-> ⊚#(+ 1 1))" :list       "(-> (⊚#(+ 1 1)))"]]]
+               ["(-> ⊚#(+ 1 1))" :list       "(-> (⊚#(+ 1 1)))"]
+               ["⊚'1"            :vector     "[⊚'1]"]
+               ["'⊚ 1"           :vector     "['⊚ 1]"]]]
         (let [zloc (th/of-locmarked-string s opts)]
           (is (= s (th/root-locmarked-string zloc)) "(sanity) string before")
           (is (= expected (-> zloc (pe/wrap-around t) th/root-locmarked-string)) "string after"))))))
+
+(comment
+  (-> "  ⊚1    2"
+      (th/of-locmarked-string {})
+      (pe/wrap-around :vector)
+      (th/root-locmarked-string))
+
+  :eoc)
 
 (deftest wrap-fully-forward-slurp-test
   (doseq [opts zipper-opts]

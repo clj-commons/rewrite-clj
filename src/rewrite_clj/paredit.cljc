@@ -771,15 +771,20 @@
   "Wrap current node with a given type `t` where `t` can be one of `:vector`, `:list`, `:set`, `:map` `:fn`.
 
   - `|123 => [|123]` given `:vector`
-  - `|[1 [2]] => [|[1 [2]]]`"
+  - `|[1 [2]] => [|[1 [2]]]`
+  - `|'a => [|'a]
+  - `'|a => ['|a]"
   [zloc t]
-  (-> zloc
-      (z/insert-left (create-seq-node t nil))
-      z/left
-      (u/remove-right-while ws/whitespace?)
-      u/remove-right
-      (z/append-child* (z/node zloc))
-      z/down))
+  (let [bookmark-orig-loc (interop/gen-uuid)
+        bookmarked-zloc (set-bookmark zloc bookmark-orig-loc)
+        root-elem (to-elem-root-loc bookmarked-zloc)]
+    (-> root-elem
+        (z/insert-left (create-seq-node t nil))
+        z/left
+        (u/remove-right-while ws/whitespace?)
+        u/remove-right
+        (z/append-child* (z/node root-elem))
+        (find-and-clear-bookmark bookmark-orig-loc))))
 
 (defn wrap-fully-forward-slurp
   "Create a new seq node of type `t` left of `zloc` then slurp fully into the new node
