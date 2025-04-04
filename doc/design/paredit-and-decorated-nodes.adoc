@@ -10,6 +10,7 @@ The `rewrite-clj.paredit` namespace was transcribed from rewrite-cljs when creat
 Folks are starting to use the paredit API and therefore I am giving it some love and attention.
 
 == Decorated Nodes
+TODO: Consider instead "Restricted Nodes"?
 I invented this term for certain rewrite-clj nodes.
 
 These nodes are special in that they have a single significant child.
