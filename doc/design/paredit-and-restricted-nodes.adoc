@@ -12,7 +12,7 @@ Folks are starting to use the paredit API and therefore I am giving it some love
 == Restricted Nodes
 I invented this term for certain rewrite-clj nodes.
 
-These nodes are special in that they can only specific significant children.
+These nodes are special in that they can only have specific significant children.
 Insignificant children would be whitespace nodes.
 
 For example a quote node:
@@ -51,43 +51,6 @@ a| `a'`
 == What am I missing?
 I also must think about restricted nodes that have multiple children and how they are affected by paredit.
 
-=== Metadata Nodes
-
-* `:meta` `^a b`, `^{:a 1} b`
-* `:raw-meta` `#^a b`, `#^{:a 1} b`
-
-Metadata nodes are encoded as:
-
-* :meta node with children:
-** optional whitespace node(s)
-** metadata node (map or symbol)
-** optional whitespace node(s)
-** data node (can be any node type)
-
-TODO: Does rewrite-clj restrict children types?
-
-Seems similar to other restricted nodes with the exception of the metadata node.
-
-* I think if paredit treats the optional whitespace, metadata, optional whitespace nodes as a regular restricted node prefix, we should be good. Paredit does not operate on this portion.
-
-* we can slurp into data, barf out of data
-* what about split? does the created seq also get the metadata? probably not?: `^a [1 2 3]` => `^a [1] [2 3]`
-
-=== Namespaced Map Nodes
-There are also qualified maps to think about:
-
-* `#:str{:a 1 :b 2}`
-* `#::{:a 1 :b 2}`
-* `#::alias{:a 1 :b 2}`
-
-Namespace map nodes are encoded as:
-
-* :namespace-map node with children
-** :map-qualifier node
-** :map node
-
-I think we can take the same strategy as we do for metdata nodes.
-
 === Discard Nodes
 And discard nodes (known to rewrite-clj as "uneval nodes"):
 
@@ -111,13 +74,56 @@ What could paredit ops effect on such a structure?
 The only valid paredit op I see is wrap.
 A raise within a significant node could work.
 
-We could consider allowing paredit ops on the last significant node.
+We could consider allowing node-count-additive or node-count-neutral paredit ops on the last significant node.
+Any additional created nodes would be added outside of the :uneval.
+Slurped nodes could be drawn in from outside the :uneval
 That might work nicely.
 Paredit on other significant nodes that would affect node count would be a no-op.
 
 But we could allow wrap on any significant node.
 And raise within any significant node should be fine.
 
+=== Metadata Nodes
+
+* `:meta` `^a b`, `^{:a 1} b`
+* `:raw-meta` `#^a b`, `#^{:a 1} b`
+
+Metadata nodes are encoded as:
+
+* :meta node with children:
+** optional whitespace node(s)
+** metadata node (map or symbol)
+** optional whitespace node(s)
+** data node (can be any node type)
+
+This seems similar to other restricted nodes with the exception of the metadata node.
+
+* I think if paredit treats the optional whitespace, metadata, optional whitespace nodes as a regular restricted node prefix, we should be good. Paredit does not operate on this portion.
+
+* We can slurp into data, barf out of data
+* What if we are located in the metadata node? Would paredit ops operate on the data?
+This would be consistent with current thinking on single child restricted nodes, but could be confusing.
+A slurp into from current `^{:a 1 |:b 2} [2 3 4] 5` could result in `^{:a 1 |:b 2} [2 3 4 5]`... is this helpful or confusing? Probably confusing.
+* What about split? does the created seq also get the metadata? probably not?: `^a [1 2 3]` => `^a [1] [2 3]`
+
+Metadata can be complex. For the initial release, for simplicity's sake, I think paredit ops within metadata will be a no-op.
+
+`^{:a [1 2 3 4] :b [5 6 7 8]}`
+
+=== Namespaced Map Nodes
+There are also qualified maps to think about:
+
+* `#:str{:a 1 :b 2}`
+* `#::{:a 1 :b 2}`
+* `#::alias{:a 1 :b 2}`
+
+Namespace map nodes are encoded as:
+
+* :namespace-map node with children
+** :map-qualifier node
+** :map node
+
+I think we can take the same strategy as we do for metdata nodes.
 
 === Reader Macro Nodes
 * `:reader-macro` is a general catch all for any reader macro we don't handle specifically, examples:
@@ -132,7 +138,9 @@ Reader macro nodes are encoded as:
 ** whitespace node(s)
 ** form-node
 
-TODO: Thinky think.
+This more generic structure has 2 significant child nodes, the macro and the form.
+
+I think we can take the same strategy as we do for metadata nodes.
 
 == Paredit & Restricted Nodes
 
@@ -140,6 +148,10 @@ Paredit needs to understand the special single-significant-child case of restric
 For example, we can't slurp extra significant children into a quote node's chldren.
 
 So we need to look at each paredit operation and see how restricted nodes impact it.
+
+=== Error handling
+If paredit op is not supported, quiet no-op or throw?
+I'll go for quiet no-op.
 
 === Slurp
 Covers: `slurp-backward-fully-into`, `slurp-backward-fully`, `slurp-backward-into`, `slurp-backward`, `slurp-forward-fully-into`, `slurp-forward-fully`, `slurp-forward-into`, `slurp-forward`
@@ -212,7 +224,6 @@ Should the split include the restricted prefix? I think no:
 
 * `''(a b |c d e)` => `''(a b |c) (d e)`
 
-
 === Raise
 Covers: `raise`
 
@@ -224,15 +235,21 @@ I think we replace the parent root elem:
 
 * `[1 ''[2 |''3 4]]` => `[1 |''3]`
 
-
 === Splice
 Covers: `splice`, `splice-killing-forward`, `splice-killing-backward`
 
-Splice also exists in rewrite-clj.zip api. I expect it doesn't deal with restricted nodes yet.
+Splice also exists in rewrite-clj.zip api.
+The paredit version simply calls to rewrite-clj.zip/splice.
+I expect it doesn't deal with restricted nodes yet?
 
-TODO: try
+Hmmm... Ok. This currently works on the raw node structure.
+It doesn't care about my concept restricted nodes.
 
-* `[|'[1 2 3] 4 5 6]`
-* `['|[1 2 3] 4 5 6]`
-* `''[|[1 2 3] 4 5 6]'`
-* `''[''|[1 2 3] 4 5 6]'`
+* `|''a` => `|'a`
+* `|'a` => `a`
+
+And it currently breaks down when trying to splice into a restricted node:
+
+* `'|[1 2 3]` => throws because a quote node can only have 1 non-whitespace form
+
+This is what does happen, what should happen?
