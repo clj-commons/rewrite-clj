@@ -10,7 +10,7 @@ As of this writing, in 2025, there is more interest in the paredit API.
 People are actually trying to use it, and in doing so, have uncovered some issues.
 I, therefore, I am giving the paredit API some love and attention.
 
-Most fixes were straightforward, but how paredit operations should act on "restricted nodes" is more nuanced, hence this design doc.
+Most fixes were relatively straightforward, but how paredit operations should act on "restricted nodes" is more nuanced, hence this design doc to think things through.
 
 == Restricted Nodes
 I invented this term for certain rewrite-clj nodes.
@@ -310,4 +310,4 @@ And it currently breaks down when trying to splice into a restricted node:
 This is what does happen, what should happen?
 I think, as a user, I would expect:
 
-* `'|1 2 3'` <- only `1` is quoted after splice
+* `'|1 2 3` <- only `1` is quoted after splice
