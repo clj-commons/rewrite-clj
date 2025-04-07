@@ -189,6 +189,7 @@ For example, we can't slurp extra significant children into a quote node's chldr
 
 So we need to look at each paredit operation and see how restricted nodes impact it.
 
+[[error-handling]]
 === Error handling
 If paredit op is not supported, quiet no-op or throw?
 I'm tending toward quiet no-op.
@@ -211,6 +212,43 @@ We retain our position in the restricted node.
 We slurp from the parent node of current element root.
 We find the node to slurp to the right of that node's element root.
 We slurp into slurp that node's element.
+
+Let's slurp forward in editors:
+|===
+| Scenario | emacs paredit | calva | notes
+
+|`'''[a '\|'b c] '''d`
+|`'''[a '\|'b c '''d]`
+|`ditto`
+| ✅
+
+| `+#_#_#_ 1 [\|2] 3+`
+| `+#_#_#_ 1 [\|2 3]+`
+| `+#_#_#_ 1 [\|2 3]+`
+Calva allows, but pops a warning about alignment.
+| ❌ This is not allowed in rewrite-clj, this is not a valid `:uneval` node.
+
+| `^{:a 1 \|:b 2} [1 2 3]`
+| `^{:a 1 \|:b 2 [1 2 3]}`
+| `ditto`
+Calva allows but pops an error: ":meta expects 2 values"
+| ❌ We can't get to this state in rewrite-clj, it is not a valid rewrite-clj `:meta` node.
+
+| `#::str{:a 1 \|:b 2} :c`
+| `#::str{:a 1 \|:b 2 :c}`
+| `ditto`
+| ✅ rewrite-clj allows unbalanced maps
+
+| `+#_#_#_ 1 [\|2] 3 4+`
+| `+#_#_#_ 1 [\|2 3] 4+`
+| `ditto`
+Calva does pop up a warning about formatting.
+| ⚠️️Technically, rewrite-clj could support this scenario because there are enough nodes to satisfy `:uneval`
+
+|===
+
+Editors do allow some slurping that rewrite-clj cannot support because they result in invalid nodes.
+In those cases we'll invoke our <<error-handling>>.
 
 === Barf
 Covers: `barf-backward`, `barf-forward`
