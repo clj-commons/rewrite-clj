@@ -224,7 +224,7 @@ Let's slurp forward in editors:
 
 | `+#_#_#_ 1 [\|2] 3+`
 | `+#_#_#_ 1 [\|2 3]+`
-| `+#_#_#_ 1 [\|2 3]+`
+|`ditto`
 Calva allows, but pops a warning about alignment.
 | ❌ This is not allowed in rewrite-clj, this is not a valid `:uneval` node.
 
