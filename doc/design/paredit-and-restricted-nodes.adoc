@@ -5,12 +5,16 @@
 Thinking & Exploring
 
 == Paredit API
-The `rewrite-clj.paredit` namespace was transcribed from rewrite-cljs when creating rewrite-clj v1.
+The `rewrite-clj.paredit` namespace was transcribed from rewrite-cljs when creating rewrite-clj v1 in 2021.
+As of this writing, in 2025, there is more interest in the paredit API.
+People are actually trying to use it, and in doing so, have uncovered some issues.
+I am, therefore, I am giving the paredit API some love and attention.
 
-Folks are starting to use the paredit API and therefore I am giving it some love and attention.
+Most fixes were straightforward, but how paredit operations should act on "restricted nodes" is more nuanced, hence this design doc.
 
 == Restricted Nodes
 I invented this term for certain rewrite-clj nodes.
+(Naming things is hard, I originally called these nodes "decorated nodes")
 
 These nodes are special in that they can only have specific significant children.
 Insignificant children would be whitespace nodes.
@@ -29,22 +33,25 @@ I'm seeing the following as restricted nodes:
 * `:unquote` `~a`
 * `:var` `#'a`
 
+Examples of unrestriced nodes that have any children are `:set` `+#{1 2 3}+`, `:vector` `[:a :b :c]`, `:list` `(foo bar baz)`, and `:map` `{:a 1 :b 2}`.
+And nodes that can't have children are exempt from concern, for examples, `:token` `a`, `:keyword` `:foo`, `:regex` `#"boo.*"`, `:comment` `;; foo`, `:whitespace` `{nbsp}`, `:newline` `\n`, and `:comma` `,`.
+
 In the context of restricted nodes, I'll use the terms "root element" and "raw element".
 
 |===
 | Example | Root Element | Raw Element
 
-a| `a'`
-a| `a'`
-a| `a'`
+a| `a`
+a| `a`
+a| `a`
 
-a| `'a'`
-a| `'a'`
-a| `a'`
+a| `'a`
+a| `'a`
+a| `a`
 
-a| `'''a'`
-a| `'''a'`
-a| `a'`
+a| `'''a`
+a| `'''a`
+a| `a`
 
 |===
 
@@ -54,61 +61,91 @@ I also must think about restricted nodes that have multiple children and how the
 === Discard Nodes
 And discard nodes (known to rewrite-clj as "uneval nodes"):
 
-* ``#_,#_#_\n1 2 3``
+* `+#_,#_#_\n1 2 3+`
 
 The above uneval node is encoded as:
 
-* :uneval node
-** `,` comma node
-** :uneval node
-*** :uneval node
-**** `\n` newline node
-**** `1` token node
-*** ` ` whitespace node
-*** `2` token node
-** ` ` whitespace node
-** `3` token node
+* `:uneval` node
+** `,` `:comma` node
+** `:uneval` node
+*** `:uneval` node
+**** `\n` `:newline` node
+**** `1` `:token` node
+*** ` ` `:whitespace` node
+*** `2` `:token` node
+** ` ` `:whitespace` node
+** `3` `:token` node
 
 What could paredit ops effect on such a structure?
 
-The only valid paredit op I see is wrap.
-A raise within a significant node could work.
+A wrap is fine:
 
-We could consider allowing node-count-additive or node-count-neutral paredit ops on the last significant node.
-Any additional created nodes would be added outside of the :uneval.
-Slurped nodes could be drawn in from outside the :uneval
-That might work nicely.
-Paredit on other significant nodes that would affect node count would be a no-op.
+* `+#_,#_#_\n|1 2 3+` => `+#_,#_#_\n[|1] 2 3+`
 
-But we could allow wrap on any significant node.
-And raise within any significant node should be fine.
+A raise __within__ a significant should be ok:
+
+* `+#_,#_#_\n[|1] 2 3+` => `+#_,#_#_\n|1 2 3+`
+
+Operations that change the number of nodes require some thought.
+Any additional created nodes would be added outside of the `:uneval`.
+Slurped nodes could be drawn in from outside the `:uneval`:
+
+* `+#_#_#_1 2 [|3] 4+` => `+#_#_#_1 2 [|3 4]+` - `4` was slurped into last uneval
+
+Technically, I guess if we have enough forms to satisfy the number of `#_`, we could allow the operation:
+
+* `+#_#_#_1 [|2] 3 4+` => `+#_#_#_1 [|2 3] 4+` - `3` was slurp from last uneval to 2nd uneval, `4` is now in last uneval.
+
+Forgetting rewrite-clj complexities, I think that's how, as a user, I'd expect things to work.
+
+Once we get to a point where we don't have enough forms to satisfy the `#_`, the operation would be a no-op?
+
+What about kill? Would I expect?:
+
+* `+#_#_#_ 1 |2 3+` => `+#_#_ 1 3+`
+
+Join is a similar scenario, do we remove an uneval?:
+
+* `+#_#_#_ 1 [2]| [3]+` => `+#_#_ 1 [2 |3]+`
 
 === Metadata Nodes
 
 * `:meta` `^a b`, `^{:a 1} b`
-* `:raw-meta` `#^a b`, `#^{:a 1} b`
+* `:raw-meta` `+#^a b+`, `+#^{:a 1} b+`
 
 Metadata nodes are encoded as:
 
-* :meta node with children:
+* `:meta` or `:raw-meta` node with children:
 ** optional whitespace node(s)
 ** metadata node (map or symbol)
 ** optional whitespace node(s)
 ** data node (can be any node type)
 
-This seems similar to other restricted nodes with the exception of the metadata node.
+This seems similar to our simple one-child restricted nodes with the exception of the metadata node.
 
-* I think if paredit treats the optional whitespace, metadata, optional whitespace nodes as a regular restricted node prefix, we should be good. Paredit does not operate on this portion.
+I think if paredit treats the optional whitespace, metadata, optional whitespace nodes as a regular restricted node prefix, we should be good.
 
-* We can slurp into data, barf out of data
-* What if we are located in the metadata node? Would paredit ops operate on the data?
-This would be consistent with current thinking on single child restricted nodes, but could be confusing.
-A slurp into from current `^{:a 1 |:b 2} [2 3 4] 5` could result in `^{:a 1 |:b 2} [2 3 4 5]`... is this helpful or confusing? Probably confusing.
-* What about split? does the created seq also get the metadata? probably not?: `^a [1 2 3]` => `^a [1] [2 3]`
+But metatada can be complex.
 
-Metadata can be complex. For the initial release, for simplicity's sake, I think paredit ops within metadata will be a no-op.
+[source,clojure]
+----
+(defn ^{:doc (some complex fn here)} foobar [])
+----
 
-`^{:a [1 2 3 4] :b [5 6 7 8]}`
+So, ideally, we should allow paredit ops within the context of metadata. Hmmm...
+
+We can slurp into data:
+
+* `^{:a 1} [1 2 |3] 4` =>  ^{:a 1} [1 2 |3 4]`
+
+Barf out of data
+
+* `^{:a 1} [1 2 |3]` =>  ^{:a 1} [1 2] |3 `
+
+
+What about split?
+Does the created seq also get the metadata?
+No: `^a [|1 2 3]` => `^a [|1] [2 3]`
 
 === Namespaced Map Nodes
 There are also qualified maps to think about:
@@ -123,7 +160,8 @@ Namespace map nodes are encoded as:
 ** :map-qualifier node
 ** :map node
 
-I think we can take the same strategy as we do for metdata nodes.
+This is, I think, simpler than metadata nodes.
+The prefix is a childless literal, so I think we can treat it like we do single child restricted nodes.
 
 === Reader Macro Nodes
 * `:reader-macro` is a general catch all for any reader macro we don't handle specifically, examples:
@@ -141,6 +179,8 @@ Reader macro nodes are encoded as:
 This more generic structure has 2 significant child nodes, the macro and the form.
 
 I think we can take the same strategy as we do for metadata nodes.
+Is it a bit simpler though?
+I think the prefix (including the macro name) is always a literal.
 
 == Paredit & Restricted Nodes
 
@@ -151,7 +191,13 @@ So we need to look at each paredit operation and see how restricted nodes impact
 
 === Error handling
 If paredit op is not supported, quiet no-op or throw?
-I'll go for quiet no-op.
+I'm tending toward quiet no-op.
+
+But rewrite-clj does throw for non-paredit ops.
+
+*  a `rewrite-clj.zip/remove` on `#|foo [1 2 3]` will throw
+
+But a `kill-one-at-pos` for the same node shouldn't?
 
 === Slurp
 Covers: `slurp-backward-fully-into`, `slurp-backward-fully`, `slurp-backward-into`, `slurp-backward`, `slurp-forward-fully-into`, `slurp-forward-fully`, `slurp-forward-into`, `slurp-forward`
