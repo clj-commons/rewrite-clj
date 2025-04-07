@@ -8,7 +8,7 @@ Thinking & Exploring
 The `rewrite-clj.paredit` namespace was transcribed from rewrite-cljs when creating rewrite-clj v1 in 2021.
 As of this writing, in 2025, there is more interest in the paredit API.
 People are actually trying to use it, and in doing so, have uncovered some issues.
-I am, therefore, I am giving the paredit API some love and attention.
+I, therefore, I am giving the paredit API some love and attention.
 
 Most fixes were straightforward, but how paredit operations should act on "restricted nodes" is more nuanced, hence this design doc.
 
@@ -22,7 +22,7 @@ Insignificant children would be whitespace nodes.
 For example a quote node:
 
 * `'a` is parsed to a quote node with child of symbol node `a`
-* `' a` is a quote node with child nodes of whitespace ` `, and symbol node `a`
+* `' a` is a quote node with child nodes of whitespace `{nbsp}`, and symbol node `a`
 
 I'm seeing the following as restricted nodes:
 
@@ -33,8 +33,8 @@ I'm seeing the following as restricted nodes:
 * `:unquote` `~a`
 * `:var` `#'a`
 
-Examples of unrestriced nodes that have any children are `:set` `+#{1 2 3}+`, `:vector` `[:a :b :c]`, `:list` `(foo bar baz)`, and `:map` `{:a 1 :b 2}`.
-And nodes that can't have children are exempt from concern, for examples, `:token` `a`, `:keyword` `:foo`, `:regex` `#"boo.*"`, `:comment` `;; foo`, `:whitespace` `{nbsp}`, `:newline` `\n`, and `:comma` `,`.
+Unrestriced nodes that have any children are not a concern, for examples: `:set` `+#{1 2 3}+`, `:vector` `[:a :b :c]`, `:list` `(foo bar baz)`, and `:map` `{:a 1 :b 2}`.
+And nodes that can't have children are exempt from concern, for examples: `:token` `a`, `:keyword` `:foo`, `:regex` `#"boo.*"`, `:comment` `;; foo`, `:whitespace` `{nbsp}`, `:newline` `\n`, and `:comma` `,`.
 
 In the context of restricted nodes, I'll use the terms "root element" and "raw element".
 
@@ -59,7 +59,7 @@ a| `a`
 I also must think about restricted nodes that have multiple children and how they are affected by paredit.
 
 === Discard Nodes
-And discard nodes (known to rewrite-clj as "uneval nodes"):
+Discard nodes (known to rewrite-clj as "uneval nodes"):
 
 * `+#_,#_#_\n1 2 3+`
 
@@ -136,11 +136,11 @@ So, ideally, we should allow paredit ops within the context of metadata. Hmmm...
 
 We can slurp into data:
 
-* `^{:a 1} [1 2 |3] 4` =>  ^{:a 1} [1 2 |3 4]`
+* `^{:a 1} [1 2 |3] 4` =>  `^{:a 1} [1 2 |3 4]`
 
 Barf out of data
 
-* `^{:a 1} [1 2 |3]` =>  ^{:a 1} [1 2] |3 `
+* `^{:a 1} [1 2 |3]` =>  `^{:a 1} [1 2] |3`
 
 
 What about split?
@@ -281,6 +281,15 @@ I think we replace the parent root elem:
 
 * `[1 ''[2 |''3 4]]` => `[1 |''3]`
 
+TODO: This is not consistent with splice.
+Probably best to become consistent with splice.
+I think this means:
+
+* `'|'3` => `|'3`
+
+Is this intuitive?
+These nodes are implemented in an hierarchy, but does a paredit user see them as such?
+
 === Splice
 Covers: `splice`, `splice-killing-forward`, `splice-killing-backward`
 
@@ -299,3 +308,6 @@ And it currently breaks down when trying to splice into a restricted node:
 * `'|[1 2 3]` => throws because a quote node can only have 1 non-whitespace form
 
 This is what does happen, what should happen?
+I think, as a user, I would expect:
+
+* `'|1 2 3'` <- only `1` is quoted after splice
