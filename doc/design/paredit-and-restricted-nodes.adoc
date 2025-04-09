@@ -270,7 +270,7 @@ Calva allows, but pops up a error about :meta expecting 2 values, which is a bid
 
 | `:x #::str{:a 1 \|:b 2}`
 | `:x {#::str :a 1 \|:b 2}` hmmm... odd and unhelpful.
-| `{:x #::str:a 1 \|:b 2}}` also not helpful.
+| `{:x #::str:a 1 \|:b 2}` also not helpful.
 Calva pops up an error about namespace map expecting a map
 | 🤔️ rewrite-clj could suck in the :x `#::str{:x :a 1 \|:b 2}`
 
