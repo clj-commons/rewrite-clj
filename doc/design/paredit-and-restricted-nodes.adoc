@@ -8,6 +8,10 @@ Thinking & Exploring
 In examples, `|` represents the location within the code.
 For example, `[:a |:b :c]`, means the location in `[:a :b :c]` is at `:b`.
 
+You'll see `ditto` in some examples, this means same as previous.
+
+🤔 means up for more thinking/debate
+
 == References
 The original author of rewrite-clj/paredit based his implementation on the  https://pub.gajendra.net/src/paredit-refcard.pdf[Paredit Refcard] created by https://pub.gajendra.net/software[Dan Cross].
 
@@ -306,7 +310,7 @@ s¦ #1 slurp backward
 ¦`+'''d '''[a '|'b c]+`
 
 ¦emacs paredit
-¦``'''['''d a '|'b c ]`
+¦`'''['''d a '|'b c ]`
 
 ¦ calva
 ¦`ditto`
@@ -414,16 +418,144 @@ s¦ #1 barf forward
 ¦ `'''[a '|'b c '''d]`
 
 ¦ emacs paredit
-¦
+¦ `'''[a '|'b c] '''d`
 
 ¦ calva
-¦
+¦ `ditto`
 
 ¦ rewrite-clj
-¦
+¦ ✅ rewrite-clj will match editor behaviour
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #2 barf forward
+¦ `+#_#_#_ 1 [|2 3] 4+`
+
+¦ emacs paredit
+¦ `+#_#_#_ 1 [|2] 3 4+`
+
+¦ calva
+¦ `ditto`
+Calva pops up a warning about alignment, but allows.
+
+¦ rewrite-clj
+¦ ✅ This matches what we want for rewrite-clj the `4` is effectively pushed out of the `:uneval`s
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #3 barf forward
+¦`^{:a 1 |:b 2} [1 2 3]`
+
+¦ emacs paredit
+¦ `^{:a 1 |:b} 2 [1 2 3]`
+
+¦ calva
+¦ `ditto`
+Calva pops up an error about `:meta` expecting values, but allows the operation.
+
+¦ rewrite-clj
+¦ 🤔 I think rewrite-clj should behave as editors do here, the `[1 2 3]` data is pushed out of the `:meta` node and `2` becomes the data.
 
 |===
 
+[cols="1,1",separator=¦]
+|===
+s¦ #3 barf forward
+¦`+#::str{:a 1 |:b 2}+`
+
+¦ emacs paredit
+¦ `+#:str{:a 1 :b} 2+`
+
+¦ calva
+¦ `ditto`
+
+¦ rewrite-clj
+¦ ✅ This matches what we want for rewrite-clj, it allows unbalanced maps.
+
+|===
+
+And let's look at some barf backward scenarios:
+
+[cols="1,1",separator=¦]
+|===
+s¦ #1 barf backward
+¦ `'''['''d a '|'b c]`
+
+¦ emacs paredit
+¦ `'''d '''[a '|'b c]`
+
+¦ calva
+¦ `ditto`
+Calva emits a warning about alignment, but allows the operation
+
+¦ rewrite-clj
+¦ ✅ This matches what we want for rewrite-clj.
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #2 barf backward
+¦ `+#_#_#_ [1 |2] 3 4+`
+
+¦ emacs paredit
+¦ `+#_#_#_ 1 [|2] 3 4+`
+
+¦ calva
+¦ `ditto`
+Calva emits a warning about alignment, but allows the operation
+
+¦ rewrite-clj
+¦ ✅ This matches what we want for rewrite-clj, the `4` is pushed out of the `:uneval`s
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #3 barf backward
+¦`^{:a 1 |:b 2} [1 2 3]`
+
+¦ emacs paredit
+¦`:a ^{1 |:b 2} [1 2 3]`
+
+¦ calva
+¦ `ditto`
+Calva emits an error about `:meta` node expecting 2 values, but allow operation
+
+¦ rewrite-clj
+¦ ✅ This matches what we'd like rewrite-clj to do
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #4 barf backward
+¦`^{:a 1 :b 2} [1 |2 3]`
+
+¦ emacs paredit
+¦`^{:a 1 :b 2} 1 [|2 3]`
+
+¦ calva
+¦ `ditto`
+Calva emits a warning about alignment, but allows operation
+
+¦ rewrite-clj
+¦ ✅ I think this matches what we'd like rewrite-clj to do, `1` becomes `:meta` data and `[2 3]` is pushed out of `:meta` node
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #5 barf backward
+¦`#:str{:a 1 |:b 2}`
+
+¦ emacs paredit
+¦`#:str:a {1 :b 2}` ick, not helpful
+
+¦ calva
+¦`ditto` not helpful
+
+¦ rewrite-clj
+¦ 🤔 I think we can do better and barf the `:a` out like so: `:a #:str{1 |:b 2}`
+|===
 
 === Kill
 Covers: `kill`, `kill-at-pos`, `kill-one-at-pos`
