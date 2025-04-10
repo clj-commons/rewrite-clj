@@ -216,7 +216,8 @@ We slurp into slurp that node's element.
 Let's explore how slurp forward behaves in editors:
 [cols="1,1"]
 |===
-| #1 slurp forward |`'''[a '\|'b c] '''d`
+s| #1 slurp forward
+|`'''[a '\|'b c] '''d`
 
 | emacs paredit
 |`'''[a '\|'b c '''d]`
@@ -230,7 +231,8 @@ Let's explore how slurp forward behaves in editors:
 
 [cols="1,1"]
 |===
-| #2 slurp forward |`+#_#_#_ 1 [\|2] 3+`
+s| #2 slurp forward
+|`+#_#_#_ 1 [\|2] 3+`
 
 | emacs paredit
 | `+#_#_#_ 1 [\|2 3]+`
@@ -245,7 +247,8 @@ Calva allows, but pops a warning about alignment.
 
 [cols="1,1"]
 |===
-| #3 slurp forward | `^{:a 1 \|:b 2} [1 2 3]`
+s| #3 slurp forward
+| `^{:a 1 \|:b 2} [1 2 3]`
 
 | emacs paredit
 | `^{:a 1 \|:b 2 [1 2 3]}`
@@ -260,7 +263,8 @@ Calva allows but pops an error: ":meta expects 2 values"
 
 [cols="1,1"]
 |===
-| #4 slurp forward | `#::str{:a 1 \|:b 2} :c`
+s| #4 slurp forward
+| `#::str{:a 1 \|:b 2} :c`
 
 | emacs paredit
 | `#::str{:a 1 \|:b 2 :c}`
@@ -274,7 +278,8 @@ Calva allows but pops an error: ":meta expects 2 values"
 
 [cols="1,1"]
 |===
-| #5 slurp forward | `+#_#_#_ 1 [\|2] 3 4+`
+s| #5 slurp forward
+| `+#_#_#_ 1 [\|2] 3 4+`
 
 | emacs paredit
 | `+#_#_#_ 1 [\|2 3] 4+`
@@ -291,7 +296,8 @@ Calva does pop up a warning about formatting.
 Let's take a peek at how slurp backward behaves:
 [cols="1,1"]
 |===
-| #1 slurp backward |`+'''d '''[a '\|'b c]+`
+s| #1 slurp backward
+|`+'''d '''[a '\|'b c]+`
 
 |emacs paredit
 |``'''['''d a '\|'b c ]`
@@ -303,10 +309,10 @@ Let's take a peek at how slurp backward behaves:
 | ✅ matches what we'd like to do for rewrite-clj
 |===
 
-
 [cols="1,1"]
 |===
-| #2 slurp backward | `+#_#_#_ 1 [\|2] 3+`
+s| #2 slurp backward
+| `+#_#_#_ 1 [\|2] 3+`
 
 | emacs paredit
 | `+#_#_#_ [1 \|2] 3+`
@@ -321,7 +327,8 @@ Calva pops up a warning about formatting
 
 [cols="1,1"]
 |===
-| #3 slurp backward | `x ^{:a 1 \|:b 2} [1 2 3]`
+s| #3 slurp backward
+| `x ^{:a 1 \|:b 2} [1 2 3]`
 
 | emacs paredit
 | `{x ^:a 1 \|:b 2} [1 2 3]` hmmm... this seems like an odd and unhelpful behaviour.
@@ -336,7 +343,8 @@ Calva allows, but pops up a error about :meta expecting 2 values, which is a bid
 
 [cols="1,1"]
 |===
-| #4 slurp backward | `:x #::str{:a 1 \|:b 2}`
+s| #4 slurp backward
+| `:x #::str{:a 1 \|:b 2}`
 
 | emacs paredit
 | `:x {#::str :a 1 \|:b 2}` hmmm... odd and unhelpful.
@@ -351,7 +359,8 @@ Calva pops up an error about namespace map expecting a map
 
 [cols="1,1"]
 |===
-| #5 slurp backward | `+#_#_#_ [1 \|2] 3 4+`
+s| #5 slurp backward
+| `+#_#_#_ [1 \|2] 3 4+`
 
 | emacs paredit
 | `+[#_#_#_ 1 \|2] 3 4+` oh my... that's not helpful
@@ -365,7 +374,8 @@ Calva pops up an error about namespace map expecting a map
 
 [cols="1,1"]
 |===
-| #6 slurp backward | `+x #_#_#_ [\|1] 2 3+`
+s| #6 slurp backward
+| `+x #_#_#_ [\|1] 2 3+`
 
 | emacs paredit
 | `+x [#_#_#_ \|1] 2 3+` not helpful
