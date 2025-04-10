@@ -4,6 +4,13 @@
 == Status
 Thinking & Exploring
 
+== Conventions
+In examples, `|` represents the location within the code.
+For example, `[:a |:b :c]`, means the location in `[:a :b :c]` is at `:b`.
+
+== References
+The original author of rewrite-clj/paredit based his implementation on the  https://pub.gajendra.net/src/paredit-refcard.pdf[Paredit Refcard] created by https://pub.gajendra.net/software[Dan Cross].
+
 == Paredit API
 The `rewrite-clj.paredit` namespace was transcribed from rewrite-cljs when creating rewrite-clj v1 in 2021.
 As of this writing, in 2025, there is more interest in the paredit API.
