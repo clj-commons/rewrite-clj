@@ -568,6 +568,37 @@ Simple restricted cases:
 * `'''a '|''b`  => `|'''a'
 * `'''a '''|b`  => `|'''a'
 
+[cols="1,1",separator=¦]
+|===
+s¦ #1 kill
+¦`+#_#_#_ 1 |2 3+`
+
+¦ emacs paredit
+¦`+#_#_#_ 1| +`
+
+¦ calva
+¦`ditto`
+
+¦ rewrite-clj
+¦ ❌ This is not allowed in rewrite-clj, each `:uneval` must have a significant child node. +
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #2 kill
+¦`+#str|{:a 1 :b 2}`
+
+¦ emacs paredit
+¦`#st|r`
+
+¦ calva
+¦``
+
+¦ rewrite-clj
+¦ ❌ This editor behaviour is not allowed in rewrite-clj a namespace map qualifier must have a map.
+In this case rewrite-clj will kill the entire `:namespaced-map` node.
+|===
+
 === Move
 Coves: `move-to-prev`
 
@@ -577,6 +608,41 @@ If in or on a restricted element, move that element:
 * `''a '|'b ''c` => `'|'b ''a ''c`
 * `''a ''|b ''c` => `''|b ''a ''c`
 
+I don't see a `move-to-prev` equivalent in emacs or calva.
+Let's explore a few cases anyway.
+
+[cols="1,1",separator=¦]
+|===
+s¦ #1 move
+¦`+:x #str|{:a 1 :b 2}+`
+
+¦ rewrite-clj
+¦`+#str|{:a 1 :b 2} :x+`
+since we are at the prefix we'll move the entire node to prev
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #2 move
+¦`+:x #str|{:a 1 :b 2}+`
+
+¦ rewrite-clj
+¦`+#str|{:a 1 :b 2} :x+`
+since we are at the prefix we'll move the entire node to prev
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #3 move
+¦`#str{|:a 1 :b 2}+`
+
+¦ rewrite-clj
+¦`+|:a #str{1 :b 2}+`
+This case is much like barf backward
+|===
+
+TODO: Hmmm... `:uneval`...
+
 === Wrap
 Covers: `wrap-around`, `wrap-fully-forward-slurp`
 
@@ -584,12 +650,14 @@ Wrapping is slightly nuanced for restricted nodes.
 
 If at a restricted element's root or in a restricted node, it makes sense to wrap a the element root:
 
-* `|'a'` => `[|'a]`
+* `|'a` => `[|'a]`
 * `'|'a` => `['|'a]`
 
 But if we are at the element, we wrap element:
 
 * `''|a` => `''[|a]`
+
+
 
 === Join
 Covers: `join`
@@ -628,6 +696,12 @@ These nodes are implemented in an hierarchy, but does a paredit user see them as
 
 === Splice
 Covers: `splice`, `splice-killing-forward`, `splice-killing-backward`
+
+Rewrite-clj's `splice` is a bit interesting in that it does not match the conventional editor paredit splice.
+It expects the location to a be at a sequence, not in a sequence.
+I assume this design decision was made because one cannot be located in an empty rewrite-clj sequence.
+
+The other splice functions work when located in a sequence.
 
 Splice also exists in rewrite-clj.zip api.
 The paredit version simply calls to rewrite-clj.zip/splice.
