@@ -1,7 +1,7 @@
 (ns rewrite-clj.paredit
   "Paredit zipper operations for Clojure/ClojureScript/EDN.
 
-  You might find inspiration from examples here: http://pub.gajendra.net/src/paredit-refcard.pdf"
+  You might find inspiration from examples here: https://pub.gajendra.net/src/paredit-refcard.pdf"
   (:require [clojure.string :as str]
             [rewrite-clj.custom-zipper.core :as zraw]
             [rewrite-clj.custom-zipper.utils :as u]
