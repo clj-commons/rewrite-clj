@@ -214,81 +214,173 @@ We find the node to slurp to the right of that node's element root.
 We slurp into slurp that node's element.
 
 Let's explore how slurp forward behaves in editors:
+[cols="1,1"]
 |===
-| Scenario | emacs paredit | calva | notes
+| #1 slurp forward |`'''[a '\|'b c] '''d`
 
-|`'''[a '\|'b c] '''d`
+| emacs paredit
 |`'''[a '\|'b c '''d]`
-|`ditto`
-| ✅
 
-| `+#_#_#_ 1 [\|2] 3+`
+| calva
+|`ditto`
+
+| rewrite-clj
+| ✅ rewrite-clj will match editor behaviour
+|===
+
+[cols="1,1"]
+|===
+| #2 slurp forward |`+#_#_#_ 1 [\|2] 3+`
+
+| emacs paredit
 | `+#_#_#_ 1 [\|2 3]+`
+
+| calva
 |`ditto`
 Calva allows, but pops a warning about alignment.
-| ❌ This is not allowed in rewrite-clj, this is not a valid `:uneval` node.
 
-| `^{:a 1 \|:b 2} [1 2 3]`
+| rewrite-clj
+| ❌ This is not allowed in rewrite-clj, this results in an invalid `:uneval` node
+|===
+
+[cols="1,1"]
+|===
+| #3 slurp forward | `^{:a 1 \|:b 2} [1 2 3]`
+
+| emacs paredit
 | `^{:a 1 \|:b 2 [1 2 3]}`
+
+| calva
 | `ditto`
 Calva allows but pops an error: ":meta expects 2 values"
+
+| rewrite-clj
 | ❌ We can't get to this state in rewrite-clj, it is not a valid rewrite-clj `:meta` node.
+|===
 
-| `#::str{:a 1 \|:b 2} :c`
+[cols="1,1"]
+|===
+| #4 slurp forward | `#::str{:a 1 \|:b 2} :c`
+
+| emacs paredit
 | `#::str{:a 1 \|:b 2 :c}`
-| `ditto`
-| ✅ rewrite-clj allows unbalanced maps
 
-| `+#_#_#_ 1 [\|2] 3 4+`
+| calva
+| `ditto`
+
+| rewrite-clj
+| ✅ rewrite-clj allows unbalanced maps
+|===
+
+[cols="1,1"]
+|===
+| #5 slurp forward | `+#_#_#_ 1 [\|2] 3 4+`
+
+| emacs paredit
 | `+#_#_#_ 1 [\|2 3] 4+`
+
+| calva
 | `ditto`
 Calva does pop up a warning about formatting.
-| 🤔️️ Technically, rewrite-clj could support this scenario because there are enough nodes to satisfy `:uneval`
 
+| rewrite-clj
+| 🤔️️ Technically, rewrite-clj could support this scenario because there are enough nodes to satisfy `:uneval`
 |===
+
 
 Let's take a peek at how slurp backward behaves:
+[cols="1,1"]
 |===
-| Scenario | emacs paredit | calva | notes
+| #1 slurp backward |`+'''d '''[a '\|'b c]+`
 
-|`'''d '''[a '\|'b c] `
-|`'''['''d a '\|'b c ]`
+|emacs paredit
+|``'''['''d a '\|'b c ]`
+
+| calva
 |`ditto`
-| ✅
 
-| `+#_#_#_ 1 [\|2] 3+`
+| rewrite-clj
+| ✅ matches what we'd like to do for rewrite-clj
+|===
+
+
+[cols="1,1"]
+|===
+| #2 slurp backward | `+#_#_#_ 1 [\|2] 3+`
+
+| emacs paredit
 | `+#_#_#_ [1 \|2] 3+`
-Calva pops up a warning about formatting
-|`ditto`
-| ❌ This is not allowed in rewrite-clj, this is not a valid `:uneval` node.
 
-| `x ^{:a 1 \|:b 2} [1 2 3]`
+| calva
+|`ditto`
+Calva pops up a warning about formatting
+
+| rewrite-clj
+| ❌ This is not allowed in rewrite-clj, each `:uneval` must have a significant child node.
+|===
+
+[cols="1,1"]
+|===
+| #3 slurp backward | `x ^{:a 1 \|:b 2} [1 2 3]`
+
+| emacs paredit
 | `{x ^:a 1 \|:b 2} [1 2 3]` hmmm... this seems like an odd and unhelpful behaviour.
+
+| calva
 | `^{x :a 1 \|:b 2} [1 2 3]` this matches what rewrite-clj would do.
 Calva allows, but pops up a error about :meta expecting 2 values, which is a bid odd (seems like will still have 2 nodes)
-| ✅️ rewrite-clj supports unbalanced maps and will match calva here
 
-| `:x #::str{:a 1 \|:b 2}`
+| rewrite-clj
+| ✅️ rewrite-clj supports unbalanced maps and will match calva here
+|===
+
+[cols="1,1"]
+|===
+| #4 slurp backward | `:x #::str{:a 1 \|:b 2}`
+
+| emacs paredit
 | `:x {#::str :a 1 \|:b 2}` hmmm... odd and unhelpful.
+
+| calva
 | `{:x #::str:a 1 \|:b 2}` also not helpful.
 Calva pops up an error about namespace map expecting a map
+
+| rewrite-clj
 | 🤔️ rewrite-clj could suck in the :x `#::str{:x :a 1 \|:b 2}`
+|===
 
-| `+#_#_#_ [1 \|2] 3 4+`
+[cols="1,1"]
+|===
+| #5 slurp backward | `+#_#_#_ [1 \|2] 3 4+`
+
+| emacs paredit
 | `+[#_#_#_ 1 \|2] 3 4+` oh my... that's not helpful
-| `+#_#_ [#_ 1 \|2] 3 4+` ugh... not good either
-| this would be a no-op for rewrite-clj, ther is no valid slurpee candidate
 
-| `+x #_#_#_ [\|1] 2 3+`
+| calva
+| `+#_#_ [#_ 1 \|2] 3 4+` ugh... not good either
+
+| rewrite-clj
+| this would be a no-op for rewrite-clj, ther is no valid slurpee candidate
+|===
+
+[cols="1,1"]
+|===
+| #6 slurp backward | `+x #_#_#_ [\|1] 2 3+`
+
+| emacs paredit
 | `+x [#_#_#_ \|1] 2 3+` not helpful
+
+| calva
 | `+x #_#_[#_ \|1] 2 3+` also not helpful
+
+| rewrite-clj
 | 🤔 Technically, rewrite-clj cold suck in the `x` like so `+#_#_#_ [x \|1] 2 3+`
 |===
 
 Editors do allow some slurping that rewrite-clj cannot support because they result in invalid nodes.
 In those cases we'll invoke our <<error-handling>>.
 
-Rewrite-clj could handle some scenarios better than editors currently do.
+Rewrite-clj could, theoreticaly, handle some scenarios better than editors currently do.
 
 === Barf
 Covers: `barf-backward`, `barf-forward`
