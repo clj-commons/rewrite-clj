@@ -657,6 +657,52 @@ But if we are at the element, we wrap element:
 
 * `''|a` => `''[|a]`
 
+[cols="1,1",separator=¦]
+|===
+s¦ #1 wrap
+¦`|'a`
+
+¦ emacs paredit
+¦`['a]`
+
+¦ calva
+¦`ditto`
+
+¦ rewrite-clj
+¦ ✅ matches our plan
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #2 wrap
+¦`'|a`
+
+¦ emacs paredit
+¦`' [|a]`
+
+¦ calva
+¦ `['|a]`
+
+¦ rewrite-clj
+¦ 🤔 Calva matches our plan, but emacs behaviour is worth considering (without extra space char)
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #3 wrap
+¦`'|''a`
+
+¦ emacs paredit
+¦`' [|''a]`
+
+¦ calva
+¦ `['|''a]`
+
+¦ rewrite-clj
+¦ 🤔 Again calva matches our plan, but emacs is worth considering (without extra space char).
+|===
+
+TODO: :meta, :uneval, :namespace-map
 
 
 === Join
@@ -667,12 +713,78 @@ Should we support restricted nodes for joins? If so, maybe:
 * `''[a b c]| [d e f]` => `''[a b c |d e f]`
 * `''[a b c]| ~'(d e f)` => `''[a b c |d e f]`
 
+Let's seee what emacs and calva do:
+
+[cols="1,1",separator=¦]
+|===
+s¦ #1 join
+¦`''[a b c]| [d e f]`
+
+¦ emacs paredit
+¦`''[a b c| d e f]`
+
+¦ calva
+¦`''[a b c |d e f]`
+
+¦ rewrite-clj
+¦ ✅ very similar behaviour, we match calva here
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #2 join
+¦`''[a b c]| (d e f)`
+
+¦ emacs paredit
+¦`''[a b c]| (d e f)` no-op, does not join sequences of different types
+
+¦ calva
+¦`ditto`
+
+¦ rewrite-clj
+¦ 🤔 Rewrite-clj does join sequences of different types, result here is `''[a b c |d e f]`
+|===
+
+Editors only join sequences of the same type, whereas rewrite-clj will join sequences of different types.
+We'll preserve this historical behaviour.
+If it doesn't suit users, they can either roll their own join, or we can add options to the `join` fn.
+
+🤔 If the sequence on the left is a single child restricted node sequence, I think we'll also join it.
+
 === Split
 Covers: `split`, `split-at-pos`
 
 Should the split include the restricted prefix? I think no:
 
 * `''(a b |c d e)` => `''(a b |c) (d e)`
+
+[cols="1,1",separator=¦]
+|===
+s¦ #1 split
+¦`''(a b c d e)`
+
+¦ emacs paredit
+¦`''(a b)| (c d e)`
+
+¦ calva
+¦`''(a b)|''(c d e)`
+
+¦ rewrite-clj
+¦ 🤔 Interesting.
+
+* Calva includes the prefix, and emacs does not.
+We'll go the emacs route and if that does not work for users, they can roll thier own `split` or we'll add some options to control behaviour.
+* Another difference is that rewrite-clj keeps the position on the same node.
+Given that it is less confusing to preserve ones location in zipper, I think this makes sense.
+We'll stick with this historical behaviour.
+|===
+
+TODO:
+
+* :meta
+* :uneval
+* :namespaced-map
+
 
 === Raise
 Covers: `raise`
@@ -685,33 +797,114 @@ I think we replace the parent root elem:
 
 * `[1 ''[2 |''3 4]]` => `[1 |''3]`
 
-TODO: This is not consistent with splice.
-Probably best to become consistent with splice.
-I think this means:
+[cols="1,1",separator=¦]
+|===
+s¦ #1 raise
+¦`[a [x '|'y z]]`
 
-* `'|'3` => `|'3`
+¦ emacs paredit
+¦`[a |''y]`
 
-Is this intuitive?
-These nodes are implemented in an hierarchy, but does a paredit user see them as such?
+¦ calva
+¦ `ditto`
+
+¦ rewrite-clj
+¦ ✅ rewrite-clj will also preserve position within restricted node, result will be `[a '|'y]`
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #2 raise
+¦`[a ''[x '|'y z]]`
+
+¦ emacs paredit
+¦`[a ''|''y]` preserves parent sequence prefix
+
+¦ calva
+¦ `[a |''y]` does not preserve parent sequence prefix
+
+¦ rewrite-clj
+¦ 🤔 We are leaning toward the calva behaviour, but we'll preserve location within the restricted node `[a |'|'y]`
+|===
+
+TODO:
+
+* :uneval
+* :namespace-map
+* :meta
+
+Unfortunately, the current `raise` works on the internal hierarchy of nodes (which I feel is an implementation detail):
+
+* `''|3` => `'|3` => `|3`
+
+🤔 Choices:
+
+1. make a breaking change
+2. add a new `raise` fn that matches new behaviour
+3. add an option to existing raise fn that defaults to old behaviour but allows new behaviour
 
 === Splice
 Covers: `splice`, `splice-killing-forward`, `splice-killing-backward`
 
-Rewrite-clj's `splice` is a bit interesting in that it does not match the conventional editor paredit splice.
+[cols="1,1",separator=¦]
+|===
+s¦ #1 splice
+¦`[1 |2 3]`
+
+¦ emacs paredit
+¦`1 |2 3`
+
+¦ calva
+¦ `ditto`
+
+¦ rewrite-clj
+¦ 🤔 This is what we'd like rewrite-clj to do, but this is a currently a no-op for rewrite-clj `splice`.
+Read on to next example.
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #2 splice
+¦`|[1 2 3]`
+
+¦ emacs paredit
+¦`|[1 2 3]` a no-op
+
+¦ calva
+¦ `ditto`
+
+¦ rewrite-clj
+¦ 🤔 This is the only way that `splice` currently works in rewrite-clj you must be located at the sequence.
+|===
+
+Ok. Rewrite-clj's `splice` is a bit interesting in that it does not match the conventional editor paredit splice.
 It expects the location to a be at a sequence, not in a sequence.
 I assume this design decision was made because one cannot be located in an empty rewrite-clj sequence.
 
-The other splice functions work when located in a sequence.
+The other splice functions `splice-killing-*` work when located in a sequence.
 
 Splice also exists in rewrite-clj.zip api.
 The paredit version simply calls to rewrite-clj.zip/splice.
 I expect it doesn't deal with restricted nodes yet?
 
-Hmmm... Ok. This currently works on the raw node structure.
-It doesn't care about my concept restricted nodes.
+[cols="1,1",separator=¦]
+|===
+s¦ #3 splice
+¦`''[a '|'b c]`
 
-* `|''a` => `|'a`
-* `|'a` => `a`
+¦ emacs paredit
+¦`''a '|'b c` like `raise`, preserves parent prefix
+
+¦ calva
+¦ `a ''b| c'` odd location after splice, does not preserve parent prefix
+
+¦ rewrite-clj
+¦ 🤔 Assuming we now work within the sequence (see above), I was thinking rewrite-clj should match calva, but with location within restricted node preserved `a '|'b c`.
+|===
+
+
+Unfortunately, rewrite-clj `splice` currently works on the raw node structure.
+Like the current `raise`, it doesn't care about our concept restricted nodes.
 
 And it currently breaks down when trying to splice into a restricted node:
 
@@ -721,3 +914,12 @@ This is what does happen, what should happen?
 I think, as a user, I would expect:
 
 * `'|1 2 3` <- only `1` is quoted after splice
+
+This is a bit of a mess. What to do?
+I think adding a new fn makes sense.
+We'll leave the existing splice as is, we could consider deprecating `rewrite-clj.paredit/splice` (but not `rewrite-clj.zip/splice`).
+
+What to call our new `splice`? `splice-to`?
+
+If we only operate from within a sequence, we'll not be able to splice an empty sequence (because you cannot be located inside an empty sequence in a zipper).
+If we still want to allow splicing an empty sequence, we'll need to support splicing when located at a sequence. Maybe we could adopt same options as `slurp-forward-into` `:from :parent` or `:from :current`.
