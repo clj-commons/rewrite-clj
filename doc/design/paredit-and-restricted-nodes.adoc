@@ -15,6 +15,39 @@ You'll see `ditto` in some examples, this means same as previous.
 == References
 The original author of rewrite-clj/paredit based his implementation on the  https://pub.gajendra.net/src/paredit-refcard.pdf[Paredit Refcard] created by https://pub.gajendra.net/software[Dan Cross].
 
+== Other Questions
+I'll collect out of scope questions here.
+
+=== node emptiness
+
+We make certain decisions when a node is empty, but what is an emptyn node to paredit?
+[source,clojure]
+----
+;; empty?
+[
+   ]
+
+;; empty?
+[
+  ; foo
+
+]
+----
+=== slurping and barfing comments
+[source,clojure]
+----
+[1 |2 3] ;; slurp me too?
+4
+
+[1 |2 ;; when am I barfed?
+3 ;; and when am I barfed??
+]
+
+;; when am I slurped?
+1 ;; and when am I slurped?
+[2 |3]
+----
+
 == Paredit API
 The `rewrite-clj.paredit` namespace was transcribed from rewrite-cljs when creating rewrite-clj v1 in 2021.
 As of this writing, in 2025, there is more interest in the paredit API.
@@ -205,11 +238,18 @@ So we need to look at each paredit operation and see how restricted nodes impact
 If paredit op is not supported, quiet no-op or throw?
 I'm tending toward quiet no-op.
 
+For example, if we try to slurp and there is no thing to slurp, an editor will quietly do nothing.
+
+* `[1 |2 3]` => `[1 |2 3]`
+
+This feels like doing nothing over an empty collection in clojure.
+
 But rewrite-clj does throw for non-paredit ops.
 
 *  a `rewrite-clj.zip/remove` on `#|foo [1 2 3]` will throw
 
 But a `kill-one-at-pos` for the same node shouldn't?
+🤔 Actually, what paredit will kill here is still TBD.
 
 === Slurp
 Covers: `slurp-backward-fully-into`, `slurp-backward-fully`, `slurp-backward-into`, `slurp-backward`, `slurp-forward-fully-into`, `slurp-forward-fully`, `slurp-forward-into`, `slurp-forward`
@@ -379,7 +419,7 @@ s¦ #5 slurp backward
 ¦ `+#_#_ [#_ 1 |2] 3 4+` ugh... not good either
 
 ¦ rewrite-clj
-¦ this would be a no-op for rewrite-clj, ther is no valid slurpee candidate
+¦ this would be a no-op for rewrite-clj, there is no valid slurpee candidate
 |===
 
 [cols="1,1",separator=¦]
@@ -564,9 +604,9 @@ If in or on a restricted element node, kill from the restricted element root nod
 
 Simple restricted cases:
 
-* `'''a |'''b`  => `|'''a'
-* `'''a '|''b`  => `|'''a'
-* `'''a '''|b`  => `|'''a'
+* `'''a |'''b`  => `|'''a'`
+* `'''a '|''b`  => `|'''a'`
+* `'''a '''|b`  => `|'''a'`
 
 [cols="1,1",separator=¦]
 |===
@@ -581,18 +621,36 @@ s¦ #1 kill
 
 ¦ rewrite-clj
 ¦ ❌ This is not allowed in rewrite-clj, each `:uneval` must have a significant child node. +
+¦ 🤔 Should rewrite-clj handle by removing associated leading `_#`? `#_ |1`, would this be more confusing than helpful?
 |===
 
 [cols="1,1",separator=¦]
 |===
 s¦ #2 kill
-¦`+#str|{:a 1 :b 2}`
+¦`+#_|#_#_ 1 2 3+`
+
+¦ emacs paredit
+¦`+#|_+`
+
+¦ calva
+¦`+#_|#_ 1 2 3+`
+Calva does pop up an error about uneval expecting 1 node.
+
+¦ rewrite-clj
+¦ ❌ I don't think either editor is great and emacs results in an invalid `:uneval` node.
+¦ 🤔 Rewrite-clj could remove the entire node (we'd be left with nothing), this might be the simplest to understand for a user.
+|===
+
+[cols="1,1",separator=¦]
+|===
+s¦ #3 kill
+¦`+#str|{:a 1 :b 2}+`
 
 ¦ emacs paredit
 ¦`#st|r`
 
 ¦ calva
-¦``
+¦`#str|`
 
 ¦ rewrite-clj
 ¦ ❌ This editor behaviour is not allowed in rewrite-clj a namespace map qualifier must have a map.
