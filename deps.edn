@@ -22,7 +22,7 @@
            ;;
            ;; ClojureScript version we test with (and support)
            ;;
-           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.132"}}}
+           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.12.35"}}}
 
            ;;
            ;; REPL to support bb dev-jvm & dev-cljs tasks, see script/dev_repl.clj
