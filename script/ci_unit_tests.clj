@@ -61,7 +61,7 @@
             :requires ["npm"]}]
           ;; planck does not run on windows, and I don't think it needs a jdk
           [{:desc "cljs-bootstrap" :cmd "bb test-cljs --env planck --optimizations none"
-            :oses ["macos" "ubuntu"] :jdks :earliest :requires ["planck"]}]))
+            :oses ["macos" "ubuntu"] :jdks [jdk-cljs] :requires ["planck"]}]))
 
 (defn- ci-test-matrix []
   (for [{:keys [desc cmd oses jdks requires]} (test-tasks)
