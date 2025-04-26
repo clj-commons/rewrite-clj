@@ -20,7 +20,7 @@ I'll collect out of scope questions here.
 
 === node emptiness
 
-We make certain decisions when a node is empty, but what is an emptyn node to paredit?
+We make certain decisions when a node is empty, but what is an empty node to paredit?
 [source,clojure]
 ----
 ;; empty?
@@ -54,7 +54,7 @@ As of this writing, in 2025, there is more interest in the paredit API.
 People are actually trying to use it, and in doing so, have uncovered some issues.
 I, therefore, I am giving the paredit API some love and attention.
 
-Most fixes were relatively straightforward, but how paredit operations should act on "restricted nodes" is more nuanced, hence this design doc to think things through.
+Most fixes were relatively straightforward, but how paredit should operate on "restricted nodes" is more nuanced, hence this design doc to think things through.
 
 == Restricted Nodes
 I invented this term for certain rewrite-clj nodes.
@@ -105,7 +105,11 @@ I also must think about restricted nodes that have multiple children and how the
 === Discard Nodes
 Discard nodes (known to rewrite-clj as "uneval nodes"):
 
-* `+#_,#_#_\n1 2 3+`
+[source,clojure]
+----
+#_,#_#_
+1 2 3
+----
 
 The above uneval node is encoded as:
 
@@ -117,7 +121,7 @@ The above uneval node is encoded as:
 **** `1` `:token` node
 *** ` ` `:whitespace` node
 *** `2` `:token` node
-** ` ` `:whitespace` node
+** `{nbsp}` `:whitespace` node
 ** `3` `:token` node
 
 What could paredit ops effect on such a structure?
@@ -228,7 +232,7 @@ I think the prefix (including the macro name) is always a literal.
 
 == Paredit & Restricted Nodes
 
-Paredit needs to understand the special single-significant-child case of restricted nodes.
+Paredit needs to understand the special case of restricted nodes.
 For example, we can't slurp extra significant children into a quote node's chldren.
 
 So we need to look at each paredit operation and see how restricted nodes impact it.
@@ -434,7 +438,7 @@ s¦ #6 slurp backward
 ¦ `+x #_#_[#_ |1] 2 3+` also not helpful
 
 ¦ rewrite-clj
-¦ 🤔 technically, rewrite-clj cold suck in the `x` like so `+#_#_#_ [x |1] 2 3+`
+¦ 🤔 technically, rewrite-clj could suck in the `x` like so `+#_#_#_ [x |1] 2 3+`
 |===
 
 Editors do allow some slurping that rewrite-clj cannot support because they result in invalid nodes.
