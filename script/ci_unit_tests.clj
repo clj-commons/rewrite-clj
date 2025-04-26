@@ -30,7 +30,7 @@
 (defn- test-tasks []
   (concat [;; run lintish tasks across all oses to verify that they will work for all devs regardless of their os choice
            {:desc "import-vars" :cmd "bb apply-import-vars check" :oses all-oses :jdks :earliest}
-           {:desc "lint"        :cmd "bb lint"                    :oses all-oses :jdks :earliest}
+           {:desc "lint"        :cmd "bb lint"                    :oses all-oses :jdks :latest}
            ;; test-docs clj on default clojure version across all oses and jdks
            {:desc "test-doc clj" :cmd "bb test-doc --platform clj"  :oses all-oses :jdks :all}
            ;; test-docs cljs on default min cljs supported jdk
@@ -68,6 +68,7 @@
         os oses
         jdk (case jdks
               :earliest (take 1 (get os-jdks os))
+              :latest (take-last 1 (get os-jdks os))
               :all (get os-jdks os)
               jdks)]
     {:desc (str desc " " os " jdk" jdk)
