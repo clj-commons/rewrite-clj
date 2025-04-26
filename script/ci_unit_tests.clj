@@ -23,20 +23,25 @@
                         ;; macOS on GitHub Actions is now arm-based and does not include jdk8
                         "macos"   ["11" "17" "21" "24"]
                         "windows" ["8" "11" "17" "21" "24"]})
+(def ^:private jdk-cljs "11")
+(def ^:private jdk-shadow-cljs "21")
 (def ^:private all-oses (keys os-jdks))
 
 (defn- test-tasks []
   (concat [;; run lintish tasks across all oses to verify that they will work for all devs regardless of their os choice
            {:desc "import-vars" :cmd "bb apply-import-vars check" :oses all-oses :jdks :earliest}
            {:desc "lint"        :cmd "bb lint"                    :oses all-oses :jdks :earliest}
-           ;; test-docs on default clojure version across all oses and jdks
-           {:desc "test-doc"          :cmd "bb test-doc"          :oses all-oses :jdks :all :requires ["npm"]}]
-          (for [version ["all"]]
-            {:desc (str "clj-" version)
-             :cmd (str "bb test-clj --clojure-version " version)
+           ;; test-docs clj on default clojure version across all oses and jdks
+           {:desc "test-doc clj" :cmd "bb test-doc --platform clj"  :oses all-oses :jdks :all}
+           ;; test-docs cljs on default min cljs supported jdk
+           {:desc "test-doc cljs" :cmd "bb test-doc --platform cljs" :oses all-oses :jdks [jdk-cljs] :requires ["npm"]}]
+          (for [clojure-version ["all"]]
+            {:desc (str "clj-" clojure-version)
+             :cmd (str "bb test-clj --clojure-version " clojure-version)
              :oses all-oses
              :jdks :all})
-          ;; I'm not sure there's much value testing across jdks for ClojureScript tests, for now we'll stick with earliest jdk only
+          ;; I'm not sure there's much value testing across jdks for ClojureScript tests,
+          ;; for now we'll stick with earliest cljs-supported jdk only
           (for [env [{:param "node" :desc "node"}
                      {:param "chrome-headless" :desc "browser"}]
                 opt [{:param "none"}
@@ -44,14 +49,15 @@
             {:desc (str "cljs-"
                         (:desc env)
                         (when (:desc opt) (str "-" (:desc opt))))
+             :skip-reason-fn (fn [{:keys [jdk]}] (when (< (parse-long jdk) (parse-long jdk-cljs))
+                                                   (str "jdk must be >= " jdk-cljs)))
              :cmd (str "bb test-cljs --env " (:param env) " --optimizations " (:param opt))
              :oses all-oses
-             :jdks :earliest
+             :jdks [jdk-cljs]
              :requires ["npm"]})
-          ;; shadow-cljs requires a min of jdk 11 so we'll test on that
-          [{:desc "shadow-cljs"    :cmd "bb test-shadow-cljs" :oses all-oses :jdks ["11"]
-            :skip-reason-fn (fn [{:keys [jdk]}] (when (< (parse-long jdk) 11)
-                                                  "jdk must be >= 11"))
+          [{:desc "shadow-cljs"    :cmd "bb test-shadow-cljs" :oses all-oses :jdks [jdk-shadow-cljs]
+            :skip-reason-fn (fn [{:keys [jdk]}] (when (< (parse-long jdk) (parse-long jdk-shadow-cljs))
+                                                  (str "jdk must be >= " jdk-shadow-cljs)))
             :requires ["npm"]}]
           ;; planck does not run on windows, and I don't think it needs a jdk
           [{:desc "cljs-bootstrap" :cmd "bb test-cljs --env planck --optimizations none"

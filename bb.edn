@@ -31,7 +31,7 @@
          test-clj-watch    {:task test-clj-watch/-main    :doc "[kaocha args]"}
          test-cljs-watch   {:task test-cljs-watch/-main   :doc "watch cljs test with fighweel main"}
          test-coverage     {:task test-coverage/-main     :doc "generate code coverage reports for Clojure tests"}
-         test-doc          {:task test-doc/-main          :doc "test doc code blocks"}
+         test-doc          {:task test-doc/-main          :doc "test doc code blocks [--platform (clj|cljs|all)]"}
          test-libs         {:task test-libs/-main         :doc "(list|run|outdated) - verify that libs using rewrite-clj* work with current rewrite-clj"}
          outdated          {:task outdated/-main          :doc "report on outdated Clojure and npm dependencies"}
          doc-update-readme {:task doc-update-readme/-main :doc "honour our contributors in README"}
