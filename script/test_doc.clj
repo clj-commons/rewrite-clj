@@ -29,12 +29,27 @@
                    "--dir" "target/test-doc-blocks/test"
                    "--out" out-dir)))
 
+(def allowed-platforms ["clj" "cljs"])
+
+(def args-usage "Valid args: [options]
+
+Options:
+  -p, --platform PLATFORM  Test against [clj cljs all]  [default: all]
+  --help                         Show this help")
+
 (defn -main [& args]
-  (when (main/doc-arg-opt args)
-    (generate-doc-tests)
-    (run-clj-doc-tests)
-    (run-cljs-doc-tests))
-  nil)
+  (when-let [opts (main/doc-arg-opt args-usage args)]
+    (let [platform (get opts "--platform")]
+      (if (not (some #{platform} (conj allowed-platforms "all")))
+        (status/die 1 args-usage)
+        (let [platforms (if (= "all" platform)
+                          allowed-platforms
+                          [platform])]
+          (generate-doc-tests)
+          (doseq [p platforms]
+            (case p
+              "clj" (run-clj-doc-tests)
+              "cljs" (run-cljs-doc-tests))))))))
 
 (main/when-invoked-as-script
  (apply -main *command-line-args*))

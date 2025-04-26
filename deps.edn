@@ -22,21 +22,21 @@
            ;;
            ;; ClojureScript version we test with (and support)
            ;;
-           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.132"}}}
+           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.12.35"}}}
 
            ;;
            ;; REPL to support bb dev-jvm & dev-cljs tasks, see script/dev_repl.clj
            ;;
            :nrepl
            {:extra-deps {nrepl/nrepl {:mvn/version "1.3.1"}
-                         cider/cider-nrepl {:mvn/version "0.54.0"}}
+                         cider/cider-nrepl {:mvn/version "0.55.3"}}
             :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
 
            :flowstorm
            {;; for disabling the official compiler
             :classpath-overrides {org.clojure/clojure nil}
             :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.0-9"}
-                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.3.0"}}
+                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.4.0"}}
             :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
 
            :nrepl/jvm
