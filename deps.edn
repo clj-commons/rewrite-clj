@@ -36,11 +36,11 @@
            {;; for disabling the official compiler
             :classpath-overrides {org.clojure/clojure nil}
             :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.0-9"}
-                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.4.0"}}
+                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.4.1"}}
             :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
 
            :nrepl/jvm
-           {:extra-deps {refactor-nrepl/refactor-nrepl {:mvn/version "3.10.0"}}
+           {:extra-deps {refactor-nrepl/refactor-nrepl {:mvn/version "3.11.0"}}
             :jvm-opts ["-Djdk.attach.allowAttachSelf"]
             :main-opts  ["-m" "nrepl.cmdline"
                          "--middleware" "[refactor-nrepl.middleware/wrap-refactor cider.nrepl/cider-middleware]"
@@ -180,5 +180,4 @@
                                   "--exclude=org.clojure/clojurescript@1.11.121" ;; no evidence yet that this is an official release
                                   "--exclude=technomancy/leiningen@2.11.0" ;; exclude for refactor-nrepl lib test
                                   "--exclude=technomancy/leiningen@2.11.1" ;; exclude for refactor-nrepl lib test
-                                  "--exclude=technomancy/leiningen@2.11.2" ;; exclude for refactor-nrepl lib test
                                   ]}}}
