@@ -180,5 +180,4 @@
                                   "--exclude=org.clojure/clojurescript@1.11.121" ;; no evidence yet that this is an official release
                                   "--exclude=technomancy/leiningen@2.11.0" ;; exclude for refactor-nrepl lib test
                                   "--exclude=technomancy/leiningen@2.11.1" ;; exclude for refactor-nrepl lib test
-                                  "--exclude=technomancy/leiningen@2.11.2" ;; exclude for refactor-nrepl lib test
                                   ]}}}

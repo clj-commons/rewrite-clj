@@ -215,8 +215,7 @@
 ;;
 ;; refactor-nrepl
 ;;
-;; uncomment we we re-enable
-#_(defn- refactor-nrepl-patch
+(defn- refactor-nrepl-patch
   "custom because my generic does not handle ^:inline-dep syntax"
   [{:keys [home-dir rewrite-clj-version]}]
   (status/line :detail "=> Patching deps")
@@ -420,9 +419,8 @@
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
-           ;; temporarily disable, see https://github.com/clojure-emacs/refactor-nrepl/issues/409
-           #_{:name "refactor-nrepl"
-            :version "3.10.0"
+           {:name "refactor-nrepl"
+            :version "3.11.0"
             :platforms [:clj]
             :github-release {:repo "clojure-emacs/refactor-nrepl"
                              :via :tag
