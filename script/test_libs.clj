@@ -235,38 +235,22 @@
 ;;
 
 (defn- zprint-patch [{:keys [home-dir] :as lib}]
-  ;; zprint has a project.clj and a deps.edn, patch 'em both
+  ;; zprint uses both deps.edn and project.clj, patch them both
   (deps-edn-v1-patch lib)
   (project-clj-v1-patch lib)
-  (status/line :detail "v1.4.1 fixup - can delete for subsequent versions")
-  (let [p (str (fs/file home-dir "project.clj"))]
-    (-> p
-        slurp
-        (string/replace #"\[lein-zprint \"1.2.4\"\]"
-                        "[lein-zprint \"1.2.4.1\"]")
-        (->> (spit p))))
-  ;; zprint 1.2.9 has a single failing test for https://github.com/clj-commons/rewrite-clj/pull/306
-  ;; Have raised this with over at zprint https://github.com/kkinnear/zprint/issues/333
-  ;; and have agreement that it is a zprint issue.
-  ;; Disable the failing test which starts on line 2538
-  (status/line :detail "Patching for failing test in v1.2.9")
-  (let [p (str (fs/file home-dir "test/zprint/guide_test.cljc"))
+  ;; zprint 1.3.0 has a single failing test (at least on linux).
+  ;; See https://github.com/kkinnear/zprint/issues/355
+  ;; Disable the failing test which starts on line 211
+  (status/line :detail "Patching for failing test in v1.3.0")
+  (let [p (str (fs/file home-dir "test/zprint/main_test.cljc"))
         lines (-> p slurp string/split-lines)
-        new-lines (update lines 2537 #(str "#_" %))]
+        new-lines (update lines 210 #(str "#_" %))]
     (->> (string/join "\n" new-lines)
          (spit p))))
 
 (defn- zprint-prep [{:keys [home-dir]}]
   (status/line :detail "=> Building uberjar for uberjar tests")
-  (shcmd {:dir home-dir} "lein uberjar")
-  ;; not sure if this is still necessary...
-  (status/line :detail "=> Installing zprint locally for ClojureScript tests")
-  (shcmd {:dir home-dir} "lein install"))
-
-(defn- zprint-cleanup [_lib]
-  (status/line :detail "=> Deleting jar installed to local maven repo for tests")
-  ;; currently an over-clobber but official zprint libs will re-install as needed
-  (fs/delete-tree (fs/file (fs/home) ".m2/repository/zprint")))
+  (shcmd {:dir home-dir} "lein uberjar"))
 
 ;;
 ;; lib defs
@@ -465,22 +449,22 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "zprint"
-            :version "1.2.9"
-            :note "1) planck cljs tests disabled for now: https://github.com/planck-repl/planck/issues/1088 2) failing v1.2.9 test disabled"
+            :version "1.3.0"
+            :note "1) planck cljs tests disabled for now: https://github.com/planck-repl/planck/issues/1088"
             :platforms [:clj :cljs]
             :github-release {:repo "kkinnear/zprint"}
             :patch-fn zprint-patch
             :prep-fn zprint-prep
             :show-deps-fn (fn [lib]
-                            (status/line :detail "=> Deps for Clojure run:")
+                            (status/line :detail "=> project.clj:")
                             (lein-deps-tree lib)
-                            (status/line :detail "=> Deps Clojurescript run:")
+                            (status/line :detail "=> deps.edn:")
                             (cli-deps-tree lib))
             :test-cmds ["clojure -M:cljtest"
                         ;; disable zprint cljs tests for now, see https://github.com/planck-repl/planck/issues/1088
                         #_"clojure -M:cljs-runner"]
             ;; :requires ["planck"] ;; re-enable when cljs tests are re-enabled
-            :cleanup-fn zprint-cleanup}])
+            }])
 
 (defn- header [text]
   (let [dashes (apply str (repeat 80 "-"))]
