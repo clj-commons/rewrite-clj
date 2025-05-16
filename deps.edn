@@ -22,7 +22,7 @@
            ;;
            ;; ClojureScript version we test with (and support)
            ;;
-           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.12.38"}}}
+           :cljs {:extra-deps {org.clojure/clojurescript {:mvn/version "1.12.42"}}}
 
            ;;
            ;; REPL to support bb dev-jvm & dev-cljs tasks, see script/dev_repl.clj
@@ -36,7 +36,7 @@
            {;; for disabling the official compiler
             :classpath-overrides {org.clojure/clojure nil}
             :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.0-9"}
-                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.4.1"}}
+                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.4.2"}}
             :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
 
            :nrepl/jvm
@@ -130,7 +130,7 @@
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.12.0"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.17.0"}
+                               :extra-deps {metosin/malli {:mvn/version "0.18.0"}
                                             io.aviso/pretty {:mvn/version "1.4.4"}}
                                :ns-default lread.apply-import-vars}
 
@@ -157,7 +157,7 @@
            ;;
            ;; Deployment
            ;;
-           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.8"}}
+           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.9"}}
                    :extra-paths ["src" "build"]
                    :ns-default build}
 
