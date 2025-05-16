@@ -155,9 +155,9 @@
    (deftest t-zipper-tree-larger-walks
      (doseq [larger-sample
              [;; 11876 lines
-              "https://raw.githubusercontent.com/clojure/clojurescript/fa4b8d853be08120cb864782e4ea48826b9d757e/src/main/cljs/cljs/core.cljs"
+              "test-resources/code-samples/clojurescript/fa4b8d853be08120cb864782e4ea48826b9d757e/src/main/cljs/cljs/core.cljs"
               ;; 4745 lines
-              "https://raw.githubusercontent.com/clojure/clojurescript/fa4b8d853be08120cb864782e4ea48826b9d757e/src/main/clojure/cljs/analyzer.cljc"]]
+              "test-resources/code-samples/clojurescript/fa4b8d853be08120cb864782e4ea48826b9d757e/src/main/clojure/cljs/analyzer.cljc"]]
           (let [s (slurp larger-sample)]
             (is (= s (walker z/postwalk s)) "postwalk")
             (is (= s (walker z/prewalk s)) "prewalk")))))
