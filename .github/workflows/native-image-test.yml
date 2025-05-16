@@ -24,6 +24,13 @@ jobs:
     name: ${{ matrix.os }},jdk${{ matrix.java-version }},${{ matrix.test }},clj${{ matrix.clojure-version }}
 
     steps:
+      #
+      # Tell git not to convert newlines on checkout for Windows
+      #
+      - name: Prepare git (Windows)
+        run: git config --global core.autocrlf false
+        if: matrix.os == 'windows'
+
       - name: Checkout
         uses: actions/checkout@v4
         
