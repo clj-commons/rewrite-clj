@@ -1,6 +1,9 @@
 (ns rewrite-clj.paredit
   "Paredit zipper operations for Clojure/ClojureScript/EDN.
 
+  > [!WARNING]
+  > This API is experimental, under development, and subject to change.
+
   You might find inspiration from examples here: https://pub.gajendra.net/src/paredit-refcard.pdf"
   (:require [clojure.string :as str]
             [rewrite-clj.custom-zipper.core :as zraw]
@@ -351,7 +354,7 @@
              (z/append-child (z/node slurpee-loc))             ;; slurp in slurpee
              (nav-via route)))))))
 
-(defn ^{:deprecated "1.1.49"} slurp-forward
+(defn ^{:deprecated "1.2.50"} slurp-forward
   "DEPRECATED: we recommend [[slurp-forward-into]] instead for more control.
 
   Return `zloc` with node to the right of nearest eligible sequence slurped into that sequence else `zloc` unchanged.
@@ -415,7 +418,7 @@
               (take (inc n-slurps))
               last))))))
 
-(defn ^{:deprecated "1.1.49"} slurp-forward-fully
+(defn ^{:deprecated "1.2.50"} slurp-forward-fully
   "DEPRECATED: We recommend [[slurp-forward-fully-into]]] for more control.
 
   Return `zloc` with all right sibling nodes of nearest eligible sequence slurped into that sequence else `zloc` unchanged.
@@ -478,7 +481,7 @@
              (z/insert-child (z/node slurpee-loc))
              (nav-via route)))))))
 
-(defn ^{:deprecated "1.1.49"} slurp-backward
+(defn ^{:deprecated "1.2.50"} slurp-backward
   "DEPRECATED: we recommend [[slurp-backward-into]] for more control.
 
   Returns `zloc` with node to the left of nearest eligible sequence slurped into that sequence else `zloc` unchanged.
@@ -543,7 +546,7 @@
               (take (inc n-slurps))
               last))))))
 
-(defn ^{:deprecated "1.1.49"} slurp-backward-fully
+(defn ^{:deprecated "1.2.50"} slurp-backward-fully
   "DEPRECATED: We recommend instead [[slurp-backward-fully-into]] for more control.
 
   Returns `zloc` with all left sibling nodes of nearest eligible sequnece slurped into that sequence else `zloc`.
