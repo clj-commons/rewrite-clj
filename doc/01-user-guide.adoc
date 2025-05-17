@@ -688,7 +688,9 @@ Finally, there are a handful of node whitespace creation convenience functions s
 === Paredit API
 Structured editing was introduce by rewrite-cljs and carried over to rewrite-clj v1.
 
-We might expand this section if there is interest, but the docstrings should get you started.
+We have plans to expand this section but the docstrings should get you started.
+
+WARNING: The paredit API is experimental, under development, and subject to change.
 
 See link:{cljdoc-api-url}/rewrite-clj.paredit[current paredit API docs].
 
