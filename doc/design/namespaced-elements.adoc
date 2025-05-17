@@ -281,7 +281,9 @@ Previously the prefix was stored as a keyword.
 This should return `true` for any source we throw at rewrite-clj v1:
 +
 
-// {:test-doc-blocks/reader-cond :clj}
+// GitHub has started rate limiting and returning 429s for githubusercontent.
+// This code block is covered by unit tests, so will have test-doc-blocks skip it.
+// :test-doc-blocks/skip
 [source,Clojure]
 ----
 (require '[rewrite-clj.zip :as z])
