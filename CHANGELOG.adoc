@@ -24,6 +24,8 @@ A release with known breaking changes is marked with:
 //   (adjust these in publish.clj as you see fit)
 === Unreleased
 
+=== v1.2.50 - 2025-05-17 [[v1.2.50]]
+
 * `rewrite-clj.zip/insert-right` and `rewrite-clj.zip/append-child` no longer insert a space when inserting/appending after a comment node.
 {issue}346[#346] ({lread})
 * bump `clojure/tools.reader` to correct `:end-col` metadata for keywords at end of content
@@ -75,6 +77,8 @@ A release with known breaking changes is marked with:
 {issue}333[#333] ({lread})
 ** when `pos` is at closing `"`,`)` `]`, etc `kill-at-pos`, `kill-one-at-pos` now kill the found node
 {issue}362[#362] ({lread})
+
+https://github.com/clj-commons/rewrite-clj/compare/v1.1.49\...v1.2.50[commit log]
 
 === v1.1.49 - 2024-11-18 [[v1.1.49]]
 
