@@ -430,7 +430,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:dev:test:runner"]}
            {:name "test-doc-blocks"
-            :version "1.1.20"
+            :version "1.2.21"
             :platforms [:clj :cljs]
             :note "generates tests under clj, but can also be run under cljs"
             :github-release {:repo "lread/test-doc-blocks"
