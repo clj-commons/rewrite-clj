@@ -327,7 +327,7 @@
                         "bin/test unit"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2025.04.23-18.16.46"
+            :version "2025.05.27-13.56.57"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
@@ -430,7 +430,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:dev:test:runner"]}
            {:name "test-doc-blocks"
-            :version "1.1.20"
+            :version "1.2.21"
             :platforms [:clj :cljs]
             :note "generates tests under clj, but can also be run under cljs"
             :github-release {:repo "lread/test-doc-blocks"
