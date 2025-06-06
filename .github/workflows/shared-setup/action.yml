@@ -40,7 +40,7 @@ runs:
       if: inputs.jdk != 'skip'
 
     - name: Install Babashka & Clojure
-      uses: DeLaGuardo/setup-clojure@13.2
+      uses: DeLaGuardo/setup-clojure@13.3
       with:
         bb: 'latest'
         cli: 'latest'
