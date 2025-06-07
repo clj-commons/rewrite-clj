@@ -15,6 +15,8 @@
             [io.aviso.ansi :as ansi]
             [lread.status-line :as status]))
 
+(def default-jdk "21")
+
 (defn shcmd [cmd & args]
   (let [[opts cmd args] (if (map? cmd)
                           [cmd (first args) (rest args)]
@@ -327,11 +329,20 @@
                         "bin/test unit"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2025.05.27-13.56.57"
+            :version "2025.06.06-19.04.49"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
             :test-cmds ["bb test"]}
+           {:name "clojure-mcp"
+            :platforms [:clj]
+            :version "0.1.1-alpha"
+            :github-release {:repo "bhauman/clojure-mcp"
+                             :via :tag
+                             :version-prefix "v"}
+            :patch-fn deps-edn-v1-patch
+            :show-deps-fn cli-deps-tree
+            :test-cmds ["clojure -M:test"]}
            {:name "depot"
             :platforms [:clj]
             :note "1 patch required due to using, but not requiring, rewrite-clj.node"
@@ -369,6 +380,7 @@
             :test-cmds ["lein test"]}
            {:name "mranderson"
             :version "0.5.3"
+            :jdk 11 ;; Downgrade jdk from default, MrAnderson tests currently require the older jdk11
             :platforms [:clj]
             :github-release {:repo "benedekfazekas/mranderson"
                              :via :tag
@@ -580,13 +592,18 @@ Specifying no lib-names selects all libraries.")
   (when-let [opts (main/doc-arg-opt args-usage args)]
     (cond
       (get opts "list")
-      (if (= "json" (get opts "--format"))
-        (status/line :detail (->> libs
-                                  (map (fn [{:keys [name requires]}]
-                                         {:lib-name name
-                                          :requires (or requires [])}))
-                                  json/generate-string))
-        (status/line :detail (str "available libs: " (string/join " " (map :name libs)))))
+      (let [format (get opts "--format")
+            libs-for-ci (->> libs
+                             (map (fn [{:keys [name jdk requires]}]
+                                    {:lib-name name
+                                     :requires (or requires [])
+                                     :jdk (or jdk default-jdk)})))]
+        (case format
+          "json"
+          (status/line :detail (json/generate-string libs-for-ci))
+          "table"
+          (status/line :detail (doric/table [:lib-name :jdk :requires] libs-for-ci))
+          (status/line :detail (str "available libs: " (string/join " " (map :name libs))))))
 
       :else
       (let [lib-names (get opts "<lib-name>")
