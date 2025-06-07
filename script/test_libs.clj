@@ -327,11 +327,20 @@
                         "bin/test unit"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2025.05.27-13.56.57"
+            :version "2025.06.06-19.04.49"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
             :test-cmds ["bb test"]}
+           {:name "clojure-mcp"
+            :platforms [:clj]
+            :version "0.1.1-alpha"
+            :github-release {:repo "bhauman/clojure-mcp"
+                             :via :tag
+                             :version-prefix "v"}
+            :patch-fn deps-edn-v1-patch
+            :show-deps-fn cli-deps-tree
+            :test-cmds ["clojure -M:test"]}
            {:name "depot"
             :platforms [:clj]
             :note "1 patch required due to using, but not requiring, rewrite-clj.node"
