@@ -434,10 +434,11 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test-clj"]}
            {:name "splint"
-            :version "1.20.0"
+            :version "1.21.0"
             :platforms [:clj]
             :github-release {:repo "NoahTheDuke/splint"
-                             :version-prefix "v"}
+                             :version-prefix "v"
+                             :via :tag}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:dev:test:runner"]}
