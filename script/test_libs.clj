@@ -136,7 +136,8 @@
                :removals #{'rewrite-clj 'rewrite-clj/rewrite-clj}
                :additions [['rewrite-clj/rewrite-clj rewrite-clj-version]]}))
 
-(defn- replace-in-file [fname match replacement]
+;; needed by depot patch, we'll see if it still needed after depot fixes its tests
+#_(defn- replace-in-file [fname match replacement]
   (let [orig-filename (str fname ".orig")
         content (slurp fname)]
     (fs/copy fname orig-filename)
@@ -177,7 +178,8 @@
 ;;
 ;; depot
 ;;
-(defn depot-patch [{:keys [home-dir] :as lib}]
+;; We'll see if this custom path is needed after next release of depot that fixes its tests
+#_(defn depot-patch [{:keys [home-dir] :as lib}]
   (deps-edn-v1-patch lib)
   (status/line :detail "=> depot uses but does not require rewrite-clj.node, need to adjust for rewrite-clj v1")
   (replace-in-file (str (fs/file home-dir "src/depot/zip.clj"))
@@ -336,17 +338,17 @@
             :test-cmds ["bb test"]}
            {:name "clojure-mcp"
             :platforms [:clj]
-            :version "0.1.5-alpha"
+            :version "0.1.6-alpha"
             :github-release {:repo "bhauman/clojure-mcp"
                              :via :tag
                              :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
-           {:name "depot"
+           #_{:name "depot"
             :platforms [:clj]
-            :note "1 patch required due to using, but not requiring, rewrite-clj.node"
-            :version "2.2.0"
+            :note "Depot tests are currently broken, re-enable when they are fixed"
+            :version "2.4.0"
             :github-release {:repo "Olical/depot"
                              :via :tag
                              :version-prefix "v"}
