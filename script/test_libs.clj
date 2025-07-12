@@ -316,7 +316,7 @@
             :test-cmds ["bb test"]}
            {:name "clojure-mcp"
             :platforms [:clj]
-            :version "0.1.6-alpha"
+            :version "0.1.7-alpha-pre"
             :github-release {:repo "bhauman/clojure-mcp"
                              :via :tag
                              :version-prefix "v"}
