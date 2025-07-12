@@ -136,17 +136,6 @@
                :removals #{'rewrite-clj 'rewrite-clj/rewrite-clj}
                :additions [['rewrite-clj/rewrite-clj rewrite-clj-version]]}))
 
-;; needed by depot patch, we'll see if it still needed after depot fixes its tests
-#_(defn- replace-in-file [fname match replacement]
-  (let [orig-filename (str fname ".orig")
-        content (slurp fname)]
-    (fs/copy fname orig-filename)
-    (status/line :detail "- hacking %s" fname)
-    (let [new-content (string/replace content match replacement)]
-      (if (= new-content content)
-        (throw (ex-info (format "hacking file failed: %s" fname) {}))
-        (spit fname new-content)))))
-
 (defn- show-patch-diff [{:keys [home-dir]}]
   (let [{:keys [exit]} (shcmd {:dir home-dir :continue true}
                               "git --no-pager diff --exit-code")]
@@ -174,17 +163,6 @@
 
 (defn clojure-lsp-deps [lib-opts]
   (cli-deps-tree (update lib-opts :home-dir #(str (fs/file % "lib")))))
-
-;;
-;; depot
-;;
-;; We'll see if this custom path is needed after next release of depot that fixes its tests
-#_(defn depot-patch [{:keys [home-dir] :as lib}]
-  (deps-edn-v1-patch lib)
-  (status/line :detail "=> depot uses but does not require rewrite-clj.node, need to adjust for rewrite-clj v1")
-  (replace-in-file (str (fs/file home-dir "src/depot/zip.clj"))
-                   "[rewrite-clj.zip :as rzip]"
-                   "[rewrite-clj.zip :as rzip] [rewrite-clj.node]"))
 
 ;;
 ;; lein ancient
@@ -345,16 +323,15 @@
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
-           #_{:name "depot"
+           {:name "depot"
             :platforms [:clj]
-            :note "Depot tests are currently broken, re-enable when they are fixed"
-            :version "2.4.0"
+            :version "2.4.1"
             :github-release {:repo "Olical/depot"
                              :via :tag
                              :version-prefix "v"}
-            :patch-fn depot-patch
+            :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
-            :test-cmds ["bin/kaocha --reporter documentation"]}
+            :test-cmds ["clojure -M:dev:test"]}
            {:name "kibit"
             :platforms [:clj]
             :version "0.1.11"

@@ -57,8 +57,7 @@ Some projects using rewrite-clj v1
 * https://github.com/greglook/cljstyle[cljstyle] {canary-tested} - A tool for formatting Clojure code
 * https://github.com/clojure-lsp/clojure-lsp[clojure-lsp] {canary-tested} - Language Server (LSP) for Clojure
 * https://github.com/bhauman/clojure-mcp[clojure-mcp] {canary-tested} - REPL-Driven Development with AI Assistance
-// depot tests are currently broken
-* https://github.com/Olical/depot[depot] {not-canary-tested} - Find newer versions of your dependencies in your deps.edn file
+* https://github.com/Olical/depot[depot] {canary-tested} - Find newer versions of your dependencies in your deps.edn file
 // duck-repled repo is not version tagged:
 * https://github.com/mauricioszabo/duck-repled[duck-repled] {not-canary-tested} - Transform your REPL interation into Pathom queries
 * https://github.com/jonase/kibit[kibit] {canary-tested} - There's a function for that!
