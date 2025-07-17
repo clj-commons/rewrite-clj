@@ -1,6 +1,6 @@
 :notitle:
 // num-contributors is updated automatically by doc-readme-update bb task
-:num-contributors: 59
+:num-contributors: 60
 :figure-caption!:
 :imagesdir: ./doc
 :project-src-coords: clj-commons/rewrite-clj
@@ -136,6 +136,7 @@ image:arrdem.png[arrdem,role="left",width=250,link="https://github.com/arrdem"]
 image:awb99.png[awb99,role="left",width=250,link="https://github.com/awb99"]
 image:bobbicodes.png[bobbicodes,role="left",width=250,link="https://github.com/bobbicodes"]
 image:brian-dawn.png[brian-dawn,role="left",width=250,link="https://github.com/brian-dawn"]
+image:conao3.png[conao3,role="left",width=250,link="https://github.com/conao3"]
 image:doby162.png[doby162,role="left",width=250,link="https://github.com/doby162"]
 image:drorbemet.png[drorbemet,role="left",width=250,link="https://github.com/drorbemet"]
 image:expez.png[expez,role="left",width=250,link="https://github.com/expez"]
