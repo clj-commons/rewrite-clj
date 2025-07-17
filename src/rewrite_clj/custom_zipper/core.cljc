@@ -102,7 +102,7 @@
   (map first (:left zloc)))
 
 (defn-switchable rights
-  "Returns a seq of the left siblings of current node in `zloc`."
+  "Returns a seq of the right siblings of current node in `zloc`."
   [zloc]
   (map first (:right zloc)))
 
