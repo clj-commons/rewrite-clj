@@ -59,7 +59,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2025.06.05"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2025.07.28"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.12.1"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
