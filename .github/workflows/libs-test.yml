@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup
         uses: ./.github/workflows/shared-setup
@@ -41,7 +41,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -60,6 +60,13 @@ jobs:
       - name: Install Planck
         uses: ./.github/workflows/setup-planck
         if: contains( matrix.requires, 'planck' )
+
+      # The runner image comes with a later version gradle that does not work with antq unit tests yet
+      - name: Install Gradle for antq
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+        if: matrix.lib-name == 'antq'
 
       - name: Run Libs Tests
         run: bb test-libs run ${{ matrix.lib-name }}
