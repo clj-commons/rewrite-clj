@@ -148,7 +148,7 @@
                       :extra-deps {lread/sci-test
                                    #_ {:local/root "/home/lee/proj/oss/lread/sci-test"}
                                    {:git/url "https://github.com/lread/sci-test.git"
-                                    :sha "749327568a4f4990357ea3eb9020176946d6a2c2"}}}
+                                    :sha "e7130da5b29c294d9044c4f4d48a282991f8a50f" }}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 
