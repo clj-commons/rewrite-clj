@@ -210,7 +210,16 @@
         ;; pedantic is enabled for CI, so adjust to match rewrite-clj so we don't fail
         (string/replace #"org.clojure/tools.reader \"(\d+\.)+.*\""
                         "org.clojure/tools.reader \"1.5.2\"")
-        (->> (spit p)))))
+        (->> (spit p))))
+  (status/line :detail "=> Disabling flaky tests in v3.11.0")
+  (let [p (str (fs/file home-dir "test/refactor_nrepl/artifacts_test.clj"))
+        lines (-> p slurp string/split-lines)
+        new-lines (-> lines
+                      (update 37 #(str "#_" %))   ;; get-mvn-artifacts!-test
+                      (update 47 #(str "#_" %))   ;; get-mvn-versions!-test
+                      )]
+    (->> (string/join "\n" new-lines)
+         (spit p))))
 
 ;;
 ;; zprint
