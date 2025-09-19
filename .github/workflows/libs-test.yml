@@ -55,7 +55,7 @@ jobs:
       - name: Install Lein
         uses: DeLaGuardo/setup-clojure@13.4
         with:
-          lein: 2.11.2
+          lein: 2.12.0
 
       - name: Install Planck
         uses: ./.github/workflows/setup-planck
