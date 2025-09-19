@@ -48,7 +48,7 @@
 
            :nrepl/cljs ;; note shadow-cljs does its own thing, this is for a REPL with
                        ;; support for plain old ClojureScript
-           {:extra-deps {cider/piggieback {:mvn/version "0.6.0"}}
+           {:extra-deps {cider/piggieback {:mvn/version "0.6.1"}}
             :jvm-opts ["-Djdk.attach.allowAttachSelf"]
             :main-opts ["-m" "nrepl.cmdline"
                         "--middleware" "[cider.nrepl/cider-middleware cider.piggieback/wrap-cljs-repl]"
