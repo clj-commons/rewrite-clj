@@ -17,7 +17,7 @@
            :1.9 {:override-deps {org.clojure/clojure {:mvn/version "1.9.0"}}}
            :1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
            :1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.4"}}}
-           :1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.2"}}}
+           :1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.3"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
@@ -35,8 +35,8 @@
            :flowstorm
            {;; for disabling the official compiler
             :classpath-overrides {org.clojure/clojure nil}
-            :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.2"}
-                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.5.5"}}
+            :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.3-1"}
+                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.5.7"}}
             :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
 
            :nrepl/jvm
@@ -59,7 +59,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2025.09.19"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2025.09.22"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.12.2"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
