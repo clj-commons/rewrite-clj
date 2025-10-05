@@ -63,7 +63,7 @@ jobs:
 
       # The runner image comes with a later version gradle that does not work with antq unit tests yet
       - name: Install Gradle for antq
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           gradle-version: '8.14.3'
         if: matrix.lib-name == 'antq'
