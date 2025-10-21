@@ -28,15 +28,15 @@
            ;; REPL to support bb dev-jvm & dev-cljs tasks, see script/dev_repl.clj
            ;;
            :nrepl
-           {:extra-deps {nrepl/nrepl {:mvn/version "1.4.0"}
-                         cider/cider-nrepl {:mvn/version "0.57.0"}}
+           {:extra-deps {nrepl/nrepl {:mvn/version "1.5.1"}
+                         cider/cider-nrepl {:mvn/version "0.58.0"}}
             :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
 
            :flowstorm
            {;; for disabling the official compiler
             :classpath-overrides {org.clojure/clojure nil}
             :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.3-1"}
-                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.5.7"}}
+                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.5.8"}}
             :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
 
            :nrepl/jvm
@@ -130,7 +130,7 @@
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.12.2"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.19.1"}
+                               :extra-deps {metosin/malli {:mvn/version "0.19.2"}
                                             io.aviso/pretty {:mvn/version "1.4.4"}}
                                :ns-default lread.apply-import-vars}
 
