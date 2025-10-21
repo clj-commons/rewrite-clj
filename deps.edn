@@ -130,7 +130,7 @@
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.12.2"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.19.1"}
+                               :extra-deps {metosin/malli {:mvn/version "0.19.2"}
                                             io.aviso/pretty {:mvn/version "1.4.4"}}
                                :ns-default lread.apply-import-vars}
 
