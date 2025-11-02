@@ -158,7 +158,7 @@
            ;;
            ;; Deployment
            ;;
-           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.10"}}
+           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.11"}}
                    :extra-paths ["src" "build"]
                    :ns-default build}
 
