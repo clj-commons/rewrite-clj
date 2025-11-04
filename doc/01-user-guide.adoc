@@ -169,7 +169,7 @@ If you are not familiar with zippers, you may find the following resources helpf
 
 * https://clojure.org/reference/other_libraries#_zippers_functional_tree_editing_clojure_zip[Clojure overview of zippers]
 * https://lambdaisland.com/blog/2018-11-26-art-tree-shaping-clojure-zip[Arne Brasseur - The Art of Tree Shaping with Clojure Zippers]
-* https://tbaldridge.pivotshare.com/media/zippers-episode-1/11348/feature?t=0[Tim Baldrige - PivotShare - Series of 7 Videos on Clojure Zippers]
+* https://www.youtube.com/@ClojureProgrammingTutorials/search?query=zippers[Tim Baldridge - Series of Videos on Clojure Zippers]
 ====
 
 At a conceptual level, the rewrite-clj zipper holds:
