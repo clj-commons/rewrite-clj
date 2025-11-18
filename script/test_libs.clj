@@ -299,7 +299,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -T:build ci"]}
            {:name "cljfmt"
-            :version "0.15.3"
+            :version "0.15.5"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
