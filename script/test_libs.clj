@@ -422,7 +422,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test-clj"]}
            {:name "splint"
-            :version "1.21.0"
+            :version "1.22.0"
             :platforms [:clj]
             :github-release {:repo "NoahTheDuke/splint"
                              :version-prefix "v"
