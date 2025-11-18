@@ -282,7 +282,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "clerk"
-            :version "0.18.1150"
+            :version "0.18.1158"
             :platforms [:clj]
             :github-release {:repo "nextjournal/clerk"
                              :via :tag
@@ -299,7 +299,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -T:build ci"]}
            {:name "cljfmt"
-            :version "0.15.3"
+            :version "0.15.5"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
@@ -325,7 +325,7 @@
             :test-cmds ["bb test"]}
            {:name "clojure-mcp"
             :platforms [:clj]
-            :version "0.1.11-alpha"
+            :version "0.1.12"
             :github-release {:repo "bhauman/clojure-mcp"
                              :via :tag
                              :version-prefix "v"}
@@ -422,7 +422,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test-clj"]}
            {:name "splint"
-            :version "1.21.0"
+            :version "1.22.0"
             :platforms [:clj]
             :github-release {:repo "NoahTheDuke/splint"
                              :version-prefix "v"

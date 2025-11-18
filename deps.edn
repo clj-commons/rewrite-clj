@@ -35,7 +35,7 @@
            :flowstorm
            {;; for disabling the official compiler
             :classpath-overrides {org.clojure/clojure nil}
-            :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.3-1"}
+            :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.3-4"}
                          com.github.flow-storm/flow-storm-dbg {:mvn/version "4.5.9"}}
             :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
 
@@ -130,7 +130,7 @@
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.12.3"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.19.2"}
+                               :extra-deps {metosin/malli {:mvn/version "0.20.0"}
                                             io.aviso/pretty {:mvn/version "1.4.4"}}
                                :ns-default lread.apply-import-vars}
 
