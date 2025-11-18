@@ -282,7 +282,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "clerk"
-            :version "0.18.1150"
+            :version "0.18.1158"
             :platforms [:clj]
             :github-release {:repo "nextjournal/clerk"
                              :via :tag
