@@ -179,6 +179,7 @@
                                   "--exclude=lambdaisland/kaocha@1.0.829" ;; https://github.com/lambdaisland/kaocha/issues/208
                                   "--exclude=com.bhauman/figwheel-main@0.2.15" ;; deployment was botched, some components missing
                                   "--exclude=org.clojure/clojurescript@1.11.121" ;; no evidence yet that this is an official release
+                                  "--exclude=org.clojure/clojurescript@1.12.116" ;; https://clojure.atlassian.net/browse/CLJS-3463
                                   "--exclude=technomancy/leiningen@2.11.0" ;; exclude for refactor-nrepl lib test
                                   "--exclude=technomancy/leiningen@2.11.1" ;; exclude for refactor-nrepl lib test
                                   ]}}}
