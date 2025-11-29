@@ -299,14 +299,14 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -T:build ci"]}
            {:name "cljfmt"
-            :version "0.15.5"
+            :version "0.15.6"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
                              :via :tag}
             :patch-fn project-clj-v1-patch
             :show-deps-fn lein-deps-tree
-            :test-cmds ["lein test"]}
+            :test-cmds ["lein test-all"]}
            {:name "cljstyle"
             :version "0.17.642"
             :platforms [:clj]
