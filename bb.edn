@@ -15,6 +15,7 @@
          :enter (let [{:keys [name]} (current-task)] (status/line :head "TASK %s %s" name (string/join " " *command-line-args*)))
          :leave (let [{:keys [name]} (current-task)] (status/line :detail "\nTASK %s done." name))
          ;; commands
+         clean             {:task clean/-main             :doc "delete all build work"}
          download-deps     {:task download-deps/-main     :doc "bring down Clojure deps"}
          apply-import-vars {:task apply-import-vars/-main :doc "(check|gen-code) - export APIs statically from templates"}
          dev-jvm           {:task dev-repl/dev-jvm        :doc "launch jvm nREPL for development, --help for usage"}

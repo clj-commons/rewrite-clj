@@ -95,6 +95,13 @@ bb lint --help
 
 Tasks are described throughout this document.
 
+== Clean
+Sometimes you want to turf any local build work and caches, you can do so via:
+
+----
+bb clean
+----
+
 == Code Generation
 Rewrite-clj v0 used a version of potemkin import-vars.
 Potemkin import-vars copies specified vars from a specified namespace to the current namespace at load time.
