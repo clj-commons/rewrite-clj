@@ -32,7 +32,7 @@ jobs:
         if: matrix.os == 'windows'
 
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         
       - name: Setup
         uses: ./.github/workflows/shared-setup
