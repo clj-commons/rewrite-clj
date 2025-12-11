@@ -17,7 +17,7 @@
            :1.9 {:override-deps {org.clojure/clojure {:mvn/version "1.9.0"}}}
            :1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
            :1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.4"}}}
-           :1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.3"}}}
+           :1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.4"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
@@ -36,7 +36,7 @@
            :flowstorm
            {;; for disabling the official compiler
             :classpath-overrides {org.clojure/clojure nil}
-            :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.3-4"}
+            :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.4"}
                          com.github.flow-storm/flow-storm-dbg {:mvn/version "4.5.9"}}
             :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
 
