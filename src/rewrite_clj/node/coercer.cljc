@@ -137,7 +137,9 @@
     (keyword-node v)))
 
 (extend-protocol NodeCoerceable
-  #?(:clj java.lang.String :cljs string)
+  #?(:clj java.lang.String
+     ;; False positive for clj-kondo, string is valid here: https://cljs.github.io/api/cljs.core/extend-type
+     :cljs #_{:clj-kondo/ignore [:unresolved-var]} string)
   (coerce [v]
     (stringz/string-node (pimpl/read-string-data (reader/string-reader (pr-str v))))))
 
