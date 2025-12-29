@@ -131,6 +131,7 @@
 
 (deftest t-parsing-reader-prefixed-data
   (doseq [[ s         t                 ws            sexpr        ltag   lcld]
+          #_{:clj-kondo/ignore [:unquote-not-syntax-quoted]} ;; generally a good lint warning that we ignore here.
           [["@sym"    :deref            []            '@sym        :token 'sym]
            ["@  sym"  :deref            [:whitespace] '@sym        :token 'sym]
            ["'sym"    :quote            []            ''sym        :token 'sym]
