@@ -104,9 +104,9 @@
   (->SeqNode :set "#{%s}" 3 set children))
 
 (let [;; re-use seq-fn for all instances for equality
-      map-seq-fn #(apply (if (>= (count %) 16)
-                           hash-map
-                           array-map) %)]
+      map-seq-fn #(apply (if (<= (count %) 16)
+                           array-map
+                           hash-map) %)]
   (defn map-node
     "Create a node representing a map with `children`.
    ```Clojure
