@@ -158,8 +158,14 @@
 ;;
 ;; Has moved the deps.edn we care about into a lib subdir
 ;;
-(defn clojure-lsp-patch [lib-opts]
-  (deps-edn-v1-patch (update lib-opts :home-dir #(str (fs/file % "lib")))))
+(defn clojure-lsp-patch [{:keys [home-dir] :as lib-opts}]
+  (deps-edn-v1-patch (update lib-opts :home-dir #(str (fs/file % "lib"))))
+  (status/line :detail "Temporarily disabling failing test, remove after bumping clojure-lsp")
+  (let [p (str (fs/file home-dir "lib/test/clojure_lsp/feature/document_symbol_test.clj"))
+        lines (-> p slurp string/split-lines)
+        new-lines (update lines 121 #(str "#_" %))]
+    (->> (string/join "\n" new-lines)
+         (spit p))))
 
 (defn clojure-lsp-deps [lib-opts]
   (cli-deps-tree (update lib-opts :home-dir #(str (fs/file % "lib")))))
@@ -319,6 +325,7 @@
            {:name "clojure-lsp"
             :platforms [:clj]
             :version "2025.11.28-12.47.43" 
+            :note "temporarily disabled failing test, see https://github.com/clj-commons/rewrite-clj/pull/419"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
