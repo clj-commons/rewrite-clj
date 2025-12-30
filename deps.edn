@@ -29,7 +29,7 @@
            ;; REPL to support bb dev-jvm & dev-cljs tasks, see script/dev_repl.clj
            ;;
            :nrepl
-           {:extra-deps {nrepl/nrepl {:mvn/version "1.5.1"}
+           {:extra-deps {nrepl/nrepl {:mvn/version "1.5.2"}
                          cider/cider-nrepl {:mvn/version "0.58.0"}}
             :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
 
@@ -60,7 +60,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2025.10.23"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2025.12.23"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.12.3"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
