@@ -8,8 +8,9 @@ Rewrite-clj is verified on each push on macOS, Ubuntu and Windows via GitHub Act
 All scripts are written in Clojure and most invoked via https://github.com/borkdude/babashka[babashka] tasks.
 This gives us a cross platform scripting language that is familiar, fun and consistent.
 
-We make use of planck for cljs bootstrap (aka cljs self-hosted) testing.
-Planck is currently not available for Windows.
+We made use of planck for cljs bootstrap (aka cljs self-hosted) testing on macOS and Linux (Planck is not available for Windows).
+But... planck is not currently maintained, it uses an older version of CloureScript and it can be difficult to get a binary for current OSes, so we've disabled these tests for now.
+See: https://github.com/clj-commons/rewrite-clj/issues/420
 
 We test that rewrite-clj operates as expected when natively compile via GraalVM.
 Automated testing is setup using GraalVM for JDK 25.
