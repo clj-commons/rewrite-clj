@@ -104,6 +104,8 @@
   (->SeqNode :set "#{%s}" 3 set children))
 
 (let [;; re-use seq-fn for all instances for equality
+      ;; For maps containing up to 16 elements (8 key-value pairs) we
+      ;; use array-maps to preserve their order
       map-seq-fn #(apply (if (<= (count %) 16)
                            array-map
                            hash-map) %)]
