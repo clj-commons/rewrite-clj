@@ -896,19 +896,21 @@ The whitespace that a rewrite-clj so carefully preserves is lost when converting
          '[rewrite-clj.node :as n])
 
 ;; parse some Clojure source
-(def nodes (p/parse-string "{  :a 1\n\n   :b 2}"))
+(def nodes (p/parse-string "{  :a 1\n\n   :b 2\n   :c 3 :d 4 :e 5 :f 6\n   :g 7 :h 8 :i 9}"))
 
 ;; print it out to show the whitespace
 (println (n/string nodes))
 ;; =stdout=>
 ; {  :a 1
 ;
-;    :b 2}
+;    :b 2
+;    :c 3 :d 4 :e 5 :f 6
+;    :g 7 :h 8 :i 9}
 
 ;; print out Clojure forms and notice the loss of the specifics of whitespace and element ordering
 (pr (n/sexpr nodes))
 ;; =stdout=>
-; {:b 2, :a 1}
+; {:e 5, :g 7, :c 3, :h 8, :b 2, :d 4, :f 6, :i 9, :a 1}
 ----
 
 [[not-all-clojure-is-sexpr-able]]

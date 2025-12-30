@@ -766,3 +766,9 @@
                 (catch #?(:clj Exception :cljs :default) e e))]
     (is (= 1 (-> ex ex-data :row)))
     (is (= 12 (-> ex ex-data :col)))))
+
+(deftest t-map-kv-order-preserved
+  (let [m {:a 1 :b 2 :c 3 :d 4 :e 5 :f 6 :g 7 :h 8}
+        m-str (pr-str m)
+        m-sexpr (-> m-str p/parse-string node/sexpr)]
+    (is (= (keys m) (keys m-sexpr)))))
