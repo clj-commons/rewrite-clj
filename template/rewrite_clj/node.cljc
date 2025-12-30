@@ -78,7 +78,6 @@
   [[linebreak?]]
   [[comma?]]"
   ^{:added "0.4.0"}
-  (:refer-clojure :exclude [string coerce])
   (:require [rewrite-clj.node.coercer]
             [rewrite-clj.node.comment]
             [rewrite-clj.node.extras]
