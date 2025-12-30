@@ -60,7 +60,8 @@
                                                   (str "jdk must be >= " jdk-shadow-cljs)))
             :requires ["npm"]}]
           ;; planck does not run on windows, and I don't think it needs a jdk
-          [{:desc "cljs-bootstrap" :cmd "bb test-cljs --env planck --optimizations none"
+          ;; disable planck testing for now: See https://github.com/clj-commons/rewrite-clj/issues/420
+          #_[{:desc "cljs-bootstrap" :cmd "bb test-cljs --env planck --optimizations none"
             :oses ["macos" "ubuntu"] :jdks [jdk-cljs] :requires ["planck"]}]))
 
 (defn- ci-test-matrix []
