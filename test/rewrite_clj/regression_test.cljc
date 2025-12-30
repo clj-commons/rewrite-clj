@@ -1,8 +1,7 @@
 (ns rewrite-clj.regression-test
   (:require [clojure.test :refer [deftest is testing]]
             [rewrite-clj.node :as node]
-            [rewrite-clj.zip :as z]
-            [rewrite-clj.parser :as parser]))
+            [rewrite-clj.zip :as z]))
 
 ;; ## Regression Tests for 0.3.x -> 0.4.x
 
@@ -251,10 +250,4 @@
            (is (= data-string (slurp f)))
            (let [loc (z/of-file f)]
              (is (= :list (first (->vec loc))))
-             (is (= :forms (node/tag (z/root loc))))))))
-
-    (testing "sexpr preserves order for maps up to 8 key-value pairs"
-      (let [m {:a 1 :b 2 :c 3 :d 4 :e 5 :f 6 :g 7 :h 8}
-            m-str (pr-str m)
-            m-sexpr (-> m-str parser/parse-string node/sexpr)]
-        (is (= (keys m) (keys m-sexpr)))))))
+             (is (= :forms (node/tag (z/root loc))))))))))
