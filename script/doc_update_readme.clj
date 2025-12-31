@@ -86,12 +86,12 @@
       [:head
        [:link {:href "https://fonts.googleapis.com", :rel "preconnect"}]
        [:link {:href "https://fonts.gstatic.com", :rel "preconnect" :crossorigin "crossorigin"}]
-       [:link {:type "text/css", :href "https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" :rel "stylesheet"}]
+       [:link {:href "https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Color+Emoji&display=swap" :rel "stylesheet"}]
        [:style
         (hu/raw-string
          (str
           "* {-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;}\n"
-          "body {font-family: 'Fira Code', monospace; margin: 0;}\n"
+          "body {font-family: 'Fira Code'; margin: 0;}\n"
           (format ".wrapper {overflow:hidden; min-width: %dpx; max-width: %dpx;}" image-width image-width) "\n"
           (format ".card {float: left; border-radius: 5px;
                           border: %dpx solid #ccc;
@@ -104,11 +104,11 @@
           (format ".avatar {float: left; height: %dpx; border-radius: 5px; padding: 0; margin-right: 10px;}"
                   avatar-size) "\n"
           ".image {margin: 2px;}\n"
-          (format ".contribs {padding-top: 3px; margin-left: 5px; line-height: 1.4; max-height: %dpx; overflow: hidden;}"
+          (format ".contribs {padding-top: 0; margin-left: 5px; line-height: 1.5; max-height: %dpx; overflow: hidden;}"
                   avatar-size) "\n"
-          (format ".contrib {display:inline-block;font-size: %s;white-space: nowrap;margin: 0;margin-right: 0.8em;}\n"
+          (format ".contrib {display:inline-block; font-size: %s; white-space: nowrap;margin: 0; margin-right: 0.3em; margin-left: 0.2em;}\n"
                   contrib-font-size)
-          ".symbol {margin-right: 0.3em;}\n"
+          ".symbol {margin-right: 0.2em; width: 1em; height: 1em; font-family: 'Noto Color Emoji';}\n"
           ".text {}\n"
           ".name {font-size: 1.3em; margin: 0; clear:both;}\n"))]]
       [:div.wrapper
@@ -128,7 +128,8 @@
   (when (fs/exists? target)
     (fs/delete-tree target))
   (fs/create-dirs (fs/parent target))
-  (fs/move source target {:replace-existing true :atomic-move true}))
+  (fs/copy-tree source target)
+  (fs/delete-tree source))
 
 (defn- generate-image! [driver target-dir github-id contributions opts]
   (let [html-file (fs/file target-dir (str github-id ".html"))]
