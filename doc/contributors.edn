@@ -113,7 +113,7 @@
   {:github-id "conao3"
    :contributions [:doc]}
   {:github-id "onbreath"
-   :contributions [:code-rewrite-clj-v1]}]
+   :contributions [:code-rewrite-clj-v1 :doc]}]
  :founders
  [{:github-id "xsc"
    :contributions [:original-author :doc :design :issue :review :support :code-rewrite-clj-v0]}
