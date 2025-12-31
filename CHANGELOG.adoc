@@ -24,8 +24,12 @@ A release with known breaking changes is marked with:
 //   (adjust these in publish.clj as you see fit)
 === Unreleased
 
+=== v1.2.51 - 2025-12-31 [[v1.2.51]]
+
 * `sexpr` now uses `array-map` for maps with up to 8 key-value pairs, to preserve the original order.
 {pr}419[#419] ({person}onbreath[@onbreath])
+
+https://github.com/clj-commons/rewrite-clj/compare/v1.2.50\...v1.2.51[commit log]
 
 === v1.2.50 - 2025-05-17 [[v1.2.50]]
 

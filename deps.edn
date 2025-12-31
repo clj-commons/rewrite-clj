@@ -5,7 +5,7 @@
 
  :aliases {;; we use babashka/neil for project attributes
            ;; publish workflow references these values (and automatically bumps patch component of version)
-           :neil {:project {:version "1.2.50" ;; describes last release and is template for next release
+           :neil {:project {:version "1.2.51" ;; describes last release and is template for next release
                             :name rewrite-clj/rewrite-clj
                             ;; not neilisms - could potentially conflict with new neilisms
                             :github-coords clj-commons/rewrite-clj}}
