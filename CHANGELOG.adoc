@@ -24,6 +24,9 @@ A release with known breaking changes is marked with:
 //   (adjust these in publish.clj as you see fit)
 === Unreleased
 
+* bump clojure tools reader to v1.6.0
+{issue}427[#427] ({lread})
+
 === v1.2.51 - 2025-12-31 [[v1.2.51]]
 
 * `sexpr` now uses `array-map` for maps with up to 8 key-value pairs, to preserve the original order.
