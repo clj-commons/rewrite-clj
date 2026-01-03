@@ -1,5 +1,5 @@
 {:source-paths ["src" "test"]
- :dependencies [[org.clojure/test.check "1.1.2"]]
+ :dependencies [[org.clojure/test.check "1.1.3"]]
  :builds {:test {:target :node-test
                  :output-to "target/shadow-cljs/node-test.js"
                  :compiler-options {:warnings
