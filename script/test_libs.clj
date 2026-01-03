@@ -149,8 +149,9 @@
 (defn ancient-clj-patch [{:keys [home-dir rewrite-clj-version]}]
  (patch-deps {:filename (str (fs/file home-dir "project.clj"))
               ;; we remove and add tools.reader because project.clj has pedantic? :abort enabled
-              :removals #{'rewrite-clj 'org.clojure/tools.reader}
-              :additions [['org.clojure/tools.reader "1.5.2"]
+              :removals #{'rewrite-clj 'org.clojure/tools.reader 'org.clojure/clojure}
+              :additions [['org.clojure/clojure "1.11.4" :scope "provided"]
+                          ['org.clojure/tools.reader "1.6.0"]
                           ['rewrite-clj rewrite-clj-version]]}))
 
 ;;
@@ -182,7 +183,9 @@
         (string/replace #"rewrite-clj \"(\d+\.)+.*\""
                         (format "rewrite-clj \"%s\"" rewrite-clj-version))
         (string/replace #"org.clojure/tools.reader \"(\d+\.)+.*\""
-                        "org.clojure/tools.reader \"1.5.2\"")
+                        "org.clojure/tools.reader \"1.6.0\"")
+        (string/replace #"org.clojure/clojure \"(\d+\.)+.*\""
+                        "org.clojure/clojure \"1.11.4\"")
         (->> (spit p)))))
 
 ;;
@@ -215,7 +218,7 @@
                         (format "rewrite-clj \"%s\"" rewrite-clj-version))
         ;; pedantic is enabled for CI, so adjust to match rewrite-clj so we don't fail
         (string/replace #"org.clojure/tools.reader \"(\d+\.)+.*\""
-                        "org.clojure/tools.reader \"1.5.2\"")
+                        "org.clojure/tools.reader \"1.6.0\"")
         (->> (spit p))))
   (status/line :detail "=> Disabling flaky tests in v3.11.0")
   (let [p (str (fs/file home-dir "test/refactor_nrepl/artifacts_test.clj"))
