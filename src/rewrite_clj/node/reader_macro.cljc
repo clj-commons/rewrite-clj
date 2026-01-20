@@ -44,7 +44,7 @@
   (node-type [_node] :reader-macro)
   (printable-only?[_node] false)
   (sexpr* [node _opts]
-    (list 'read-string (node/string node)))
+    (list `read-string (node/string node)))
   (length [_node]
     (inc (node/sum-lengths children)))
   (string [_node]
