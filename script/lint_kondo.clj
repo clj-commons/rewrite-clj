@@ -1,8 +1,7 @@
 #!/usr/bin/env bb
 
 (ns lint-kondo
-  (:require [babashka.classpath :as bbcp]
-            [babashka.fs :as fs]
+  (:require [babashka.fs :as fs]
             [clojure.string :as string]
             [helper.main :as main]
             [helper.shell :as shell]
@@ -24,7 +23,11 @@
                                   "-Spath -M:test")
                    with-out-str
                    string/trim)
-        bb-cp (bbcp/get-classpath)]
+        bb-cp (-> (shell/command {:out :string}
+                                 "bb print-deps --format classpath")
+                  :out
+                  string/trim)]
+    (println "bb-cp" bb-cp)
     (status/line :detail "- copying lib configs and creating cache")
     (shell/command "clojure -M:clj-kondo --skip-lint --copy-configs --dependencies --lint" clj-cp bb-cp)))
 
