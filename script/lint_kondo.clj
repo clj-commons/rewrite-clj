@@ -27,7 +27,6 @@
                                  "bb print-deps --format classpath")
                   :out
                   string/trim)]
-    (println "bb-cp" bb-cp)
     (status/line :detail "- copying lib configs and creating cache")
     (shell/command "clojure -M:clj-kondo --skip-lint --copy-configs --dependencies --lint" clj-cp bb-cp)))
 
