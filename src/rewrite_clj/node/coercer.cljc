@@ -141,6 +141,8 @@
   (coerce [v]
     (stringz/string-node (pimpl/read-string-data (reader/string-reader (pr-str v))))))
 
+(declare seq-node)
+
 #?(:clj
    (extend-protocol NodeCoerceable
      Object
@@ -152,12 +154,12 @@
    (extend-protocol NodeCoerceable
      default
      (coerce [v]
-       (node-with-meta
-        ;; in cljs, this is where we check for a record, in clj it happens under map handling
-        (if (record? v)
-          (record-node v)
-          (token-node v))
-        v))))
+       (cond
+         ;; in cljs, this is where we check for a seq, in clj is happens via extend-protocol ISeq
+         (satisfies? ISeq v) (seq-node list-node v)
+         ;; in cljs, this is where we check for a record, in clj it happens under map handling
+         (record? v) (node-with-meta (record-node v) v)
+         :else (node-with-meta (token-node v) v)))))
 
 (extend-protocol NodeCoerceable
   nil
@@ -171,7 +173,7 @@
   (coerce [v]
     (regex-node (pattern-string-for-regex v))))
 
-;; ## Seqs
+;; ## Seqs (which covers vectors and sets which aren't really seqs!)
 
 (defn- seq-node
   [f sq]
@@ -182,29 +184,21 @@
          (f))
     sq))
 
+;; vectors and sets
 (extend-protocol NodeCoerceable
   #?(:clj clojure.lang.IPersistentVector :cljs PersistentVector)
   (coerce [sq]
     (seq-node vector-node sq))
-  #?(:clj clojure.lang.IPersistentList :cljs List)
-  (coerce [sq]
-    (seq-node list-node sq))
-  #?(:clj clojure.lang.LazySeq :cljs LazySeq)
-  (coerce [sq]
-    (seq-node list-node sq))
-  #?(:clj clojure.lang.Cons :cljs Cons)
-  (coerce [sq]
-    (seq-node list-node sq))
   #?(:clj clojure.lang.IPersistentSet :cljs PersistentHashSet)
   (coerce [sq]
     (seq-node set-node sq)))
 
-#?(:cljs
-   ;; cljs empty list is special
+;; actual seqs
+#?(:clj
    (extend-protocol NodeCoerceable
-     EmptyList
-     (coerce [sq]
-       (seq-node list-node sq))))
+    clojure.lang.ISeq
+    (coerce [sq]
+      (seq-node list-node sq))))
 
 ;; ## Maps
 
