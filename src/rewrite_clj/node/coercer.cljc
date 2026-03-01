@@ -156,7 +156,8 @@
      (coerce [v]
        (cond
          ;; in cljs, this is where we check for a seq, in clj is happens via extend-protocol ISeq
-         (satisfies? ISeq v) (seq-node list-node v)
+         ;; apparently implements? performs better than satisfies? so use that.
+         (implements? ISeq v) (seq-node list-node v)
          ;; in cljs, this is where we check for a record, in clj it happens under map handling
          (record? v) (node-with-meta (record-node v) v)
          :else (node-with-meta (token-node v) v)))))
