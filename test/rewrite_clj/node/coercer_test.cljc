@@ -41,7 +41,7 @@
              ["inner\"quote"         :token      :string]
              ["\\s+"                 :token      :string]
 
-             ;; seqs
+             ;; seqs (which includes vectors and sets)
              [[]                     :vector     :seq]
              [[1 2 3]                :vector     :seq]
              [()                     :list       :seq]
@@ -49,21 +49,32 @@
              [(list 1 2 3)           :list       :seq]
              [#{}                    :set        :seq]
              [#{1 2 3}               :set        :seq]
+             ;; there are a variety of implementations of ISeq, exercise some of them via regular code
              [(cons 1 [2 3])         :list       :seq]
              [(lazy-seq [1 2 3])     :list       :seq]
-
+             [(seq [1 2 3])          :list       :seq]
+             [(seq "123")            :list       :seq]
+             [(vals {:a 1 :b 2})     :list       :seq]
+             [(keys {:a 1 :b 2})     :list       :seq]
+             [(rseq [1 2 3])         :list       :seq]
+             #?(:clj [(seq (byte-array [1 2])) :list  :seq])
+             #?(:clj [(enumeration-seq (java.util.StringTokenizer. "1 2 3")) :list :seq])
+             [(range 1 3)            :list       :seq]
+             [(range 1N 3N)          :list       :seq]
+             [(seq (sorted-map :a 1 :b 2)) :list :seq]
              ;; date
              [#inst "2014-11-26T00:05:23" :token :token]]]
-      (let [n (node/coerce sexpr)]
-        (is (node/node? n))
-        (is (= sexpr (node/sexpr n)))
-        (is (string? (node/string n)))
-        (is (= expected-tag (node/tag n)) "tag")
-        (is (= expected-type (protocols/node-type n)) "node-type")
-        (is (not (meta n)))
-        (if (seq? sexpr)
-          (is (seq? (node/sexpr n)))
-          (is (= (type (node/sexpr n)) (type sexpr)))))))
+      (testing (str sexpr " (type " (type sexpr) ")") 
+        (let [n (node/coerce sexpr)]
+          (is (node/node? n))
+          (is (= sexpr (node/sexpr n)))
+          (is (string? (node/string n)))
+          (is (= expected-tag (node/tag n)) "tag")
+          (is (= expected-type (protocols/node-type n)) "node-type")
+          (is (not (meta n)))
+          (if (seq? sexpr)
+            (is (seq? (node/sexpr n)))
+            (is (= (type (node/sexpr n)) (type sexpr))))))))
   (testing "multi-line string newline variants are preserved"
     (let [s "hey\nyou\rover\r\nthere"
           n (node/coerce s)]
