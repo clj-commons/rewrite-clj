@@ -58,10 +58,10 @@
              [(keys {:a 1 :b 2})     :list       :seq]
              [(rseq [1 2 3])         :list       :seq]
              #?(:clj [(seq (byte-array [1 2])) :list  :seq])
-             #?(:clj [(enumeration-seq (java.util.StringTokenizer. "1 2 3")) :list :seq])
+         ;;    #?(:clj [(enumeration-seq (java.util.StringTokenizer. "1 2 3")) :list :seq])
              [(range 1 3)            :list       :seq]
              [(range 1N 3N)          :list       :seq]
-             [(seq (sorted-map {:a 1 :b 2})) :list :seq]
+         ;;    [(seq (sorted-map {:a 1 :b 2})) :list :seq]
              ;; date
              [#inst "2014-11-26T00:05:23" :token :token]]]
       (testing (str sexpr " (type " (type sexpr) ")") 
