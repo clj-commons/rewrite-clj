@@ -82,7 +82,7 @@
    :contributions [:issue]}
   {:github-id "RickMoynihan"
    :contributions [:issue]}
-  {:github-id "zcaudate"
+  {:github-id "hoebat"
    :contributions [:issue]}
   {:github-id "luxbock"
    :contributions [:issue]}
@@ -113,7 +113,9 @@
   {:github-id "conao3"
    :contributions [:doc]}
   {:github-id "onbreath"
-   :contributions [:code-rewrite-clj-v1 :doc]}]
+   :contributions [:code-rewrite-clj-v1 :doc]}
+  {:github-id "alexander-yakushev"
+   :contributions [:code-rewrite-clj-v1]}]
  :founders
  [{:github-id "xsc"
    :contributions [:original-author :doc :design :issue :review :support :code-rewrite-clj-v0]}
