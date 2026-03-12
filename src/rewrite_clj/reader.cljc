@@ -146,11 +146,11 @@
 
 (defn read-with-meta
   "Use the given function to read value, then attach row/col metadata."
-  [#?(:cljs ^not-native reader :default reader) read-fn]
+  [#?(:cljs ^not-native reader :default reader) read-fn context]
   (loop []
     (let [start-row (r/get-line-number reader)
           start-col (r/get-column-number reader)]
-      (when-let [entry (read-fn reader)]
+      (when-let [entry (read-fn reader context)]
         (if (identical? reader entry)
           (recur)
           ;; conj is more efficient here than into because it doesn't perform
@@ -165,20 +165,21 @@
 (defn read-repeatedly
   "Call the given function on the given reader until it returns
    a non-truthy value."
-  [#?(:cljs ^not-native reader :default reader) read-fn]
-  (->> (repeatedly #(read-fn reader))
-       (take-while identity)
-       (doall)))
+  [#?(:cljs ^not-native reader :default reader) read-fn context]
+  (loop [acc []]
+    (if-let [x (read-fn reader context)]
+      (recur (conj acc x))
+      (or (seq acc) ()))))
 
 (defn read-n
   "Call the given function on the given reader until `n` values matching `p?` have been
    collected."
-  [#?(:cljs ^not-native reader :default reader) node-tag read-fn p? n]
+  [#?(:cljs ^not-native reader :default reader) node-tag read-fn context p? n]
   {:pre [(pos? n)]}
   (loop [c 0
          vs []]
     (if (< c n)
-      (if-let [v (read-fn reader)]
+      (if-let [v (read-fn reader context)]
         (recur
           (if (p? v) (inc c) c)
           (conj vs v))
