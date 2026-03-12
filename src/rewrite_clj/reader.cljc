@@ -147,11 +147,20 @@
 (defn read-with-meta
   "Use the given function to read value, then attach row/col metadata."
   [#?(:cljs ^not-native reader :default reader) read-fn]
-  (let [start-position (position reader :row :col)]
-    (when-let [entry (read-fn reader)]
-      (->> (position reader :end-row :end-col)
-           (merge start-position)
-           (with-meta entry)))))
+  (loop []
+    (let [start-row (r/get-line-number reader)
+          start-col (r/get-column-number reader)]
+      (when-let [entry (read-fn reader)]
+        (if (identical? reader entry)
+          (recur)
+          ;; conj is more efficient here than into because it doesn't perform
+          ;; transient/persistent conversion if the second argument is nil.
+          (let [new-meta (conj {:row start-row
+                                :col start-col
+                                :end-row (r/get-line-number reader)
+                                :end-col (r/get-column-number reader)}
+                               (meta entry))]
+            (with-meta entry new-meta)))))))
 
 (defn read-repeatedly
   "Call the given function on the given reader until it returns

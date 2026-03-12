@@ -30,6 +30,8 @@ A release with known breaking changes is marked with:
 {issue}435[#435] ({lread}, thanks for the issue {person}shaunlebron[@shaunlebron]!)
 * bump clojure tools reader to v1.6.0
 {issue}427[#427] ({lread})
+* Performance improvements
+{issue}439[#439]
 
 https://github.com/clj-commons/rewrite-clj/compare/v1.2.51\...v1.2.52[commit log]
 
