@@ -110,7 +110,7 @@
                   contrib-font-size)
           ".symbol {margin-right: 0.2em; width: 1em; height: 1em; font-family: 'Noto Color Emoji';}\n"
           ".text {}\n"
-          ".name {font-size: 1.3em; margin: 0; clear:both;}\n"))]]
+          ".name {font-size: 1.3em; white-space: nowrap; margin: 0; clear:both;}\n"))]]
       [:div.wrapper
        [:div.card
         [:div
