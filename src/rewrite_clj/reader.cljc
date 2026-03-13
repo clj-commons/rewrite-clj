@@ -75,12 +75,12 @@
    (read-while reader p? (not (p? nil))))
 
   ([#?(:cljs ^not-native reader :default reader) p? eof?]
-   (let [buf (StringBuffer.)]
+   (let [buf #?(:clj (StringBuilder.) :cljs (StringBuffer.))]
      (loop []
        (if-let [c (r/read-char reader)]
          (if (p? c)
            (do
-             (.append buf c)
+             (.append buf (char c))
              (recur))
            (do
              (r/unread reader c)
