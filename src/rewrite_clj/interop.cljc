@@ -32,7 +32,9 @@
 
 (defn clojure-whitespace?
   [#?(:clj ^java.lang.Character c :default c)]
-  #?(:clj (and c (or (= c \,) (Character/isWhitespace c)))
+  #?(:clj (cond (nil? c) false
+                (identical? c \,) true
+                :else (Character/isWhitespace c))
      :cljs (and c (< -1 (.indexOf #js [\return \newline \tab \space ","] c)))))
 
 (defn meta-available?

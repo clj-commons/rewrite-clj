@@ -34,10 +34,9 @@
 (defn boundary?
   "Check whether a given char is a token boundary."
   [#?(:clj ^java.lang.Character c :default c)]
-  (contains?
-    #{\" \: \; \' \@ \^ \` \~
-      \( \) \[ \] \{ \} \\ nil}
-    c))
+  ;; Note: indexOf here is more efficient that a hashset of characters.
+  #?(:clj (or (nil? c) (> (.indexOf "\":;'@^`~()[]{}\\" (int c)) -1))
+     :cljs (contains? #{\" \: \; \' \@ \^ \` \~\( \) \[ \] \{ \} \\ nil} c)))
 
 (defn comma?
   [#?(:clj ^java.lang.Character c :default c)]
@@ -52,19 +51,20 @@
 (defn linebreak?
   "Checks whether the character is a newline"
   [#?(:clj ^java.lang.Character c :default c)]
-  (contains? #{\newline \return} c))
+  (or (identical? c \newline) (identical? c \return)))
 
 (defn space?
   "Checks whether the character is a space"
   [#?(:clj ^java.lang.Character c :default c)]
   (and c
-       (whitespace? c)
-       (not (contains? #{\newline \return \,} c))))
+       (interop/clojure-whitespace? c)
+       (not (identical? c \newline))
+       (not (identical? c \,))))
 
 (defn whitespace-or-boundary?
   #?(:clj ^Boolean [^java.lang.Character c]
           :default [c])
-  (or (whitespace? c) (boundary? c)))
+  (or (interop/clojure-whitespace? c) (boundary? c)))
 
 ;; ## Helpers
 
@@ -215,32 +215,27 @@
       (reader-impl-errors/throw-single-colon reader))))
 
 (defn- parse-symbol
-  "Parses a string into a vector of the namespace and symbol
+  "Parses a string into a Symbol object, either unqualified or namespaced.
 
   Cribbed from clojure/cljs.tools.reader.impl.commons/parse-symbol merging clj and cljs fns into single implementation
   Added in equivalent of TRDR-73 patch to allow array class symbols (e.g. foobar/3)."
   [^String token]
-  (when-not (or (identical? "" token)
+  (when-not (or (= token "")
                 (string/ends-with? token ":")
                 (string/starts-with? token "::"))
     (if-let [ns-idx (string/index-of token "/")]
       (let [ns (subs token 0 ns-idx)
             ns-idx (inc ns-idx)]
-          (when-not (== ns-idx (count token))
-            (let [sym (subs token ns-idx)]
-              (cond
-                (contains? #{"1" "2" "3" "4" "5" "6" "7" "8" "9"} sym)
-                [ns sym]
-
-                (and (not (interop/numeric? (nth sym 0)))
-                     (not (= "" sym))
-                     (not (string/ends-with? ns ":"))
-                     (or (= sym "/")
-                         (nil? (string/index-of sym "/"))))
-                [ns sym]))))
-      (when (or (= token "/")
-                (nil? (string/index-of token "/")))
-          [nil token]))))
+        (when-not (== ns-idx (count token))
+          (let [sym (subs token ns-idx)]
+            (when (or (contains? #{"1" "2" "3" "4" "5" "6" "7" "8" "9"} sym)
+                      (and (not (interop/numeric? (nth sym 0)))
+                           (not (= "" sym))
+                           (not (string/ends-with? ns ":"))
+                           (or (= sym "/")
+                               (nil? (string/index-of sym "/")))))
+              (symbol ns sym)))))
+      (symbol token))))
 
 (defn read-symbol
   "Return symbol parsed from `token`.
@@ -254,8 +249,7 @@
     "false" false
     "/" '/
 
-    (or (when-let [p (parse-symbol token)]
-          (symbol (p 0) (p 1)))
+    (or (parse-symbol token)
         ;; Throw in same way that tools.reader would when reading a string
         ;; for exeption compatibility. Some users, like clojure-lsp, currently rely
         ;; on parsing exception strings. A user having to resort
