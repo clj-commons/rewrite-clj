@@ -28,6 +28,8 @@ A release with known breaking changes is marked with:
 {issue}442[#442] ({person}alexander-yakushev[@alexander-yakushev])
 * perf: Use more efficient StringBuilder.append arity
 {issue}443[#443] ({person}alexander-yakushev[@alexander-yakushev])
+* perf: Reader optimizations
+{issue}444[#444] ({person}alexander-yakushev[@alexander-yakushev])
 
 === v1.2.53 - 2026-03-12 [[v1.2.53]]
 

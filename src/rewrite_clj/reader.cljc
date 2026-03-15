@@ -34,10 +34,9 @@
 (defn boundary?
   "Check whether a given char is a token boundary."
   [#?(:clj ^java.lang.Character c :default c)]
-  (contains?
-    #{\" \: \; \' \@ \^ \` \~
-      \( \) \[ \] \{ \} \\ nil}
-    c))
+  ;; Note: indexOf here is more efficient that a hashset of characters.
+  #?(:clj (or (nil? c) (> (.indexOf "\":;'@^`~()[]{}\\" (int c)) -1))
+     :cljs (contains? #{\" \: \; \' \@ \^ \` \~\( \) \[ \] \{ \} \\ nil} c)))
 
 (defn comma?
   [#?(:clj ^java.lang.Character c :default c)]
@@ -52,19 +51,20 @@
 (defn linebreak?
   "Checks whether the character is a newline"
   [#?(:clj ^java.lang.Character c :default c)]
-  (contains? #{\newline \return} c))
+  (or (identical? c \newline) (identical? c \return)))
 
 (defn space?
   "Checks whether the character is a space"
   [#?(:clj ^java.lang.Character c :default c)]
   (and c
-       (whitespace? c)
-       (not (contains? #{\newline \return \,} c))))
+       (interop/clojure-whitespace? c)
+       (not (identical? c \newline))
+       (not (identical? c \,))))
 
 (defn whitespace-or-boundary?
   #?(:clj ^Boolean [^java.lang.Character c]
           :default [c])
-  (or (whitespace? c) (boundary? c)))
+  (or (interop/clojure-whitespace? c) (boundary? c)))
 
 ;; ## Helpers
 
