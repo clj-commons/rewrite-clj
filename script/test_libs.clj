@@ -302,7 +302,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -T:build ci"]}
            {:name "cljfmt"
-            :version "0.16.1"
+            :version "0.16.2"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
@@ -329,7 +329,7 @@
             :test-cmds ["bb test"]}
            {:name "clojure-mcp"
             :platforms [:clj]
-            :version "0.2.6"
+            :version "0.3.1"
             :github-release {:repo "bhauman/clojure-mcp"
                              :via :tag
                              :version-prefix "v"}
