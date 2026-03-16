@@ -24,12 +24,16 @@ A release with known breaking changes is marked with:
 //   (adjust these in publish.clj as you see fit)
 === Unreleased
 
+=== v1.2.54 - 2026-03-16 [[v1.2.54]]
+
 * perf: pass explicit context instead *delimiter* dynvar.
 {issue}442[#442] ({person}alexander-yakushev[@alexander-yakushev])
 * perf: Use more efficient StringBuilder.append arity
 {issue}443[#443] ({person}alexander-yakushev[@alexander-yakushev])
 * perf: Reader optimizations
 {issue}444[#444] ({person}alexander-yakushev[@alexander-yakushev])
+
+https://github.com/clj-commons/rewrite-clj/compare/v1.2.53\...v1.2.54[commit log]
 
 === v1.2.53 - 2026-03-12 [[v1.2.53]]
 
