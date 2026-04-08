@@ -20,7 +20,7 @@ jobs:
         run: bb test-coverage
 
       - name: Upload Code Coverage Results
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           fail_ci_if_error: true # optional (default = false)
           files: ./target/coverage/codecov.json
