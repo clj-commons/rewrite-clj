@@ -225,6 +225,16 @@
          (spit p))))
 
 ;;
+;; splint
+;;
+(defn- splint-patch
+  "Disable failing test due to now missing github repo"
+  [{:keys [home-dir] :as lib}]
+  (deps-edn-v1-patch lib)
+  (status/line :detail "Patching for failing test due to missing repo")
+  (fs/delete (fs/path home-dir "test/noahtheduke/splint/integrations/dinero_test.clj")))
+
+;;
 ;; zprint
 ;;
 
@@ -302,7 +312,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -T:build ci"]}
            {:name "cljfmt"
-            :version "0.16.2"
+            :version "0.16.3"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
@@ -426,12 +436,13 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test-clj"]}
            {:name "splint"
-            :version "1.23.1"
+            :version "1.24.0"
+            :note "disabled a failing test, see https://github.com/NoahTheDuke/splint/issues/43"
             :platforms [:clj]
             :github-release {:repo "NoahTheDuke/splint"
                              :version-prefix "v"
                              :via :tag}
-            :patch-fn deps-edn-v1-patch
+            :patch-fn splint-patch 
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:dev:test:runner"]}
            {:name "test-doc-blocks"

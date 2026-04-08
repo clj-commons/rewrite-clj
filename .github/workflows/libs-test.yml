@@ -53,7 +53,7 @@ jobs:
           clj-cache-hash-files: "'script/test_libs.clj','deps.edn','bb.edn'"
 
       - name: Install Lein
-        uses: DeLaGuardo/setup-clojure@13.5
+        uses: DeLaGuardo/setup-clojure@13.6.0
         with:
           lein: 2.12.0
 
@@ -63,7 +63,7 @@ jobs:
 
       # The runner image comes with a later version gradle that does not work with antq unit tests yet
       - name: Install Gradle for antq
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: '8.14.3'
         if: matrix.lib-name == 'antq'
