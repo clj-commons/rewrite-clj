@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      tests: ${{ setps.set-tests.outputs.tests }}
+      tests: ${{ steps.set-tests.outputs.tests }}
 
     steps:
       - name: Checkout
