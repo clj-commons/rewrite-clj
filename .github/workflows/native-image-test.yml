@@ -11,17 +11,33 @@ on:
     - main
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    outputs:
+      tests: ${{ steps.set-tests.outputs.tests }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup
+        uses: ./.github/workflows/shared-setup
+
+      - id: set-tests
+        name: Set test var for matrix
+        # run ci_native_tests.clj directly instead of via bb task to avoid generic task output
+        run: echo "tests=$(bb script/ci_native_tests.clj matrix-for-ci --format=json)" >> $GITHUB_OUTPUT
+
   build:
+    needs: setup
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows, ubuntu, macos ]
-        java-version: [ '25.0.2' ]
-        test: [ native, native-sci ]
-        clojure-version: [ '1.12' ]
+        include: ${{ fromJSON(needs.setup.outputs.tests) }}
 
-    name: ${{ matrix.os }},jdk${{ matrix.java-version }},${{ matrix.test }},clj${{ matrix.clojure-version }}
+    name: ${{ matrix.desc }}
 
     steps:
       #
@@ -49,5 +65,5 @@ jobs:
       #
       # native image tests
       #
-      - name: Execute test-${{ matrix.test }}
-        run: bb test-${{ matrix.test }} --clojure-version ${{ matrix.clojure-version }}
+      - name: Run Tests
+        run: ${{ matrix.cmd }}

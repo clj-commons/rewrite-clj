@@ -26,7 +26,7 @@ jobs:
 
       - id: set-tests
         name: Set test var for matrix
-        # run test.clj directly instead of via bb task to avoid generic task output
+        # run ci-unit_tests.clj directly instead of via bb task to avoid generic task output
         run: echo "tests=$(bb script/ci_unit_tests.clj matrix-for-ci --format=json)" >> $GITHUB_OUTPUT
 
   build:

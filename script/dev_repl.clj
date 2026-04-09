@@ -2,6 +2,7 @@
   (:require [babashka.cli :as cli]
             [babashka.process :as process]
             [clojure.string :as str]
+            [helper.clojure-versions :as clojure-versions]
             [lread.status-line :as status]))
 
 (def cli-spec {:help {:desc "This usage help"}
@@ -55,7 +56,7 @@
         (status/line :head "Launching Clojure %s nREPL" (name flavor))
         (when flowstorm
           (status/line :detail "Flowstorm support is enabled"))
-        (process/exec "clj" (str "-M:1.12:test-common:nrepl:" (str/join ":" aliases))
+        (process/exec "clj" (str "-M:" (:alias (clojure-versions/current-prod)) ":test-common:nrepl:" (str/join ":" aliases))
                       "-h" host
                       "-b" bind
                       "-p" port)))))
