@@ -12,9 +12,17 @@ We made use of planck for cljs bootstrap (aka cljs self-hosted) testing on macOS
 But... planck is not currently maintained, it uses an older version of CloureScript and it can be difficult to get a binary for current OSes, so we've disabled these tests for now.
 See: https://github.com/clj-commons/rewrite-clj/issues/420
 
-We test that rewrite-clj operates as expected when natively compile via GraalVM.
-Automated testing is setup using GraalVM for JDK 25.
+Scripts run on GitHub Actions automatically discover what versions of Clojure to test via auto-discovery of `:clojure-*` aliases in `deps.edn`. Unit tests will cover all versions. Native image tests cover the current production release and `:clojure-pre-*` releases (if any).
+
+JVM tests cover supported LTS JDKs and the current latest JDK.
+For GraalVM native image tests, we cover and support only the current latest GraalVM version.
 At this time we only test against the Community Edition.
+
+GitHub Actions test matrixes are fed from:
+
+* `bb ci-unit-tests matrix-for-ci` - unit tests
+* `bb ci-native-tests matrix-for-ci` - native image tests 
+* `bb test-libs list --format=table` - lib tests
 
 == Prerequisites
 * Java JDK 1.8 or above (shadow-cljs tests require min of JDK 11)

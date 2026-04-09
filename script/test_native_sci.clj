@@ -2,6 +2,8 @@
 
 (ns test-native-sci
   (:require [clojure.java.io :as io]
+            [clojure.string :as str]
+            [helper.clojure-versions :as clojure-versions]
             [helper.graal :as graal]
             [helper.main :as main]
             [helper.os :as os]
@@ -24,24 +26,25 @@
     (status/die 1 "native image %s not found." exe-fname))
   (shell/command exe-fname "--file" "script/sci_test_runner.clj" "--classpath" "test"))
 
-(def allowed-clojure-versions '("1.10" "1.11" "1.12"))
+(def cli-clojure-versions (mapv :version (clojure-versions/for-native)))
 
-(def args-usage "Valid args: [options]
+(def args-usage (format "Valid args: [options]
 
 Options:
-  -v, --clojure-version VERSION  Test with Clojure [1.10, 1.11, 1.12] [default: 1.12]
-  --help                         Show this help")
-
+  -v, --clojure-version VERSION  Test with Clojure [%s] [default: %s]
+  --help                         Show this help"
+                        (str/join ", " cli-clojure-versions)
+                        (first cli-clojure-versions)))
 
 (defn validate-opts [opts]
-  (when (not (some #{(get opts "--clojure-version")} allowed-clojure-versions))
+  (when (not (some #{(get opts "--clojure-version")} cli-clojure-versions))
         (status/die 1 args-usage)))
 
 (defn -main [& args]
   (when-let [opts (main/doc-arg-opt args-usage args)]
     (validate-opts opts)
     (graal/assert-min-version)
-    (let [clojure-version (get opts "--clojure-version")
+    (let [clojure-version (clojure-versions/lookup (get opts "--clojure-version"))
           native-image-xmx "6g"
           graal-reflection-fname "target/native-image/reflection.json"
           target-path "target"
@@ -54,7 +57,7 @@ Options:
       (let [graal-native-image (graal/find-graal-native-image)]
         (graal/clean)
         (expose-api-to-sci)
-        (let [classpath (graal/compute-classpath (str "graal:sci-test:" clojure-version))]
+        (let [classpath (graal/compute-classpath (str "graal:sci-test:" (:alias clojure-version)))]
           (graal/aot-compile-sources classpath "sci-test.main")
           (generate-reflection-file graal-reflection-fname)
           (graal/run-native-image {:graal-native-image graal-native-image

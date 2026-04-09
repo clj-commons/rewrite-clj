@@ -8,6 +8,7 @@
         lread/status-line {:git/url "https://github.com/lread/status-line.git"
                            :sha "eace48e2e0fcc65a3986d696fb0b910fa5790a1c"}
         etaoin/etaoin {:mvn/version "1.1.43"}
+        wevre/natural-compare {:mvn/version "0.0.10"}
         io.github.babashka/neil {:git/tag "v0.3.69", :git/sha "fa79321"}}
  :tasks {;; setup
          :requires ([clojure.string :as string]
@@ -23,7 +24,7 @@
          lint              {:task lint/-main              :doc "[--rebuild] lint source code using clj-kondo, eastwood"}
          -lint-kondo       {:task lint-kondo/-main        :doc "[--rebuild]"}
          -lint-eastwood    {:task lint-eastwood/-main}
-         test-clj          {:task test-clj/-main          :doc "[--clojure-version (1.8|1.9|1.10|1.11|1.12)]"}
+         test-clj          {:task test-clj/-main          :doc "use --help for args"}
          test-cljs         {:task test-cljs/-main         :doc "use --help for args"}
          test-shadow-cljs  {:task test-shadow-cljs/-main}
          test-native       {:task test-native/-main       :doc "run rewrite-clj and tests after both compiled with GraalVM native-image"}
@@ -37,6 +38,7 @@
          outdated          {:task outdated/-main          :doc "report on outdated Clojure and npm dependencies"}
          doc-update-readme {:task doc-update-readme/-main :doc "honour our contributors in README"}
          cljdoc-preview    {:task cljdoc-preview/-main    :doc "preview what docs will look like on cljdoc, use --help for args"}
+         ci-native-tests   {:task ci-native-tests/-main   :doc "matrix-for-ci - list native integration tests"}
          ci-unit-tests     {:task ci-unit-tests/-main     :doc "run/list continuous integration unit tests, use --help for args"}
          pubcheck          {:task publish/pubcheck        :doc "Run only publish checks (without publishing)"}
          publish           {:task publish/-main           :doc "Publish a release (for maintainers)"}
