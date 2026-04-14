@@ -34,7 +34,7 @@
            ;; REPL to support bb dev-jvm & dev-cljs tasks, see script/dev_repl.clj
            ;;
            :nrepl
-           {:extra-deps {nrepl/nrepl {:mvn/version "1.6.0"}
+           {:extra-deps {nrepl/nrepl {:mvn/version "1.7.0"}
                          cider/cider-nrepl {:mvn/version "0.58.0"}}
             :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
 
@@ -170,7 +170,7 @@
 
            ;; keep deploy deps separate from build deps; this avoids `bb download-deps` failures on windows
            ;; when downloading jackson (and other conflicting) deps.
-           :deploy {:extra-deps {slipset/deps-deploy {:mvn/version "0.2.2"}}}
+           :deploy {:extra-deps {slipset/deps-deploy {:mvn/version "0.2.3"}}}
 
            ;;
            ;; Maintenance support
