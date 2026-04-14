@@ -170,7 +170,7 @@
 
            ;; keep deploy deps separate from build deps; this avoids `bb download-deps` failures on windows
            ;; when downloading jackson (and other conflicting) deps.
-           :deploy {:extra-deps {slipset/deps-deploy {:mvn/version "0.2.2"}}}
+           :deploy {:extra-deps {slipset/deps-deploy {:mvn/version "0.2.3"}}}
 
            ;;
            ;; Maintenance support
