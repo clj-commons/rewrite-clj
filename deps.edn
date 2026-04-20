@@ -22,7 +22,7 @@
            :clojure-1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.4"}}}
            :clojure-1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.4"}}}
            ;; Candidate release is :clojure-pre-* (ex. clojure-candidate-1.12.5-alpha1) (if any)
-           :clojure-pre-1.12.5-alpha1 {:override-deps {org.clojure/clojure {:mvn/version "1.12.5-alpha1"}}}
+           :clojure-pre-1.12.5-rc1 {:override-deps {org.clojure/clojure {:mvn/version "1.12.5-rc1"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
@@ -35,7 +35,7 @@
            ;;
            :nrepl
            {:extra-deps {nrepl/nrepl {:mvn/version "1.7.0"}
-                         cider/cider-nrepl {:mvn/version "0.58.0"}}
+                         cider/cider-nrepl {:mvn/version "0.59.0"}}
             :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
 
            :flowstorm
@@ -65,7 +65,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2026.01.19"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2026.04.15"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.12.3"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 

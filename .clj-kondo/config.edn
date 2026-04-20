@@ -12,7 +12,8 @@
   rewrite-clj.zip.subedit/edit->> clojure.core/->>
   rewrite-clj.custom-zipper.switchable/defn-switchable clojure.core/defn}
  :linters
- {:discouraged-var {clojure.test/are {:message "We're not fans of clojure.test/are, use doseq instead"}}
+ {:missing-protocol-method-arity {:level :warning}
+  :discouraged-var {clojure.test/are {:message "We're not fans of clojure.test/are, use doseq instead"}}
   :redundant-str-call {:level :warning}
   :redundant-fn-wrapper {:level :warning}
   :redundant-ignore {:level :warning}
