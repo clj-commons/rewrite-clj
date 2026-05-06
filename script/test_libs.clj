@@ -331,8 +331,7 @@
                         "bin/test unit"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2026.02.20-16.08.58"
-            :note "temporarily disabled failing test, see https://github.com/clj-commons/rewrite-clj/pull/419"
+            :version "2026.05.05-12.58.26"
             :github-release {:repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
