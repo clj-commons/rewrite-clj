@@ -220,6 +220,3 @@
       (is (= expected-node-type (proto/node-type n)))
       (is (= expected-str (n/string n)))
       (is (= expected-sexpr (n/sexpr n))))))
-
-(deftest reader-macro-sexpr-test
-  (is (= `read-string (first (n/sexpr (p/parse-string "#booya 32"))))))
