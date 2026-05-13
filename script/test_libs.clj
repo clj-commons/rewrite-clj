@@ -218,8 +218,10 @@
   (let [p (str (fs/file home-dir "test/refactor_nrepl/artifacts_test.clj"))
         lines (-> p slurp string/split-lines)
         new-lines (-> lines
-                      (update 37 #(str "#_" %))   ;; get-mvn-artifacts!-test
-                      (update 47 #(str "#_" %))   ;; get-mvn-versions!-test
+                      ;; updated line numbers for v3.12.0 (editor line-num minus 1)
+                      ;; there is now better retry logic, but I know these maven API endpoints are flakey
+                      (update 45 #(str "#_" %))   ;; get-mvn-artifacts!-test
+                      (update 55 #(str "#_" %))   ;; get-mvn-versions!-test
                       )]
     (->> (string/join "\n" new-lines)
          (spit p))))
