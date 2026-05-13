@@ -20,10 +20,10 @@
            :clojure-1.9 {:override-deps {org.clojure/clojure {:mvn/version "1.9.0"}}}
            :clojure-1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
            :clojure-1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.4"}}}
-           :clojure-1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.4"}}}
+           :clojure-1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.5"}}}
            ;; Candidate release is :clojure-pre-* (ex. clojure-candidate-1.12.5-alpha1) (if any)
-           :clojure-pre-1.12.5-rc1 {:override-deps {org.clojure/clojure {:mvn/version "1.12.5-rc1"}}}
-
+           ;; - none at this time
+           
            ;;
            ;; ClojureScript version we test with (and support)
            ;;
@@ -41,12 +41,12 @@
            :flowstorm
            {;; for disabling the official compiler
             :classpath-overrides {org.clojure/clojure nil}
-            :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.4"}
+            :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.5"}
                          com.github.flow-storm/flow-storm-dbg {:mvn/version "4.5.9"}}
             :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
 
            :nrepl/jvm
-           {:extra-deps {refactor-nrepl/refactor-nrepl {:mvn/version "3.11.0"}}
+           {:extra-deps {refactor-nrepl/refactor-nrepl {:mvn/version "3.12.0"}}
             :jvm-opts ["-Djdk.attach.allowAttachSelf"]
             :main-opts  ["-m" "nrepl.cmdline"
                          "--middleware" "[refactor-nrepl.middleware/wrap-refactor cider.nrepl/cider-middleware]"
@@ -148,7 +148,7 @@
            ;; graal:native-test - natively compile src and tests and run
 
            :graal {:override-deps {org.clojure/clojure {:mvn/version "1.12.3"}}
-                   :extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "1.0.5"}}}
+                   :extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "1.0.6"}}}
 
            :sci-test {:extra-paths ["target/generated/sci-test/src"]
                       :extra-deps {lread/sci-test
@@ -176,7 +176,7 @@
            ;; Maintenance support
            ;;
            :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.11.1276"}
-                                   org.slf4j/slf4j-simple {:mvn/version "2.0.17"} ;; to rid ourselves of logger warnings
+                                   org.slf4j/slf4j-simple {:mvn/version "2.0.18"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.12.3"}}
                       :main-opts ["-m" "antq.core"
