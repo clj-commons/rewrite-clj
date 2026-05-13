@@ -417,7 +417,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "refactor-nrepl"
-            :version "3.11.0"
+            :version "3.12.0"
             :platforms [:clj]
             :github-release {:repo "clojure-emacs/refactor-nrepl"
                              :via :tag
