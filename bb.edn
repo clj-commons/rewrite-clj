@@ -9,7 +9,7 @@
                            :sha "eace48e2e0fcc65a3986d696fb0b910fa5790a1c"}
         etaoin/etaoin {:mvn/version "1.1.43"}
         wevre/natural-compare {:mvn/version "0.0.10"}
-        io.github.babashka/neil {:git/tag "v0.3.69", :git/sha "fa79321"}}
+        io.github.babashka/neil {:git/tag "v0.3.70" :git/sha "2cdd7c6"}}
  :tasks {;; setup
          :requires ([clojure.string :as string]
                     [lread.status-line :as status])
