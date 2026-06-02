@@ -1,5 +1,6 @@
 (ns ci-native-tests
   (:require [cheshire.core :as json]
+            [clojure.string :as str]
             [doric.core :as doric]
             [helper.clojure-versions :as clojure-versions]
             [helper.main :as main]
@@ -13,7 +14,7 @@
         java-version java-versions
         test-task ["test-native" "test-native-sci"]
         clj-version (mapv :version (clojure-versions/for-native))]
-    {:desc (str os ",jdk" java-version "," test-task ",clj" clj-version)
+    {:desc (str/join " " [test-task os (str "jdk" java-version) (str "clj" clj-version)])
      :cmd (str "bb " test-task " --clojure-version " clj-version)
      :os os
      :java-version java-version}))
