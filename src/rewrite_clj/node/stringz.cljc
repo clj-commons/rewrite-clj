@@ -13,6 +13,12 @@
 (defn- join-lines [lines]
   (string/join "\n" lines))
 
+(defn- maybe-unescape
+  [s]
+  (if (string/includes? s "\\")
+    (edn/read-string (wrap-string s))
+    s))
+
 (defrecord StringNode [lines]
   node/Node
   (tag [_node]
@@ -22,10 +28,9 @@
   (node-type [_node] :string)
   (printable-only? [_node] false)
   (sexpr* [_node _opts]
-    (join-lines
-      (map
-        (comp edn/read-string wrap-string)
-        lines)))
+    (if (= (count lines) 1)
+      (maybe-unescape (nth lines 0))
+      (join-lines (map maybe-unescape lines))))
   (length [_node]
     (+ 2 (reduce + (map count lines))))
   (string [_node]
