@@ -68,6 +68,23 @@
 
 ;; ## Helpers
 
+(defn read-into-buffer-while
+  "Read while the chars fulfill the given condition and append them into the
+  provided buffer. Ignores the unmatching char."
+  [reader #?(:clj ^StringBuilder buf :default ^StringBuffer buf) p? eof?]
+  (let [eof? (if (nil? eof?)
+               (not (p? nil))
+               eof?)]
+    (loop []
+      (if-let [c (r/read-char reader)]
+        (if (p? c)
+          (do
+            (.append buf (char c))
+            (recur))
+          (r/unread reader c))
+        (when-not eof?
+          (throw-reader reader "unexpected EOF"))))))
+
 (defn read-while
   "Read while the chars fulfill the given condition. Ignores
     the unmatching char."
@@ -76,18 +93,8 @@
 
   ([#?(:cljs ^not-native reader :default reader) p? eof?]
    (let [buf #?(:clj (StringBuilder.) :cljs (StringBuffer.))]
-     (loop []
-       (if-let [c (r/read-char reader)]
-         (if (p? c)
-           (do
-             (.append buf (char c))
-             (recur))
-           (do
-             (r/unread reader c)
-             (.toString buf)))
-         (if eof?
-           (.toString buf)
-           (throw-reader reader "unexpected EOF")))))))
+     (read-into-buffer-while reader buf p? eof?)
+     (.toString buf))))
 
 (defn read-until
   "Read until a char fulfills the given condition. Ignores the
