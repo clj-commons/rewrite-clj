@@ -1,38 +1,46 @@
 (ns ^:no-doc rewrite-clj.parser.token
   (:require [rewrite-clj.interop :as interop]
             [rewrite-clj.node.token :as ntoken]
-            [rewrite-clj.reader :as r]))
+            [rewrite-clj.reader :as r])
+  #?@(:cljs [(:import [goog.string StringBuffer])]
+      :default []))
 
 #?(:clj (set! *warn-on-reflection* true))
 
+;; Next two functions are extract to avoid allocating fn objects in refsites.
+
+(defn- not-boundary? [c] (not (r/whitespace-or-boundary? c)))
+
+(defn- not-boundary-allow-extra? [c]
+  (or (#{\' \:} c)
+      (not (r/whitespace-or-boundary? c))))
+
 (defn- read-to-boundary
-  ([#?(:cljs ^not-native reader :default reader)]
-   (read-to-boundary reader #{}))
-  ([#?(:cljs ^not-native reader :default reader) allowed?]
-   (r/read-until
-    reader
-    #(and (not (allowed? %))
-          (r/whitespace-or-boundary? %)))))
+  [#?(:cljs ^not-native reader :default reader) buf f]
+  (r/read-into-buffer-while reader buf f true))
 
 (defn- read-to-char-boundary
-  [#?(:cljs ^not-native reader :default reader)]
-  (let [c (r/next reader)]
-    (str c
-         (if (not= c \\)
-           (read-to-boundary reader)
-           ""))))
+  [#?(:cljs ^not-native reader :default reader)
+   #?(:clj ^StringBuilder buf :default ^StringBuffer buf)]
+  (if-let [c (r/next reader)]
+    (do (.append buf (char c))
+        (when-not (= c \\)
+          (read-to-boundary reader buf not-boundary?)))
+    ;; At least one char must be present after \
+    (r/throw-reader reader "Unexpected EOF")))
 
 (defn- symbol-node
   "Symbols allow for certain boundary characters that have
    to be handled explicitly."
-  [#?(:cljs ^not-native reader :default reader) value value-string]
-  (let [suffix (read-to-boundary reader #{\' \:})]
-    (if (empty? suffix)
+  [#?(:cljs ^not-native reader :default reader) value value-string
+   #?(:clj ^StringBuilder buf :default ^StringBuffer buf)]
+  (let [length-before (#?(:clj .length :cljs .getLength) buf)
+        _ (read-to-boundary reader buf not-boundary-allow-extra?)
+        length-after (#?(:clj .length :cljs .getLength) buf)]
+    (if (= length-before length-after)
       (ntoken/token-node value value-string)
-      (let [s (str value-string suffix)]
-        (ntoken/token-node
-          (r/read-symbol s)
-          s)))))
+      (let [s (str buf)]
+        (ntoken/token-node (r/read-symbol s) s)))))
 
 (defn- number-literal?
   "Checks whether the reader is at the start of a number literal
@@ -46,18 +54,20 @@
 (defn parse-token
   "Parse a single token. For example: symbol, number or character."
   [#?(:cljs ^not-native reader :default reader)]
-  (let [first-char (r/next reader)
-        s (->> (if (= first-char \\)
-                 (read-to-char-boundary reader)
-                 (read-to-boundary reader))
-               (str first-char))
+  (let [buf #?(:clj (StringBuilder.) :cljs (StringBuffer.))
+        first-char (r/next reader)
+        _ (.append buf (char first-char))
+        _ (if (= first-char \\)
+            (read-to-char-boundary reader buf)
+            (read-to-boundary reader buf not-boundary?))
+        s (str buf)
         v (if (or (= first-char \\) ;; character like \n or \newline
                   (= first-char \#) ;; something like ##Inf, ##Nan
                   (number-literal? s))
             (r/string->edn s)
             (r/read-symbol s))]
     (if (symbol? v)
-      (symbol-node reader v s)
+      (symbol-node reader v s buf)
       (ntoken/token-node v s))))
 
 (comment

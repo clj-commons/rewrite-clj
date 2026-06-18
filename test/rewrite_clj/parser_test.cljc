@@ -584,6 +584,7 @@
            ["[def"                  #".*Unexpected EOF.*"]
            ["#{def"                 #".*Unexpected EOF.*"]
            ["{:a 0"                 #".*Unexpected EOF.*"]
+           ["\\"                    #".*Unexpected EOF.*"]
            ["\"abc"                 #".*EOF.*"]
            ["#\"abc"                #".*Unexpected EOF.*"]
            ["(def x 0]"             #".*Unmatched delimiter.*"]
