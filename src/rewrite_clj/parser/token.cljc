@@ -22,10 +22,12 @@
 (defn- read-to-char-boundary
   [#?(:cljs ^not-native reader :default reader)
    #?(:clj ^StringBuilder buf :default ^StringBuffer buf)]
-  (let [c (r/next reader)]
-    (.append buf (char c))
-    (when-not (= c \\)
-      (read-to-boundary reader buf not-boundary?))))
+  (if-let [c (r/next reader)]
+    (do (.append buf (char c))
+        (when-not (= c \\)
+          (read-to-boundary reader buf not-boundary?)))
+    ;; At least one char must be present after \
+    (r/throw-reader reader "Unexpected EOF")))
 
 (defn- symbol-node
   "Symbols allow for certain boundary characters that have
@@ -38,7 +40,7 @@
     (if (= length-before length-after)
       (ntoken/token-node value value-string)
       (let [s (str buf)]
-        (ntoken/token-node (r/string->edn s) s)))))
+        (ntoken/token-node (r/read-symbol s) s)))))
 
 (defn- number-literal?
   "Checks whether the reader is at the start of a number literal
