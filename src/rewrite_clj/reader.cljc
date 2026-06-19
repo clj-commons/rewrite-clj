@@ -277,38 +277,45 @@
 ;; Once/if this isssue is fixed in in tools reader we can turf our work-around.
 
 #?(:clj
-   (deftype NewlineNormalizingReader
-       [rdr
-        ^:unsynchronized-mutable read-ahead-char
-        ^:unsynchronized-mutable user-peeked-char]
+   (deftype NewlineNormalizingReader [rdr]
      r/Reader
      (read-char [_reader]
-       (if-let [ch user-peeked-char]
-         (do (set! user-peeked-char nil) ch)
-         (let [ch (or read-ahead-char (r/read-char rdr))]
-           (when read-ahead-char (set! read-ahead-char nil))
-           (if (not (identical? \return ch))
-             ch
-             (let [read-ahead-ch (r/read-char rdr)]
-               (when (not (or (identical? \newline read-ahead-ch)
-                              (identical? \formfeed read-ahead-ch)))
-                 (set! read-ahead-char read-ahead-ch))
-               \newline)))))
+       (let [ch (r/read-char rdr)]
+         (if-not (identical? \return ch)
+           ;; Happy path
+           ch
+           ;; Complicated path
+           (let [ch2 (r/read-char rdr)]
+             (when-not (or (identical? \newline ch2)
+                           (identical? \formfeed ch2))
+               (r/unread rdr ch2))
+             \newline))))
 
-     (peek-char [reader]
-       (or user-peeked-char
-           (let [ch (.read-char reader)]
-             (set! user-peeked-char ch)
-             ch)))))
+     (peek-char [_reader]
+       (let [ch (r/peek-char rdr)]
+         (if (identical? \return ch)
+           \newline
+           ch)))
+
+     r/IPushbackReader
+     (unread [_reader ch] (r/unread rdr ch))))
 
 #?(:clj
    (defn newline-normalizing-reader
      "Normalizes the following line endings to LF (line feed - 0x0A):
       - LF (remains LF)
       - CRLF (carriage return 0x0D line feed 0x0A)
-      - CRFF (carriage return 0x0D form feed 0x0C)"
-     ^Closeable [rdr]
-     (NewlineNormalizingReader. (r/to-rdr rdr) nil nil)))
+      - CRFF (carriage return 0x0D form feed 0x0C)
+      IMPORTANT: `pbr` must be an IPushbackReader with a buffer of at least 2."
+     ^Closeable [pbr]
+     {:pre [(satisfies? r/IPushbackReader pbr)]}
+     (->NewlineNormalizingReader pbr)))
+
+(defn- indexing-reader
+  "Creates a new IndexingPushbackReader from a reader that is assumed to already
+  be a IPushbackReader, hence no double PushbackReader-wrapping is performed.`"
+  [pbr]
+  (r/->IndexingPushbackReader pbr 1 1 true nil 0 nil false))
 
 #?(:clj
    (defn file-reader
@@ -319,12 +326,12 @@
          (io/reader)
          (PushbackReader. 2)
          newline-normalizing-reader
-         (r/indexing-push-back-reader 2))))
+         indexing-reader)))
 
 (defn string-reader
   "Create reader for strings."
   [s]
   (-> s
-      r/string-push-back-reader
+      (r/string-push-back-reader 2)
       #?@(:clj [newline-normalizing-reader])
-      r/indexing-push-back-reader))
+      indexing-reader))
