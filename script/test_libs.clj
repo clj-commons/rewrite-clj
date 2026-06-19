@@ -340,7 +340,7 @@
             :test-cmds ["bb test"]}
            {:name "clojure-mcp"
             :platforms [:clj]
-            :version "0.3.1"
+            :version "0.4.0"
             :github-release {:repo "bhauman/clojure-mcp"
                              :via :tag
                              :version-prefix "v"}
