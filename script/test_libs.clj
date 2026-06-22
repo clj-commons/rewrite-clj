@@ -340,7 +340,7 @@
             :test-cmds ["bb test"]}
            {:name "clojure-mcp"
             :platforms [:clj]
-            :version "0.4.0"
+            :version "0.5.1"
             :github-release {:repo "bhauman/clojure-mcp"
                              :via :tag
                              :version-prefix "v"}
@@ -382,8 +382,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "mranderson"
-            :version "0.5.3"
-            :jdk 11 ;; Downgrade jdk from default, MrAnderson tests currently require the older jdk11
+            :version "0.6.0"
             :platforms [:clj]
             :github-release {:repo "benedekfazekas/mranderson"
                              :via :tag
@@ -443,7 +442,7 @@
             :github-release {:repo "NoahTheDuke/splint"
                              :version-prefix "v"
                              :via :tag}
-            :patch-fn splint-patch 
+            :patch-fn splint-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:dev:test:runner"]}
            {:name "test-doc-blocks"
