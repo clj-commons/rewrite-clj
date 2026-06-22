@@ -382,8 +382,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "mranderson"
-            :version "0.5.3"
-            :jdk 11 ;; Downgrade jdk from default, MrAnderson tests currently require the older jdk11
+            :version "0.6.0"
             :platforms [:clj]
             :github-release {:repo "benedekfazekas/mranderson"
                              :via :tag
