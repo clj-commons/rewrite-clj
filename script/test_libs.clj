@@ -340,7 +340,7 @@
             :test-cmds ["bb test"]}
            {:name "clojure-mcp"
             :platforms [:clj]
-            :version "0.4.0"
+            :version "0.5.1"
             :github-release {:repo "bhauman/clojure-mcp"
                              :via :tag
                              :version-prefix "v"}
@@ -443,7 +443,7 @@
             :github-release {:repo "NoahTheDuke/splint"
                              :version-prefix "v"
                              :via :tag}
-            :patch-fn splint-patch 
+            :patch-fn splint-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:dev:test:runner"]}
            {:name "test-doc-blocks"
