@@ -23,7 +23,7 @@
            :clojure-1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.5"}}}
            ;; Candidate release is :clojure-pre-* (ex. clojure-candidate-1.12.5-alpha1) (if any)
            ;; - none at this time
-           
+
            ;;
            ;; ClojureScript version we test with (and support)
            ;;
@@ -35,7 +35,7 @@
            ;;
            :nrepl
            {:extra-deps {nrepl/nrepl {:mvn/version "1.7.0"}
-                         cider/cider-nrepl {:mvn/version "0.59.0"}}
+                         cider/cider-nrepl {:mvn/version "0.60.0"}}
             :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
 
            :flowstorm
@@ -154,7 +154,7 @@
                       :extra-deps {lread/sci-test
                                    #_ {:local/root "/home/lee/proj/oss/lread/sci-test"}
                                    {:git/url "https://github.com/lread/sci-test.git"
-                                    :sha "c9992f0b9bf6792dbfcc2647207f1a8272695fe8"}}}
+                                    :sha "ad8b92686a7b91c09a6bd40ec0fb768ff6d4e1ce"}}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 
