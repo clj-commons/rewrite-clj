@@ -32,23 +32,34 @@
   (map #(list 'def (sci-ns-var-name %) (list 'sci/create-ns (symbol (str "'" %))))
        nses))
 
-(defn gen-sci-ns-map-code [pubs {:keys [:fn-wrappers]}]
+(defn ns-var [ns]
+  (symbol (str (string/replace (str ns) "." "-") "-vars")))
+
+(defn gen-sci-ns-vars-defns [pubs {:keys [:fn-wrappers]}]
+  ;; create fns to return vars only to avoid AOT-time "Method code too large!"
   (->> pubs
+       (sort-by first)
        (map (fn [[ns pubs]]
-              [(symbol (str "'" ns))
-               (->> pubs
-                    (map (fn [pub]
-                           [(symbol (str "'" (:name pub)))
-                            (let [sym (str ns "/" (:name pub))
-                                  wrapper (ffirst (filter (fn [[_ pats]] (matches-some-pat pats sym))
-                                                          fn-wrappers))]
-                              (if wrapper
-                                (list (symbol wrapper)
-                                      (symbol sym))
-                                (list (symbol 'sci/copy-var)
-                                      (symbol sym)
-                                      (symbol (sci-ns-var-name ns)))))]))
-                    (into (sorted-map)))]))
+              (list 'defn (ns-var ns) []
+                    (->> pubs
+                         (map (fn [pub]
+                                [(symbol (str "'" (:name pub)))
+                                 (let [sym (str ns "/" (:name pub))
+                                       wrapper (ffirst (filter (fn [[_ pats]] (matches-some-pat pats sym))
+                                                               fn-wrappers))]
+                                   (if wrapper
+                                     (list (symbol wrapper)
+                                           (symbol sym))
+                                     (list (symbol 'sci/copy-var)
+                                           (symbol sym)
+                                           (symbol (sci-ns-var-name ns)))))]))
+                         (into (sorted-map))))))))
+
+(defn ns-vars [pubs]
+  (->> pubs
+       (sort-by first)
+       (map first)
+       (map (fn [ns] {(symbol (str "'" ns)) (list (ns-var ns))}))
        (into (sorted-map))))
 
 (defn -main [ & _args ]
@@ -69,7 +80,8 @@
                                         '[sci-test.import :as import])
                                   nses)))
               (gen-sci-ns-defs nses)
-              (list (list 'def 'namespaces (gen-sci-ns-map-code pubs opts))))]
+              (gen-sci-ns-vars-defns pubs opts)
+              (list (list 'def 'namespaces (ns-vars pubs))))]
     (binding [pprint/*print-right-margin* 130
               pprint/*print-miser-width* 130]
       (let [out-file (io/file "target/generated/sci-test/src" (str (string/escape ns-name {\- "_" \. "/"}) ".clj"))]
