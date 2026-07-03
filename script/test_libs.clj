@@ -382,7 +382,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "mranderson"
-            :version "0.6.1"
+            :version "0.7.0"
             :platforms [:clj]
             :github-release {:repo "benedekfazekas/mranderson"
                              :via :tag
