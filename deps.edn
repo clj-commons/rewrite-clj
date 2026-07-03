@@ -21,8 +21,8 @@
            :clojure-1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
            :clojure-1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.4"}}}
            :clojure-1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.5"}}}
-           ;; Candidate release is :clojure-pre-* (ex. clojure-candidate-1.12.5-alpha1) (if any)
-           ;; - none at this time
+           ;; Candidate release is :clojure-pre-* (ex. clojure-candidate-1.13.0-alpha2) (if any)
+           :clojure-pre-1.13.0-alpha2 {:override-deps {org.clojure/clojure {:mvn/version "1.13.0-alpha2"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
