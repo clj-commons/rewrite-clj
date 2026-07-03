@@ -49,7 +49,7 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v7
-        
+
       - name: Setup
         uses: ./.github/workflows/shared-setup
         with:
@@ -58,7 +58,7 @@ jobs:
       - name: Install GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: ${{ matrix.java-version }}
+          version: ${{ matrix.java-version }}
           distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 

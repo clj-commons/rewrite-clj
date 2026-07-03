@@ -12,6 +12,7 @@
 
 (defn assert-min-version
   "After GraalVM 22.3.2, the Graal team moved to matching JDK version.
+  And after GraalVM 25, they now match LTS major version only.
   For now, we check for something at least with the new JDK version scheme."
   []
   (if-let [java-exe (find-graal-prog "java")]

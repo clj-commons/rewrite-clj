@@ -6,7 +6,7 @@
             [helper.main :as main]
             [lread.status-line :as status]))
 
-(def java-versions ["25.0.2"])
+(def java-versions ["25.1.3"])
 (def oses ["ubuntu" "macos" "windows"])
 
 (defn- ci-test-matrix []

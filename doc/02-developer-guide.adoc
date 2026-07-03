@@ -21,7 +21,7 @@ At this time we only test against the Community Edition.
 GitHub Actions test matrixes are fed from:
 
 * `bb ci-unit-tests matrix-for-ci` - unit tests
-* `bb ci-native-tests matrix-for-ci` - native image tests 
+* `bb ci-native-tests matrix-for-ci` - native image tests
 * `bb test-libs list --format=table` - lib tests
 
 == Prerequisites
@@ -30,7 +30,7 @@ GitHub Actions test matrixes are fed from:
 * Clojure v1.10.1.697 or above for `clojure` command
 ** Note that rewrite-clj v1 itself supports Clojure v1.8 and above
 * Babashka v0.3.7 or above
-* Current release of GraalVM for JDK 25, if you want to run GraalVM native image tests
+* Current release of GraalVM v25, if you want to run GraalVM native image tests
 
 === Windows Notes
 
