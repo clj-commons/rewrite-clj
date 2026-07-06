@@ -6,8 +6,8 @@
             [clojure.tools.reader :as rdr]
             [rewrite-clj.node :as node]
             [rewrite-clj.parser :as p])
-  #?(:clj (:import [clojure.lang ExceptionInfo]
-                   [java.io File])))
+  #?(:clj (:import [clojure.lang ExceptionInfo LineNumberingPushbackReader]
+                   [java.io File StringReader])))
 
 (deftest t-parsing-the-first-few-whitespaces
   (doseq [[ws parsed]
@@ -773,3 +773,8 @@
         m-str (pr-str m)
         m-sexpr (-> m-str p/parse-string node/sexpr)]
     (is (= (keys m) (keys m-sexpr)))))
+
+#?(:clj
+   (deftest one-char-pushback-reader
+     (testing "parsing doesn't crash if the provided PBR only has a buffer of 1 char"
+       (is (p/parse-all (LineNumberingPushbackReader. (StringReader. "1\n\n\n2")))))))
