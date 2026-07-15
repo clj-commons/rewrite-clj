@@ -314,7 +314,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -T:build ci"]}
            {:name "cljfmt"
-            :version "0.16.4"
+            :version "0.16.5"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :github-release {:repo "weavejester/cljfmt"
@@ -382,7 +382,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "mranderson"
-            :version "0.7.0"
+            :version "0.7.1"
             :platforms [:clj]
             :github-release {:repo "benedekfazekas/mranderson"
                              :via :tag

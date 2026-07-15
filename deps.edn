@@ -21,8 +21,8 @@
            :clojure-1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
            :clojure-1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.4"}}}
            :clojure-1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.5"}}}
-           ;; Candidate release is :clojure-pre-* (ex. clojure-candidate-1.13.0-alpha2) (if any)
-           :clojure-pre-1.13.0-alpha2 {:override-deps {org.clojure/clojure {:mvn/version "1.13.0-alpha3"}}}
+           ;; Candidate release is :clojure-pre-* (ex. clojure-pre-1.13.0) (if any)
+           :clojure-pre-1.13.0-alpha {:override-deps {org.clojure/clojure {:mvn/version "1.13.0-alpha4"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
@@ -35,7 +35,7 @@
            ;;
            :nrepl
            {:extra-deps {nrepl/nrepl {:mvn/version "1.7.0"}
-                         cider/cider-nrepl {:mvn/version "0.61.0"}}
+                         cider/cider-nrepl {:mvn/version "0.62.1"}}
             :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
 
            :flowstorm
