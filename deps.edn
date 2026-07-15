@@ -35,7 +35,7 @@
            ;;
            :nrepl
            {:extra-deps {nrepl/nrepl {:mvn/version "1.7.0"}
-                         cider/cider-nrepl {:mvn/version "0.61.0"}}
+                         cider/cider-nrepl {:mvn/version "0.62.1"}}
             :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]}
 
            :flowstorm
