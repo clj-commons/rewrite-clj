@@ -3,6 +3,7 @@
 (ns test-clj
   (:require [clojure.string :as str]
             [helper.clojure-versions :as clojure-versions]
+            [helper.jdk :as jdk]
             [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
@@ -31,21 +32,28 @@
 
 Options:
   -v, --clojure-version VERSION  Test with Clojure [%s] [default: %s]
+                                 When specifying all, will skip testing version if your JDK < min required.
   --help                         Show this help"
                         (str/join ", " cli-clojure-versions)
                         (first cli-clojure-versions)))
 
 (defn -main [& args]
   (when-let [opts (main/doc-arg-opt args-usage args)]
-    (let [clojure-version (get opts "--clojure-version")]
+    (let [env-jdk-version (jdk/version)
+          clojure-version (get opts "--clojure-version")]
       (if (not (some #{clojure-version} cli-clojure-versions))
         (status/die 1 args-usage)
         (let [clojure-versions (if (= "all" clojure-version)
                                  (clojure-versions/all)
                                  [(clojure-versions/lookup clojure-version)])]
           (doseq [v clojure-versions]
-            (run-unit-tests v)
-            (run-isolated-tests v))))))
+            (if (and (= "all" clojure-version)
+                     (< (:major env-jdk-version) (:min-jdk-major v)))
+              (status/line :warn "Skipping testing clojure version %s\nIt requires min JDK %s, found JDK %s"
+                           (:mvn-version v) (:min-jdk-major v) (:version env-jdk-version))
+              (do
+                (run-unit-tests v)
+                (run-isolated-tests v))))))))
   nil)
 
 (main/when-invoked-as-script
