@@ -113,8 +113,7 @@
             (status/line :detail "Total jobs found: %d" (count matrix))))))
 
 (defn run-tests
-  {:org.babashka/cli cli/base-opts}
-  [_opts]
+  []
   (let [cur-os (matrix-os)
         cur-jdk (jdk/version)
         cur-major-jdk (str (:major cur-jdk))
@@ -140,11 +139,13 @@
       (shell/command cmd))))
 
 (defn task
+  ;; TODO: IMO, this is an unusual an awkward CLI, only migrated as-is to test that new bb cli support
+  ;; can handle it.
   {:org.babashka/cli
    (merge cli/base-opts
           {:epilog "By default, will run all tests applicable to your current jdk and os."
            :cmd {"matrix-for-ci" {:exec-fn #'matrix-for-ci
-                                  :doc "Return a matrix for use within GitHub Actions workflow"}}
-           ;; TODO: Does not get invoked when no command specified
-           :exec-fn #'run-tests})}
-  [_opts])
+                                  :doc "Return a matrix for use within GitHub Actions workflow"}}})}
+  [_opts]
+  ;; we fall through to running tests when no command is provided
+  (run-tests))
