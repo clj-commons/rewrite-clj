@@ -1,6 +1,7 @@
 (ns lint-kondo
   (:require [babashka.fs :as fs]
             [clojure.string :as string]
+            [helper.cli :as cli]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -55,10 +56,11 @@
       (= 3 exit) (status/die exit "clj-kondo found one or more lint warnings")
       (> exit 0) (status/die exit "clj-kondo returned unexpected exit code"))))
 
+(def cli-opts (merge cli/base-opts
+                     {:spec {:rebuild {:coerce :boolean
+                                       :desc "Force rebuild of clj-kondo lint cache"}}}))
+
 (defn task
-  {:org.babashka/cli
-   {:restrict true :restrict-args true
-    :spec {:rebuild {:coerce :boolean
-                     :desc "Force rebuild of clj-kondo lint cache"}}}}
+  {:org.babashka/cli cli-opts}
   [opts]
   (lint opts))

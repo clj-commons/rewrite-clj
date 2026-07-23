@@ -1,5 +1,6 @@
 (ns lint-eastwood
-  (:require [helper.shell :as shell]
+  (:require [helper.cli :as cli]
+            [helper.shell :as shell]
             [lread.status-line :as status]))
 
 (defn lint []
@@ -7,6 +8,6 @@
   (shell/command "clojure -M:test-common:eastwood"))
 
 (defn task
-  {:org.babashka/cli {:restrict true :restrict-args true}}
+  {:org.babashka/cli cli/base-opts}
   []
   (lint))

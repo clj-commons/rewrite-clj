@@ -2,6 +2,7 @@
   (:require [babashka.fs :as fs]
             [clojure.java.io :as io]
             [clojure.string :as string]
+            [helper.cli :as cli]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -73,27 +74,21 @@
 
 (defn task
   {:org.babashka/cli
-   {:restrict true :restrict-args true
-    :spec {:env {:alias :e
-                 :coerce :string
-                 :desc (format "JavaScript Environment [%s]" (string/join ", " valid-envs))
-                 :default (first valid-envs)
-                 :validate {:pred #(some #{%} valid-envs)
-                            :ex-msg (fn [{:keys [value]}]
-                                      (str "Invalid JavaScript Environment: " value))}}
-           :optimizations {:alias :o
-                           :coerce :string
-                           :desc (format "ClojureScript Optimizations [%s]" (string/join ", " valid-optimizations))
-                           :default (first valid-optimizations)
-                           :validate {:pred #(some #{%} valid-optimizations)
-                                      :ex-msg (fn [{:keys [value]}]
-                                                (str "Invalid ClojureScript Optimization: " value))}}
-           :run-granularity {:alias :g
-                             :coerce :string
-                             :desc (format "Run Granularity [%s]" (string/join ", " valid-granularities))
-                             :default (first valid-granularities)
-                             :validate {:pred #(some #{%} valid-granularities)
-                                        :ex-msg (fn [{:keys [value]}]
-                                                  (str "Invalid Run Granularity: " value))}}}}}
+   (merge cli/base-opts
+          {:spec {:env {:alias :e
+                        :coerce :string
+                        :desc (format "JavaScript Environment [%s]" (string/join ", " valid-envs))
+                        :default (first valid-envs)
+                        :validate #(some #{%} valid-envs)}
+                  :optimizations {:alias :o
+                                  :coerce :string
+                                  :desc (format "ClojureScript Optimizations [%s]" (string/join ", " valid-optimizations))
+                                  :default (first valid-optimizations)
+                                  :validate #(some #{%} valid-optimizations)}
+                  :run-granularity {:alias :g
+                                    :coerce :string
+                                    :desc (format "Run Granularity [%s]" (string/join ", " valid-granularities))
+                                    :default (first valid-granularities)
+                                    :validate #(some #{%} valid-granularities)}}})}
   [opts]
   (run-tests opts))

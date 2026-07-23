@@ -1,5 +1,6 @@
 (ns helper.clojure-versions
   (:require [clojure.edn :as edn]
+            [clojure.string :as str]
             [version-clj.core :as version]
             [wevre.natural-compare :as natural-compare]))
 
@@ -38,3 +39,10 @@
   [version]
   (or (some #(when (= version (:version %)) %) (all))
       (throw (ex-info (str "Clojure version not found: " version) {}))))
+
+(defn cli-opt [cli-clojure-versions]
+  {:clojure-version {:alias :v
+                     :coerce :string
+                     :desc (format "Test with Clojure [%s]" (str/join ", " cli-clojure-versions))
+                     :default (first cli-clojure-versions)
+                     :validate #(some #{%} cli-clojure-versions)}})

@@ -1,8 +1,9 @@
 (ns clean
-  (:require [babashka.fs :as fs]))
+  (:require [babashka.fs :as fs]
+            [helper.cli :as cli]))
 
 (defn task
-  {:org.babashka/cli {:restrict true :restrict-args true}}
+  {:org.babashka/cli cli/base-opts}
   [_opts]
   (println "Deleting (d=deleted -=did not exist)")
   (run! (fn [d]

@@ -1,7 +1,7 @@
 (ns test-native
   (:require [babashka.fs :as fs]
             [clojure.java.io :as io]
-            [clojure.string :as str]
+            [helper.cli :as cli]
             [helper.clojure-versions :as clojure-versions]
             [helper.graal :as graal]
             [helper.os :as os]
@@ -20,14 +20,7 @@
 
 (defn task
   {:org.babashka/cli
-   {:restrict true :restrict-args true
-    :spec {:clojure-version {:alias :v
-                             :coerce :string
-                             :desc (format "Test with Clojure [%s]" (str/join ", " cli-clojure-versions))
-                             :default (first cli-clojure-versions)
-                             :validate {:pred #(some #{%} cli-clojure-versions)
-                                        :ex-msg (fn [{:keys [value]}]
-                                                  (str "Invalid clojure version: " value))}}}}}
+   (merge cli/base-opts {:spec (clojure-versions/cli-opt cli-clojure-versions)})}
   [{:keys [clojure-version]}]
   (graal/assert-min-version)
   (let [clojure-version (clojure-versions/lookup clojure-version)

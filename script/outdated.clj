@@ -1,5 +1,6 @@
 (ns outdated
   (:require [clojure.java.io :as io]
+            [helper.cli :as cli]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -21,7 +22,7 @@
       (status/line :detail "(warning: deps are only checked against installed ./node_modules)"))))
 
 (defn task
-  {:org.babashka/cli {:restrict true :restrict-args true}}
+  {:org.babashka/cli cli/base-opts}
   [_opts]
   (check-clojure)
   (check-nodejs))

@@ -1,5 +1,6 @@
 (ns test-shadow-cljs
-  (:require [helper.jdk :as jdk]
+  (:require [helper.cli :as cli]
+            [helper.jdk :as jdk]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -7,7 +8,7 @@
 (def compiled-tests "target/shadow-cljs/node-test.js")
 
 (defn task
-  {:org.babashka/cli {:restrict true :restrict-args true}}
+  {:org.babashka/cli cli/base-opts}
   [_opts]
   (let [{:keys [version major]} (jdk/version)]
     (when (<= major 8)

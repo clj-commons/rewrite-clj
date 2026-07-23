@@ -2,6 +2,7 @@
   (:require [cheshire.core :as json]
             [clojure.string :as str]
             [doric.core :as doric]
+            [helper.cli :as cli]
             [helper.clojure-versions :as clojure-versions]
             [lread.status-line :as status]))
 
@@ -22,13 +23,11 @@
 
 (defn matrix-for-ci
   {:org.babashka/cli
-   {:restrict true :restrict-args true
-    :spec {:format {:coerce :string
-                    :desc (format "Output format [%s]" (str/join ", " valid-formats))
-                    :default (first valid-formats)
-                    :validate {:pred #(some #{%} valid-formats)
-                               :ex-msg (fn [{:keys [value]}]
-                                         (str "Invalid format: " value))}}}}}
+   (merge cli/base-opts
+          {:spec {:format {:coerce :string
+                           :desc (format "Output format [%s]" (str/join ", " valid-formats))
+                           :default (first valid-formats)
+                           :validate #(some #{%} valid-formats)}}})}
   [{:keys [format]}]
   (let [matrix (ci-test-matrix)]
     (if (= "json" format)
@@ -39,6 +38,7 @@
 
 (defn task
   {:org.babashka/cli
-   {:cmd {"matrix-for-ci" {:exec-fn #'matrix-for-ci
-                           :doc "Return a matrix for use within GitHub Actions workflow"}}}}
+   (merge cli/base-opts
+          {:cmd {"matrix-for-ci" {:exec-fn #'matrix-for-ci
+                                  :doc "Return a matrix for use within GitHub Actions workflow"}}})}
   [_opts])

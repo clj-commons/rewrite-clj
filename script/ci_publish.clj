@@ -5,6 +5,7 @@
   - rate of change here should be less/different than in publish namespace"
   (:require [babashka.tasks :as t]
             [build-shared]
+            [helper.cli :as cli]
             [lread.status-line :as status]))
 
 (def ^:private changelog-url (format "https://github.com/%s/blob/main/CHANGELOG.adoc" (build-shared/lib-github-coords)))
@@ -39,7 +40,7 @@
 ;;
 
 (defn clojars-deploy
-  {:org.babashka/cli {:restrict true :restrict-args true}}
+  {:org.babashka/cli cli/base-opts}
   [_opts]
   (assert-on-ci)
   (System/exit 32)
@@ -47,7 +48,7 @@
   (t/shell "clojure -T:build:deploy deploy"))
 
 (defn github-create-release
-  {:org.babashka/cli {:restrict true :restrict-args true}}
+  {:org.babashka/cli cli/base-opts}
   [_opts]
   (assert-on-ci)
   (let [{:keys [tag]} (analyze-ci-tag)]
@@ -57,7 +58,7 @@
              "--notes" (format "[Changelog](%s#%s)" changelog-url tag))))
 
 (defn cljdoc-request-build
-  {:org.babashka/cli {:restrict true :restrict-args true}}
+  {:org.babashka/cli cli/base-opts}
   [_opts]
   (assert-on-ci)
   (let [{:keys [version]} (analyze-ci-tag)

@@ -3,6 +3,7 @@
             [cheshire.core :as json]
             [clojure.string :as string]
             [doric.core :as doric]
+            [helper.cli :as cli]
             [helper.jdk :as jdk]
             [helper.os :as os]
             [helper.shell :as shell]
@@ -96,14 +97,13 @@
 
 (defn matrix-for-ci
   {:org.babashka/cli
-   {:restrict true :restrict-args true
-    :epilog "epilog test"
-    :spec {:format {:coerce :string
-                    :desc (format "Output format [%s]" (string/join ", " valid-formats))
-                    :default (first valid-formats)
-                    :validate {:pred #(some #{%} valid-formats)
-                               :ex-msg (fn [{:keys [value]}]
-                                         (str "Invalid format: " value))}}}}}
+   (merge cli/base-opts
+          {:spec {:format {:coerce :string
+                           :desc (format "Output format [%s]" (string/join ", " valid-formats))
+                           :default (first valid-formats)
+                           :validate {:pred #(some #{%} valid-formats)
+                                      :ex-msg (fn [{:keys [value]}]
+                                                (str "Invalid format: " value))}}}})}
   [{:keys [format]}]
   (let [matrix (ci-test-matrix)]
     (if (= "json" format)
@@ -113,7 +113,7 @@
             (status/line :detail "Total jobs found: %d" (count matrix))))))
 
 (defn run-tests
-  {:org.babashka/cli {:restrict true :restrict-args true}}
+  {:org.babashka/cli cli/base-opts}
   [_opts]
   (let [cur-os (matrix-os)
         cur-jdk (jdk/version)
@@ -139,11 +139,12 @@
     (doseq [{:keys [cmd]} tests-to-run]
       (shell/command cmd))))
 
-
 (defn task
-  {:org.babashka/cli {:epilog "By default, will run all tests applicable to your current jdk and os."
-                      :cmd {"matrix-for-ci" {:exec-fn #'matrix-for-ci
-                                             :doc "Return a matrix for use within GitHub Actions workflow"}}
-                      ;; TODO: Does not get invoked
-                      :exec-fn #'run-tests}}
+  {:org.babashka/cli
+   (merge cli/base-opts
+          {:epilog "By default, will run all tests applicable to your current jdk and os."
+           :cmd {"matrix-for-ci" {:exec-fn #'matrix-for-ci
+                                  :doc "Return a matrix for use within GitHub Actions workflow"}}
+           ;; TODO: Does not get invoked when no command specified
+           :exec-fn #'run-tests})}
   [_opts])

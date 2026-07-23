@@ -1,5 +1,5 @@
 (ns test-clj
-  (:require [clojure.string :as str]
+  (:require [helper.cli :as cli]
             [helper.clojure-versions :as clojure-versions]
             [helper.jdk :as jdk]
             [helper.shell :as shell]
@@ -27,14 +27,8 @@
 
 (defn task
   {:org.babashka/cli
-   {:restrict true :restrict-args true
-    :spec {:clojure-version {:alias :v
-                             :coerce :string
-                             :desc (format "Test with Clojure [%s]" (str/join ", " cli-clojure-versions))
-                             :default (first cli-clojure-versions)
-                             :validate {:pred #(some #{%} cli-clojure-versions)
-                                        :ex-msg (fn [{:keys [value]}]
-                                                  (str "Invalid clojure version: " value))}}}}}
+   (merge cli/base-opts
+          {:spec (clojure-versions/cli-opt cli-clojure-versions)})}
   [{:keys [clojure-version]}]
   (let [env-jdk-version (jdk/version)
         clojure-versions (if (= "all" clojure-version)

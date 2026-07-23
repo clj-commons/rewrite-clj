@@ -8,6 +8,7 @@
             [clojure.set :as cset]
             [clojure.string :as string]
             [doric.core :as doric]
+            [helper.cli :as cli]
             [helper.deps-patcher :as deps-patcher]
             [helper.shell :as shell]
             [io.aviso.ansi :as ansi]
@@ -590,13 +591,11 @@
 
 (defn list-libs
   {:org.babashka/cli
-   {:restrict true :restrict-args true
-    :spec {:format {:coerce :string
-                    :desc (format "Output format [%s]" (string/join ", " valid-list-formats))
-                    :default (first valid-list-formats)
-                    :validate {:pred #(some #{%} valid-list-formats)
-                               :ex-msg (fn [{:keys [value]}]
-                                         (str "Invalid format: " value))}}}}}
+   (merge cli/base-opts
+          {:spec {:format {:coerce :string
+                           :desc (format "Output format [%s]" (string/join ", " valid-list-formats))
+                           :default (first valid-list-formats)
+                           :validate #(some #{%} valid-list-formats)}}})}
   [{:keys [format]}]
   (let [libs-for-ci (->> libs
                          (map (fn [{:keys [name jdk requires]}]
@@ -610,39 +609,34 @@
           (status/line :detail (doric/table [:lib-name :jdk :requires] libs-for-ci))
           (status/line :detail (str "available libs: " (string/join " " (map :name libs)))))))
 
+(def cli-lib-names-spec {:spec {:lib-names {:coerce [:string]
+                                            :positional true
+                                            :desc "Library name(s), omit for all"
+                                            :validate {:pred #(not (seq (cset/difference (set %) (set valid-libs))))
+                                                       :ex-msg (fn [{:keys [value arg] :as boo}]
+                                                                 (println "boo" boo)
+                                                                 (str "Invalid " arg ": "
+                                                                      (string/join ", " (sort (cset/difference (set value) (set valid-libs))))))}}}
+                         :args->opts [:lib-names]})
+
 (defn run-libs
   {:org.babashka/cli
-   {:restrict true :restrict-args true
-    :spec {:lib-names {:coerce [:string]
-                       :positional true
-                       :desc "Library name(s), omit for all"
-                       :validate {:pred #(not (seq (cset/difference (set %) (set valid-libs))))
-                                  :ex-msg (fn [{:keys [value]}]
-                                            (str "Invalid lib-name(s): "
-                                                 (string/join ", " (sort (cset/difference (set value) (set valid-libs))))))}}}
-    :args->opts [:lib-names]}}
+   (merge cli/base-opts cli-lib-names-spec)}
   [{:keys [lib-names]}]
   (let [libs (requested-libs lib-names)]
     (run-tests libs)))
 
 (defn outdated-libs
   {:org.babashka/cli
-   {:restrict true :restrict-args true
-    :spec {:lib-names {:coerce [:string]
-                       :positional true
-                       :desc "Library name(s), omit for all"
-                       :validate {:pred #(not (seq (cset/difference (set %) (set valid-libs))))
-                                  :ex-msg (fn [{:keys [value]}]
-                                            (str "Invalid lib-name(s): "
-                                                 (string/join ", " (sort (cset/difference (set value) (set valid-libs))))))}}}
-    :args->opts [:lib-names]}}
+   (merge cli/base-opts cli-lib-names-spec)}
   [{:keys [lib-names]}]
   (let [libs (requested-libs lib-names)]
     (report-outdated libs)))
 
 (defn task
   {:org.babashka/cli
-   {:cmd {"list"     {:exec-fn #'list-libs :doc "List libs we can test against"}
-          "run"      {:exec-fn #'run-libs   :doc "Run tests for specified libs"}
-          "outdated" {:exec-fn #'outdated-libs :doc "Check specified libs for newer versions"}}}}
+   (merge cli/base-opts
+          {:cmd {"list"     {:exec-fn #'list-libs :doc "List libs we can test against"}
+                 "run"      {:exec-fn #'run-libs   :doc "Run tests for specified libs"}
+                 "outdated" {:exec-fn #'outdated-libs :doc "Check specified libs for newer versions"}}})}
   [_opts])
