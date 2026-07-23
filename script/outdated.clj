@@ -1,8 +1,5 @@
-#!/usr/bin/env bb
-
 (ns outdated
   (:require [clojure.java.io :as io]
-            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -23,11 +20,8 @@
       (status/line :detail "All Node.js dependencies seem up to date.")
       (status/line :detail "(warning: deps are only checked against installed ./node_modules)"))))
 
-(defn -main[& args]
-  (when (main/doc-arg-opt args)
-    (check-clojure)
-    (check-nodejs))
-  nil)
-
-(main/when-invoked-as-script
- (apply -main *command-line-args*))
+(defn task
+  {:org.babashka/cli {:restrict true :restrict-args true}}
+  [_opts]
+  (check-clojure)
+  (check-nodejs))

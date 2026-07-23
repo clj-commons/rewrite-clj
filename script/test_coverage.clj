@@ -1,8 +1,5 @@
-#!/usr/bin/env bb
-
 (ns test-coverage
-  (:require [helper.main :as main]
-            [helper.shell :as shell]
+  (:require [helper.shell :as shell]
             [lread.status-line :as status]))
 
 (defn generate-doc-tests []
@@ -17,11 +14,8 @@
                  "--no-randomize"
                  "--reporter" "documentation"))
 
-(defn -main [& args]
-  (when (main/doc-arg-opt args)
-    (generate-doc-tests)
-    (run-clj-doc-tests))
-  nil)
-
-(main/when-invoked-as-script
- (apply -main *command-line-args*))
+(defn task
+  {:org.babashka/cli {:restrict true :restrict-args true}}
+  [_opts]
+  (generate-doc-tests)
+  (run-clj-doc-tests))

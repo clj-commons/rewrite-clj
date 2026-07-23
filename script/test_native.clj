@@ -1,12 +1,9 @@
-#!/usr/bin/env bb
-
 (ns test-native
   (:require [babashka.fs :as fs]
             [clojure.java.io :as io]
             [clojure.string :as str]
             [helper.clojure-versions :as clojure-versions]
             [helper.graal :as graal]
-            [helper.main :as main]
             [helper.os :as os]
             [helper.shell :as shell]
             [lread.status-line :as status]))
@@ -21,48 +18,40 @@
 
 (def cli-clojure-versions (mapv :version (clojure-versions/for-native)))
 
-(def args-usage (format "Valid args: [options]
-
-Options:
-  -v, --clojure-version VERSION  Test with Clojure [%s] [default: %s]
-  --help                         Show this help"
-                        (str/join ", " cli-clojure-versions)
-                        (first cli-clojure-versions)))
-
-(defn validate-opts [opts]
-  (when (not (some #{(get opts "--clojure-version")} cli-clojure-versions))
-        (status/die 1 args-usage)))
-
-(defn -main [& args]
-  (when-let [opts (main/doc-arg-opt args-usage args)]
-    (validate-opts opts)
-    (graal/assert-min-version)
-    (let [clojure-version (clojure-versions/lookup (get opts "--clojure-version"))
-          native-image-xmx "6g"
-          target-path "target"
-          target-exe "rewrite-clj-test"
-          full-target-exe (str target-path "/" target-exe (when (= :win (os/get-os)) ".exe"))]
-      (status/line :head "Creating native image for test")
-      (status/line :detail "java -version")
-      (shell/command "java -version")
-      (status/line :detail (str "\nnative-image max memory: " native-image-xmx))
-      (let [graal-native-image (graal/find-graal-native-image)
-            test-runner-dir "target/generated/graal"]
-        (graal/clean)
-        (generate-test-runner test-runner-dir)
-        (let [classpath (graal/compute-classpath (str "test-common:graal:native-test:" (:alias clojure-version)))]
-          (graal/aot-compile-sources classpath "clj-graal.test-runner")
-          (graal/run-native-image {:graal-native-image graal-native-image
-                                   :target-path target-path
-                                   :target-exe target-exe
-                                   :classpath classpath
-                                   :native-image-xmx native-image-xmx
-                                   :entry-class "clj_graal.test_runner"})))
-      (status/line :head "Native image built")
-      (status/line :detail "built: %s, %d bytes" full-target-exe (.length (io/file full-target-exe)))
-      (status/line :head "Running tests natively")
-      (shell/command full-target-exe)))
-  nil)
-
-(main/when-invoked-as-script
- (apply -main *command-line-args*))
+(defn task
+  {:org.babashka/cli
+   {:restrict true :restrict-args true
+    :spec {:clojure-version {:alias :v
+                             :coerce :string
+                             :desc (format "Test with Clojure [%s]" (str/join ", " cli-clojure-versions))
+                             :default (first cli-clojure-versions)
+                             :validate {:pred #(some #{%} cli-clojure-versions)
+                                        :ex-msg (fn [{:keys [value]}]
+                                                  (str "Invalid clojure version: " value))}}}}}
+  [{:keys [clojure-version]}]
+  (graal/assert-min-version)
+  (let [clojure-version (clojure-versions/lookup clojure-version)
+        native-image-xmx "6g"
+        target-path "target"
+        target-exe "rewrite-clj-test"
+        full-target-exe (str target-path "/" target-exe (when (= :win (os/get-os)) ".exe"))]
+    (status/line :head "Creating native image for test")
+    (status/line :detail "java -version")
+    (shell/command "java -version")
+    (status/line :detail (str "\nnative-image max memory: " native-image-xmx))
+    (let [graal-native-image (graal/find-graal-native-image)
+          test-runner-dir "target/generated/graal"]
+      (graal/clean)
+      (generate-test-runner test-runner-dir)
+      (let [classpath (graal/compute-classpath (str "test-common:graal:native-test:" (:alias clojure-version)))]
+        (graal/aot-compile-sources classpath "clj-graal.test-runner")
+        (graal/run-native-image {:graal-native-image graal-native-image
+                                 :target-path target-path
+                                 :target-exe target-exe
+                                 :classpath classpath
+                                 :native-image-xmx native-image-xmx
+                                 :entry-class "clj_graal.test_runner"})))
+    (status/line :head "Native image built")
+    (status/line :detail "built: %s, %d bytes" full-target-exe (.length (io/file full-target-exe)))
+    (status/line :head "Running tests natively")
+    (shell/command full-target-exe)))

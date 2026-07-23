@@ -1,5 +1,3 @@
-#!/usr/bin/env bb
-
 (ns doc-update-readme
   "Script to update README.adoc to credit contributors
   Run manually as needed."
@@ -7,7 +5,6 @@
             [clojure.edn :as edn]
             [clojure.string :as string]
             [etaoin.api :as etaoin]
-            [helper.main :as main]
             [hiccup.util :as hu]
             [hiccup2.core :as h]
             [lread.status-line :as status]
@@ -210,7 +207,9 @@
         (status/die 1 "Found duplicate github-id entries: %s" (into [] dupes))))
     people))
 
-(defn -main [& _args]
+(defn task
+  {:org.babashka/cli {:restrict true :restrict-args true}}
+  [_opts]
   (let [readme-filename "README.adoc"
         image-opts {:image-width 250
                     :images-dir "./doc/generated/contributors"}
@@ -222,6 +221,3 @@
     (update-readme-file! people readme-filename image-opts)
     (status/line :detail "SUCCESS"))
   (shutdown-agents))
-
-(main/when-invoked-as-script
- (apply -main *command-line-args*))

@@ -1,12 +1,13 @@
 (ns lint
-  (:require [helper.main :as main]
-            [lint-eastwood :as eastwood]
+  (:require [lint-eastwood :as eastwood]
             [lint-kondo :as kondo]))
 
-(defn -main [& args]
-  (when (main/doc-arg-opt kondo/args-usage args)
-    (apply kondo/-main args)
-    (eastwood/-main)))
-
-(main/when-invoked-as-script
- (apply -main *command-line-args*))
+(defn task
+  ;; TODO: repeated in lint-kondo, can I DRY?
+  {:org.babashka/cli
+   {:restrict true :restrict-args true
+    :spec {:rebuild {:coerce :boolean
+                     :desc "Force rebuild of clj-kondo lint cache"}}}}
+  [opts]
+  (kondo/lint opts)
+  (eastwood/lint))

@@ -3,7 +3,6 @@
             [clojure.string :as str]
             [doric.core :as doric]
             [helper.clojure-versions :as clojure-versions]
-            [helper.main :as main]
             [lread.status-line :as status]))
 
 (def java-versions ["25.1.3"])
@@ -19,25 +18,21 @@
      :os os
      :java-version java-version}))
 
-(def args-usage "Valid args:
-  matrix-for-ci [--format=json]
-  --help
+(def valid-formats ["json" "table"])
 
-Commands:
-  matrix-for-ci Return a matrix for use within GitHub Actions workflow
-
-Options:
-  --help    Show this help")
-
-(defn -main [& args]
-  (when-let [opts (main/doc-arg-opt args-usage args)]
-    (let [matrix (ci-test-matrix)]
-      (if (= "json" (get opts "--format"))
-        (status/line :detail (json/generate-string matrix))
-        (do
-          (status/line :detail (doric/table [:os :java-version :desc :cmd] matrix))
-          (status/line :detail "Total jobs found: %d" (count matrix))))))
-  nil)
-
-(main/when-invoked-as-script
- (apply -main *command-line-args*))
+(defn task
+  {:org.babashka/cli
+   {:restrict true :restrict-args true
+    :spec {:format {:coerce :string
+                    :desc (format "Output format [%s]" (str/join ", " valid-formats))
+                    :default (first valid-formats)
+                    :validate {:pred #(some #{%} valid-formats)
+                               :ex-msg (fn [{:keys [value]}]
+                                         (str "Invalid format: " value))}}}}}
+  [{:keys [format]}]
+  (let [matrix (ci-test-matrix)]
+    (if (= "json" format)
+      (status/line :detail (json/generate-string matrix))
+      (do
+        (status/line :detail (doric/table [:os :java-version :desc :cmd] matrix))
+        (status/line :detail "Total jobs found: %d" (count matrix))))))

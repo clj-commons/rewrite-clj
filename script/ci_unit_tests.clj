@@ -1,12 +1,9 @@
-#!/usr/bin/env bb
-
 (ns ci-unit-tests
   (:require [babashka.fs :as fs]
             [cheshire.core :as json]
             [clojure.string :as string]
             [doric.core :as doric]
             [helper.jdk :as jdk]
-            [helper.main :as main]
             [helper.os :as os]
             [helper.shell :as shell]
             [lread.status-line :as status]))
@@ -95,51 +92,50 @@
   (doseq [dir ["target" ".cpcache" ".shadow-cljs"]]
     (fs/delete-tree dir)))
 
-(def args-usage "Valid args:
-  [matrix-for-ci [--format=json]]
-  --help
+(def valid-formats ["json" "table"])
 
-Commands:
-  matrix-for-ci Return a matrix for use within GitHub Actions workflow
-
-Options:
-  --help    Show this help
-
-By default, will run all tests applicable to your current jdk and os.")
-
-(defn -main [& args]
-  (when-let [opts (main/doc-arg-opt args-usage args)]
-    (if (get opts "matrix-for-ci")
-      (let [matrix (ci-test-matrix)]
-        (if (= "json" (get opts "--format"))
+(defn matrix-for-ci
+  {:org.babashka/cli
+   {:restrict true :restrict-args true
+    :epilog "epilog test"
+    :spec {:format {:coerce :string
+                    :desc (format "Output format [%s]" (string/join ", " valid-formats))
+                    :default (first valid-formats)
+                    :validate {:pred #(some #{%} valid-formats)
+                               :ex-msg (fn [{:keys [value]}]
+                                         (str "Invalid format: " value))}}}}}
+  [{:keys [format]}]
+  (let [matrix (ci-test-matrix)]
+    (if (= "json" format)
           (status/line :detail (json/generate-string matrix))
           (do
             (status/line :detail (doric/table [:os :jdk :desc :cmd :requires] matrix))
-            (status/line :detail "Total jobs found: %d" (count matrix)))))
-      (let [cur-os (matrix-os)
-            cur-jdk (jdk/version)
-            cur-major-jdk (str (:major cur-jdk))
-            ci-jdks (get os-jdks cur-os)
-            test-list (local-test-list cur-os cur-major-jdk)
-            tests-skipped (filter :skip-reasons test-list)
-            tests-to-run (remove :skip-reasons test-list)]
-        (when (not (some #{cur-major-jdk} ci-jdks))
-          (status/line :warn "CI runs only on jdks %s on %s OS but you are on jdk %s\nWe'll run tests anyway."
-                       ci-jdks cur-os (:version cur-jdk)))
+            (status/line :detail "Total jobs found: %d" (count matrix))))))
 
-        (status/line :head "Test plan")
-        (status/line :detail "Found %d runnable tests for jdk %s on %s:"
-                     (count tests-to-run) cur-major-jdk cur-os)
-        (doseq [{:keys [cmd]} tests-to-run]
-          (status/line :detail (str " " cmd)))
-        (doseq [{:keys [cmd skip-reasons]} tests-skipped]
-          (status/line :warn (string/join "\n* "
-                                          (concat [(str "Skipping: " cmd)]
-                                                  skip-reasons))))
-        (clean)
-        (doseq [{:keys [cmd]} tests-to-run]
-          (shell/command cmd)))))
-  nil)
+(defn run-tests
+  ;; TODO: Had to omit restrict-args true for things to work
+  {:org.babashka/cli {:restrict true}}
+  [_opts]
+  (let [cur-os (matrix-os)
+        cur-jdk (jdk/version)
+        cur-major-jdk (str (:major cur-jdk))
+        ci-jdks (get os-jdks cur-os)
+        test-list (local-test-list cur-os cur-major-jdk)
+        tests-skipped (filter :skip-reasons test-list)
+        tests-to-run (remove :skip-reasons test-list)]
+    (when (not (some #{cur-major-jdk} ci-jdks))
+      (status/line :warn "CI runs only on jdks %s on %s OS but you are on jdk %s\nWe'll run tests anyway."
+                   ci-jdks cur-os (:version cur-jdk)))
 
-(main/when-invoked-as-script
- (apply -main *command-line-args*))
+    (status/line :head "Test plan")
+    (status/line :detail "Found %d runnable tests for jdk %s on %s:"
+                 (count tests-to-run) cur-major-jdk cur-os)
+    (doseq [{:keys [cmd]} tests-to-run]
+      (status/line :detail (str " " cmd)))
+    (doseq [{:keys [cmd skip-reasons]} tests-skipped]
+      (status/line :warn (string/join "\n* "
+                                      (concat [(str "Skipping: " cmd)]
+                                              skip-reasons))))
+    (clean)
+    (doseq [{:keys [cmd]} tests-to-run]
+      (shell/command cmd))))

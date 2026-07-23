@@ -1,18 +1,12 @@
-#!/usr/bin/env bb
-
 (ns lint-eastwood
-  (:require [helper.main :as main]
-            [helper.shell :as shell]
+  (:require [helper.shell :as shell]
             [lread.status-line :as status]))
 
-(defn- lint []
+(defn lint []
   (status/line :head "eastwood: linting")
   (shell/command "clojure -M:test-common:eastwood"))
 
-(defn -main [& args]
-  (when (main/doc-arg-opt args)
-    (lint))
-  nil)
-
-(main/when-invoked-as-script
- (apply -main *command-line-args*))
+(defn task
+  {:org.babashka/cli {:restrict true :restrict-args true}}
+  []
+  (lint))

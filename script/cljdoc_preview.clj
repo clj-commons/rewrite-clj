@@ -1,15 +1,11 @@
-#!/usr/bin/env bb
-
 (ns cljdoc-preview
   (:require [babashka.fs :as fs]
             [babashka.http-client :as http]
             [build-shared]
             [clojure.java.browse :as browse]
             [clojure.string :as string]
-            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
-
 ;;
 ;; constants
 ;;
@@ -203,51 +199,28 @@
 (defn cleanup-resources []
   (fs/delete-tree cljdoc-db-dir))
 
-(def args-usage "Valid args: (start|ingest|view|stop|status|--help)
+(defn- canary-version [] (str (build-shared/lib-version) "-cljdoc-preview"))
 
-Commands:
-  start   Start docker containers supporting cljdoc preview
-  ingest  Locally publishes your project for cljdoc preview
-  view    Opens cljdoc preview in your default browser
-  stop    Stops docker containers supporting cljdoc preview
-  status  Status of docker containers supporting cljdoc preview
-
-Options:
-  --help  Show this help
-
-Must be run from project root directory.")
-
-(defn -main [& args]
+(defn start [_opts]
   (check-prerequisites)
-  (let [canary-version (str (build-shared/lib-version) "-cljdoc-preview")]
-    (when-let [opts (main/doc-arg-opt args-usage args)]
-      (cond
-        (get opts "start")
-        (do
-          (start-cljdoc-server cljdoc-container)
-          nil)
+  (start-cljdoc-server cljdoc-container))
 
-        (get opts "ingest")
-        (do
-          (git-warnings)
-          (local-install canary-version)
-          (cljdoc-ingest cljdoc-container (get-project) canary-version)
-          nil)
+(defn ingest [_opts]
+  (check-prerequisites)
+  (git-warnings)
+  (local-install canary-version)
+  (cljdoc-ingest cljdoc-container (get-project) canary-version))
 
-        (get opts "view")
-        (do
-          (wait-for-server cljdoc-container)
-          (view-in-browser (str "http://localhost:" (:port cljdoc-container) "/d/" (get-project) "/" canary-version))
-          nil)
+(defn view [_opts]
+  (check-prerequisites)
+  (wait-for-server cljdoc-container)
+  (view-in-browser (str "http://localhost:" (:port cljdoc-container) "/d/" (get-project) "/" canary-version)))
 
-        (get opts "status")
-        (status-server-print cljdoc-container)
+(defn stop [_opts]
+  (check-prerequisites)
+  (stop-server cljdoc-container)
+  (cleanup-resources))
 
-        (get opts "stop")
-        (do
-          (stop-server cljdoc-container)
-          (cleanup-resources)
-          nil)))))
-
-(main/when-invoked-as-script
- (apply -main *command-line-args*))
+(defn status [_opts]
+  (check-prerequisites)
+  (status-server-print cljdoc-container))

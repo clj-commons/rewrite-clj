@@ -1,8 +1,6 @@
-#!/usr/bin/env bb
-
 (ns test-doc
   (:require [babashka.fs :as fs]
-            [helper.main :as main]
+            [clojure.string :as str]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -29,27 +27,26 @@
                    "--dir" "target/test-doc-blocks/test"
                    "--out" out-dir)))
 
-(def allowed-platforms ["clj" "cljs"])
+(def valid-platforms ["clj" "cljs"])
 
-(def args-usage "Valid args: [options]
+(def cli-valid-platforms (conj valid-platforms "all"))
 
-Options:
-  -p, --platform PLATFORM  Test against [clj cljs all]  [default: all]
-  --help                         Show this help")
-
-(defn -main [& args]
-  (when-let [opts (main/doc-arg-opt args-usage args)]
-    (let [platform (get opts "--platform")]
-      (if (not (some #{platform} (conj allowed-platforms "all")))
-        (status/die 1 args-usage)
-        (let [platforms (if (= "all" platform)
-                          allowed-platforms
-                          [platform])]
-          (generate-doc-tests)
-          (doseq [p platforms]
-            (case p
-              "clj" (run-clj-doc-tests)
-              "cljs" (run-cljs-doc-tests))))))))
-
-(main/when-invoked-as-script
- (apply -main *command-line-args*))
+(defn task
+  {:org.babashka/cli
+   {:restrict true :restrict-args true
+    :spec {:platform {:alias :p
+                      :coerce :string
+                      :desc (format "Test against [%s]" (str/join ", " cli-valid-platforms))
+                      :default (last cli-valid-platforms)
+                      :validate {:pred #(some #{%} cli-valid-platforms)
+                                 :ex-msg (fn [{:keys [value]}]
+                                           (str "Invalid platform: " value))}}}}}
+  [{:keys [platform]}]
+  (let [platforms (if (= "all" platform)
+                    valid-platforms
+                    [platform])]
+    (generate-doc-tests)
+    (doseq [p platforms]
+      (case p
+        "clj" (run-clj-doc-tests)
+        "cljs" (run-cljs-doc-tests)))))
