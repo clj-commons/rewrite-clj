@@ -113,8 +113,7 @@
             (status/line :detail "Total jobs found: %d" (count matrix))))))
 
 (defn run-tests
-  ;; TODO: Had to omit restrict-args true for things to work
-  {:org.babashka/cli {:restrict true}}
+  {:org.babashka/cli {:restrict true :restrict-args true}}
   [_opts]
   (let [cur-os (matrix-os)
         cur-jdk (jdk/version)
@@ -139,3 +138,12 @@
     (clean)
     (doseq [{:keys [cmd]} tests-to-run]
       (shell/command cmd))))
+
+
+(defn task
+  {:org.babashka/cli {:epilog "By default, will run all tests applicable to your current jdk and os."
+                      :cmd {"matrix-for-ci" {:exec-fn #'matrix-for-ci
+                                             :doc "Return a matrix for use within GitHub Actions workflow"}}
+                      ;; TODO: Does not get invoked
+                      :exec-fn #'run-tests}}
+  [_opts])

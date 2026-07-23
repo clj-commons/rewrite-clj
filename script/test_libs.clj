@@ -639,3 +639,10 @@
   [{:keys [lib-names]}]
   (let [libs (requested-libs lib-names)]
     (report-outdated libs)))
+
+(defn task
+  {:org.babashka/cli
+   {:cmd {"list"     {:exec-fn #'list-libs :doc "List libs we can test against"}
+          "run"      {:exec-fn #'run-libs   :doc "Run tests for specified libs"}
+          "outdated" {:exec-fn #'outdated-libs :doc "Check specified libs for newer versions"}}}}
+  [_opts])

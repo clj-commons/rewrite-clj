@@ -27,10 +27,10 @@
     (status/line :detail "- copying lib configs and creating cache")
     (shell/command "clojure -M:clj-kondo --skip-lint --copy-configs --dependencies --lint" clj-cp bb-cp)))
 
-(defn- check-cache [{:keys [rebuild-cache]}]
+(defn- check-cache [{:keys [rebuild]}]
   (status/line :head "clj-kondo: cache check")
   (if-let [rebuild-reason (cond
-                            rebuild-cache
+                            rebuild
                             "Rebuild requested"
 
                             (not (cache-exists?))

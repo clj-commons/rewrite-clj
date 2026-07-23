@@ -20,7 +20,7 @@
 
 (def valid-formats ["json" "table"])
 
-(defn task
+(defn matrix-for-ci
   {:org.babashka/cli
    {:restrict true :restrict-args true
     :spec {:format {:coerce :string
@@ -36,3 +36,9 @@
       (do
         (status/line :detail (doric/table [:os :java-version :desc :cmd] matrix))
         (status/line :detail "Total jobs found: %d" (count matrix))))))
+
+(defn task
+  {:org.babashka/cli
+   {:cmd {"matrix-for-ci" {:exec-fn #'matrix-for-ci
+                           :doc "Return a matrix for use within GitHub Actions workflow"}}}}
+  [_opts])

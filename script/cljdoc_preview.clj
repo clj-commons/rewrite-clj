@@ -201,26 +201,45 @@
 
 (defn- canary-version [] (str (build-shared/lib-version) "-cljdoc-preview"))
 
-(defn start [_opts]
+(defn start
+  {:org.babashka/cli {:restrict true :restrict-args true}}
+  [_opts]
   (check-prerequisites)
   (start-cljdoc-server cljdoc-container))
 
-(defn ingest [_opts]
+(defn ingest
+  {:org.babashka/cli {:restrict true :restrict-args true}}
+  [_opts]
   (check-prerequisites)
   (git-warnings)
   (local-install canary-version)
   (cljdoc-ingest cljdoc-container (get-project) canary-version))
 
-(defn view [_opts]
+(defn view
+  {:org.babashka/cli {:restrict true :restrict-args true}}
+  [_opts]
   (check-prerequisites)
   (wait-for-server cljdoc-container)
   (view-in-browser (str "http://localhost:" (:port cljdoc-container) "/d/" (get-project) "/" canary-version)))
 
-(defn stop [_opts]
+(defn stop
+  {:org.babashka/cli {:restrict true :restrict-args true}}
+  [_opts]
   (check-prerequisites)
   (stop-server cljdoc-container)
   (cleanup-resources))
 
-(defn status [_opts]
+(defn status
+  {:org.babashka/cli {:restrict true :restrict-args true}}
+  [_opts]
   (check-prerequisites)
   (status-server-print cljdoc-container))
+
+(defn task
+  {:org.babashka/cli
+   {:cmd {"start"  {:exec-fn #'start    :doc "Start docker containers supporting cljdoc preview"}
+          "ingest" {:exec-fn #'ingest   :doc "Locally publishes your project for cljdoc preview"}
+          "view"   {:exec-fn #'view     :doc "Opens cljdoc preview in your default browser"}
+          "stop"   {:exec-fn #'stop     :doc "Stops docker containers supporting cljdoc preview"}
+          "status" {:exec-fn #'status   :doc "Status of docker containers supporting cljdoc preview"}}}}
+  [_opts])

@@ -16,3 +16,9 @@
   {:org.babashka/cli {:restrict true :restrict-args true}}
   [_opts]
   (apply-import-vars "check"))
+
+(defn task
+  {:org.babashka/cli
+   {:cmd {"check"    {:exec-fn #'check    :doc "Generate API sources from templates"}
+          "gen-code" {:exec-fn #'gen-code :doc "Fail if API sources are stale as compared to templates"}}}}
+  [_opts])
