@@ -2,8 +2,8 @@
 
 (ns test-libs
   "Test 3rd party libs against rewrite-clj head"
-  (:require [babashka.curl :as curl]
-            [babashka.fs :as fs]
+  (:require [babashka.fs :as fs]
+            [babashka.http-client :as http]
             [build-shared]
             [cheshire.core :as json]
             [clojure.java.io :as io]
@@ -29,7 +29,7 @@
   (shcmd "clojure -T:build install :version-override" (pr-str canary-version)))
 
 (defn- get-current-version
-  "Get current available version of lib via GitHub API.
+  "Get current available version of lib via GitHub or Codeberg API.
 
    Note that github API does have rate limiting... so if running this a lot some calls will fail.
    Set GITHUB_TOKEN env var to a GitHub personal access token to increase this limit.
@@ -37,15 +37,18 @@
 
    Could get from deps.edn RELEASE technique, but not all libs are on clojars.
    See: https://github.com/babashka/babashka/blob/master/examples/outdated.clj"
-  [{:keys [github-release]}]
-  (let [token (System/getenv "GITHUB_TOKEN")
-        opts (if token
-               {:headers {"Authorization" (format "Bearer %s" token)}}
-               {})]
-    (case (:via github-release)
-      ;; no official release
+  [{:keys [release]}]
+  (let [{:keys [scm repo default-branch]} release
+        opts (cond-> {}
+               (and (= :github scm) (System/getenv "GITHUB_TOKEN"))
+               (assoc :header {"Authorization" (format "Bearer %s" (System/getenv "GITHUB_TOKEN"))}))
+        api-path (case scm
+                   :github "api.github.com"
+                   :codeberg "codeberg.org/api/v1")]
+    (case (:via release)
+      ;; no official release so we go by git sha (not something we normally do, we like to work from official releases)
       :sha
-      (-> (curl/get (format "https://api.github.com/repos/%s/git/refs/heads/master" (:repo github-release))
+      (-> (http/get (format "https://%s/repos/%s/git/refs/heads/%s" api-path repo default-branch)
                     opts)
           :body
           (json/parse-string true)
@@ -54,7 +57,7 @@
 
       ;; tags can work better than release - sometimes libs have release 1.2 that refs tag 1.1
       :tag
-      (-> (curl/get (format "https://api.github.com/repos/%s/tags" (:repo github-release))
+      (-> (http/get (format "https://%s/repos/%s/tags" api-path repo)
                     opts)
           :body
           (json/parse-string true)
@@ -62,25 +65,24 @@
           :name)
 
       ;; else via release which works better than tags sometimes due to the way tags sort
-      (->  (curl/get (format "https://api.github.com/repos/%s/releases" (:repo github-release))
+      (->  (http/get (format "https://%s/repos/%s/releases" api-path repo)
                      opts)
            :body
            (json/parse-string true)
            first
            :tag_name))))
 
-(defn- fetch-lib-release [{:keys [target-root-dir name version github-release]}]
+(defn- fetch-lib-release [{:keys [target-root-dir name version release]}]
   (let [target (str (fs/file target-root-dir (format "%s-%s.zip" name version)))
-        download-url (if (= :sha (:via github-release))
-                       (format "https://github.com/%s/zipball/%s" (:repo github-release) version)
-                       (format "https://github.com/%s/archive/%s%s.zip"
-                               (:repo github-release)
-                               (or (:version-prefix github-release) "")
-                               version))]
+        download-url (format "https://%s/%s/archive/%s%s.zip"
+                             (case (:scm release) :github "github.com" :codeberg "codeberg.org")
+                             (:repo release)
+                             (or (:version-prefix release) "")
+                             version)]
     (status/line :detail "Downloading lib release from: %s" download-url)
     (io/make-parents target)
     (io/copy
-     (:body (curl/get download-url {:as :stream}))
+     (:body (http/get download-url {:as :stream}))
      (io/file target))
     (let [zip-root-dir (->> (shcmd {:out :string} "unzip -qql" target)
                             :out
@@ -265,9 +267,10 @@
 (def libs [{:name "adorn"
             :version "0.1.131-alpha"
             :platforms [:clj :cljs]
-            :github-release {:repo "fabricate-site/adorn"
-                             :via :tag
-                             :version-prefix "v"}
+            :release {:scm :github
+                      :repo "fabricate-site/adorn"
+                      :via :tag
+                      :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             ;; TODO: cljs tests were spitting out lots of warnings and errors when I tried,
@@ -276,40 +279,46 @@
            {:name "ancient-clj"
             :version "2.0.0"
             :platforms [:clj]
-            :github-release {:repo "xsc/ancient-clj"
-                             :version-prefix "v"}
+            :release {:scm :codeberg
+                      :repo "xsc/ancient-clj"
+                      :via :tag
+                      :version-prefix "v"}
             :patch-fn ancient-clj-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein kaocha"]}
            {:name "antq"
             :version "2.11.1276"
             :platforms [:clj]
-            :github-release {:repo "liquidz/antq"}
+            :release {:scm :github
+                      :repo "liquidz/antq"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:dev:test"]}
            {:name "carve"
             :version "0.3.5"
             :platforms [:clj]
-            :github-release {:repo "borkdude/carve"
-                             :version-prefix "v"}
+            :release {:scm :github
+                      :repo "borkdude/carve"
+                      :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "clerk"
             :version "0.18.1158"
             :platforms [:clj]
-            :github-release {:repo "nextjournal/clerk"
-                             :via :tag
-                             :version-prefix "v"}
+            :release {:scm :github
+                      :repo "nextjournal/clerk"
+                      :via :tag
+                      :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test:clj :kaocha/reporter '[kaocha.report/documentation]'"]}
            {:name "clj-mergetool"
             :version "0.7.0"
             :platforms [:clj]
-            :github-release {:repo "kurtharriger/clj-mergetool"
-                             :via :tag}
+            :release {:scm :github
+                      :repo "kurtharriger/clj-mergetool"
+                      :via :tag}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -T:build ci"]}
@@ -317,16 +326,18 @@
             :version "0.16.5"
             :platforms [:clj :cljs]
             :root "cljfmt"
-            :github-release {:repo "weavejester/cljfmt"
-                             :via :tag}
+            :release {:scm :github
+                      :repo "weavejester/cljfmt"
+                      :via :tag}
             :patch-fn project-clj-v1-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test-all"]}
            {:name "cljstyle"
             :version "0.17.642"
             :platforms [:clj]
-            :github-release {:repo "greglook/cljstyle"
-                             :via :tag}
+            :release {:scm :github
+                      :repo "greglook/cljstyle"
+                      :via :tag}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["bin/test check"
@@ -334,59 +345,66 @@
            {:name "clojure-lsp"
             :platforms [:clj]
             :version "2026.07.06-14.34.19"
-            :github-release {:repo "clojure-lsp/clojure-lsp"}
+            :release {:scm :github
+                      :repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
             :show-deps-fn clojure-lsp-deps
             :test-cmds ["bb test"]}
            {:name "clojure-mcp"
             :platforms [:clj]
             :version "0.5.1"
-            :github-release {:repo "bhauman/clojure-mcp"
-                             :via :tag
-                             :version-prefix "v"}
+            :release {:scm :github
+                      :repo "bhauman/clojure-mcp"
+                      :via :tag
+                      :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "depot"
             :platforms [:clj]
             :version "2.4.1"
-            :github-release {:repo "Olical/depot"
-                             :via :tag
-                             :version-prefix "v"}
+            :release {:scm :github
+                      :repo "Olical/depot"
+                      :via :tag
+                      :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:dev:test"]}
            {:name "kibit"
             :platforms [:clj]
             :version "0.1.11"
-            :github-release {:repo "clj-commons/kibit"}
+            :release {:scm :github
+                      :repo "clj-commons/kibit"}
             :patch-fn project-clj-v1-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test-all"]}
            {:name "kusonga"
             :platforms [:clj]
             :version "0.1.2"
-            :github-release {:repo "FiV0/kusonga"
-                             :via :tag
-                             :version-prefix "v"}
+            :release {:scm :github
+                      :repo "FiV0/kusonga"
+                      :via :tag
+                      :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -X:test"]}
            {:name "lein-ancient"
             :platforms [:clj]
             :version "1.0.0-RC3"
-            :github-release {:repo "xsc/lein-ancient"
-                             :via :tag
-                             :version-prefix "v"}
+            :release {:scm :codeberg
+                      :repo "xsc/lein-ancient"
+                      :via :tag
+                      :version-prefix "v"}
             :patch-fn lein-ancient-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "mranderson"
             :version "0.7.1"
             :platforms [:clj]
-            :github-release {:repo "benedekfazekas/mranderson"
-                             :via :tag
-                             :version-prefix "v"}
+            :release {:scm :github
+                      :repo "benedekfazekas/mranderson"
+                      :via :tag
+                      :version-prefix "v"}
             :patch-fn mranderson-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
@@ -394,16 +412,18 @@
             :version "0.2.0"
             :platforms [:clj]
             :note "Dormant project"
-            :github-release {:repo "jstepien/mutant"
-                             :via :tag}
+            :release {:scm :github
+                      :repo "jstepien/mutant"
+                      :via :tag}
             :patch-fn project-clj-v1-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "reval"
             :version "0.0.38"
-            :github-release {:repo "pink-gorilla/reval"
-                             :version-prefix "v"
-                             :via :tag}
+            :release {:scm :github
+                      :repo "pink-gorilla/reval"
+                      :version-prefix "v"
+                      :via :tag}
             :root "reval"
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
@@ -411,27 +431,30 @@
            {:name "rewrite-edn"
             :version "0.5.0"
             :platforms [:clj]
-            :github-release {:repo "borkdude/rewrite-edn"
-                             :version-prefix "v"
-                             :via :tag}
+            :release {:scm :github
+                      :repo "borkdude/rewrite-edn"
+                      :version-prefix "v"
+                      :via :tag}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "refactor-nrepl"
             :version "3.14.0"
             :platforms [:clj]
-            :github-release {:repo "clojure-emacs/refactor-nrepl"
-                             :via :tag
-                             :version-prefix "v"}
+            :release {:scm :github
+                      :repo "clojure-emacs/refactor-nrepl"
+                      :via :tag
+                      :version-prefix "v"}
             :patch-fn refactor-nrepl-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["make test"]}
            {:name "rich-comment-tests"
             :version "1.0.3"
             :platforms [:clj] ;; and bb but we don't test that here
-            :github-release {:repo "matthewdowney/rich-comment-tests"
-                             :version-prefix "v"
-                             :via :tag}
+            :release {:scm :github
+                      :repo "matthewdowney/rich-comment-tests"
+                      :version-prefix "v"
+                      :via :tag}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test-clj"]}
@@ -439,9 +462,10 @@
             :version "1.24.0"
             :note "disabled a failing test, see https://github.com/NoahTheDuke/splint/issues/43"
             :platforms [:clj]
-            :github-release {:repo "NoahTheDuke/splint"
-                             :version-prefix "v"
-                             :via :tag}
+            :release {:scm :github
+                      :repo "NoahTheDuke/splint"
+                      :version-prefix "v"
+                      :via :tag}
             :patch-fn splint-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:dev:test:runner"]}
@@ -449,8 +473,9 @@
             :version "1.2.21"
             :platforms [:clj :cljs]
             :note "generates tests under clj, but can also be run under cljs"
-            :github-release {:repo "lread/test-doc-blocks"
-                             :version-prefix "v"}
+            :release {:scm :github
+                      :repo "lread/test-doc-blocks"
+                      :version-prefix "v"}
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test-unit"
@@ -459,8 +484,9 @@
            {:name "umschreiben-clj"
             :version "0.1.0"
             :platforms [:clj]
-            :github-release {:repo "nubank/umschreiben-clj"
-                             :via :tag}
+            :release {:scm :github
+                      :repo "nubank/umschreiben-clj"
+                      :via :tag}
             :patch-fn project-clj-v1-patch
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
@@ -468,7 +494,8 @@
             :version "1.3.0"
             :note "1) planck cljs tests disabled for now: https://github.com/planck-repl/planck/issues/1088"
             :platforms [:clj :cljs]
-            :github-release {:repo "kkinnear/zprint"}
+            :release {:scm :github
+                      :repo "kkinnear/zprint"}
             :patch-fn zprint-patch
             :prep-fn zprint-prep
             :show-deps-fn (fn [lib]
@@ -544,7 +571,7 @@
   (let [outdated-libs (->> requested-libs
                            (map #(assoc %
                                         :available-version (get-current-version %)
-                                        :version (str (-> % :github-release :version-prefix) (:version %))))
+                                        :version (str (-> % :release :version-prefix) (:version %))))
                            (filter #(not= (:available-version %) (:version %))))]
     (if (seq outdated-libs)
       (-> (doric/table [:name :version :available-version :note] outdated-libs) println)
