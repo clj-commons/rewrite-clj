@@ -2,7 +2,6 @@
   (:require [babashka.fs :as fs]
             [clojure.java.io :as io]
             [clojure.string :as string]
-            [helper.cli :as cli]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -74,21 +73,20 @@
 
 (defn task
   {:org.babashka/cli
-   (merge cli/base-opts
-          {:spec {:env {:alias :e
-                        :coerce :string
-                        :desc "JavaScript Environment"
-                        :enum valid-envs
-                        :default (first valid-envs)}
-                  :optimizations {:alias :o
-                                  :coerce :string
-                                  :desc "ClojureScript Optimizations"
-                                  :enum valid-optimizations
-                                  :default (first valid-optimizations)}
-                  :run-granularity {:alias :g
-                                    :coerce :string
-                                    :desc "Run Granularity"
-                                    :enum valid-granularities
-                                    :default (first valid-granularities)}}})}
+   {:spec {:env {:alias :e
+                 :coerce :string
+                 :desc "JavaScript Environment"
+                 :enum valid-envs
+                 :default (first valid-envs)}
+           :optimizations {:alias :o
+                           :coerce :string
+                           :desc "ClojureScript Optimizations"
+                           :enum valid-optimizations
+                           :default (first valid-optimizations)}
+           :run-granularity {:alias :g
+                             :coerce :string
+                             :desc "Run Granularity"
+                             :enum valid-granularities
+                             :default (first valid-granularities)}}}}
   [opts]
   (run-tests opts))

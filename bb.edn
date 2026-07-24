@@ -14,10 +14,14 @@
                     [lread.status-line :as status])
          :enter (let [{:keys [name]} (current-task)] (status/line :head "TASK %s %s" name (string/join " " *command-line-args*)))
          :leave (let [{:keys [name]} (current-task)] (status/line :detail "\nTASK %s done." name))
+         :cli helper.cli/base-opts
+
          ;; commands
          clean             {:exec-fn clean/task             :doc "delete all build work"}
          download-deps     {:exec-fn download-deps/task     :doc "bring down Clojure deps"}
-         apply-import-vars {:exec-fn apply-import-vars/task :doc "check/gen export APIs statically from templates"}
+         apply-import-vars {:cmd {"check" {:exec-fn apply-import-vars/check}
+                                  "gen-code" {:exec-fn apply-import-vars/gen-code}}
+                            :doc "check/gen export APIs statically from templates"}
          dev-jvm           {:exec-fn dev-repl/dev-jvm       :doc "launch jvm nREPL for development"}
          dev-cljs          {:exec-fn dev-repl/dev-cljs      :doc "launch cljs nREPL for development"}
          lint              {:exec-fn lint/task              :doc "lint source code using clj-kondo, eastwood"}
@@ -33,12 +37,25 @@
          test-cljs-watch   {:exec-fn test-cljs-watch/task   :doc "auto-rerun ClojureScript test with fighweel main"}
          test-coverage     {:exec-fn test-coverage/task     :doc "generate code coverage reports for Clojure tests"}
          test-doc          {:exec-fn test-doc/task          :doc "test doc code blocks under Clojure, ClojureScript"}
-         test-libs         {:exec-fn test-libs/task         :doc "cmds to verify that libs using rewrite-clj work with current rewrite-clj"}
+         test-libs         {:cmd {"list"     {:exec-fn test-libs/list-libs}
+                                  "run"      {:exec-fn test-libs/run-libs}
+                                  "outdated" {:exec-fn test-libs/outdated-libs}}
+                            :doc "cmds to verify that libs using rewrite-clj work with current rewrite-clj"}
          outdated          {:exec-fn outdated/task          :doc "report on outdated Clojure and npm dependencies"}
          doc-update-readme {:exec-fn doc-update-readme/task :doc "honour our contributors in README"}
-         cljdoc-preview    {:exec-fn cljdoc-preview/task    :doc "cmds to preview what docs will look like on cljdoc"}
-         ci-native-tests   {:exec-fn ci-native-tests/task   :doc "list native integration tests"}
-         ci-unit-tests     {:exec-fn ci-unit-tests/task     :doc "list/run continuous integration unit tests"}
+         cljdoc-preview    {:cmd {"start"  {:exec-fn cljdoc-preview/start }
+                                  "ingest" {:exec-fn cljdoc-preview/ingest }
+                                  "view"   {:exec-fn cljdoc-preview/view }
+                                  "stop"   {:exec-fn cljdoc-preview/stop }
+                                  "status" {:exec-fn cljdoc-preview/status}}
+                            :doc "cmds to preview what docs will look like on cljdoc"}
+         ci-native-tests   {:cmd {"matrix-for-ci" {:exec-fn ci-native-tests/matrix-for-ci
+                                                   :doc "Return a matrix for use within GitHub Actions workflow"}}
+                            :doc "list native integration tests"}
+         ci-unit-tests     {:epilog "By default, will run all tests applicable to your current jdk and os."
+                            :cmd {"matrix-for-ci" {:exec-fn ci-unit-tests/matrix-for-ci}}
+                            :exec-fn ci-unit-tests/run-tests
+                            :doc "list/run continuous integration unit tests"}
          pubcheck          {:exec-fn publish/pubcheck       :doc "Run only publish checks (without publishing)"}
          publish           {:exec-fn publish/publish        :doc "Publish a release (for maintainers)"}
          ;; let's not rely on a random version of neil

@@ -5,10 +5,8 @@
             [build-shared]
             [cheshire.core :as json]
             [clojure.java.io :as io]
-            [clojure.set :as cset]
             [clojure.string :as string]
             [doric.core :as doric]
-            [helper.cli :as cli]
             [helper.deps-patcher :as deps-patcher]
             [helper.shell :as shell]
             [io.aviso.ansi :as ansi]
@@ -591,11 +589,11 @@
 
 (defn list-libs
   {:org.babashka/cli
-   (merge cli/base-opts
-          {:spec {:format {:coerce :string
-                           :desc "Output format"
-                           :enum valid-list-formats
-                           :default (first valid-list-formats)}}})}
+   {:doc "List libs we can test against"
+    :spec {:format {:coerce :string
+                    :desc "Output format"
+                    :enum valid-list-formats
+                    :default (first valid-list-formats)}}}}
   [{:keys [format]}]
   (let [libs-for-ci (->> libs
                          (map (fn [{:keys [name jdk requires]}]
@@ -617,22 +615,14 @@
 
 (defn run-libs
   {:org.babashka/cli
-   (merge cli/base-opts cli-lib-names-spec)}
+   (merge {:doc "Run tests for specified libs"} cli-lib-names-spec)}
   [{:keys [lib-names]}]
   (let [libs (requested-libs lib-names)]
     (run-tests libs)))
 
 (defn outdated-libs
   {:org.babashka/cli
-   (merge cli/base-opts cli-lib-names-spec)}
+   (merge {:doc "Check specified libs for newer versions"} cli-lib-names-spec)}
   [{:keys [lib-names]}]
   (let [libs (requested-libs lib-names)]
     (report-outdated libs)))
-
-(defn task
-  {:org.babashka/cli
-   (merge cli/base-opts
-          {:cmd {"list"     {:exec-fn #'list-libs :doc "List libs we can test against"}
-                 "run"      {:exec-fn #'run-libs   :doc "Run tests for specified libs"}
-                 "outdated" {:exec-fn #'outdated-libs :doc "Check specified libs for newer versions"}}})}
-  [_opts])

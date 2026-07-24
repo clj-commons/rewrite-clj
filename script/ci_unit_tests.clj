@@ -3,7 +3,6 @@
             [cheshire.core :as json]
             [clojure.string :as string]
             [doric.core :as doric]
-            [helper.cli :as cli]
             [helper.jdk :as jdk]
             [helper.os :as os]
             [helper.shell :as shell]
@@ -97,11 +96,11 @@
 
 (defn matrix-for-ci
   {:org.babashka/cli
-   (merge cli/base-opts
-          {:spec {:format {:coerce :string
-                           :desc "Output format"
-                           :enum valid-formats
-                           :default (first valid-formats)}}})}
+   {:doc "Return a matrix for use within GitHub Actions workflow"
+    :spec {:format {:coerce :string
+                    :desc "Output format"
+                    :enum valid-formats
+                    :default (first valid-formats)}}}}
   [{:keys [format]}]
   (let [matrix (ci-test-matrix)]
     (if (= "json" format)
@@ -111,7 +110,7 @@
             (status/line :detail "Total jobs found: %d" (count matrix))))))
 
 (defn run-tests
-  []
+  [_opts]
   (let [cur-os (matrix-os)
         cur-jdk (jdk/version)
         cur-major-jdk (str (:major cur-jdk))
@@ -135,15 +134,3 @@
     (clean)
     (doseq [{:keys [cmd]} tests-to-run]
       (shell/command cmd))))
-
-(defn task
-  ;; TODO: IMO, this is an unusual an awkward CLI, only migrated as-is to test that new bb cli support
-  ;; can handle it.
-  {:org.babashka/cli
-   (merge cli/base-opts
-          {:epilog "By default, will run all tests applicable to your current jdk and os."
-           :cmd {"matrix-for-ci" {:exec-fn #'matrix-for-ci
-                                  :doc "Return a matrix for use within GitHub Actions workflow"}}})}
-  [_opts]
-  ;; we fall through to running tests when no command is provided
-  (run-tests))

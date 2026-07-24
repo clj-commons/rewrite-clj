@@ -1,6 +1,5 @@
 (ns test-doc
   (:require [babashka.fs :as fs]
-            [helper.cli :as cli]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -33,12 +32,11 @@
 
 (defn task
   {:org.babashka/cli
-   (merge cli/base-opts
-          {:spec {:platform {:alias :p
-                             :coerce :string
-                             :desc "Test against"
-                             :enum cli-valid-platforms
-                             :default (last cli-valid-platforms)}}})}
+   {:spec {:platform {:alias :p
+                      :coerce :string
+                      :desc "Test against"
+                      :enum cli-valid-platforms
+                      :default (last cli-valid-platforms)}}}}
   [{:keys [platform]}]
   (let [platforms (if (= "all" platform)
                     valid-platforms

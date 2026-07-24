@@ -1,6 +1,5 @@
 (ns test-native-sci
   (:require [clojure.java.io :as io]
-            [helper.cli :as cli]
             [helper.clojure-versions :as clojure-versions]
             [helper.graal :as graal]
             [helper.os :as os]
@@ -26,8 +25,7 @@
 (def cli-clojure-versions (mapv :version (clojure-versions/for-native)))
 
 (defn task
-  {:org.babashka/cli
-   (merge cli/base-opts {:spec (clojure-versions/cli-opt cli-clojure-versions)})}
+  {:org.babashka/cli {:spec (clojure-versions/cli-opt cli-clojure-versions)}}
   [{:keys [clojure-version]}]
   (graal/assert-min-version)
   (let [clojure-version (clojure-versions/lookup clojure-version)

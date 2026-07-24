@@ -2,7 +2,6 @@
   (:require [cheshire.core :as json]
             [clojure.string :as str]
             [doric.core :as doric]
-            [helper.cli :as cli]
             [helper.clojure-versions :as clojure-versions]
             [lread.status-line :as status]))
 
@@ -23,11 +22,11 @@
 
 (defn matrix-for-ci
   {:org.babashka/cli
-   (merge cli/base-opts
-          {:spec {:format {:coerce :string
-                           :desc "Output format"
-                           :enum valid-formats
-                           :default (first valid-formats)}}})}
+   {:doc "Return a matrix for use within GitHub Actions workflow"
+    :spec {:format {:coerce :string
+                    :desc "Output format"
+                    :enum valid-formats
+                    :default (first valid-formats)}}}}
   [{:keys [format]}]
   (let [matrix (ci-test-matrix)]
     (if (= "json" format)
@@ -35,10 +34,3 @@
       (do
         (status/line :detail (doric/table [:os :java-version :desc :cmd] matrix))
         (status/line :detail "Total jobs found: %d" (count matrix))))))
-
-(defn task
-  {:org.babashka/cli
-   (merge cli/base-opts
-          {:cmd {"matrix-for-ci" {:exec-fn #'matrix-for-ci
-                                  :doc "Return a matrix for use within GitHub Actions workflow"}}})}
-  [_opts])

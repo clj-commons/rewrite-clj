@@ -3,7 +3,6 @@
   (:require [babashka.tasks :as t]
             [build-shared]
             [clojure.string :as string]
-            [helper.cli :as cli]
             [lread.status-line :as status]
             [version-clj.core :as v]))
 
@@ -195,7 +194,6 @@
 ;; task entry points
 
 (defn pubcheck
-  {:org.babashka/cli cli/base-opts}
   [_opts]
   (status/line :head "Performing publish checks")
   (let [check-results (release-checks)
@@ -213,7 +211,6 @@
       (status/die 1 "Release checks failed"))))
 
 (defn publish
-  {:org.babashka/cli cli/base-opts}
   [_opts]
   (pubcheck {})
   (status/line :head "Calculating versions")

@@ -1,6 +1,5 @@
 (ns test-coverage
-  (:require [helper.cli :as cli]
-            [helper.shell :as shell]
+  (:require [helper.shell :as shell]
             [lread.status-line :as status]))
 
 (defn generate-doc-tests []
@@ -16,7 +15,6 @@
                  "--reporter" "documentation"))
 
 (defn task
-  {:org.babashka/cli cli/base-opts}
   [_opts]
   (generate-doc-tests)
   (run-clj-doc-tests))

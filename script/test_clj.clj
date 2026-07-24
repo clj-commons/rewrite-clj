@@ -1,6 +1,5 @@
 (ns test-clj
-  (:require [helper.cli :as cli]
-            [helper.clojure-versions :as clojure-versions]
+  (:require [helper.clojure-versions :as clojure-versions]
             [helper.jdk :as jdk]
             [helper.shell :as shell]
             [lread.status-line :as status]))
@@ -26,9 +25,7 @@
 (def cli-clojure-versions (conj (mapv :version (clojure-versions/all)) "all"))
 
 (defn task
-  {:org.babashka/cli
-   (merge cli/base-opts
-          {:spec (clojure-versions/cli-opt cli-clojure-versions)})}
+  {:org.babashka/cli {:spec (clojure-versions/cli-opt cli-clojure-versions)}}
   [{:keys [clojure-version]}]
   (let [env-jdk-version (jdk/version)
         clojure-versions (if (= "all" clojure-version)

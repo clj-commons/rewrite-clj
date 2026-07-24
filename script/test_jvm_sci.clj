@@ -1,14 +1,12 @@
 (ns test-jvm-sci
-  (:require [helper.cli :as cli]
-            [helper.clojure-versions :as clojure-versions]
+  (:require [helper.clojure-versions :as clojure-versions]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
 (def cli-clojure-versions (mapv :version (clojure-versions/for-native)))
 
 (defn task
-  {:org.babashka/cli
-   (merge cli/base-opts {:spec (clojure-versions/cli-opt cli-clojure-versions)})}
+  {:org.babashka/cli {:spec (clojure-versions/cli-opt cli-clojure-versions)}}
   [{:keys [clojure-version]}]
   (let [clojure-version (clojure-versions/lookup clojure-version)]
     (status/line :head "Exposing rewrite-clj API to sci")

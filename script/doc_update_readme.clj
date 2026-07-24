@@ -5,7 +5,6 @@
             [clojure.edn :as edn]
             [clojure.string :as string]
             [etaoin.api :as etaoin]
-            [helper.cli :as cli]
             [hiccup.util :as hu]
             [hiccup2.core :as h]
             [lread.status-line :as status]
@@ -209,7 +208,6 @@
     people))
 
 (defn task
-  {:org.babashka/cli cli/base-opts}
   [_opts]
   (let [readme-filename "README.adoc"
         image-opts {:image-width 250

@@ -4,7 +4,6 @@
             [build-shared]
             [clojure.java.browse :as browse]
             [clojure.string :as string]
-            [helper.cli :as cli]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 ;;
@@ -203,13 +202,13 @@
 (defn- canary-version [] (str (build-shared/lib-version) "-cljdoc-preview"))
 
 (defn start
-  {:org.babashka/cli cli/base-opts}
+  {:org.babashka/cli {:doc "Start docker containers supporting cljdoc preview"}}
   [_opts]
   (check-prerequisites)
   (start-cljdoc-server cljdoc-container))
 
 (defn ingest
-  {:org.babashka/cli cli/base-opts}
+  {:org.babashka/cli {:doc "Locally publishes your project for cljdoc preview"}}
   [_opts]
   (check-prerequisites)
   (git-warnings)
@@ -217,31 +216,21 @@
   (cljdoc-ingest cljdoc-container (get-project) canary-version))
 
 (defn view
-  {:org.babashka/cli cli/base-opts}
+  {:org.babashka/cli {:doc "Opens cljdoc preview in your default browser"}}
   [_opts]
   (check-prerequisites)
   (wait-for-server cljdoc-container)
   (view-in-browser (str "http://localhost:" (:port cljdoc-container) "/d/" (get-project) "/" canary-version)))
 
 (defn stop
-  {:org.babashka/cli cli/base-opts}
+  {:org.babashka/cli {:doc "Stops docker containers supporting cljdoc preview"}}
   [_opts]
   (check-prerequisites)
   (stop-server cljdoc-container)
   (cleanup-resources))
 
 (defn status
-  {:org.babashka/cli cli/base-opts}
+  {:org.babashka/cli {:doc "Status of docker containers supporting cljdoc preview"}}
   [_opts]
   (check-prerequisites)
   (status-server-print cljdoc-container))
-
-(defn task
-  {:org.babashka/cli
-   (merge cli/base-opts
-          {:cmd {"start"  {:exec-fn #'start    :doc "Start docker containers supporting cljdoc preview"}
-                 "ingest" {:exec-fn #'ingest   :doc "Locally publishes your project for cljdoc preview"}
-                 "view"   {:exec-fn #'view     :doc "Opens cljdoc preview in your default browser"}
-                 "stop"   {:exec-fn #'stop     :doc "Stops docker containers supporting cljdoc preview"}
-                 "status" {:exec-fn #'status   :doc "Status of docker containers supporting cljdoc preview"}}})}
-  [_opts])
