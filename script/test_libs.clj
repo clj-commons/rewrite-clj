@@ -303,6 +303,16 @@
             :patch-fn deps-edn-v1-patch
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
+           {:name "classpath"
+            :version "0.8.70"
+            :platforms [:clj]
+            :release {:scm :github
+                      :repo "lambdaisland/classpath"
+                      :version-prefix "v"}
+            :patch-fn deps-edn-v1-patch
+            :show-deps-fn cli-deps-tree
+            ;; odd, there is no :test alias!
+            :test-cmds ["clojure -Sdeps '{:deps {lambdaisland/kaocha {:mvn/version \"1.91.1392\"}}}' -M -m kaocha.runner"]}
            {:name "clerk"
             :version "0.18.1158"
             :platforms [:clj]
