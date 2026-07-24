@@ -611,11 +611,8 @@
 
 (def cli-lib-names-spec {:spec {:lib-names {:coerce [:string]
                                             :positional true
-                                            :desc "Library name(s), omit for all"
-                                            :validate {:pred #(not (seq (cset/difference (set %) (set valid-libs))))
-                                                       :ex-msg (fn [{:keys [value arg]}]
-                                                                 (str "Invalid " arg ": "
-                                                                      (string/join ", " (sort (cset/difference (set value) (set valid-libs))))))}}}
+                                            :enum valid-libs
+                                            :desc "Library name(s), omit for all"}}
                          :args->opts [:lib-names]})
 
 (defn run-libs
