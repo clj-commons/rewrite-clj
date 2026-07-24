@@ -390,7 +390,7 @@
             :test-cmds ["clojure -X:test"]}
            {:name "lein-ancient"
             :platforms [:clj]
-            :version "1.0.0-RC3"
+            :version "1.0.0"
             :release {:scm :codeberg
                       :repo "xsc/lein-ancient"
                       :via :tag
