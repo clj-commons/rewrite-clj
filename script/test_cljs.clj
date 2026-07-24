@@ -77,18 +77,18 @@
    (merge cli/base-opts
           {:spec {:env {:alias :e
                         :coerce :string
-                        :desc (format "JavaScript Environment [%s]" (string/join ", " valid-envs))
-                        :default (first valid-envs)
-                        :validate #(some #{%} valid-envs)}
+                        :desc "JavaScript Environment"
+                        :enum valid-envs
+                        :default (first valid-envs)}
                   :optimizations {:alias :o
                                   :coerce :string
-                                  :desc (format "ClojureScript Optimizations [%s]" (string/join ", " valid-optimizations))
-                                  :default (first valid-optimizations)
-                                  :validate #(some #{%} valid-optimizations)}
+                                  :desc "ClojureScript Optimizations"
+                                  :enum valid-optimizations
+                                  :default (first valid-optimizations)}
                   :run-granularity {:alias :g
                                     :coerce :string
-                                    :desc (format "Run Granularity [%s]" (string/join ", " valid-granularities))
-                                    :default (first valid-granularities)
-                                    :validate #(some #{%} valid-granularities)}}})}
+                                    :desc "Run Granularity"
+                                    :enum valid-granularities
+                                    :default (first valid-granularities)}}})}
   [opts]
   (run-tests opts))

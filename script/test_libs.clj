@@ -593,9 +593,9 @@
   {:org.babashka/cli
    (merge cli/base-opts
           {:spec {:format {:coerce :string
-                           :desc (format "Output format [%s]" (string/join ", " valid-list-formats))
-                           :default (first valid-list-formats)
-                           :validate #(some #{%} valid-list-formats)}}})}
+                           :desc "Output format"
+                           :enum valid-list-formats
+                           :default (first valid-list-formats)}}})}
   [{:keys [format]}]
   (let [libs-for-ci (->> libs
                          (map (fn [{:keys [name jdk requires]}]
@@ -613,8 +613,7 @@
                                             :positional true
                                             :desc "Library name(s), omit for all"
                                             :validate {:pred #(not (seq (cset/difference (set %) (set valid-libs))))
-                                                       :ex-msg (fn [{:keys [value arg] :as boo}]
-                                                                 (println "boo" boo)
+                                                       :ex-msg (fn [{:keys [value arg]}]
                                                                  (str "Invalid " arg ": "
                                                                       (string/join ", " (sort (cset/difference (set value) (set valid-libs))))))}}}
                          :args->opts [:lib-names]})

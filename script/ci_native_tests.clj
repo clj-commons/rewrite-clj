@@ -25,9 +25,9 @@
   {:org.babashka/cli
    (merge cli/base-opts
           {:spec {:format {:coerce :string
-                           :desc (format "Output format [%s]" (str/join ", " valid-formats))
-                           :default (first valid-formats)
-                           :validate #(some #{%} valid-formats)}}})}
+                           :desc "Output format"
+                           :enum valid-formats
+                           :default (first valid-formats)}}})}
   [{:keys [format]}]
   (let [matrix (ci-test-matrix)]
     (if (= "json" format)

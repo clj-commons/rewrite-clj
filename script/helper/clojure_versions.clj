@@ -1,6 +1,5 @@
 (ns helper.clojure-versions
   (:require [clojure.edn :as edn]
-            [clojure.string :as str]
             [version-clj.core :as version]
             [wevre.natural-compare :as natural-compare]))
 
@@ -43,6 +42,6 @@
 (defn cli-opt [cli-clojure-versions]
   {:clojure-version {:alias :v
                      :coerce :string
-                     :desc (format "Test with Clojure [%s]" (str/join ", " cli-clojure-versions))
-                     :default (first cli-clojure-versions)
-                     :validate #(some #{%} cli-clojure-versions)}})
+                     :desc "Test with Clojure"
+                     :enum cli-clojure-versions
+                     :default (first cli-clojure-versions)}})
