@@ -52,10 +52,10 @@
          ci-native-tests   {:cmd {"matrix-for-ci" {:exec-fn ci-native-tests/matrix-for-ci
                                                    :doc "Return a matrix for use within GitHub Actions workflow"}}
                             :doc "list native integration tests"}
-         ci-unit-tests     {:epilog "By default, will run all tests applicable to your current jdk and os."
-                            :cmd {"matrix-for-ci" {:exec-fn ci-unit-tests/matrix-for-ci}}
+         ci-unit-tests     {:cmd {"matrix-for-ci" {:exec-fn ci-unit-tests/matrix-for-ci}}
                             :exec-fn ci-unit-tests/run-tests
-                            :doc "list/run continuous integration unit tests"}
+                            :doc "list/run continuous integration unit tests"
+                            :cli {:epilog "By default, will run all tests applicable to your current jdk and os."}}
          pubcheck          {:exec-fn publish/pubcheck       :doc "Run only publish checks (without publishing)"}
          publish           {:exec-fn publish/publish        :doc "Publish a release (for maintainers)"}
          ;; let's not rely on a random version of neil
