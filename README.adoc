@@ -49,8 +49,7 @@ Some projects using rewrite-clj v1
 // we already do sci testing and borkdude runs his own copies of rewrite-clj tests against babashka:
 * https://github.com/babashka/babashka[babashka] {not-canary-tested} - Native, fast starting Clojure interpreter for scripting
 * https://github.com/borkdude/carve[carve] {canary-tested} - Carve out the essentials of your Clojure app
-// classpath has no unit tests:
-* https://github.com/lambdaisland/classpath[classpath] {not-canary-tested} - Classpath/classloader/deps.edn related utilities
+* https://github.com/lambdaisland/classpath[classpath] {canary-tested} - Classpath/classloader/deps.edn related utilities
 * https://github.com/nextjournal/clerk[clerk] {canary-tested} - Local-First Notebooks for Clojure
 * https://github.com/kurtharriger/clj-mergetool[clj-mergetool] {canary-tested} - Smarter git mergetool for clojure and edn
 * https://github.com/weavejester/cljfmt[cljfmt] {canary-tested} - A tool for formatting Clojure code
