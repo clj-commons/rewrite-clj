@@ -1,4 +1,4 @@
-{:min-bb-version "0.9.162"
+{:min-bb-version "1.13.219"
  :paths ["script" "build"]
  :deps {org.clojure/data.zip {:mvn/version "1.1.1"}
         io.aviso/pretty {:mvn/version "1.4.4"}
