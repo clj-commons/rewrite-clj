@@ -3,7 +3,7 @@
             [lread.status-line :as status]))
 
 (defn colorful-error
-  [{:keys [msg tree dispatch prog cause]}]
+  [{:keys [msg tree dispatch prog]}]
   (status/line :error msg)
   (status/line :detail "\n%s" (cli/format-command-help {:table tree :cmds dispatch :prog prog}))
   (System/exit 1))
