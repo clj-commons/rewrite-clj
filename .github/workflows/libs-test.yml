@@ -27,7 +27,7 @@ jobs:
       - id: set-libs
         name: Set libs var for matrix
         ## call bb script directly instead of as task to avoid task status output
-        run: echo "libs=$(bb script/test_libs.clj list --format=json)" >> $GITHUB_OUTPUT
+        run: echo "libs=$(bb --exec test-libs/list-libs --format=json)" >> $GITHUB_OUTPUT
 
   libs-test:
     needs: enumerate-libs

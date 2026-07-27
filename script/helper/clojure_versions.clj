@@ -38,3 +38,10 @@
   [version]
   (or (some #(when (= version (:version %)) %) (all))
       (throw (ex-info (str "Clojure version not found: " version) {}))))
+
+(defn cli-opt [cli-clojure-versions]
+  {:clojure-version {:alias :v
+                     :coerce :string
+                     :desc "Test with Clojure"
+                     :enum cli-clojure-versions
+                     :default (first cli-clojure-versions)}})

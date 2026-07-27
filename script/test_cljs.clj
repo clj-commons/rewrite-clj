@@ -1,10 +1,7 @@
-#!/usr/bin/env bb
-
 (ns test-cljs
   (:require [babashka.fs :as fs]
             [clojure.java.io :as io]
             [clojure.string :as string]
-            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -74,30 +71,22 @@
                                 (apply shell/command (concat cmd ["--namespace" ns])))
                               nses)))))))
 
-(defn valid-opts? [opts]
- (and (some #{(get opts "--env")} valid-envs)
-      (some #{(get opts "--optimizations")} valid-optimizations)
-      (some #{(get opts "--run-granularity")} valid-granularities)))
-
-(def args-usage "Valid args: [options]
-
-Options:
-  -e, --env ENV                      JavaScript Environment [node, chrome-headless, planck] [default: node]
-  -o, --optimizations OPTIMIZATIONS  ClojureScript Optimizations [none, advanced] [default: none]
-  -g, --run-granularity GRANULARITY  Run Granularity [all, namespace] [default: all]
-  --help")
-
-(defn -main [& args]
-  (when-let [opts (main/doc-arg-opt args-usage args)]
-    (cond
-      (not (valid-opts? opts))
-      (status/die 1 args-usage)
-
-      :else
-      (run-tests {:env (get opts "--env")
-                  :optimizations (get opts "--optimizations")
-                  :run-granularity (get opts "--run-granularity")})))
-  nil)
-
-(main/when-invoked-as-script
- (apply -main *command-line-args*))
+(defn task
+  {:org.babashka/cli
+   {:spec {:env {:alias :e
+                 :coerce :string
+                 :desc "JavaScript Environment"
+                 :enum valid-envs
+                 :default (first valid-envs)}
+           :optimizations {:alias :o
+                           :coerce :string
+                           :desc "ClojureScript Optimizations"
+                           :enum valid-optimizations
+                           :default (first valid-optimizations)}
+           :run-granularity {:alias :g
+                             :coerce :string
+                             :desc "Run Granularity"
+                             :enum valid-granularities
+                             :default (first valid-granularities)}}}}
+  [opts]
+  (run-tests opts))

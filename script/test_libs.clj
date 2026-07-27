@@ -1,5 +1,3 @@
-#!/usr/bin/env bb
-
 (ns test-libs
   "Test 3rd party libs against rewrite-clj head"
   (:require [babashka.fs :as fs]
@@ -10,7 +8,6 @@
             [clojure.string :as string]
             [doric.core :as doric]
             [helper.deps-patcher :as deps-patcher]
-            [helper.main :as main]
             [helper.shell :as shell]
             [io.aviso.ansi :as ansi]
             [lread.status-line :as status]))
@@ -613,58 +610,56 @@
                               (every? zero?))
                        0 1))))))
 
-(def args-usage "Valid args:
-  list [--format=json]
-  run [<lib-name>...]
-  outdated [<lib-name>...]
-  --help
+(def valid-list-formats ["json" "table" "list"])
+(def valid-libs (map :name libs))
 
-Commands:
-  list     List libs we can test against
-  run      Run tests for specified libs
-  outdated Check specified libs for newer versions
+(defn- requested-libs [lib-names]
+  (println "lib-names" lib-names)
+  (if (zero? (count lib-names))
+    libs
+    (reduce (fn [ls n]
+              (if-let [l (first (filter #(= n (:name %)) libs))]
+                (conj ls l)
+                ls))
+            []
+            lib-names)))
 
-Options:
-  --help  Show this help
-
-Specifying no lib-names selects all libraries.")
-
-(defn -main [& args]
-  (when-let [opts (main/doc-arg-opt args-usage args)]
-    (cond
-      (get opts "list")
-      (let [format (get opts "--format")
-            libs-for-ci (->> libs
-                             (map (fn [{:keys [name jdk requires]}]
-                                    {:lib-name name
-                                     :requires (or requires [])
-                                     :jdk (or jdk default-jdk)})))]
+(defn list-libs
+  {:org.babashka/cli
+   {:doc "List libs we can test against"
+    :spec {:format {:coerce :string
+                    :desc "Output format"
+                    :enum valid-list-formats
+                    :default (first valid-list-formats)}}}}
+  [{:keys [format]}]
+  (let [libs-for-ci (->> libs
+                         (map (fn [{:keys [name jdk requires]}]
+                                {:lib-name name
+                                 :requires (or requires [])
+                                 :jdk (or jdk default-jdk)})))]
         (case format
           "json"
           (status/line :detail (json/generate-string libs-for-ci))
           "table"
           (status/line :detail (doric/table [:lib-name :jdk :requires] libs-for-ci))
-          (status/line :detail (str "available libs: " (string/join " " (map :name libs))))))
+          (status/line :detail (str "available libs: " (string/join " " (map :name libs)))))))
 
-      :else
-      (let [lib-names (get opts "<lib-name>")
-            requested-libs (if (zero? (count lib-names))
-                             libs
-                             (reduce (fn [ls a]
-                                       (if-let [l (first (filter #(= a (:name %)) libs))]
-                                         (conj ls l)
-                                         ls))
-                                     []
-                                     lib-names))]
-        (cond
-          (not (seq requested-libs))
-          (status/die 1 "no specified lib-names found")
+(def cli-lib-names-spec {:spec {:lib-names {:coerce [:string]
+                                            :positional true
+                                            :enum valid-libs
+                                            :desc "Library name(s), omit for all"}}
+                         :args->opts [:lib-names]})
 
-          (get opts "outdated")
-          (report-outdated requested-libs)
+(defn run-libs
+  {:org.babashka/cli
+   (merge {:doc "Run tests for specified libs"} cli-lib-names-spec)}
+  [{:keys [lib-names]}]
+  (let [libs (requested-libs lib-names)]
+    (run-tests libs)))
 
-          (get opts "run")
-          (run-tests requested-libs))))))
-
-(main/when-invoked-as-script
- (apply -main *command-line-args*))
+(defn outdated-libs
+  {:org.babashka/cli
+   (merge {:doc "Check specified libs for newer versions"} cli-lib-names-spec)}
+  [{:keys [lib-names]}]
+  (let [libs (requested-libs lib-names)]
+    (report-outdated libs)))

@@ -1,9 +1,6 @@
-#!/usr/bin/env bb
-
 (ns lint-kondo
   (:require [babashka.fs :as fs]
             [clojure.string :as string]
-            [helper.main :as main]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
@@ -30,10 +27,10 @@
     (status/line :detail "- copying lib configs and creating cache")
     (shell/command "clojure -M:clj-kondo --skip-lint --copy-configs --dependencies --lint" clj-cp bb-cp)))
 
-(defn- check-cache [{:keys [rebuild-cache]}]
+(defn- check-cache [{:keys [rebuild]}]
   (status/line :head "clj-kondo: cache check")
   (if-let [rebuild-reason (cond
-                            rebuild-cache
+                            rebuild
                             "Rebuild requested"
 
                             (not (cache-exists?))
@@ -47,7 +44,7 @@
         (build-cache))
     (status/line :detail "Using existing cache")))
 
-(defn- lint [opts]
+(defn lint [opts]
   (check-cache opts)
   (status/line :head "clj-kondo: linting")
   (let [{:keys [exit]}
@@ -58,15 +55,10 @@
       (= 3 exit) (status/die exit "clj-kondo found one or more lint warnings")
       (> exit 0) (status/die exit "clj-kondo returned unexpected exit code"))))
 
-(def args-usage "Valid args: [options]
+(def cli-opts {:spec {:rebuild {:coerce :boolean
+                                :desc "Force rebuild of clj-kondo lint cache"}}})
 
-Options:
-  --rebuild  Force rebuild of clj-kondo lint cache.
-  --help     Show this help.")
-
-(defn -main [& args]
-  (when-let [opts (main/doc-arg-opt args-usage args)]
-    (lint {:rebuild-cache (get opts "--rebuild")})))
-
-(main/when-invoked-as-script
- (apply -main *command-line-args*))
+(defn task
+  {:org.babashka/cli cli-opts}
+  [opts]
+  (lint opts))
