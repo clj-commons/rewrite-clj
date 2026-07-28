@@ -26,7 +26,7 @@
         target-path "target"
         target-exe "rewrite-clj-test"
         full-target-exe (str target-path "/" target-exe (when (= :win (os/get-os)) ".exe"))]
-    (status/line :head "Creating native image for test")
+    (status/line :head "Creating native image for test against clojure v%s" (:mvn-version clojure-version))
     (status/line :detail "java -version")
     (shell/command "java -version")
     (status/line :detail (str "\nnative-image max memory: " native-image-xmx))

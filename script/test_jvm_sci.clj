@@ -12,6 +12,6 @@
     (status/line :head "Exposing rewrite-clj API to sci")
     (shell/command "clojure -M:script -m sci-test-gen-publics")
 
-    (status/line :head "Interpreting tests with sci from using JVM using Clojure %s" (:version clojure-version))
+    (status/line :head "Interpreting tests with sci from using JVM using Clojure %s" (:mvn-version clojure-version))
     (shell/command (format "clojure -M:sci-test:%s -m sci-test.main --file script/sci_test_runner.clj --classpath test"
                            (:alias clojure-version)))))
