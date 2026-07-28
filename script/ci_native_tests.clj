@@ -5,7 +5,7 @@
             [helper.clojure-versions :as clojure-versions]
             [lread.status-line :as status]))
 
-(def java-versions ["25.1.3"])
+(def java-versions ["25.2.4"])
 (def oses ["ubuntu" "macos" "windows"])
 
 (defn- ci-test-matrix []
