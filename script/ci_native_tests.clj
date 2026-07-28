@@ -5,18 +5,18 @@
             [helper.clojure-versions :as clojure-versions]
             [lread.status-line :as status]))
 
-(def java-versions ["25.2.4"])
+(def graal-versions ["25.2.4"])
 (def oses ["ubuntu" "macos" "windows"])
 
 (defn- ci-test-matrix []
   (for [os oses
-        java-version java-versions
+        java-version graal-versions
         test-task ["test-native" "test-native-sci"]
         clj-version (mapv :version (clojure-versions/for-native))]
     {:desc (str/join " " [test-task os (str "jdk" java-version) (str "clj" clj-version)])
      :cmd (str "bb " test-task " --clojure-version " clj-version)
      :os os
-     :java-version java-version}))
+     :graal-version java-version}))
 
 (def valid-formats ["json" "table"])
 
@@ -32,5 +32,5 @@
     (if (= "json" format)
       (status/line :detail (json/generate-string matrix))
       (do
-        (status/line :detail (doric/table [:os :java-version :desc :cmd] matrix))
+        (status/line :detail (doric/table [:os :graal-version :desc :cmd] matrix))
         (status/line :detail "Total jobs found: %d" (count matrix))))))
