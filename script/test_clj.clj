@@ -4,8 +4,8 @@
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
-(defn run-unit-tests [{:keys [version alias] :as _clojure-version}]
-  (status/line :head (str "testing clojure source against clojure v" version))
+(defn run-unit-tests [{:keys [mvn-version version alias] :as _clojure-version}]
+  (status/line :head (str "testing clojure source against clojure v" mvn-version))
   (if (= "1.8" version)
     (shell/command "clojure"
                    (str "-M:test-common:clj-test-runner:" alias))
@@ -13,8 +13,8 @@
                    (str "-M:test-common:kaocha:" alias)
                    "--reporter" "documentation")))
 
-(defn run-isolated-tests[{:keys [version alias] :as _clojure-version}]
-  (status/line :head (str "running isolated tests against clojure v" version))
+(defn run-isolated-tests[{:keys [mvn-version version alias] :as _clojure-version}]
+  (status/line :head (str "running isolated tests against clojure v" mvn-version))
   (if (= "1.8" version)
     (shell/command "clojure" (str "-M:clj-test-runner:test-isolated:" alias)
                    "--dir" "test-isolated")

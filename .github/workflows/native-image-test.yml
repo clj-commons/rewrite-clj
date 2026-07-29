@@ -58,7 +58,7 @@ jobs:
       - name: Install GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          version: ${{ matrix.java-version }}
+          version: ${{ matrix.graal-version }}
           distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
