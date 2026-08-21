@@ -230,7 +230,7 @@
 ;;
 (defn- splint-patch
   "Disable failing test due to now missing github repo"
-  [{:keys [home-dir] :as lib}]
+  [lib]
   (deps-edn-v1-patch lib)
   (status/line :detail "Patching for failing test due to missing repo"))
 
