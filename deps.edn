@@ -42,7 +42,7 @@
            {;; for disabling the official compiler
             :classpath-overrides {org.clojure/clojure nil}
             :extra-deps {com.github.flow-storm/clojure {:mvn/version "1.12.5-1"}
-                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.7.0"}}
+                         com.github.flow-storm/flow-storm-dbg {:mvn/version "4.8.1"}}
             :jvm-opts ["-Dclojure.storm.instrumentEnable=true"]}
 
            :nrepl/jvm
@@ -65,7 +65,7 @@
            ;;
            :lint-cache {:replace-paths ["src"]} ;; when building classpath we want to exclude resources
                                                 ;; so we do not pick up our own clj-kondo config exports
-           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2026.07.24"}}
+           :clj-kondo {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2026.08.04"}}
                        :override-deps {org.clojure/clojure {:mvn/version "1.12.3"}}
                        :main-opts ["-m" "clj-kondo.main"]}
 
