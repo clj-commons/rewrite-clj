@@ -232,8 +232,7 @@
   "Disable failing test due to now missing github repo"
   [{:keys [home-dir] :as lib}]
   (deps-edn-v1-patch lib)
-  (status/line :detail "Patching for failing test due to missing repo")
-  (fs/delete (fs/path home-dir "test/noahtheduke/splint/integrations/dinero_test.clj")))
+  (status/line :detail "Patching for failing test due to missing repo"))
 
 ;;
 ;; zprint
@@ -466,8 +465,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["bb test-clj"]}
            {:name "splint"
-            :version "1.24.0"
-            :note "disabled a failing test, see https://github.com/NoahTheDuke/splint/issues/43"
+            :version "1.25.0"
             :platforms [:clj]
             :release {:scm :github
                       :repo "NoahTheDuke/splint"
