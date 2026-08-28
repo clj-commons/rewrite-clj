@@ -70,7 +70,7 @@
 (defn concat-strings
   "Return string version of `nodes`."
   [nodes]
-  (reduce str (map string nodes)))
+  (string/join (map string nodes)))
 
 ;; ## Inner Node
 
