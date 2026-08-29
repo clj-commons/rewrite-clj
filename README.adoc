@@ -61,6 +61,8 @@ Some projects using rewrite-clj v1
 * https://github.com/mauricioszabo/duck-repled[duck-repled] {not-canary-tested} - Transform your REPL interation into Pathom queries
 // tests for gen-fn rely on datomic-pro
 * https://github.com/ivarref/gen-fn[gen-fn] {not-canary-tested} - Generate Datomic function literals from regular Clojure namespaces
+// tests failed for me when I tried them
+* https://github.com/paintparty/jus[jus] {not-canary-tested} - TUI app for Clojure dialects
 * https://github.com/jonase/kibit[kibit] {canary-tested} - There's a function for that!
 // kit repo is not version tagged:
 * https://github.com/kit-clj/kit[kit] {not-canary-tested} - Lightweight, modular framework for scalable web development in Clojure
