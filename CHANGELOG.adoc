@@ -26,19 +26,18 @@ A release with known breaking changes is marked with:
 
 === v1.2.57 - 2026-08-29 [[v1.2.57]]
 
-* ci: fix error in rewrite-clj lib publish flow
-({lread})
-
-https://github.com/clj-commons/rewrite-clj/compare/v1.2.56\...v1.2.57[commit log]
-
-=== v1.2.56 - 2026-08-29 [[v1.2.56]]
-
 * fix: Don't crash when 1-char buffer PBR is provided.
 {issue}466[#466] ({person}alexander-yakushev[@alexander-yakushev])
 * perf: Reduce memory pressure and increase performance by changing the way rewrite-clj internally concats strings
 {issue}478[#478] ({person}nnichols[@nnichols])
+* ci: fix error in rewrite-clj lib publish flow
+({lread})
 
-https://github.com/clj-commons/rewrite-clj/compare/v1.2.55\...v1.2.56[commit log]
+https://github.com/clj-commons/rewrite-clj/compare/v1.2.55\...v1.2.57[commit log]
+
+=== v1.2.56 - 2026-08-29 [[v1.2.56]]
+
+* No release on clojars: failed due to an error ci workflow.
 
 === v1.2.55 - 2026-06-19 [[v1.2.55]]
 
