@@ -41,7 +41,6 @@
 (defn clojars-deploy
   [_opts]
   (assert-on-ci)
-  (System/exit 32)
   (analyze-ci-tag) ;; fail on unexpected version tag
   (t/shell "clojure -T:build:deploy deploy"))
 
