@@ -115,7 +115,9 @@
   {:github-id "onbreath"
    :contributions [:code-rewrite-clj-v1 :doc]}
   {:github-id "alexander-yakushev"
-   :contributions [:code-rewrite-clj-v1]}]
+   :contributions [:code-rewrite-clj-v1]}
+  {:github-id "nnichols"
+   :contributions [:issue :code-rewrite-clj-v1]}]
  :founders
  [{:github-id "xsc"
    :contributions [:original-author :doc :design :issue :review :support :code-rewrite-clj-v0]}

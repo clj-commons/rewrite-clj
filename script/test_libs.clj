@@ -300,7 +300,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "classpath"
-            :version "0.8.70"
+            :version "0.9.74"
             :platforms [:clj]
             :release {:scm :github
                       :repo "lambdaisland/classpath"

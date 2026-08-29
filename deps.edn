@@ -22,6 +22,7 @@
            :clojure-1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.4"}}}
            :clojure-1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.5"}}}
            ;; Candidate release is :clojure-pre-* (ex. clojure-pre-1.13.0) (if any)
+           :clojure-pre-1.12.6 {:override-deps {org.clojure/clojure {:mvn/version "1.12.6-alpha1"}}}
            :clojure-pre-1.13 {:override-deps {org.clojure/clojure {:mvn/version "1.13.0-alpha6"}}}
 
            ;;
@@ -154,7 +155,7 @@
                       :extra-deps {lread/sci-test
                                    #_ {:local/root "/home/lee/proj/oss/lread/sci-test"}
                                    {:git/url "https://github.com/lread/sci-test.git"
-                                    :sha "830580c3b29209f51b15f9a2a36926fda9cea1fd"}}}
+                                    :sha "321780706121d2f5e3159255e3e87378ec58a095"}}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 

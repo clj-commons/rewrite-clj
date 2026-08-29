@@ -10,13 +10,13 @@
 
 (defn- ci-test-matrix []
   (for [os oses
-        java-version graal-versions
+        graal-version graal-versions
         test-task ["test-native" "test-native-sci"]
         clj-version (mapv :version (clojure-versions/for-native))]
-    {:desc (str/join " " [test-task os (str "jdk" java-version) (str "clj" clj-version)])
+    {:desc (str/join " " [test-task os (str "graal" graal-version) (str "clj" clj-version)])
      :cmd (str "bb " test-task " --clojure-version " clj-version)
      :os os
-     :graal-version java-version}))
+     :graal-version graal-version}))
 
 (def valid-formats ["json" "table"])
 

@@ -26,6 +26,8 @@ A release with known breaking changes is marked with:
 
 * fix: Don't crash when 1-char buffer PBR is provided.
 {issue}466[#466] ({person}alexander-yakushev[@alexander-yakushev])
+* perf: Reduce memory pressure and increase performance by changing the way rewrite-clj internally concats strings
+{issue}478[#478] ({person}nnichols[@nnichols])
 
 === v1.2.55 - 2026-06-19 [[v1.2.55]]
 
