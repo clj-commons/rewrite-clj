@@ -405,7 +405,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["lein test"]}
            {:name "mranderson"
-            :version "0.7.1"
+            :version "0.7.2"
             :platforms [:clj]
             :release {:scm :github
                       :repo "benedekfazekas/mranderson"
