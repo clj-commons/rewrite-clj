@@ -1,7 +1,6 @@
 (ns rewrite-clj.test-helper
   "Generic test help fns (currently Clojure only, adapt as necessary)"
-  (:import [java.io File]
-           [java.nio.file Files]))
+  (:import [java.io File]))
 
 (defmacro with-test-file
   "Minimal temp file creator, shaped like `let` for easy kondo linting.
@@ -12,4 +11,4 @@
        ~@body
        (finally
          ;; use a delete that will throw on failure
-         (Files/delete (.toPath ~temp-file-sym))))))
+         (java.nio.file.Files/delete (.toPath ~temp-file-sym))))))
