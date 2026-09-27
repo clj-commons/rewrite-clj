@@ -5,9 +5,10 @@
             [clojure.test :refer [deftest is testing]]
             [clojure.tools.reader :as rdr]
             [rewrite-clj.node :as node]
-            [rewrite-clj.parser :as p])
+            [rewrite-clj.parser :as p]
+            #?(:clj [rewrite-clj.test-helper :as th]))
   #?(:clj (:import [clojure.lang ExceptionInfo LineNumberingPushbackReader]
-                   [java.io File StringReader])))
+                   [java.io StringReader])))
 
 (deftest t-parsing-the-first-few-whitespaces
   (doseq [[ws parsed]
@@ -638,20 +639,19 @@
 
 #?(:clj
    (deftest t-parsing-files
-     (let [f (doto (java.io.File/createTempFile "rewrite.test" "")
-               (.deleteOnExit))
-           s "âbcdé"
-           c ";; Hi"
-           o (str c "\n\n" (pr-str s))]
-       (spit f o)
-       (is (= o (slurp f)))
-       (let [n (p/parse-file-all f)
-             children (node/children n)]
-         (is (= :forms (node/tag n)))
-         (is (= o (node/string n)))
-         (is (= s (node/sexpr n)))
-         (is (= [:comment :newline :token] (map node/tag children)))
-         (is (= [";; Hi\n" "\n" (pr-str s)] (map node/string children)))))))
+     (th/with-test-file [f {:prefix "rewrite.test" :suffix ""}]
+       (let [s "âbcdé"
+             c ";; Hi"
+             o (str c "\n\n" (pr-str s))]
+         (spit f o)
+         (is (= o (slurp f)))
+         (let [n (p/parse-file-all f)
+               children (node/children n)]
+           (is (= :forms (node/tag n)))
+           (is (= o (node/string n)))
+           (is (= s (node/sexpr n)))
+           (is (= [:comment :newline :token] (map node/tag children)))
+           (is (= [";; Hi\n" "\n" (pr-str s)] (map node/string children))))))))
 
 (defn- nodes-with-meta
   "Create map associating row/column number pairs with the node at that position."
@@ -757,8 +757,7 @@
     (let [str-actual (-> in p/parse-string-all node/string)]
       (is (= expected str-actual) "from string")
       #?(:clj
-         (is (= expected (let [t-file (File/createTempFile "rewrite-clj-parse-test" ".clj")]
-                            (.deleteOnExit t-file)
+         (is (= expected (th/with-test-file [t-file {:prefix "rewrite-clj-parse-test" :suffix ".clj"}]
                             (spit t-file in)
                             (-> t-file p/parse-file-all node/string))) "from file")))))
 

@@ -73,6 +73,8 @@
                       :main-opts ["-m" "eastwood.lint" {:source-paths ["src"]
                                                         :test-paths ["test"]
                                                         :add-linters [:performance]
+                                                        ;; false positives from eastwood, rely on kondo for this
+                                                        :exclude-linters [:constant-test :suspicious-test]
                                                         ;; not too worried about eastwood finding deprecation usages,
                                                         ;; we rely on clj-kondo for that
                                                         :ignored-faults {:deprecations {rewrite-clj.regression-test true

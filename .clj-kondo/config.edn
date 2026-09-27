@@ -1,7 +1,8 @@
 {:config-paths ^:replace ["lread/status-line"]
  :lint-as
- { clojure.test.check.clojure-test/defspec clojure.core/def
+ {clojure.test.check.clojure-test/defspec clojure.core/def
   clojure.test.check.properties/for-all clojure.core/let
+  rewrite-clj.test-helper/with-test-file clojure.core/let
   rewrite-clj.zip/subedit-> clojure.core/->
   rewrite-clj.zip.subedit/subedit-> clojure.core/->
   rewrite-clj.zip/subedit->> clojure.core/->>

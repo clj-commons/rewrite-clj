@@ -1,6 +1,7 @@
 (ns rewrite-clj.regression-test
   (:require [clojure.test :refer [deftest is testing]]
             [rewrite-clj.node :as node]
+            #?(:clj [rewrite-clj.test-helper :as th])
             [rewrite-clj.zip :as z]))
 
 ;; ## Regression Tests for 0.3.x -> 0.4.x
@@ -244,8 +245,7 @@
 
     #?(:clj
        (testing "creating zippers from files"
-         (let [f (doto (java.io.File/createTempFile "rewrite.test" "")
-                   (.deleteOnExit))]
+         (th/with-test-file [f {:prefix "rewrite.test" :suffix ""}]
            (spit f data-string)
            (is (= data-string (slurp f)))
            (let [loc (z/of-file f)]

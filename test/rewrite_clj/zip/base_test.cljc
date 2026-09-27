@@ -1,6 +1,7 @@
 (ns rewrite-clj.zip.base-test
   (:require [clojure.test :refer [deftest is]]
             [rewrite-clj.node :as node]
+            #?(:clj [rewrite-clj.test-helper :as th])
             [rewrite-clj.zip :as z]))
 
 (deftest t-edn-for-zipper-creation-with-no-auto-move
@@ -9,10 +10,10 @@
                                [(node/spaces 3)
                                 (node/coerce [[1 2] 3])]))
                  (z/of-string* s)
-                 #?(:clj (let [f (java.io.File/createTempFile "rewrite" ".clj")]
+                 #?(:clj (th/with-test-file [f {:prefix "rewrite" :suffix ".clj"}]
                            (spit f s)
                            (z/of-file* f)))
-                 #?(:clj (let [f (java.io.File/createTempFile "rewrite" ".clj")]
+                 #?(:clj (th/with-test-file [f {:prefix "rewrite" :suffix ".clj"}]
                            (spit f s)
                            (z/of-file* (.getPath f))))]
             :let [[_ a b c d] (iterate z/next* loc)]]
@@ -35,10 +36,10 @@
                      [(node/spaces 3)
                       (node/coerce [[1 2] 3])]))
                  (z/of-string s)
-                 #?(:clj (let [f (java.io.File/createTempFile "rewrite" ".clj")]
+                 #?(:clj (th/with-test-file [f {:prefix "rewrite" :suffix ".clj"}]
                            (spit f s)
                            (z/of-file f)))
-                 #?(:clj (let [f (java.io.File/createTempFile "rewrite" ".clj")]
+                 #?(:clj (th/with-test-file [f {:prefix "rewrite" :suffix ".clj"}]
                            (spit f s)
                            (z/of-file (.getPath f))))]
             :let [[_ a b c d] (iterate z/next* loc)]]
