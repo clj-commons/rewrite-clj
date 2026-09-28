@@ -94,16 +94,6 @@ Have an update? Let us know!
 {canary-needed-patch} [.small]#source required minor change to work with rewrite-clj v1# +
 {not-canary-tested} [.small]#no easy-peasy way to run automated unit tests found for this project#
 
-== Versioning
-
-Rewrite-clj versioning scheme is: `major`.`minor`.`release`-`test-qualifier`
-
-* `major` increments when a non alpha release API has been broken - something, as a rule, we'd like to avoid.
-* `minor` increments to convey significant new features have been added.
-* `release` indicates small changes or bug fixes - starting with v1.1, it is the rewrite-clj release count over the life of rewrite-clj.
-* `test-qualifier` is absent for stable releases.
-Can be `alpha`, `beta`, `rc1`, etc.
-
 [[contributors]]
 == People
 
