@@ -73,6 +73,8 @@
                       :main-opts ["-m" "eastwood.lint" {:source-paths ["src"]
                                                         :test-paths ["test"]
                                                         :add-linters [:performance]
+                                                        ;; false positives from eastwood, rely on kondo for this
+                                                        :exclude-linters [:constant-test :suspicious-test]
                                                         ;; not too worried about eastwood finding deprecation usages,
                                                         ;; we rely on clj-kondo for that
                                                         :ignored-faults {:deprecations {rewrite-clj.regression-test true
@@ -154,7 +156,7 @@
                       :extra-deps {lread/sci-test
                                    #_ {:local/root "/home/lee/proj/oss/lread/sci-test"}
                                    {:git/url "https://github.com/lread/sci-test.git"
-                                    :sha "321780706121d2f5e3159255e3e87378ec58a095"}}}
+                                    :sha "0b3cf73b9d4e2bc6d8a482ff3c668f1ddde549c9" }}}
 
            :native-test {:extra-paths ["target/generated/graal"]}
 

@@ -24,6 +24,13 @@ A release with known breaking changes is marked with:
 //   (adjust these in publish.clj as you see fit)
 === Unreleased
 
+* fix: operation that read from a file no longer leak a file descriptor:
+{issue}483[#483] ({lread}):
+** `rewrite-clj.parser/parse-file`
+** `rewrite-clj.parser/parse-file-all`
+** `rewrite-clj.zip/of-file`
+** `rewrite-clj.zip/of-file*`
+
 === v1.2.57 - 2026-08-29 [[v1.2.57]]
 
 * fix: Don't crash when 1-char buffer PBR is provided.
