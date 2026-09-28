@@ -9,7 +9,15 @@
 :borkdude: {person}borkdude[@borkdude]
 
 [.normal]
-A release with known breaking changes is marked with:
+Rewrite-clj versioning scheme is: `major`.`minor`.`release`-`test-qualifier`
+
+* `major` increments when a non alpha release API has been broken - something, as a rule, we'd like to avoid.
+* `minor` increments to convey significant new features or changes.
+* `release` indicates smaller changes or bug fixes - starting with v1.1, it is the rewrite-clj release count over the life of rewrite-clj.
+* `test-qualifier` is absent for stable releases.
+Can be `alpha`, `beta`, `rc1`, etc.
+
+A release with known breaking changes is described in the changelog with:
 
 * [breaking] you probably need to change your code
 * [minor breaking] you likely don't need to change your code
