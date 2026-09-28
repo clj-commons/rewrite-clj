@@ -298,7 +298,12 @@
            ch)))
 
      r/IPushbackReader
-     (unread [_reader ch] (r/unread rdr ch))))
+     (unread [_reader ch] (r/unread rdr ch))
+
+     Closeable
+     (close [_reader]
+       (when (instance? Closeable rdr)
+         (.close ^Closeable rdr)))))
 
 #?(:clj
    (defn newline-normalizing-reader
