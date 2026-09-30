@@ -22,7 +22,7 @@
            :clojure-1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.4"}}}
            :clojure-1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.6"}}}
            ;; Candidate release is :clojure-pre-* (ex. clojure-pre-1.13.0) (if any)
-           :clojure-pre-1.13 {:override-deps {org.clojure/clojure {:mvn/version "1.13.0-alpha7"}}}
+           :clojure-pre-1.13 {:override-deps {org.clojure/clojure {:mvn/version "1.13.0-alpha8"}}}
 
            ;;
            ;; ClojureScript version we test with (and support)
@@ -138,7 +138,7 @@
                                  cli-matic/cli-matic {:mvn/version "0.5.4"}}}
 
            :apply-import-vars {:override-deps {org.clojure/clojure {:mvn/version "1.12.3"}}
-                               :extra-deps {metosin/malli {:mvn/version "0.20.1"}
+                               :extra-deps {metosin/malli {:mvn/version "0.20.2"}
                                             io.aviso/pretty {:mvn/version "1.4.4"}}
                                :ns-default lread.apply-import-vars}
 
@@ -178,7 +178,7 @@
            ;; Maintenance support
            ;;
            :outdated {:extra-deps {com.github.liquidz/antq {:mvn/version "2.11.1276"}
-                                   org.slf4j/slf4j-simple {:mvn/version "2.0.19"} ;; to rid ourselves of logger warnings
+                                   org.slf4j/slf4j-simple {:mvn/version "2.0.20"} ;; to rid ourselves of logger warnings
                                    }
                       :override-deps {org.clojure/clojure {:mvn/version "1.12.3"}}
                       :main-opts ["-m" "antq.core"
