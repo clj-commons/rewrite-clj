@@ -329,7 +329,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -T:build ci"]}
            {:name "cljfmt"
-            :version "0.16.5"
+            :version "0.16.6"
             :platforms [:clj :cljs]
             :root "cljfmt"
             :release {:scm :github
