@@ -320,7 +320,8 @@
   "Creates a new IndexingPushbackReader from a reader that is assumed to already
   be a IPushbackReader, hence no double PushbackReader-wrapping is performed.`"
   [pbr]
-  (r/->IndexingPushbackReader pbr 1 1 true nil 0 nil false))
+    #?(:clj  (r/->IndexingPushbackReader pbr 1 1 true nil 0 nil false)
+       :cljs (r/->IndexingPushbackReader pbr 1 1 true nil 0 nil)))
 
 #?(:clj
    (defn file-reader
