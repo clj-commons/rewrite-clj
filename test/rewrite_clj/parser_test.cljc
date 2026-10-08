@@ -67,10 +67,11 @@
            ["sym:sym"                    'sym:sym]
            ["\"string\""                 "string"]
            ["b//"                        'b//]]]
-    (let [n (p/parse-string s)]
-      (is (= :token (node/tag n)))
-      (is (= s (node/string n)))
-      (is (= r (node/sexpr n))))))
+    (testing (str "parsing " s)
+      (let [n (p/parse-string s)]
+        (is (= :token (node/tag n)))
+        (is (= s (node/string n)))
+        (is (= r (node/sexpr n)))))))
 
 (deftest t-parsing-clojure-1-12-array-class-tokens
   (doseq [dimension (range 1 10)]
@@ -93,6 +94,53 @@
       (is (= :token (node/tag n)))
       (is (keyword? r))
       (is (= expected-r r)))))
+
+(deftest t-parsing-various-keywords
+  (doseq [[kind inputs] [[:valid [":a" "::a" ":a/b" "::a/b"
+                                  ":a.b/c" "::a.b/c"
+                                  ":a.b/c.d" "::a.b/c.d"
+                                  ":a%b" ":a:b"
+                                  [":a~b" ":a"] [":a/b~c" ":a/b"]
+                                  ["::a~b" "::a"] ["::a/b~c" "::a/b"]
+                                  ":&:hover" ":&::before"]]
+                         [:invalid [":" ":/" ":a/" ":/b" ":a//b"
+                                    "::" "::/" "::a/" "::/b"
+                                    "::/::" "::a::/::b::"
+                                    ":::" ":::a" ":::a/b" ":::/" ":::a/" ":::/b"
+                                    "://" ":///" ":://" "::///"
+                                    ":::::/a:::::/:::::////"]]]
+          :let [kind? (if (= :valid kind)
+                        node/keyword-node?
+                        node/invalid-node?)]
+          s inputs
+          :let [[given expected] (if (vector? s) s [s s])]]
+    (testing (str (name kind) " keyword: " (pr-str given))
+      (let [n (p/parse-string given)]
+        (is (kind? n))
+        (is (= expected (str n)))
+        (is (= :token (node/tag n)))))))
+
+(deftest t-parsing-various-symbols
+  (doseq [[kind inputs] [[:valid ["a" "a/b" "/"
+                                  "a.b" "a.b/c" "a.b/c.d"
+                                  "." "./."
+                                  "a%b" "a:b"
+                                  ["a~b" "a"] ["a/b~c" "a/b"]
+                                  "&:hover" "&::before"]]
+                         [:invalid ["a/" "/b" "a//b"
+                                    "//" "./" "/." "..//.."
+                                    "a/b/" "/b/c"
+                                    "a/b/c" "a.b/c.d/e"]]]
+          :let [kind? (if (= :valid kind)
+                        node/symbol-node?
+                        node/invalid-node?)]
+          s inputs
+          :let [[given expected] (if (vector? s) s [s s])]]
+    (testing (str (name kind) " symbol: " (pr-str given))
+      (let [n (p/parse-string given)]
+        (is (kind? n))
+        (is (= expected (str n)))
+        (is (= :token (node/tag n)))))))
 
 (deftest t-ratios
   (let [s "3/4"
@@ -590,8 +638,8 @@
            ["\"abc"                 #".*EOF.*"]
            ["#\"abc"                #".*Unexpected EOF.*"]
            ["(def x 0]"             #".*Unmatched delimiter.*"]
-           ["foobar/0"              #".*Invalid symbol: foobar/0"]  ;; array class dimension can be 1 to 9
-           ["foobar/11"             #".*Invalid symbol: foobar/11"] ;; array class dimension can be 1 to 9
+           ; ["foobar/0"              #".*Invalid symbol: foobar/0"]  ;; array class dimension can be 1 to 9
+           ; ["foobar/11"             #".*Invalid symbol: foobar/11"] ;; array class dimension can be 1 to 9
            ["##wtf"                 #".*Invalid token: ##wtf"]
            ["#="                    #".*:eval node expects 1 value.*"]
            ["#^"                    #".*:meta node expects 2 values.*"]

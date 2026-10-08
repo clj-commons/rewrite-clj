@@ -13,6 +13,8 @@
   [[fn-node]]
   [[forms-node]]
   [[integer-node]]
+  [[invalid-keyword-node]]
+  [[invalid-symbol-node]]
   [[keyword-node]]
   [[list-node]]
   [[map-node]]
@@ -75,6 +77,7 @@
   [[whitespace-or-comment?]]
   [[keyword-node?]]
   [[symbol-node?]]
+  [[invalid-node?]]
   [[linebreak?]]
   [[comma?]]"
   ^{:added "0.4.0"}
@@ -84,6 +87,7 @@
             [rewrite-clj.node.fn]
             [rewrite-clj.node.forms]
             [rewrite-clj.node.integer]
+            [rewrite-clj.node.invalid]
             [rewrite-clj.node.keyword]
             [rewrite-clj.node.meta]
             [rewrite-clj.node.namespaced-map]
@@ -136,6 +140,11 @@
 
            [rewrite-clj.node.integer
             integer-node]
+
+           [rewrite-clj.node.invalid
+            invalid-keyword-node
+            invalid-symbol-node
+            invalid-node?]
 
            [rewrite-clj.node.keyword
             keyword-node

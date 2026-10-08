@@ -221,26 +221,43 @@
           (reader-impl-errors/throw-invalid reader :keyword token)))
       (reader-impl-errors/throw-single-colon reader))))
 
+(defn valid-token?
+  [token]
+  (if token
+    (not (or (= token "")
+             (string/ends-with? token ":")
+             (string/starts-with? token "::")))
+    false))
+
+(defn valid-symbol?
+  [ns sep? sym]
+  (cond
+    (not sym) false
+    ns (or (contains? #{"1" "2" "3" "4" "5" "6" "7" "8" "9"} sym)
+           (and (not (interop/numeric? (nth sym 0)))
+                (not (= "" sym))
+                (not (string/starts-with? ns ":"))
+                (not (string/ends-with? ns ":"))
+                (or (= sym "/")
+                    (nil? (string/index-of sym "/")))))
+    sep? false
+    :else (and (not (string/starts-with? sym ":"))
+               (or (= sym "/")
+                   (nil? (string/index-of sym "/"))))))
+
 (defn- parse-symbol
   "Parses a string into a Symbol object, either unqualified or namespaced.
 
   Cribbed from clojure/cljs.tools.reader.impl.commons/parse-symbol merging clj and cljs fns into single implementation
   Added in equivalent of TRDR-73 patch to allow array class symbols (e.g. foobar/3)."
   [^String token]
-  (when-not (or (= token "")
-                (string/ends-with? token ":")
-                (string/starts-with? token "::"))
+  (when (valid-token? token)
     (if-let [ns-idx (string/index-of token "/")]
       (let [ns (subs token 0 ns-idx)
             ns-idx (inc ns-idx)]
         (when-not (== ns-idx (count token))
           (let [sym (subs token ns-idx)]
-            (when (or (contains? #{"1" "2" "3" "4" "5" "6" "7" "8" "9"} sym)
-                      (and (not (interop/numeric? (nth sym 0)))
-                           (not (= "" sym))
-                           (not (string/ends-with? ns ":"))
-                           (or (= sym "/")
-                               (nil? (string/index-of sym "/")))))
+            (when (valid-symbol? ns true sym)
               (symbol ns sym)))))
       (symbol token))))
 
@@ -262,6 +279,104 @@
         ;; on parsing exception strings. A user having to resort
         ;; to parsing exception messages is not great, but a separate issue.
         (reader-impl-errors/throw-invalid nil :symbol token))))
+
+;; new stuff
+
+(defn lax-read-token
+  "Copied and adapted from clojure.tools.reader.edn/read-token.
+  Does not throw."
+  ^String [#?(:cljs ^:not-native reader :default reader) #?(:clj ^java.lang.Character ch :default ch)]
+  (loop [sb #?(:clj (StringBuilder.)
+               :cljs (StringBuffer.))
+         ch ch]
+    (if (or (whitespace? ch)
+            (#'edn/macro-terminating? ch)
+            (#'edn/not-constituent? ch)
+            (nil? ch))
+      (do (when ch
+            (unread reader ch))
+          (str sb))
+      (recur (doto sb (.append ch)) (r/read-char reader)))))
+
+(defn lax-parse-symbol
+  "Parses a string into a vector of `[?ns sep? ?sym valid?]`.
+
+  * `?ns` is a string or `nil`,
+  * `sep?` is a boolean indicating presence of at least one `/`,
+  * `?sym` is a string or `nil`,
+  * `valid?` is a boolean indicating if the result is a valid symbol."
+  [^String token]
+  (let [ns-idx (string/index-of token "/")
+        ns (-> (and ns-idx
+                    (subs token 0 ns-idx))
+               (not-empty))
+        sym (-> (if ns-idx
+                  (subs token (inc ns-idx))
+                  token)
+                (not-empty))
+        sep? (some? ns-idx)]
+    [ns sep? sym (boolean
+                  (and (valid-token? token)
+                       (valid-symbol? ns sep? sym)))]))
+
+(comment
+  (lax-parse-symbol "a") ;=> [nil false "a" true]
+  (lax-parse-symbol "a/") ;=> ["a" true nil false]
+  (lax-parse-symbol "a/b") ;=> ["a" true "b" true]
+  (lax-parse-symbol "/b") ;=> [nil true "b" false]
+  (lax-parse-symbol "/a/") ;=> [nil true "a/" false]
+  :eoc)
+
+(defn lax-read-keyword
+  "This customized version of clojure.tools.reader.edn's read-keyword allows for a much wider range of inputs than the original or the existing `rewrite-clj.reader/read-keyword`. It expects the reader is right after the first `:`, and returns a vector of `[double-colon? ?ns sep? ?sym valid?]`.
+
+  * `double-colon?` is a boolean indicating the keyword starts with `::`,
+  * `?ns` is a string or `nil`,
+  * `sep?` is a boolean indicating presence of at least one `/`,
+  * `?sym` is a string or `nil`.
+  * `valid?` is a boolean indicating if the result is a valid keyword.
+
+  Does not (deliberately) throw. Any additional `:` are included in the ns or sym as appropriate."
+  [#?(:cljs ^:not-native reader :default reader)]
+  (let [ch (r/read-char reader)
+        double-colon? (identical? \: ch)
+        ch' (if double-colon? (r/read-char reader) ch)
+        token (lax-read-token reader ch')
+        s (lax-parse-symbol token)]
+    [double-colon? (s 0) (s 1) (s 2) (s 3)]))
+
+(comment
+  (lax-read-keyword (r/string-reader "")) ; [false nil false nil false]
+  (lax-read-keyword (r/string-reader "a")) ; [false nil false "a" true]
+  (lax-read-keyword (r/string-reader ":a/")) ; [true "a" true nil false]
+  (lax-read-keyword (r/string-reader "::/b")) ; [true ":" true "b" false]
+  (lax-read-keyword (r/string-reader "a/b")) ; [false "a" true "b" true]
+  (lax-read-keyword (r/string-reader "::a")) ; [true nil false "::a" false]
+  (lax-read-keyword (r/string-reader ":::::/a:::::/:::::////")) ; [true "::::" true "a:::::/:::::////" false]
+  :eoc)
+
+(defn lax-read-symbol
+  "This customized version of clojure.tools.reader.edn's read-symbol allows for a much wider range of inputs than the original or the existing `rewrite-clj.reader/read-symbol`.
+
+  Either returns `nil`, `true`, `false`, a valid symbol, or a vector of `[?ns ?sym valid?]`, described below:
+
+  * `?ns` is a string or `nil`,
+  * `?sym` is a string or `nil`.
+  * `valid?` is a boolean indicating if the result is a valid symbol.
+
+  Does not (deliberately) throw."
+  [^String token]
+  (case token
+    ;; special symbols
+    "nil" nil
+    "true" true
+    "false" false
+    "/" '/
+    #_:else (let [v (lax-parse-symbol token)]
+              ;; if valid, convert to symbol directly
+              (if (v 3)
+                (symbol (v 0) (v 2))
+                v))))
 
 ;; ## Reader Types
 

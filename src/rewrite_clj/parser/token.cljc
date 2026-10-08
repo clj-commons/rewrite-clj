@@ -1,5 +1,6 @@
 (ns ^:no-doc rewrite-clj.parser.token
   (:require [rewrite-clj.interop :as interop]
+            [rewrite-clj.node.invalid :as invalid]
             [rewrite-clj.node.token :as ntoken]
             [rewrite-clj.reader :as r])
   #?@(:cljs [(:import [goog.string StringBuffer])]
@@ -61,20 +62,24 @@
             (read-to-char-boundary reader buf)
             (read-to-boundary reader buf not-boundary?))
         s (str buf)
-        v (if (or (= first-char \\) ;; character like \n or \newline
-                  (= first-char \#) ;; something like ##Inf, ##Nan
-                  (number-literal? s))
-            (r/string->edn s)
-            (r/read-symbol s))]
-    (if (symbol? v)
-      (symbol-node reader v s buf)
-      (ntoken/token-node v s))))
+        edn (when (or (= first-char \\) ;; character like \n or \newline
+                      (= first-char \#) ;; something like ##Inf, ##Nan
+                      (number-literal? s))
+              (r/string->edn s))
+        v (when-not edn (r/lax-read-symbol s))]
+    (cond
+      edn (ntoken/token-node edn s)
+      (symbol? v) (symbol-node reader v s buf)
+      (vector? v) (invalid/invalid-symbol-node (v 0) (v 2))
+      :else (ntoken/token-node v s))))
 
 (comment
   (require '[clojure.tools.reader.reader-types :as rt])
 
   (parse-token (rt/string-push-back-reader "foo"))
   ;; => {:value foo, :string-value "foo", :map-qualifier nil}
+
+  (parse-token (rt/string-push-back-reader "a//b/c"))
 
   (parse-token (rt/string-push-back-reader "42"))
   ;; => {:value 42, :string-value "42"}
