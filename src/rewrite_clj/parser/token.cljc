@@ -62,6 +62,25 @@
             (read-to-char-boundary reader buf)
             (read-to-boundary reader buf not-boundary?))
         s (str buf)
+        v (if (or (= first-char \\) ;; character like \n or \newline
+                  (= first-char \#) ;; something like ##Inf, ##Nan
+                  (number-literal? s))
+            (r/string->edn s)
+            (r/read-symbol s))]
+    (if (symbol? v)
+      (symbol-node reader v s buf)
+      (ntoken/token-node v s))))
+
+(defn safe-parse-token
+  "Parse a single token. For example: symbol, number or character."
+  [#?(:cljs ^not-native reader :default reader)]
+  (let [buf #?(:clj (StringBuilder.) :cljs (StringBuffer.))
+        first-char (r/next reader)
+        _ (.append buf (char first-char))
+        _ (if (= first-char \\)
+            (read-to-char-boundary reader buf)
+            (read-to-boundary reader buf not-boundary?))
+        s (str buf)
         edn (when (or (= first-char \\) ;; character like \n or \newline
                       (= first-char \#) ;; something like ##Inf, ##Nan
                       (number-literal? s))
@@ -78,8 +97,6 @@
 
   (parse-token (rt/string-push-back-reader "foo"))
   ;; => {:value foo, :string-value "foo", :map-qualifier nil}
-
-  (parse-token (rt/string-push-back-reader "a//b/c"))
 
   (parse-token (rt/string-push-back-reader "42"))
   ;; => {:value 42, :string-value "42"}

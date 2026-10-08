@@ -376,9 +376,9 @@
       (n/string))
   ;; => \"/b\"
 
-  (-> (invalid-symbol-node \"a\" \"b\")
+  (-> (invalid-symbol-node \"a\" \"///b\")
       (n/string))
-  ;; => \"a/b\"
+  ;; => \"a////b\"
   ```"
   [?ns ?name] (rewrite-clj.node.invalid/invalid-symbol-node ?ns ?name))
 

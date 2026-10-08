@@ -115,7 +115,7 @@
           s inputs
           :let [[given expected] (if (vector? s) s [s s])]]
     (testing (str (name kind) " keyword: " (pr-str given))
-      (let [n (p/parse-string given)]
+      (let [n (p/parse-string given {:allow-invalid true})]
         (is (kind? n))
         (is (= expected (str n)))
         (is (= :token (node/tag n)))))))
@@ -137,7 +137,7 @@
           s inputs
           :let [[given expected] (if (vector? s) s [s s])]]
     (testing (str (name kind) " symbol: " (pr-str given))
-      (let [n (p/parse-string given)]
+      (let [n (p/parse-string given {:allow-invalid true})]
         (is (kind? n))
         (is (= expected (str n)))
         (is (= :token (node/tag n)))))))
@@ -638,8 +638,8 @@
            ["\"abc"                 #".*EOF.*"]
            ["#\"abc"                #".*Unexpected EOF.*"]
            ["(def x 0]"             #".*Unmatched delimiter.*"]
-           ; ["foobar/0"              #".*Invalid symbol: foobar/0"]  ;; array class dimension can be 1 to 9
-           ; ["foobar/11"             #".*Invalid symbol: foobar/11"] ;; array class dimension can be 1 to 9
+           ["foobar/0"              #".*Invalid symbol: foobar/0"]  ;; array class dimension can be 1 to 9
+           ["foobar/11"             #".*Invalid symbol: foobar/11"] ;; array class dimension can be 1 to 9
            ["##wtf"                 #".*Invalid token: ##wtf"]
            ["#="                    #".*:eval node expects 1 value.*"]
            ["#^"                    #".*:meta node expects 2 values.*"]

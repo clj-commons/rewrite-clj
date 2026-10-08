@@ -11,10 +11,10 @@
             [rewrite-clj.node.seq :refer [list-node map-node vector-node set-node]]
             [rewrite-clj.node.token :refer [token-node]]
             [rewrite-clj.node.uneval :refer [uneval-node]]
-            [rewrite-clj.parser.keyword :refer [parse-keyword]]
+            [rewrite-clj.parser.keyword :refer [parse-keyword safe-parse-keyword]]
             [rewrite-clj.parser.namespaced-map :refer [parse-namespaced-map]]
             [rewrite-clj.parser.string :refer [parse-string parse-regex]]
-            [rewrite-clj.parser.token :refer [parse-token]]
+            [rewrite-clj.parser.token :refer [parse-token safe-parse-token]]
             [rewrite-clj.parser.whitespace :refer [parse-whitespace]]
             [rewrite-clj.reader :as reader]))
 
@@ -73,8 +73,10 @@
 ;; ### Base
 
 (defmethod parse-next* :token
-  [#?(:cljs ^not-native reader :default reader) _]
-  (parse-token reader))
+  [#?(:cljs ^not-native reader :default reader) context]
+  (if (:allow-invalid context)
+    (safe-parse-token reader)
+    (parse-token reader)))
 
 (defmethod parse-next* :delimiter
   [#?(:cljs ^not-native reader :default reader) _]
@@ -106,8 +108,10 @@
 ;; ### Special Values
 
 (defmethod parse-next* :keyword
-  [#?(:cljs ^not-native reader :default reader) _]
-  (parse-keyword reader))
+  [#?(:cljs ^not-native reader :default reader) context]
+  (if (:allow-invalid context)
+    (safe-parse-keyword reader)
+    (parse-keyword reader)))
 
 (defmethod parse-next* :string
   [#?(:cljs ^not-native reader :default reader) _]
