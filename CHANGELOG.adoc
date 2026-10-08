@@ -32,6 +32,10 @@ A release with known breaking changes is described in the changelog with:
 //   (adjust these in publish.clj as you see fit)
 === Unreleased
 
+* "fix", breaking: change symbol and keyword reads to more accepting, creating `InvalidSymbolNode` and `InvalidKeywordNode` if the resulting symbol or keyword is broken in some way (such as `:`).
+{issue}87[#87] (many folks)
+{pr}489[#489] ({person}NoahTheDuke[@NoahTheDuke])
+
 === v1.3.59 - 2026-10-01 [[v1.3.59]]
 
 * fix: ClojureScript only: Address arity warning about `->IndexingPushbackReader` call.
