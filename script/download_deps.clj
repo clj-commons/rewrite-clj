@@ -1,10 +1,19 @@
 (ns download-deps
-  (:require [babashka.tasks :as t]))
+  (:require
+   [clojure.edn :as edn]
+   [clojure.tools.build.api :as b]
+   [lread.status-line :as status]))
 
-;; clojure has a -P command, but to bring down all deps we need to specify all aliases
-;; bb deps will be brought down just from running bb (which assumedly is how this code is run)
-
-(defn task
-  [_opts]
-  ;; do all the work from build.clj to avoid repeated JVM launch costs
-  (t/clojure "-T:build download-deps"))
+(defn task [_opts]
+  (status/line :head "Downloading deps")
+  (let [aliases (->> "deps.edn"
+                     slurp
+                     edn/read-string
+                     :aliases
+                     keys)]
+    ;; one at a time because aliases with :replace-deps will... well... you know.
+    (println "Bring down default deps")
+    (b/create-basis {})
+    (doseq [a (sort aliases)]
+      (println "Bring down deps for alias" a)
+      (b/create-basis {:aliases [a]}))))
