@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup
-        uses: ./.github/workflows/shared-setup
+        uses: ./.github/actions/shared-setup
 
       - id: set-tests
         name: Set test var for matrix
@@ -51,12 +51,12 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup
-        uses: ./.github/workflows/shared-setup
+        uses: ./.github/actions/shared-setup
         with:
           jdk: ${{ matrix.jdk }}
 
       - name: Install Planck
-        uses: ./.github/workflows/setup-planck
+        uses: ./.github/actions/setup-planck
         if: contains( matrix.requires, 'planck' )
 
       - name: Node modules cache

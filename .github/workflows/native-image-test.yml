@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup
-        uses: ./.github/workflows/shared-setup
+        uses: ./.github/actions/shared-setup
 
       - id: set-tests
         name: Set test var for matrix
@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup
-        uses: ./.github/workflows/shared-setup
+        uses: ./.github/actions/shared-setup
         with:
           jdk: skip
 
