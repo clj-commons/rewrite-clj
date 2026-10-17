@@ -1,12 +1,12 @@
 (ns outdated
-  (:require [clojure.java.io :as io]
+  (:require [antq.core :as antq]
+            [clojure.java.io :as io]
             [helper.shell :as shell]
             [lread.status-line :as status]))
 
 (defn check-clojure []
-  (status/line :head "Checking Clojure deps")
-  (shell/command {:continue true}
-                 "clojure -M:outdated"))
+  (status/line :head "Checking Clojure deps & Github Actions")
+  (antq/-main))
 
 (defn check-nodejs []
   (status/line :head "Checking Node.js deps")
