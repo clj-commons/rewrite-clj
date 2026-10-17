@@ -350,7 +350,7 @@
                         "bin/test unit"]}
            {:name "clojure-lsp"
             :platforms [:clj]
-            :version "2026.07.06-14.34.19"
+            :version "2026.10.15-11.42.38"
             :release {:scm :github
                       :repo "clojure-lsp/clojure-lsp"}
             :patch-fn clojure-lsp-patch
@@ -358,7 +358,7 @@
             :test-cmds ["bb test"]}
            {:name "clojure-mcp"
             :platforms [:clj]
-            :version "0.5.1"
+            :version "0.6.0"
             :release {:scm :github
                       :repo "bhauman/clojure-mcp"
                       :via :tag
@@ -435,7 +435,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "rewrite-edn"
-            :version "0.5.0"
+            :version "0.6.10"
             :platforms [:clj]
             :release {:scm :github
                       :repo "borkdude/rewrite-edn"
@@ -455,7 +455,7 @@
             :show-deps-fn lein-deps-tree
             :test-cmds ["make test"]}
            {:name "rich-comment-tests"
-            :version "1.0.3"
+            :version "1.0.5"
             :platforms [:clj] ;; and bb but we don't test that here
             :release {:scm :github
                       :repo "matthewdowney/rich-comment-tests"
