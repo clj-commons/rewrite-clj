@@ -435,7 +435,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "rewrite-edn"
-            :version "0.6.10"
+            :version "0.6.11"
             :platforms [:clj]
             :release {:scm :github
                       :repo "borkdude/rewrite-edn"
@@ -445,7 +445,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "refactor-nrepl"
-            :version "3.14.0"
+            :version "3.15.0"
             :platforms [:clj]
             :release {:scm :github
                       :repo "clojure-emacs/refactor-nrepl"
