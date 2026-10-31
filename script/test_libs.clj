@@ -435,7 +435,7 @@
             :show-deps-fn cli-deps-tree
             :test-cmds ["clojure -M:test"]}
            {:name "rewrite-edn"
-            :version "0.6.10"
+            :version "0.6.11"
             :platforms [:clj]
             :release {:scm :github
                       :repo "borkdude/rewrite-edn"
