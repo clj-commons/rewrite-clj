@@ -8,7 +8,7 @@
                            :sha "eace48e2e0fcc65a3986d696fb0b910fa5790a1c"}
         etaoin/etaoin {:mvn/version "1.1.43"}
         wevre/natural-compare {:mvn/version "0.0.10"}
-        com.github.liquidz/antq {:git/sha "40de7dad0935c1198faa5b9a54a8c4a885080cbd"}
+        com.github.liquidz/antq {:git/sha "db72ea9de85a6f25fda96223ea5deb4b0ada3848"}
         io.github.babashka/neil {:git/tag "v0.3.70" :git/sha "2cdd7c6"}}
  :tasks {;; setup
          :requires ([clojure.string :as string]
