@@ -1119,8 +1119,8 @@ a|`(read-string "#uuid \"3b8a31ed-fd89-4f1b-a00f-42e3d60cf5ce\"")`
 2+a|*Reader conditional* `:reader-macro`
 a|`#?(:clj x :cljs y)`
 a|`(read-string "#?(:clj x :cljs y)")`
-a|`#@?(:clj [x] :cljs [y])`
-a|`(read-string "#@?(:clj [x] :cljs [y])")`
+a|`#?@(:clj [x] :cljs [y])`
+a|`(read-string "#?@(:clj [x] :cljs [y])")`
 
 |===
 

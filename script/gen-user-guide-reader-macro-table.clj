@@ -21,7 +21,7 @@
                          "#inst \"2018-03-28T10:48:00.000\""
                          "#uuid \"3b8a31ed-fd89-4f1b-a00f-42e3d60cf5ce\""]]
       ["Reader conditional" ["#?(:clj x :cljs y)"
-                             "#@?(:clj [x] :cljs [y])"]]]
+                             "#?@(:clj [x] :cljs [y])"]]]
      (reduce (fn [sdoc [desc inputs]]
                (let [parsed (map p/parse-string inputs)
                      tag (-> parsed first n/tag)
